@@ -78,4 +78,4 @@ alias pacS='pacman -Qs'
 alias pacol='pacman -Qdt'
 
 # remove orphan packages
-alias pacrl='sudo pacman -Rns $(pacman -Qtdq)'
+alias pacor='sudo pacman -Rns $(pacman -Qtdq)'
