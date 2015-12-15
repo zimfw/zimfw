@@ -179,6 +179,3 @@ alias gwX='git rm -rf'
 
 # Misc
 alias g..='cd $(git-root || echo ".")'
-
-# Cleanup
-unset _git_log{,}
