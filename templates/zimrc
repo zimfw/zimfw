@@ -20,11 +20,11 @@ zmodules=(completion directory environment git history ssh utility \
 #
 
 # set your desired prompt here
-zprompt_theme='agnoster'
+zprompt_theme='eriner'
 
 
 #
-# zsh-syntax-highlighting
+# Syntax-Highlighting
 #
 
 # this determines what highlighters will be used with the completion module
