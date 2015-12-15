@@ -17,16 +17,16 @@ What does Zim offer?
 If you're here, it means you want to see the cool shit Zim has to offer.
 
 #### Themes
-> Images of cascading themes
+![Eriner Theme][theme_eriner]
 
 #### Fish-shell History Navigation
-> GIF OF history-substring-search
+![history-substring-search][fish_shell]
 
 #### Syntax Highlighting
-> GIF of syntax highlighting
+![syntax-highlighting][syntax_highlighting]
 
 #### Speed
-> possible side-by-side comparison of oh-my-zsh/zprezto/zim
+For a speed comparison between zim and prezto, see [this gist][zim_vs_prezto]
 
 #### And much more!
 Zim has many modules! Enable as many or as few as you'd like.
@@ -55,3 +55,8 @@ uninstall those first to prevent conflicts.
   ```
 
 4. Open a new terminal and admire your work!
+
+[theme_eriner]: http://i.eriner.me/eriner_prompt_theme.png
+[fish_shell]: http://i.eriner.me/zim_history-substring-search.gif
+[syntax_highlighting]: http://i.eriner.me/zim_syntax-highlighting.gif
+[zim_vs_prezto]: https://gist.github.com/Eriner/3aa88b161615c2913930
