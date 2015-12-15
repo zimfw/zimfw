@@ -19,7 +19,7 @@ setopt NOTIFY
 # Run all background jobs at a lower priority. This option is set by default.
 unsetopt BG_NICE
 
-# Send the HUP signal to running jobs when the shell exits.<Paste>
+# Send the HUP signal to running jobs when the shell exits.
 unsetopt HUP
 
 # Report the status of background and suspended jobs before exiting a shell with job control; 

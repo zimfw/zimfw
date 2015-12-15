@@ -3,7 +3,7 @@ Environment
 
 Sets generic Zsh built-in environment options.
 
-Also enables smart url-pasting. This prevents the user from having to manually escape URLs.
+Also enables smart URL-pasting. This prevents the user from having to manually escape URLs.
 
 ZSH Options
 -----------
