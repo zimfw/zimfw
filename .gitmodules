@@ -1,0 +1,9 @@
+[submodule "modules/history-substring-search/external"]
+	path = modules/history-substring-search/external
+	url = git@github.com:zsh-users/zsh-history-substring-search.git
+[submodule "modules/completion/external"]
+	path = modules/completion/external
+	url = git@github.com:zsh-users/zsh-completions.git
+[submodule "modules/syntax-highlighting/external"]
+	path = modules/syntax-highlighting/external
+	url = git@github.com:zsh-users/zsh-syntax-highlighting.git

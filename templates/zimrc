@@ -1,0 +1,50 @@
+#################
+# CORE SETTINGS #
+#################
+
+#
+# Zim settings
+#
+
+# select what modules you would like enabled
+zmodules=(completion directory environment git history ssh utility \
+          syntax-highlighting history-substring-search prompt)
+
+
+###################
+# MODULE SETTINGS #
+###################
+
+#
+# Prompt
+#
+
+# set your desired prompt here
+zprompt_theme='agnoster'
+
+
+#
+# zsh-syntax-highlighting
+#
+
+# this determines what highlighters will be used with the completion module
+zhighlighters=(main brackets cursor)
+
+
+#
+# SSH
+#
+
+# load these ssh identities with the ssh module
+zssh_ids=(id_rsa)
+
+
+#
+# Pacman
+#
+
+# set (optional) pacman front-end. If not set, zim will attempt to use powerpill or pacmatic if available
+#zpacman_frontend='powerpill'
+
+# load any helper scripts as difined here
+#zpacman_helper=(aur)
