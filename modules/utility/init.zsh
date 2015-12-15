@@ -2,11 +2,21 @@
 # utility functions and options
 #
 
+
+#
 # general aliases
+#
+
 alias chmod='chmod --preserve-root -v'
 alias chown='chown --preserve-root -v'
+alias df='df -kh'
+alias du='du -kh'
 
-# ls colors
+
+#
+# ls
+#
+
 if [[ dircolors ]]; then
   if [[ -s ${HOME}/.dir_colors ]]; then
     eval "$(dircolors --sh ${HOME}/.dir_colors)"
@@ -24,7 +34,3 @@ else
 fi
 
 alias l='ls -lAh'        # one column, all files, human-readable sizes
-
-# resource usage
-alias df='df -kh'
-alias du='du -kh'
