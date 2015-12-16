@@ -18,9 +18,7 @@ if [[ ${zpacman_frontend} == 'auto' ]]; then
   else
     zpacman_frontend='pacman'
   fi
-elif (( ! $+zpacman_fontend )); then
-  # this conditional is broken, for unknown reasons.
-  # it should test if zpacman_frontend is set, but is hit regardless of if it is set or not.
+elif (( ! $+zpacman_frontend )); then
   zpacman_frontend='pacman'
 elif (( ! $+commands[${zpacman_frontend}] )); then
   print "pacman frontend \"${zpacman_frontend}\" is invalid or not installed. Reverting to \"pacman\"." >&2 
