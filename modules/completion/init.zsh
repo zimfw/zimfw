@@ -13,7 +13,7 @@ if [[ ${TERM} == 'dumb' ]]; then
 fi
 
 # add the completions to the fpath
-fpath+=(${0:h}/external/src)
+fpath=(${0:h}/external/src ${fpath})
 
 # load and initialize the completion system
 autoload -Uz compinit && compinit -C -d ${ZDOTDIR:-$HOME}/.zcompdump
