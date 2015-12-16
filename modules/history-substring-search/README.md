@@ -1,7 +1,7 @@
 History-Substring-Search
 ========================
 
-Allows for fish-shell-like searching of history with UP and DOWN.
+Allows for fish shell-like searching of history with UP and DOWN.
 
 The options set explicitly by init.zsh are the default options, and are only set for consistancy.
 
