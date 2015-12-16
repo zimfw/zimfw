@@ -1,17 +1,10 @@
-# vim:ft=zsh ts=2 sw=2 sts=2
-#
-# agnoster's Theme - https://gist.github.com/3712874
+# Eriner's Theme - fork of agnoster
 # A Powerline-inspired theme for ZSH
 #
 # # README
 #
 # In order for this theme to render correctly, you will need a
 # [Powerline-patched font](https://gist.github.com/1595572).
-#
-# In addition, I recommend the
-# [Solarized theme](https://github.com/altercation/solarized/) and, if you're
-# using it on Mac OS X, [iTerm 2](http://www.iterm2.com/) over Terminal.app -
-# it has significantly better color fidelity.
 #
 # # Goals
 #
@@ -42,21 +35,21 @@ GEAR="\u2699"
 # rendering default background/foreground.
 prompt_segment() {
   local bg fg
-  [[ -n $1 ]] && bg="%K{$1}" || bg="%k"
-  [[ -n $2 ]] && fg="%F{$2}" || fg="%f"
-  if [[ $CURRENT_BG != 'NONE' && $1 != $CURRENT_BG ]]; then
-    print -n "%{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%}"
+  [[ -n ${1} ]] && bg="%K{${1}}" || bg="%k"
+  [[ -n ${2} ]] && fg="%F{${2}}" || fg="%f"
+  if [[ $CURRENT_BG != 'NONE' && ${1} != $CURRENT_BG ]]; then
+    print -n "%{${bg}%F{${CURRENT_BG}}%}${SEGMENT_SEPARATOR}%{${fg}%}"
   else
-    print -n "%{$bg%}%{$fg%}"
+    print -n "%{${bg}%}%{${fg}%}"
   fi
-  CURRENT_BG=$1
-  [[ -n $3 ]] && print -n $3
+  CURRENT_BG=${1}
+  [[ -n ${3} ]] && print -n ${3}
 }
 
 # End the prompt, closing any open segments
 prompt_end() {
   if [[ -n $CURRENT_BG ]]; then
-    print -n "%{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR"
+    print -n "%{%k%F{${CURRENT_BG}}%}${SEGMENT_SEPARATOR}"
   else
     print -n "%{%k%}"
   fi
@@ -69,10 +62,8 @@ prompt_end() {
 
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
-  local user=`whoami`
-
-  if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
-    prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$user@%m "
+  if [[ ${USERNAME} != ${DEFAULT_USER} || -n ${SSH_CONNECTION} ]]; then
+    prompt_segment ${PRIMARY_FG} default " %(!.%{%F{yellow}%}.)${USERNAME}@%m "
   fi
 }
 
@@ -82,28 +73,28 @@ prompt_git() {
   is_dirty() {
     test -n "$(git status --porcelain --ignore-submodules)"
   }
-  ref="$vcs_info_msg_0_"
-  if [[ -n "$ref" ]]; then
+  ref=${vcs_info_msg_0_}
+  if [[ -n ${ref} ]]; then
     if is_dirty; then
       color=yellow
-      ref="${ref} $PLUSMINUS"
+      ref="${ref} ${PLUSMINUS}"
     else
       color=green
       ref="${ref} "
     fi
-    if [[ "${ref/.../}" == "$ref" ]]; then
-      ref="$BRANCH $ref"
+    if [[ "${ref/.../}" == ${ref} ]]; then
+      ref="${BRANCH} ${ref}"
     else
       ref="$DETACHED ${ref/.../}"
     fi
-    prompt_segment $color $PRIMARY_FG
-    print -Pn " $ref"
+    prompt_segment ${color} ${PRIMARY_FG}
+    print -Pn " ${ref}"
   fi
 }
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment cyan $PRIMARY_FG ' %~ '
+  prompt_segment cyan ${PRIMARY_FG} ' %~ '
 }
 
 # Status:
@@ -113,11 +104,11 @@ prompt_dir() {
 prompt_status() {
   local symbols
   symbols=()
-  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$CROSS"
-  [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
-  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
+  [[ ${RETVAL} -ne 0 ]] && symbols+="%{%F{red}%}${CROSS}"
+  [[ ${UID} -eq 0 ]] && symbols+="%{%F{yellow}%}${LIGHTNING}"
+  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}${GEAR}"
 
-  [[ -n "$symbols" ]] && prompt_segment $PRIMARY_FG default " $symbols "
+  [[ -n ${symbols} ]] && prompt_segment ${PRIMARY_FG} default " ${symbols} "
 }
 
 ## Main prompt
