@@ -5,6 +5,9 @@ Adds fish shell-like [syntax highlighting](https://github.com/zsh-users/zsh-synt
 
 ![syntax-highlighting][syntax_highlighting]
 
+If you are also using [history-substring-search](https://github.com/Eriner/zim/blob/master/modules/history-substring-search/README.md), 
+ensure you have placed 'syntax-highlighting' before 'history-substring-search' on the second line of `zmodules` in your `.zimrc`.
+
 .zimrc Configuration
 --------------------
 
