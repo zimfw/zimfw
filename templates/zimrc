@@ -7,7 +7,9 @@
 #
 
 # select what modules you would like enabled
-zmodules=(completion directory environment git history ssh utility \
+# the second line of modules may depend on options set by modules in the first line
+# these dependencies are noted on the respective module's README.md
+zmodules=(completion directory environment git history input ssh utility \
           syntax-highlighting history-substring-search prompt)
 
 
