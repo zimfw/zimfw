@@ -178,4 +178,4 @@ alias gwx='git rm -r'
 alias gwX='git rm -rf'
 
 # Misc
-alias g..='cd $(git-root || echo ".")'
+alias g..='cd $(git-root || print .)'
