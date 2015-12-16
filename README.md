@@ -14,7 +14,9 @@ Zim comes with a rich set of default modules and features without comprimising o
 
 What does Zim offer?
 -----------------
-If you're here, it means you want to see the cool shit Zim can do.
+If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules](https://github.com/Eriner/zim/wiki/Modules)!
+
+Below is a brief showcase of Zim's features.
 
 #### Themes
 ![Eriner Theme][theme_eriner]
