@@ -1,7 +1,7 @@
 Prompt
 ======
 
-Adds additional prompts and initializes the prompt system.
+Initializes and provides customizable prompt themes.
 
 A list of available prompts can be found by running `prompt -l`.
 
