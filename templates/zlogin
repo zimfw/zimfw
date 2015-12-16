@@ -25,7 +25,10 @@ local zcompare() {
   # First, we will zcompile the completion cache, if it exists. Siginificant speedup.
   zcompare ${ZDOTDIR:-$HOME}/.zcompdump
 
-  # Next, we should zcomplie the 'heavy' modules where possible.
+  # Next, zcompile .zshrc if needed
+  zcompare ${ZDOTDIR:-$HOME}/.zshrc
+
+  # Then, we should zcomplie the 'heavy' modules where possible.
   # This includes syntax-highlighting and completion. 
   # Other modules may be added to this list at a later date.
   function {
