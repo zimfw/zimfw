@@ -52,8 +52,8 @@ local zcompare() {
     #
     # zsh-histery-substring-search zcompile
     #
-    if [[ -s ${zim}/modules/zsh-history-substring-search/external/zsh-history-substring-search.zsh ]]; then
-      zcompare ${zim}/modules/zsh-history-substring-search/external/zsh-history-substring-search.zsh
+    if [[ -s ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh ]]; then
+      zcompare ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh
     fi
   }
 
