@@ -1,9 +1,5 @@
 ZIM - Zsh IMproved
 ==================
-Moving to Zsh because you heard it was cool? Tried other frameworks but found them slow?
-Want something that works without spending hours configuring sane settings? Want to be the conqueror of shells?
-
-Meet Zim.
 
 <div align="center">
   <a href="http://github.com/Eriner/zim">
@@ -13,7 +9,8 @@ Meet Zim.
 
 What is Zim?
 ------------
-Zim is a Zsh configuration fromework that prides itself on speed and modularity.
+Zim is a Zsh configuration fromework with blazing speed and modular extensions.
+
 Zim is very easy to customize and add your own functionality. But worry not! You don't *have* to if that's not your cup of tea!
 
 Zim comes with a rich set of default modules and features without comprimising on speed or functionality!
