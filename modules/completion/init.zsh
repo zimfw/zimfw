@@ -17,6 +17,10 @@ fpath=(${0:h}/external/src ${fpath})
 
 # load and initialize the completion system
 autoload -Uz compinit && compinit -C -d ${ZDOTDIR:-$HOME}/.zcompdump
+
+# set any compdefs
+source ${0:h}/compdefs.zsh
+
 {
   # zcomple the .zcompdump in the background
   local zcompdump=${ZDOTDIR:-$HOME}/.zcompdump

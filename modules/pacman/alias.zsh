@@ -9,7 +9,6 @@
 # General
 #
 
-alias pacman=${zpacman_frontend}
 alias pac=${zpacman_frontend}
 
 #
