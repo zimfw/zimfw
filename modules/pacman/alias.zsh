@@ -69,6 +69,7 @@ alias pacs='pacman -Ss'
 # search for the package in the local repository
 alias pacS='pacman -Qs'
 
+
 #
 # Orphans
 #
@@ -78,3 +79,14 @@ alias pacol='pacman -Qdt'
 
 # remove orphan packages
 alias pacor='sudo pacman -Rns $(pacman -Qtdq)'
+
+
+#
+# Ownership
+#
+
+# list all files that belong to a package
+alias pacown='pacman -Ql'
+
+# show package(s) owning the specified file
+alias pacblame='pacman -Qo'

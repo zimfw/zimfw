@@ -54,3 +54,8 @@ Aliases
 
   * `pacol` list orphan packages
   * `pacor` remove all orphan packages
+
+### Ownership
+
+  * `pacown` list all files provided by a given package
+  * `pacblame` show package(s) that own a specified file
