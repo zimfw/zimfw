@@ -19,4 +19,4 @@ Contributing
 
 Contributions should be submitted [upstream to history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)
 
-[fish_shell]: http://i.eriner.me/zim_history-substring-search.gif
+[fish_shell]: https://i.eriner.me/zim_history-substring-search.gif

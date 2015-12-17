@@ -3,7 +3,7 @@ ZIM - Zsh IMproved
 
 <div align="center">
   <a href="http://github.com/Eriner/zim">
-    <img width=650px src="http://i.eriner.me/zim_banner.png">
+    <img width=650px src="https://i.eriner.me/zim_banner.png">
   </a>
 </div>
 
@@ -61,7 +61,7 @@ uninstall those first to prevent conflicts.
 
 4. Open a new terminal and admire your work!
 
-[theme_eriner]: http://i.eriner.me/eriner_prompt_theme.png
-[fish_shell]: http://i.eriner.me/zim_history-substring-search.gif
-[syntax_highlighting]: http://i.eriner.me/zim_syntax-highlighting.gif
+[theme_eriner]: https://i.eriner.me/eriner_prompt_theme.png
+[fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
+[syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
 [zim_vs_prezto]: https://gist.github.com/Eriner/3aa88b161615c2913930

@@ -18,4 +18,4 @@ Contributing
 
 Contributions should be submitted [upstream to zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 
-[syntax_highlighting]: http://i.eriner.me/zim_syntax-highlighting.gif
+[syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
