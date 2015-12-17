@@ -5,6 +5,12 @@ Want something that works without spending hours configuring sane settings? Want
 
 Meet Zim.
 
+<div align="center">
+  <a href="http://github.com/Eriner/zim">
+    <img width=650px src="http://i.eriner.me/zim_banner.png">
+  </a>
+</div>
+
 What is Zim?
 ------------
 Zim is a Zsh configuration fromework that prides itself on speed and modularity.
