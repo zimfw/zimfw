@@ -35,7 +35,7 @@ case "${archive_name}" in
   (*.xz) unxz "${archive_name}" ;;
   (*.lzma) unlzma "${archive_name}" ;;
   (*.Z) uncompress "${archive_name}" ;;
-  (*.zip) unzip "${archive_name}" -d $extract_dir ;;
+  (*.zip) unzip "${archive_name}";;
   (*.rar) unrar &> /dev/null \
     && unrar x -ad "${archive_name}" \
     || rar x -ad "${archive_name}" ;;
