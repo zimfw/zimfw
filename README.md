@@ -21,20 +21,10 @@ Below is a brief showcase of Zim's features.
 
 #### Themes
 
-###### Steeef
-![Steeef Theme][theme_steeef]
-
-###### Eriner
-![Eriner Theme][theme_eriner]
-
-###### Minimal
+##### Minimal
 ![Minimal Theme][theme_minimal]
 
-###### Liquidprompt
-![Liquidprompt][theme_liquidprompt]
-
-###### Gitster
-![Gitster Theme][theme_gitster]
+To see more themes, check the [wiki page](https://github.com/Eriner/zim/wiki/Themes).
 
 #### Fish-shell History Navigation
 ![history-substring-search][fish_shell]
@@ -74,10 +64,6 @@ uninstall those first to prevent conflicts.
 4. Open a new terminal and admire your work!
 
 [theme_minimal]: http://i.eriner.me/zim_prompt_minimal.png
-[theme_eriner]: https://i.eriner.me/zim_prompt_eriner.png
-[theme_liquidprompt]: http://i.eriner.me/zim_prompt_liquidprompt.png
-[theme_steeef]: http://i.eriner.me/zim_prompt_steeef.png
-[theme_gitster]: http://i.eriner.me/zim_prompt_gitster.png
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
 [zim_vs_others]: https://gist.github.com/Eriner/3aa88b161615c2913930
