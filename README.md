@@ -9,7 +9,7 @@ ZIM - Zsh IMproved
 
 What is Zim?
 ------------
-Zim is a Zsh configuration framework with blazing speed and modular extensions.
+Zim is a Zsh configuration framework with [blazing speed](https://github.com/Eriner/zim/wiki/Speed) and modular extensions.
 
 Zim is very easy to customize, and comes with a rich set of modules and features without compromising on speed or functionality!
 
@@ -18,6 +18,9 @@ What does Zim offer?
 If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules](https://github.com/Eriner/zim/wiki/Modules)!
 
 Below is a brief showcase of Zim's features.
+
+#### Speed
+For a speed comparison between Zim and other frameworks, see [this wiki entry](https://github.com/Eriner/zim/wiki/Speed).
 
 #### Themes
 
@@ -31,9 +34,6 @@ To see more themes, check the [wiki page](https://github.com/Eriner/zim/wiki/The
 
 #### Syntax Highlighting
 ![syntax-highlighting][syntax_highlighting]
-
-#### Speed
-For a speed comparison between zim and other frameworks, see [this gist][zim_vs_others].
 
 #### And much more!
 Zim has many modules! Enable as many or as few as you'd like.
