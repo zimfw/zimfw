@@ -52,7 +52,7 @@ alias lc='lt -c'          # human-readable sizes, most recent last, change time
 #
 
 if (( ${+commands[aria2c]} )); then
-  alias get='aria2c --max-connections-per-sever=5 --continue'
+  alias get='aria2c --max-connection-per-server=5 --continue'
 elif (( ${+commands[axel]} )); then
   alias get='axel --num-connections=5 --alternate'
 elif (( ${+commands[wget]} )); then
