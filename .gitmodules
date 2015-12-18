@@ -10,3 +10,6 @@
 [submodule "modules/prompt/external-themes/pure"]
 	path = modules/prompt/external-themes/pure
 	url = https://github.com/sindresorhus/pure.git
+[submodule "modules/prompt/external-themes/liquidprompt"]
+	path = modules/prompt/external-themes/liquidprompt
+	url = https://github.com/nojhan/liquidprompt.git
