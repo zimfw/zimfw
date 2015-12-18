@@ -9,11 +9,9 @@ ZIM - Zsh IMproved
 
 What is Zim?
 ------------
-Zim is a Zsh configuration fromework with blazing speed and modular extensions.
+Zim is a Zsh configuration framework with blazing speed and modular extensions.
 
-Zim is very easy to customize and add your own functionality. But worry not! You don't *have* to if that's not your cup of tea!
-
-Zim comes with a rich set of default modules and features without comprimising on speed or functionality!
+Zim is very easy to customize, and comes with a rich set of modules and features without compromising on speed or functionality!
 
 What does Zim offer?
 -----------------
@@ -31,7 +29,7 @@ Below is a brief showcase of Zim's features.
 ![syntax-highlighting][syntax_highlighting]
 
 #### Speed
-For a speed comparison between zim and prezto, see [this gist][zim_vs_prezto]
+For a speed comparison between zim and other frameworks, see [this gist][zim_vs_others].
 
 #### And much more!
 Zim has many modules! Enable as many or as few as you'd like.
@@ -64,4 +62,4 @@ uninstall those first to prevent conflicts.
 [theme_eriner]: https://i.eriner.me/eriner_prompt_theme.png
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
-[zim_vs_prezto]: https://gist.github.com/Eriner/3aa88b161615c2913930
+[zim_vs_others]: https://gist.github.com/Eriner/3aa88b161615c2913930
