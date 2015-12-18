@@ -22,7 +22,7 @@ zmodules=(directory environment git history input ssh utility \
 #
 
 # set your desired prompt here
-zprompt_theme='eriner'
+zprompt_theme='steeef'
 
 
 #
