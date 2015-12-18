@@ -22,13 +22,16 @@ CURRENT_BG='NONE'
 PRIMARY_FG=black
 
 # Characters
-SEGMENT_SEPARATOR="\ue0b0"
-PLUSMINUS="\u00b1"
-BRANCH="\ue0a0"
-DETACHED="\u27a6"
-CROSS="\u2718"
-LIGHTNING="\u26a1"
-GEAR="\u2699"
+function {
+  local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+  SEGMENT_SEPARATOR="\ue0b0"
+  PLUSMINUS="\u00b1"
+  BRANCH="\ue0a0"
+  DETACHED="\u27a6"
+  CROSS="\u2718"
+  LIGHTNING="\u26a1"
+  GEAR="\u2699"
+}
 
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
@@ -62,8 +65,8 @@ prompt_end() {
 
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
-  if [[ ${USERNAME} != ${DEFAULT_USER} || -n ${SSH_CONNECTION} ]]; then
-    prompt_segment ${PRIMARY_FG} default " %(!.%{%F{yellow}%}.)${USERNAME}@%m "
+  if [[ ${USER} != ${DEFAULT_USER} || -n ${SSH_CONNECTION} ]]; then
+    prompt_segment ${PRIMARY_FG} default " %(!.%{%F{yellow}%}.)${USER}@%m "
   fi
 }
 
