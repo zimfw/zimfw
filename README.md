@@ -9,33 +9,33 @@ ZIM - Zsh IMproved
 
 What is Zim?
 ------------
-Zim is a Zsh configuration framework with [blazing speed](https://github.com/Eriner/zim/wiki/Speed) and modular extensions.
+Zim is a Zsh configuration framework with [blazing speed][speed] and modular extensions.
 
 Zim is very easy to customize, and comes with a rich set of modules and features without compromising on speed or functionality!
 
 What does Zim offer?
 -----------------
-If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules](https://github.com/Eriner/zim/wiki/Modules)!
+If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules][modules]!
 
 Below is a brief showcase of Zim's features.
 
-#### Speed
-For a speed comparison between Zim and other frameworks, see [this wiki entry](https://github.com/Eriner/zim/wiki/Speed).
+### Speed
+For a speed comparison between Zim and other frameworks, see [this wiki entry][speed].
 
-#### Themes
+### Themes
 
-##### Minimal
+#### Minimal
 ![Minimal Theme][theme_minimal]
 
-To see more themes, check the [wiki page](https://github.com/Eriner/zim/wiki/Themes).
+To see more themes, check the [themes wiki page][themes].
 
-#### Fish-shell History Navigation
+### Fish-shell History Navigation
 ![history-substring-search][fish_shell]
 
-#### Syntax Highlighting
+### Syntax Highlighting
 ![syntax-highlighting][syntax_highlighting]
 
-#### And much more!
+### And much more!
 Zim has many modules! Enable as many or as few as you'd like.
 
 Installation
@@ -61,9 +61,16 @@ uninstall those first to prevent conflicts.
   chsh -s $(which zsh)
   ```
 
-4. Open a new terminal and admire your work!
+4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
+  ```
+  source ~/.zlogin
+  ```
+
+5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
 [theme_minimal]: http://i.eriner.me/zim_prompt_minimal.png
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
-[zim_vs_others]: https://gist.github.com/Eriner/3aa88b161615c2913930
+[speed]: https://github.com/Eriner/zim/wiki/Speed
+[modules]: https://github.com/Eriner/zim/wiki/Modules
+[themes]: https://github.com/Eriner/zim/wiki/Themes
