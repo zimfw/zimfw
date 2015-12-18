@@ -24,10 +24,7 @@ For a speed comparison between Zim and other frameworks, see [this wiki entry][s
 
 ### Themes
 
-#### Minimal
-![Minimal Theme][theme_minimal]
-
-To see more themes, check the [themes wiki page][themes].
+To preview some of the available themes, check the [themes wiki page][themes].
 
 ### Fish-shell History Navigation
 ![history-substring-search][fish_shell]
