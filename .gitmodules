@@ -7,3 +7,6 @@
 [submodule "modules/syntax-highlighting/external"]
 	path = modules/syntax-highlighting/external
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "modules/prompt/external-themes/pure"]
+	path = modules/prompt/external-themes/pure
+	url = https://github.com/sindresorhus/pure.git
