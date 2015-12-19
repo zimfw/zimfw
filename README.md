@@ -42,14 +42,14 @@ uninstall those first to prevent conflicts.
 
 1. In Zsh, clone the repository:
   ```
-  git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-$HOME}/.zim
+  git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
   ```
 
 2. Copy the template configuration files (or append to existing configs):
   ```
   setopt EXTENDED_GLOB
-  for template_file ( ${ZDOTDIR:-$HOME}/.zim/templates/* ); do
-    cat ${template_file} | tee -a ${ZDOTDIR:-$HOME}/.$(basename ${template_file}) > /dev/null
+  for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
+    cat ${template_file} | tee -a ${ZDOTDIR:-${HOME}}/.$(basename ${template_file}) > /dev/null
   done
   ```
 
@@ -60,7 +60,7 @@ uninstall those first to prevent conflicts.
 
 4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
   ```
-  source ~/.zlogin
+  source ${ZDOTDIR:-${HOME}}/.zlogin
   ```
 
 5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.

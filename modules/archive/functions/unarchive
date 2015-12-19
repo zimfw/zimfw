@@ -4,9 +4,9 @@
 
 local archive_name _gunzip_bin _bunzip2_bin
 
-if (( $# != 1 )); then
+if (( ${#} != 1 )); then
   cat >&2 <<EOF
-usage: $0 [archive.zip]
+usage: ${0} [archive.zip]
 EOF
 return 1
 fi

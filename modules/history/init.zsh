@@ -3,7 +3,7 @@
 #
 
 # sets the location of the history file
-HISTFILE="${ZDOTDIR:-$HOME}/.zhistory"
+HISTFILE="${ZDOTDIR:-${HOME}}/.zhistory"
 
 # limit of history entries
 HISTSIZE=10000
@@ -16,7 +16,7 @@ setopt BANG_HIST
 # ‘: <beginning time>:<elapsed seconds>;<command>’.
 setopt EXTENDED_HISTORY
 
-# This options works like APPEND_HISTORY except that new history lines are added to the $HISTFILE incrementally
+# This options works like APPEND_HISTORY except that new history lines are added to the ${HISTFILE} incrementally
 # (as soon as they are entered), rather than waiting until the shell exits.
 setopt INC_APPEND_HISTORY
 

@@ -2,7 +2,7 @@
 # git aliases and functions
 #
 
-if (( ! $+commands[git] )); then
+if (( ! ${+commands[git]} )); then
   return 1
 fi
 

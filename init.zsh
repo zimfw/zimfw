@@ -3,21 +3,21 @@
 #
 
 # Define zim location
-ZIM="${ZDOTDIR:-$HOME}/.zim"
+ZIM="${ZDOTDIR:-${HOME}}/.zim"
 
 # Source user configuration
-if [[ -s "${ZDOTDIR:-$HOME}/.zimrc" ]]; then
-  source "${ZDOTDIR:-$HOME}/.zimrc"
+if [[ -s "${ZDOTDIR:-${HOME}}/.zimrc" ]]; then
+  source "${ZDOTDIR:-${HOME}}/.zimrc"
 fi
 
 load_zim_module() {
   local wanted_module
 
-  for wanted_module ($zmodules); do
-    if [[ -s "${ZIM}/modules/$wanted_module/init.zsh" ]]; then
-      source "${ZIM}/modules/$wanted_module/init.zsh"
-    elif [[ ! -d "${ZIM}/modules/$wanted_module" ]]; then
-      print "No such module \"$wanted_module\"." >&2
+  for wanted_module (${zmodules}); do
+    if [[ -s "${ZIM}/modules/${wanted_module}/init.zsh" ]]; then
+      source "${ZIM}/modules/${wanted_module}/init.zsh"
+    elif [[ ! -d "${ZIM}/modules/${wanted_module}" ]]; then
+      print "No such module \"${wanted_module}\"." >&2
     fi
   done
 }
@@ -32,7 +32,7 @@ load_zim_function() {
   function {
     setopt LOCAL_OPTIONS EXTENDED_GLOB
 
-    for mod_function in ${ZIM}/modules/${^zmodules}/functions/$~function_glob; do
+    for mod_function in ${ZIM}/modules/${^zmodules}/functions/${~function_glob}; do
       autoload -Uz ${mod_function}
     done
   }

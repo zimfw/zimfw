@@ -23,10 +23,10 @@ local zcompare() {
 # These jobs are asynchronous, and will not impact the interactive shell
 {
   # First, we will zcompile the completion cache, if it exists. Siginificant speedup.
-  zcompare ${ZDOTDIR:-$HOME}/.zcompdump
+  zcompare ${ZDOTDIR:-${HOME}}/.zcompdump
 
   # Next, zcompile .zshrc if needed
-  zcompare ${ZDOTDIR:-$HOME}/.zshrc
+  zcompare ${ZDOTDIR:-${HOME}}/.zshrc
 
   # Then, we should zcomplie the 'heavy' modules where possible.
   # This includes syntax-highlighting and completion. 
@@ -34,7 +34,7 @@ local zcompare() {
   function {
     # use of anonymous function for setopt extended_glob
 
-    local zim=${ZDOTDIR:-$HOME}/.zim
+    local zim=${ZDOTDIR:-${HOME}}/.zim
     setopt EXTENDED_GLOB
 
     #

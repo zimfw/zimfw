@@ -12,6 +12,6 @@ if ! git-root &> /dev/null; then
 fi
 
 # we are in a git repository. add parameters to .gitignore
-for file in "$@"; do
-  print "$file" >>! $(git-root)/.gitignore
+for file in "${@}"; do
+  print "${file}" >>! $(git-root)/.gitignore
 done

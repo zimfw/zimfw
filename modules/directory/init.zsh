@@ -19,7 +19,7 @@ setopt PUSHD_IGNORE_DUPS
 # Do not print the directory stack after pushd or popd.
 setopt PUSHD_SILENT
 
-# Have pushd with no arguments act like ‘pushd $HOME’.
+# Have pushd with no arguments act like ‘pushd ${HOME}’.
 setopt PUSHD_TO_HOME
 
 #

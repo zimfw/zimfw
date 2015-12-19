@@ -3,7 +3,7 @@
 #
 
 # don't do anything unless we can actually use ssh-agent
-if (( ! $+commands[ssh-agent] )); then
+if (( ! ${+commands[ssh-agent]} )); then
   return 1
 fi
 

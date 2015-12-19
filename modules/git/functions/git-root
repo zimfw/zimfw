@@ -7,10 +7,10 @@
 
 local root="$(git rev-parse --show-toplevel 2> /dev/null)"
 
-if [[ -n "$root" ]]; then
-  print "$root"
+if [[ -n "${root}" ]]; then
+  print "${root}"
   return 0
 else
-  print "$0: not a repository work tree: $PWD" >&2
+  print "${0}: not a repository work tree: ${PWD}" >&2
   return 1
 fi

@@ -4,9 +4,9 @@
 
 local archive_name dir_to_archive _gzip_bin _bzip2_bin
 
-if (( $# != 2 )); then
+if (( ${#} != 2 )); then
   cat >&2 <<EOF
-usage: $0 [archive_name.zip] [/path/to/include/into/archive]
+usage: ${0} [archive_name.zip] [/path/to/include/into/archive]
 Where 'archive.zip' uses any of the following extensions:
 .tar.gz, .tar.bz2, .tar.xz, .tar.lzma, .tar, .zip, .rar, .7z
 There is no '-v' switch; all operations are verbose.
@@ -24,18 +24,18 @@ dir_to_archive="${2}"
 
 # if the directory doesn't exist, quit. Nothing to archive
 if [[ ! -e "${dir_to_archive}" ]]; then
-  print "$0: file or directory not valid: ${dir_to_archive}" >&2
+  print "${0}: file or directory not valid: ${dir_to_archive}" >&2
   return 1
 fi
 
 # here, we check for dropin/multi-threaded replacements
-if (( $+commands[pigz] )); then
+if (( ${+commands[pigz]} )); then
   _gzip_bin='pigz'
 else
   _gzip_bin='gzip'
 fi
 
-if (( $+commands[pbzip2] )); then
+if (( ${+commands[pbzip2]} )); then
   _bzip2_bin='pbzip2'
 else
   _bzip2_bin='bzip2'

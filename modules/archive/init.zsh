@@ -8,11 +8,11 @@
 # pigz
 #
 
-if (( $+commands[pigz] )); then
+if (( ${+commands[pigz]} )); then
   alias gzip='pigz'
 fi
 
-if (( $+commands[unpigz] )); then
+if (( ${+commands[unpigz]} )); then
   alias gunzip='pigz'
 fi
 
@@ -20,10 +20,10 @@ fi
 # pbzip2
 #
 
-if (( $+commands[pbzip2] )); then
+if (( ${+commands[pbzip2]} )); then
   alias bzip2='pbzip2'
 fi
 
-if (( $+commands[pbunzip2] )); then
+if (( ${+commands[pbunzip2]} )); then
   alias bunzip2='pbzip2'
 fi

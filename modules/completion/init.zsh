@@ -16,14 +16,14 @@ fi
 fpath=(${0:h}/external/src ${fpath})
 
 # load and initialize the completion system
-autoload -Uz compinit && compinit -C -d ${ZDOTDIR:-$HOME}/.zcompdump
+autoload -Uz compinit && compinit -C -d ${ZDOTDIR:-${HOME}}/.zcompdump
 
 # set any compdefs
 source ${0:h}/compdefs.zsh
 
 {
   # zcomple the .zcompdump in the background
-  local zcompdump=${ZDOTDIR:-$HOME}/.zcompdump
+  local zcompdump=${ZDOTDIR:-${HOME}}/.zcompdump
 
   if [[ -s ${zcompdump} && ( ! -s ${zcompdump}.zwc || ${zcompdump} -nt ${zcompdump}.zwc) ]]; then
     zcompile ${zcompdump}
@@ -86,7 +86,7 @@ zstyle ':completion:*' squeeze-slashes true
 
 # enable caching
 zstyle ':completion::complete:*' use-cache on
-zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
+zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-${HOME}}/.zcompcache"
 
 # ignore useless commands and functions
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|prompt_*)'

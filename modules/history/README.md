@@ -3,7 +3,7 @@ History
 
 Sets sane default history options.
 
-History file is set to save in `${ZDOTDIR:-$HOME}/.zhistory`
+History file is set to save in `${ZDOTDIR:-${HOME}}/.zhistory`
 
 (most likely ~/.zhistory)
 

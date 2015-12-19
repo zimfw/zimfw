@@ -4,12 +4,12 @@
 
 # download and build AUR package
 aurb() {
-  git clone https://aur.archlinux.org/$1.git && cd $1 && makepkg -sci 
+  git clone https://aur.archlinux.org/${1}.git && cd ${1} && makepkg -sci 
 }
 
 # only download aur package; do not build
 aurd() {
-  git clone https://aur.archlinux.org/$1.git 
+  git clone https://aur.archlinux.org/${1}.git 
 }
 
 # remove old package, rebuild, and install.
