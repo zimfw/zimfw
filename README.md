@@ -40,7 +40,7 @@ Installation
 Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
 uninstall those first to prevent conflicts.
 
-1. In Zsh, clone the repository:
+1. In a Zsh shell, clone the repository:
   ```
   git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
   ```
