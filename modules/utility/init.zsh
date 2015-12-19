@@ -17,6 +17,7 @@ if (( ${+commands[dircolors]} )); then
   alias ls='ls --group-directories-first --color=auto'
   
 else
+  # if we can't call dircolors, use generic preset
   export LSCOLORS='exfxcxdxbxGxDxabagacad'
   export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
 
@@ -51,6 +52,7 @@ alias lc='lt -c'          # human-readable sizes, most recent last, change time
 # File Downloads
 #
 
+# order of preference: aria2c, axel, wget, curl. This order is derrived from speed based on personal tests.
 if (( ${+commands[aria2c]} )); then
   alias get='aria2c --max-connection-per-server=5 --continue'
 elif (( ${+commands[axel]} )); then
