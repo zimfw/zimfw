@@ -2,7 +2,7 @@
 # Creates archive files
 #
 
-local archive_name dir_to_archive _gzip_bin _bzip2_bin
+local archive_name dir_to_archive
 
 if (( ${#} != 2 )); then
   cat >&2 <<EOF
@@ -28,18 +28,8 @@ if [[ ! -e "${dir_to_archive}" ]]; then
   return 1
 fi
 
-# here, we check for dropin/multi-threaded replacements
-if (( ${+commands[pigz]} )); then
-  _gzip_bin='pigz'
-else
-  _gzip_bin='gzip'
-fi
-
-if (( ${+commands[pbzip2]} )); then
-  _bzip2_bin='pbzip2'
-else
-  _bzip2_bin='bzip2'
-fi
+# pigz and pbzip2 are aliased in the init.zsh file. This provides a significant speedup, resulting in a
+# near-liner decrease in compression time based on on the number of available cores.
 
 case "${archive_name}" in
   (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="${_gzip_bin}" "${dir_to_archive}" ;;

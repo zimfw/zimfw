@@ -2,7 +2,7 @@
 # Unarchives files
 #
 
-local archive_name _gunzip_bin _bunzip2_bin
+local archive_name
 
 if (( ${#} != 1 )); then
   cat >&2 <<EOF
@@ -20,7 +20,7 @@ fi
 archive_name="${1:t}"
 
 # using unpigz/pbunzip2 provides little to decompression time; the benefit is mainly in compression time.
-# may add it later.
+# setting it as an alias in the init.zsh file should be sufficient here.
 
 case "${archive_name}" in
   (*.tar.gz|*.tgz) tar -xvzf "${archive_name}" ;;
