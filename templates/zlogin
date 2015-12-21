@@ -28,6 +28,14 @@ local zcompare() {
   # Next, zcompile .zshrc if needed
   zcompare ${ZDOTDIR:-${HOME}}/.zshrc
 
+  # Now, zcomplie some light module init scripts
+  zcompare ${ZDOTDIR:-${HOME}}/modules/git/init.zsh
+  zcompare ${ZDOTDIR:-${HOME}}/modules/utility/init.zsh
+  zcompare ${ZDOTDIR:-${HOME}}/modules/pacman/init.zsh
+  zcompare ${ZDOTDIR:-${HOME}}/modules/spectrum/init.zsh
+  zcompare ${ZDOTDIR:-${HOME}}/modules/completion/init.zsh
+
+
   # Then, we should zcomplie the 'heavy' modules where possible.
   # This includes syntax-highlighting and completion. 
   # Other modules may be added to this list at a later date.
