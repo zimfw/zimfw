@@ -7,8 +7,16 @@ if (( ! ${+commands[ssh-agent]} )); then
   return 1
 fi
 
-local ssh_env=${TMPDIR:-/tmp}/ssh-agent.env
-local ssh_sock=${TMPDIR:-/tmp}/ssh-agent.sock
+# use a sane temp dir; creating 1k ssh-* files in /tmp is crazy
+if [[ ${TMPDIR} ]]; then
+  local ssh_env=${TMPDIR}/ssh-agent.env
+  local ssh_sock=${TMPDIR}/ssh-agent.sock
+else
+  # create a sane tmp dir at /tmp/username
+  mkdir -p /tmp/${USER}
+  local ssh_env=/tmp/${USER}
+  local ssh_sock=/tmp/${USER}
+fi
 
 # start ssh-agent if not already running
 if [[ ! -S ${SSH_AUTH_SOCK} ]]; then
