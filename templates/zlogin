@@ -34,6 +34,7 @@ local zcompare() {
   zcompare ${ZDOTDIR:-${HOME}}/modules/pacman/init.zsh
   zcompare ${ZDOTDIR:-${HOME}}/modules/spectrum/init.zsh
   zcompare ${ZDOTDIR:-${HOME}}/modules/completion/init.zsh
+  zcompare ${ZDOTDIR:-${HOME}}/modules/custom/init.zsh
 
 
   # Then, we should zcomplie the 'heavy' modules where possible.
