@@ -45,7 +45,7 @@ uninstall those first to prevent conflicts.
   git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
   ```
 
-2. Copy the template configuration files (or append to existing configs):
+2. Paste this into your terminal to copy the template configuration files (or append to existing configs):
   ```
   setopt EXTENDED_GLOB
   for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
