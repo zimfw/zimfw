@@ -3,7 +3,7 @@
 # https://github.com/S1cK94/minimal
 #
 
-autoload -U colors && colors
+autoload -Uz colors && colors
 
 setopt prompt_subst
 

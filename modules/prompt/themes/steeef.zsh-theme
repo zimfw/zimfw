@@ -16,7 +16,7 @@ PR_GIT_UPDATE=1
 
 setopt prompt_subst
 
-autoload -U add-zsh-hook
+autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 
 #use extended color pallete if available
