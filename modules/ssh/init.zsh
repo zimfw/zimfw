@@ -21,7 +21,7 @@ fi
 # start ssh-agent if not already running
 if [[ ! -S ${SSH_AUTH_SOCK} ]]; then
   # read environment if possible
-  source ssh_env 2> /dev/null
+  source ${ssh_env} 2> /dev/null
 
   if ! ps -U ${LOGNAME} -o pid,ucomm | grep -q -- "${SSH_AGENT_PID:--1} ssh-agent"; then
     eval "$(ssh-agent | sed '/^echo /d' | tee ${ssh_env})"
