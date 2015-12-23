@@ -14,8 +14,8 @@ if [[ ${TMPDIR} ]]; then
 else
   # create a sane tmp dir at /tmp/username
   mkdir -p /tmp/${USER}
-  local ssh_env=/tmp/${USER}
-  local ssh_sock=/tmp/${USER}
+  local ssh_env=/tmp/${USER}/ssh-agent.env
+  local ssh_sock=/tmp/${USER}/ssh-agent.sock
 fi
 
 # start ssh-agent if not already running
