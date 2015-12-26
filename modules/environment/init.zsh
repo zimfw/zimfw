@@ -3,9 +3,12 @@
 #
 
 # use smart URL pasting and escaping
-autoload -Uz url-quote-magic bracketed-paste-magic
+if [[ ${ZSH_VERSION} -ge 5.1 ]]; then
+  autoload -Uz bracketed-paste-magic
+  zle -N bracketed-paste bracketed-paste-magic
+fi
+autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
-zle -N bracketed-paste bracketed-paste-magic
 
 # Treat single word simple commands without redirection as candidates for resumption of an existing job.
 setopt AUTO_RESUME
