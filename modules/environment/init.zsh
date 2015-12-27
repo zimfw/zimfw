@@ -3,7 +3,7 @@
 #
 
 # use smart URL pasting and escaping
-if [[ ${ZSH_VERSION} -ge 5.1 ]]; then
+if [[ ${ZSH_VERSION%.*} -ge 5.1 ]]; then
   autoload -Uz bracketed-paste-magic
   zle -N bracketed-paste bracketed-paste-magic
 fi
