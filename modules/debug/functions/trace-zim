@@ -1,0 +1,147 @@
+#!/usr/bin/env zsh
+#
+# Generates trace log to debug zim and zsh issues
+#
+
+cat >&2 <<EOF
+
+This function creates a trace log to debug
+Zsh and Zim functionality.
+
+It will copy your .zshrc to /tmp/ztrace/, ammend profiling
+code, launch a new shell, log the trace, close the shell,
+archive the logs, and finally print the path to the archive.
+
+EOF
+
+read \?"Press [Enter] to begin trace."
+
+mkdir -p /tmp/ztrace
+# make sure that we were able to create the directory
+if [[ ! -d /tmp/ztrace ]]; then
+  print 'failed to create /tmp/ztrace directory. Aborting.'
+  return 1
+else
+  # check if known output file, if exists
+  # rm all directory contents
+  if [[ -e /tmp/ztrace/ztrace.log ]]; then
+    print "\nLogs from previous run of trace-zim are present"
+    print "Deleting old logs now..."
+    # use of anonymous function for dotglob opt
+    () {
+      setopt dotglob
+      rm -rf /tmp/ztrace/*
+    }
+  fi
+fi
+
+# get some basic system information (kernel and zsh version)
+print 'Zsh version:' > /tmp/ztrace/sysinfo
+print $(zsh --version) >> /tmp/ztrace/sysinfo
+print "\nkernel information:" >> /tmp/ztrace/sysinfo
+print $(uname -mosr) >> /tmp/ztrace/sysinfo
+print "\n$fpath info:" >> /tmp/ztrace/sysinfo
+print -l ${fpath} >> /tmp/ztrace/sysinfo
+
+cp ${ZDOTDIR:-${HOME}}/.zshrc /tmp/ztrace/.zshrc.orig
+cp ${ZDOTDIR:-${HOME}}/.zimrc /tmp/ztrace/.zimrc
+# rsync will allow us to not have to copy the .git folder; use if available 
+if (( $+commands[rsync] )); then
+  rsync -az --exclude .git "${ZDOTDIR:-$HOME}/.zim" "/tmp/ztrace/"
+else
+  cp -R "${ZDOTDIR:-$HOME}/.zim" "/tmp/ztrace/"
+fi
+
+# trace code to add to modified .zshrc
+if [[ "$OSTYPE" == linux-gnu ]]; then
+  read -d '' tracetop << EOF || true
+#######################
+# zim trace start #
+#######################
+exec 3>&2 2> >(tee /tmp/ztrace/sample-time.\$\$.log |
+  sed -u 's/^.*$/now/' |
+  date -f - +%s.%N >/tmp/ztrace/sample-time.\$\$.tim)
+zmodload zsh/zprof
+set -x
+EOF
+
+# we need gnu-utils to do this, so we must check for darwin/bsd.
+# if these platforms, we need to call gsed and gdate explicitly.
+elif [[ "$OSTYPE" == (darwin*|*bsd*) ]]; then
+  if (( $+commands[gdate] && $+commands[gsed] )); then
+    read -d '' tracetop << EOF || true
+#######################
+# zim trace start #
+#######################
+exec 3>&2 2> >(tee /tmp/ztrace/sample-time.\$\$.log |
+  gsed -u 's/^.*$/now/' |
+  gdate -f - +%s.%N >/tmp/ztrace/sample-time.\$\$.tim)
+zmodload zsh/zprof
+set -x
+EOF
+  else
+    print "debug module requires both gnu-sed (gsed) and gnu-date (gdate)."
+    print "please install these with brew before attempting to trace."
+    return 1
+  fi
+else
+  print "your system, ${OSTYPE}, is an unknown system."
+  print "please create an issue at:"
+  print "\thttps://github.com/Eriner/zim/issues"
+  print "Please paste the following output in your report:"
+  print "\t${OSTYPE} -  $(uname -mosr)"
+  return 1
+fi
+
+read -d '' tracebot << EOF || true
+#####################
+# zim trace end #
+#####################
+
+set +x
+zprof >! /tmp/ztrace/zprof
+#non-linux systems have weird fd; also, no real need to redirect back
+#prompt is (practically speaking) non-interactive, fd exists only for that process
+#which is closed (by typing exit)
+
+#exec 2>&3 3>&-
+EOF
+
+# create a modified .zshrc to produce a trace log
+origzshrc=$(</tmp/ztrace/.zshrc.orig)
+print "$tracetop\n$origzshrc\n$tracebot" >! "/tmp/ztrace/.zshrc"
+
+# clean up the vars now that we are done with them.
+unset origzshrc
+unset tracetop
+unset tracebot
+
+print "\nSpawning zsh and producing trace...\n\n"
+ZDOTDIR=/tmp/ztrace zsh -ic 'exit' 
+print "Trace complete.\n"
+print "Parsing logs to a nicer format; this may take some time..."
+
+# this is ugly thing makes it pretty...
+paste <( while read tim; do crt=000000000$((${tim//.}-10#0$last)); printf "%12.9f\n" ${crt:0:${#crt}-9}.${crt:${#crt}-9}; last=${tim//.}; done < /tmp/ztrace/sample-time.(*).tim; ) /tmp/ztrace/sample-time.(*).log > "/tmp/ztrace/ztrace.log" 
+print "Parsing complete!"
+
+# safe to remove old, unneeded environment files 
+print "Tidying up before archive..."
+rm -f /tmp/ztrace/sample-time.*
+rm -rf /tmp/ztrace/.zim
+rm -f /tmp/ztrace/.zshrc
+mv /tmp/ztrace/.zshrc.orig /tmp/ztrace/.zshrc
+rm -f /tmp/ztrace/.zhistory
+rm -f /tmp/ztrace/.zcompdump.zwc
+
+print "Archiving trace logs...\n"
+
+tar -cf "/tmp/ztrace.tar.gz" "/tmp/ztrace/"
+
+print "Archive complete!\n"
+
+print "\nTrace by with execution time available at:"
+print "\t/tmp/ztrace/ztrace.log"
+print "\nArchive (for sharing/help) available at:"
+print "\t/tmp/ztrace.tar.gz"
+
