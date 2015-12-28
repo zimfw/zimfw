@@ -98,6 +98,6 @@ zle -N zle-line-init
 zle -N zle-keymap-select
 zle -N zle-line-finish
 
-PROMPT='$(prompt_user)$(prompt_jobs)$(prompt_vimode)$(prompt_status) '
-RPROMPT='$(prompt_path)$(prompt_git)'
+PROMPT="$(prompt_user)$(prompt_jobs)$(prompt_vimode)$(prompt_status) "
+RPROMPT="$(prompt_path)$(prompt_git)"
 
