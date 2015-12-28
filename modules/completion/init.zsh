@@ -23,7 +23,7 @@ source ${0:h}/compdefs.zsh
 
 {
   # zcomple the .zcompdump in the background
-  local zcompdump=${ZDOTDIR:-${HOME}}/.zcompdump
+  zcompdump=${ZDOTDIR:-${HOME}}/.zcompdump
 
   if [[ -s ${zcompdump} && ( ! -s ${zcompdump}.zwc || ${zcompdump} -nt ${zcompdump}.zwc) ]]; then
     zcompile ${zcompdump}
