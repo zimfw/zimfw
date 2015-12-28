@@ -131,4 +131,4 @@ for helper ( ${zpacman_helper[@]} ); do
     print "no such helper script \"helper_${helper}.zsh\"" >&2
   fi
 done
-
+unset helper
