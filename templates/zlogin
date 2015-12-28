@@ -2,26 +2,25 @@
 # startup file read in interactive login shell
 # not run again in subsuquent shells
 #
-
 # The following code helps us by optimizing the existing framework.
-# This includes zcompile, zcompdump, etc. Options can be adjusted in .zimrc
+# This includes zcompile, zcompdump, etc.
 #
 
-# Function to determine the need of a zcompile. If the .zwc file
-# does not exist, or the base file is newer, we need to compile.
-local zcompare() {
-  if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
-    # needs zcomplie
-    zcompile ${1}
-    return 0
-  else
-    # no need to zcompile
-    return 1
-  fi
-}
+(
+  # Function to determine the need of a zcompile. If the .zwc file
+  # does not exist, or the base file is newer, we need to compile.
+  # These jobs are asynchronous, and will not impact the interactive shell
+  zcompare() {
+    if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
+      # needs zcomplie
+      zcompile ${1}
+      return 0
+    else
+      # no need to zcompile
+      return 1
+    fi
+  }
 
-# These jobs are asynchronous, and will not impact the interactive shell
-{
   # First, we will zcompile the completion cache, if it exists. Siginificant speedup.
   zcompare ${ZDOTDIR:-${HOME}}/.zcompdump
 
@@ -36,36 +35,30 @@ local zcompare() {
   zcompare ${ZDOTDIR:-${HOME}}/.zim/modules/completion/init.zsh
   zcompare ${ZDOTDIR:-${HOME}}/.zim/modules/custom/init.zsh
 
-
   # Then, we should zcompile the 'heavy' modules where possible.
   # This includes syntax-highlighting and completion. 
   # Other modules may be added to this list at a later date.
-  function {
-    # use of anonymous function for setopt extended_glob
+  zim=${ZDOTDIR:-${HOME}}/.zim
+  setopt EXTENDED_GLOB
 
-    local zim=${ZDOTDIR:-${HOME}}/.zim
-    setopt EXTENDED_GLOB
+  #
+  # syntax-highlighting zcompile
+  #
+  if [[ -d ${zim}/modules/syntax-highlighting/external/highlighters ]]; then
+    # compile the highlighters
+    for file in ${zim}/modules/syntax-highlighting/external/highlighters/**/*.zsh; do
+      zcompare ${file}
+    done
+    # compile the main file
+    zcompare ${zim}/modules/syntax-highlighting/external/zsh-syntax-highlighting.zsh
+  fi
 
-    #
-    # syntax-highlighting zcompile
-    #
-    if [[ -d ${zim}/modules/syntax-highlighting/external/highlighters ]]; then
-      # compile the highlighters
-      for file in ${zim}/modules/syntax-highlighting/external/highlighters/**/*.zsh; do
-        zcompare ${file}
-      done
-      # compile the main file
-      zcompare ${zim}/modules/syntax-highlighting/external/zsh-syntax-highlighting.zsh
-    fi
+  #
+  # zsh-histery-substring-search zcompile
+  #
+  if [[ -s ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh ]]; then
+    zcompare ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh
+  fi
+  
 
-    #
-    # zsh-histery-substring-search zcompile
-    #
-    if [[ -s ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh ]]; then
-      zcompare ${zim}/modules/history-substring-search/external/zsh-history-substring-search.zsh
-    fi
-  }
-
-} &!
-
-unfunction zcompare
+) &!
