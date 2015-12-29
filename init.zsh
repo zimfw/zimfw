@@ -45,3 +45,4 @@ load_zim_function ${zmodules[@]}
 load_zim_module ${zmodules[@]}
 
 unset zmodules
+unfunction load_zim_{module,function}
