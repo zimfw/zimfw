@@ -30,7 +30,9 @@ zprompt_theme='steeef'
 #
 
 # this determines what highlighters will be used with the completion module
-zhighlighters=(main brackets cursor)
+# documentation of the highlighters can be found here:
+#   https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
+zhighlighters=(main brackets)
 
 
 #
