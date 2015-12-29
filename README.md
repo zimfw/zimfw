@@ -66,7 +66,6 @@ uninstall those first to prevent conflicts.
 
 5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
-[theme_minimal]: https://i.eriner.me/zim_prompt_minimal.png
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
 [speed]: https://github.com/Eriner/zim/wiki/Speed
