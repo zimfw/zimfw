@@ -49,7 +49,8 @@ uninstall those first to prevent conflicts.
   ```
   setopt EXTENDED_GLOB
   for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
-    cat ${template_file} | tee -a ${ZDOTDIR:-${HOME}}/.$(basename ${template_file}) > /dev/null
+    user_file="${ZDOTDIR:-${HOME}}/.${${template_file}:t}"
+    print -n "$(<${template_file})\n$(<${user_file})" >! ${user_file}
   done
   ```
 
