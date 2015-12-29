@@ -45,12 +45,12 @@ uninstall those first to prevent conflicts.
   git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
   ```
 
-2. Paste this into your terminal to copy the template configuration files (or append to existing configs):
+2. Paste this into your terminal to prepend the initialization templates to your configs:
   ```
   setopt EXTENDED_GLOB
   for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
     user_file="${ZDOTDIR:-${HOME}}/.${${template_file}:t}"
-    print -n "$(<${template_file})\n$(<${user_file})" >! ${user_file}
+    ( print -n "$(<${template_file})\n$(<${user_file})" >! ${user_file} ) 2>/dev/null
   done
   ```
 
