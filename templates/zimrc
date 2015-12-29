@@ -48,7 +48,7 @@ zssh_ids=(id_rsa)
 # Pacman
 #
 
-# set (optional) pacman front-end. If not set, zim will attempt to use powerpill or pacmatic if available
+# set (optional) pacman front-end.
 #zpacman_frontend='powerpill'
 
 # load any helper scripts as difined here
