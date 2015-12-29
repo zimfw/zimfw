@@ -2,7 +2,7 @@ ZIM - Zsh IMproved
 ==================
 
 <div align="center">
-  <a href="http://github.com/Eriner/zim">
+  <a href="https://github.com/Eriner/zim">
     <img width=650px src="https://i.eriner.me/zim_banner.png">
   </a>
 </div>
@@ -66,7 +66,7 @@ uninstall those first to prevent conflicts.
 
 5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
-[theme_minimal]: http://i.eriner.me/zim_prompt_minimal.png
+[theme_minimal]: https://i.eriner.me/zim_prompt_minimal.png
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
 [speed]: https://github.com/Eriner/zim/wiki/Speed
