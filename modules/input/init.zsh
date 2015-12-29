@@ -13,8 +13,8 @@ zmodload zsh/terminfo
 typeset -gA key_info
 key_info=(
   'Control'      '\C-'
-  'ControlLeft'  '\e[1;5D \e[5D \e\e[D \eOd'
-  'ControlRight' '\e[1;5C \e[5C \e\e[C \eOc'
+  'ControlLeft'  '\e[1;5D \e[5D \e\e[D \eOd \eOD'
+  'ControlRight' '\e[1;5C \e[5C \e\e[C \eOc \eOC'
   'Escape'       '\e'
   'Meta'         '\M-'
   'Backspace'    "^?"
@@ -44,6 +44,13 @@ key_info=(
 )
 
 # Bind the keys
+for key in "${(s: :)key_info[ControlLeft]}"; do
+  bindkey ${key} backward-word
+done
+for key in "${(s: :)key_info[ControlRight]}"; do
+  bindkey ${key} forward-word
+done
+
 bindkey "${key_info[Home]}" beginning-of-line
 bindkey "${key_info[End]}" end-of-line
 
@@ -62,3 +69,17 @@ bindkey "${key_info[Control]}L" clear-screen
 
 # Bind Shift + Tab to go to the previous menu item.
 bindkey "${key_info[BackTab]}" reverse-menu-complete
+
+# Put into application mode and validate ${terminfo}
+zle-line-init() {
+  if (( ${+terminfo[smkx]} )); then
+    echoti smkx
+  fi
+}
+zle-line-finish() {
+  if (( ${+terminfo[rmkx]} )); then
+    echoti rmkx
+  fi
+}
+zle -N zle-line-init
+zle -N zle-line-finish
