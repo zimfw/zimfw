@@ -4,7 +4,9 @@
 # # README
 #
 # In order for this theme to render correctly, you will need a
-# [Powerline-patched font](https://gist.github.com/1595572).
+# font with powerline symbols. A simple way to add the powerline
+# symbols is to follow the instructions here: 
+# https://simplyian.com/2014/03/28/using-powerline-symbols-with-your-current-font/
 #
 # # Goals
 #
