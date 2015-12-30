@@ -14,7 +14,7 @@ function virtualenv_info {
 }
 PR_GIT_UPDATE=1
 
-setopt prompt_subst
+prompt_opts=( cr subst percent )
 
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
@@ -96,6 +96,6 @@ function steeef_precmd {
 }
 add-zsh-hook precmd steeef_precmd
 
-PROMPT="
+PROMPT='
 %{$purple%}%n${${reset_color}%} at %{$orange%}%m${${reset_color}%} in %{$limegreen%}%~${${reset_color}%} $vcs_info_msg_0_$(virtualenv_info)%{${reset_color}%}
-$ "
+$ '
