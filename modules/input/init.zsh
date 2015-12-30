@@ -43,6 +43,7 @@ key_info=(
   'BackTab'      "${terminfo[kcbt]}"
 )
 
+local key
 # Bind the keys
 for key in "${(s: :)key_info[ControlLeft]}"; do
   bindkey ${key} backward-word
