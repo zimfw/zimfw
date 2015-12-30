@@ -27,7 +27,7 @@ load_zim_function() {
   local mod_function
 
   # autoload searches fpath for function locations; add enabled module function paths
-  fpath=(${argv:+${ZIM}/modules/${^zmodules}/functions(/FN)} ${fpath})
+  fpath=(${${zmodules}:+${ZIM}/modules/${^zmodules}/functions(/FN)} ${fpath})
 
   function {
     setopt LOCAL_OPTIONS EXTENDED_GLOB
@@ -38,11 +38,9 @@ load_zim_function() {
   }
 }
 
-# Load zim functions
-load_zim_function ${zmodules[@]}
-
-# Load zim modules
-load_zim_module ${zmodules[@]}
+# initialize zim modules
+load_zim_function
+load_zim_module
 
 unset zmodules
 unfunction load_zim_{module,function}
