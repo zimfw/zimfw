@@ -6,9 +6,9 @@
 # Zim settings
 #
 
-# select what modules you would like enabled
-# the second line of modules may depend on options set by modules in the first line
-# these dependencies are noted on the respective module's README.md
+# Select what modules you would like enabled.
+# The second line of modules may depend on options set by modules in the first line.
+# These dependencies are noted on the respective module's README.md.
 zmodules=(directory environment git history input utility custom \
           syntax-highlighting history-substring-search prompt completion)
 
@@ -21,7 +21,7 @@ zmodules=(directory environment git history input utility custom \
 # Prompt
 #
 
-# set your desired prompt here
+# Set your desired prompt here
 zprompt_theme='steeef'
 
 
@@ -29,10 +29,10 @@ zprompt_theme='steeef'
 # Syntax-Highlighting
 #
 
-# this determines what highlighters will be used with the completion module
-# documentation of the highlighters can be found here:
+# This determines what highlighters will be used with the completion module.
+# Documentation of the highlighters can be found here:
 #   https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
-# for (u)rxvt users, disabling the 'cursor' highlighter will fix the disappearing cursor problem
+# For (u)rxvt users, disabling the 'cursor' highlighter will fix the disappearing cursor problem
 zhighlighters=(main brackets cursor)
 
 
@@ -40,7 +40,7 @@ zhighlighters=(main brackets cursor)
 # SSH
 #
 
-# load these ssh identities with the ssh module
+# Load these ssh identities with the ssh module
 #zssh_ids=(id_rsa)
 
 
@@ -48,8 +48,8 @@ zhighlighters=(main brackets cursor)
 # Pacman
 #
 
-# set (optional) pacman front-end.
+# Set (optional) pacman front-end.
 #zpacman_frontend='powerpill'
 
-# load any helper scripts as defined here
+# Load any helper scripts as defined here
 #zpacman_helper=(aur)
