@@ -3,6 +3,6 @@
 #
 
 # any custom stuff should go here.
-# ensure that 'custom' exists in your zmodules array in .zimrc
+# ensure that 'custom' exists in the zmodules array in your .zimrc
 
 
