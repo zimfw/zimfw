@@ -1,6 +1,5 @@
 #
-# startup file read in interactive login shell
-# not run again in subsuquent shells
+# startup file read in interactive login shells
 #
 # The following code helps us by optimizing the existing framework.
 # This includes zcompile, zcompdump, etc.
@@ -12,12 +11,7 @@
   # These jobs are asynchronous, and will not impact the interactive shell
   zcompare() {
     if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
-      # needs zcomplie
       zcompile ${1}
-      return 0
-    else
-      # no need to zcompile
-      return 1
     fi
   }
 
