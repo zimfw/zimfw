@@ -99,7 +99,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment cyan ${PRIMARY_FG} ' %~ '
+  prompt_segment cyan ${PRIMARY_FG} " $(short_pwd) "
 }
 
 # Status:
