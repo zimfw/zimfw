@@ -12,55 +12,6 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 function virtualenv_info {
     [ $VIRTUAL_ENV ] && print '('${fg[blue]}`basename $VIRTUAL_ENV`%{${reset_color}%}') '
 }
-PR_GIT_UPDATE=1
-
-prompt_opts=( cr subst percent )
-
-autoload -Uz add-zsh-hook
-autoload -Uz vcs_info
-autoload -Uz colors && colors
-
-#use extended color pallete if available
-if [[ ${TERM} == *256* || ${TERM} == *rxvt* ]]; then
-    turquoise="%F{81}"
-    orange="%F{166}"
-    purple="%F{135}"
-    hotpink="%F{161}"
-    limegreen="%F{118}"
-else
-    turquoise="$fg[cyan]"
-    orange="$fg[yellow]"
-    purple="$fg[magenta]"
-    hotpink="$fg[red]"
-    limegreen="$fg[green]"
-fi
-
-# enable VCS systems you use
-zstyle ':vcs_info:*' enable git svn
-
-# check-for-changes can be really slow.
-# you should disable it, if you work with large repositories
-zstyle ':vcs_info:*:prompt:*' check-for-changes true
-
-# set formats
-# %b - branchname
-# %u - unstagedstr (see below)
-# %c - stagedstr (see below)
-# %a - action (e.g. rebase-i)
-# %R - repository path
-# %S - path in the repository
-PR_RST="%{${reset_color}%}"
-FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
-FMT_ACTION="(%{$limegreen%}%a${PR_RST})"
-FMT_UNSTAGED="%{$orange%}●"
-FMT_STAGED="%{$limegreen%}●"
-
-zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
-zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
-zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
-zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
-zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
-
 
 function steeef_preexec {
     case "$(history $HISTCMD)" in
@@ -72,14 +23,12 @@ function steeef_preexec {
             ;;
     esac
 }
-add-zsh-hook preexec steeef_preexec
 
 function steeef_chpwd {
     PR_GIT_UPDATE=1
 }
-add-zsh-hook chpwd steeef_chpwd
 
-function steeef_precmd {
+function prompt_steeef_precmd {
     if [[ -n "$PR_GIT_UPDATE" ]] ; then
         # check for untracked files or updated submodules, since vcs_info doesn't
         if git ls-files --other --exclude-standard 2> /dev/null | grep -q "."; then
@@ -93,9 +42,64 @@ function steeef_precmd {
         vcs_info 'prompt'
         PR_GIT_UPDATE=
     fi
-}
-add-zsh-hook precmd steeef_precmd
 
-PROMPT='
+    PROMPT='
 %{$purple%}%n${${reset_color}%} at %{$orange%}%m${${reset_color}%} in %{$limegreen%}%~${${reset_color}%} $vcs_info_msg_0_$(virtualenv_info)%{${reset_color}%}
 $ '
+}
+
+function prompt_steeef_setup {
+    #use extended color pallete if available
+    if [[ ${TERM} == *256* || ${TERM} == *rxvt* ]]; then
+        turquoise="%F{81}"
+        orange="%F{166}"
+        purple="%F{135}"
+        hotpink="%F{161}"
+        limegreen="%F{118}"
+    else
+        turquoise="%F{cyan}"
+        orange="%F{yellow}"
+        purple="%F{magenta}"
+        hotpink="%F{red}"
+        limegreen="%F{green}"
+    fi
+
+    # enable VCS systems you use
+    zstyle ':vcs_info:*' enable git svn
+
+    # check-for-changes can be really slow.
+    # you should disable it, if you work with large repositories
+    zstyle ':vcs_info:*:prompt:*' check-for-changes true
+
+    # set formats
+    # %b - branchname
+    # %u - unstagedstr (see below)
+    # %c - stagedstr (see below)
+    # %a - action (e.g. rebase-i)
+    # %R - repository path
+    # %S - path in the repository
+    PR_RST="%f"
+    FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
+    FMT_ACTION="(%{$limegreen%}%a${PR_RST})"
+    FMT_UNSTAGED="%{$orange%}●"
+    FMT_STAGED="%{$limegreen%}●"
+
+    zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
+    zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
+    zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
+    zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
+    zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
+
+    PR_GIT_UPDATE=1
+
+    autoload -Uz add-zsh-hook
+    autoload -Uz vcs_info
+    autoload -Uz colors && colors
+
+    add-zsh-hook preexec steeef_preexec
+    add-zsh-hook chpwd steeef_chpwd
+    add-zsh-hook precmd prompt_steeef_precmd
+    prompt_opts=(cr subst percent)
+}
+
+prompt_steeef_setup "$@"
