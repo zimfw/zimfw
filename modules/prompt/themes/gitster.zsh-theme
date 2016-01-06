@@ -3,12 +3,11 @@
 # https://github.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
 #
 
-autoload -Uz colors && colors
-prompt_opts=( cr subst percent )
+function gst_get_status(){
+  print "%(?:%F{10}➜ :%F{9}➜ %s)"
+}
 
-local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
-
-function get_pwd(){
+function gst_get_pwd(){
   git_root=$PWD
   while [[ $git_root != / && ! -e $git_root/.git ]]; do
     git_root=$git_root:h
@@ -23,9 +22,20 @@ function get_pwd(){
   print $prompt_short_dir
 }
 
-PROMPT='$ret_status %{$fg[white]%}$(get_pwd) $(git_prompt_info)%{$reset_color%}%{$reset_color%} '
+function prompt_gitster_precmd(){
+  PROMPT='$(gst_get_status) %F{white}$(gst_get_pwd) $(git_prompt_info)%f '
+}
 
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[cyan]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[yellow]%}✗%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}✓%{$reset_color%}"
+function prompt_gitster_setup(){
+  ZSH_THEME_GIT_PROMPT_PREFIX="%F{cyan}"
+  ZSH_THEME_GIT_PROMPT_SUFFIX="%f"
+  ZSH_THEME_GIT_PROMPT_DIRTY=" %F{yellow}✗%f"
+  ZSH_THEME_GIT_PROMPT_CLEAN=" %F{green}✓%f"
+
+  autoload -Uz add-zsh-hook
+
+  add-zsh-hook precmd prompt_gitster_precmd
+  prompt_opts=(cr subst percent)
+}
+
+prompt_gitster_setup "$@"
