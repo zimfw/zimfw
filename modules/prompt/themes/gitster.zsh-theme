@@ -15,10 +15,10 @@ function get_pwd(){
   done
   if [[ $git_root = / ]]; then
     unset git_root
-    prompt_short_dir=%~
+    prompt_short_dir="$(short_pwd)"
   else
     parent=${git_root%\/*}
-    prompt_short_dir=${PWD#$parent/}
+    prompt_short_dir=${"$(short_pwd)"#$parent/}
   fi
   print $prompt_short_dir
 }
