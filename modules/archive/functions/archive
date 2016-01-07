@@ -5,13 +5,8 @@
 local archive_name dir_to_archive
 
 if (( ${#} != 2 )); then
-  cat >&2 <<EOF
-usage: ${0} [archive_name.zip] [/path/to/include/into/archive]
-Where 'archive.zip' uses any of the following extensions:
-.tar.gz, .tar.bz2, .tar.xz, .tar.lzma, .tar, .zip, .rar, .7z
-There is no '-v' switch; all operations are verbose.
-EOF
-return 1
+  print "usage: ${0} [archive_name.ext] [/path/to/include/in/archive]" >&2
+  return 1
 fi
 
 # we are quitting (above) if there are not exactly 2 vars,

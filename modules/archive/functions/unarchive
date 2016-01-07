@@ -5,10 +5,8 @@
 local archive_name
 
 if (( ${#} != 1 )); then
-  cat >&2 <<EOF
-usage: ${0} [archive.zip]
-EOF
-return 1
+  print "usage: ${0} [archive.ext]" >&2
+  return 1
 fi
 
 if [[ ! -s ${1} ]]; then
