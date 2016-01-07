@@ -13,7 +13,7 @@ if (( ${+commands[pigz]} )); then
 fi
 
 if (( ${+commands[unpigz]} )); then
-  alias gunzip='pigz'
+  alias gunzip='unpigz'
 fi
 
 #
@@ -25,5 +25,5 @@ if (( ${+commands[pbzip2]} )); then
 fi
 
 if (( ${+commands[pbunzip2]} )); then
-  alias bunzip2='pbzip2'
+  alias bunzip2='pbunzip2'
 fi
