@@ -3,30 +3,30 @@
 # https://github.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
 #
 
-function gst_get_status(){
+gst_get_status() {
   print "%(?:%F{10}➜ :%F{9}➜ %s)"
 }
 
-function gst_get_pwd(){
-  git_root=$PWD
-  while [[ $git_root != / && ! -e $git_root/.git ]]; do
-    git_root=$git_root:h
+gst_get_pwd() {
+  git_root=${PWD}
+  while [[ ${git_root} != / && ! -e ${git_root}/.git ]]; do
+    git_root=${git_root:h}
   done
-  if [[ $git_root = / ]]; then
+  if [[ ${git_root} = / ]]; then
     unset git_root
     prompt_short_dir="$(short_pwd)"
   else
     parent=${git_root%\/*}
-    prompt_short_dir=${"$(short_pwd)"#$parent/}
+    prompt_short_dir=${"$(short_pwd)"#${parent}/}
   fi
-  print $prompt_short_dir
+  print ${prompt_short_dir}
 }
 
-function prompt_gitster_precmd(){
+prompt_gitster_precmd() {
   PROMPT='$(gst_get_status) %F{white}$(gst_get_pwd) $(git_prompt_info)%f '
 }
 
-function prompt_gitster_setup(){
+prompt_gitster_setup() {
   ZSH_THEME_GIT_PROMPT_PREFIX="%F{cyan}"
   ZSH_THEME_GIT_PROMPT_SUFFIX="%f"
   ZSH_THEME_GIT_PROMPT_DIRTY=" %F{yellow}✗%f"

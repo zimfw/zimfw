@@ -1,15 +1,13 @@
-function prompt_liquidprompt_setup() {
-    autoload -Uz ex-liquidprompt
+prompt_liquidprompt_setup() {
+  autoload -Uz ex-liquidprompt
 
-    ext-liquidprompt
-    prompt_opts=(cr subst percent)
+  ext-liquidprompt
+  prompt_opts=(cr subst percent)
 }
 
-function prompt_liquidprompt_preview() {
-    _lp_set_prompt
-    prompt_preview_theme liquidprompt
+prompt_liquidprompt_preview() {
+  _lp_set_prompt
+  prompt_preview_theme liquidprompt
 }
 
 prompt_liquidprompt_setup "$@"
-
-# vim:filetype=zsh
