@@ -43,8 +43,9 @@ key_info=(
   'BackTab'      "${terminfo[kcbt]}"
 )
 
-local key
 # Bind the keys
+
+local key
 for key in "${(s: :)key_info[ControlLeft]}"; do
   bindkey ${key} backward-word
 done
@@ -52,10 +53,18 @@ for key in "${(s: :)key_info[ControlRight]}"; do
   bindkey ${key} forward-word
 done
 
-bindkey "${key_info[Home]}" beginning-of-line
-bindkey "${key_info[End]}" end-of-line
+if [[ -n "${key_info[Home]}" ]]; then
+  bindkey "${key_info[Home]}" beginning-of-line
+fi
 
-bindkey "${key_info[Insert]}" overwrite-mode
+if [[ -n "${key_info[End]}" ]]; then
+  bindkey "${key_info[End]}" end-of-line
+fi
+
+if [[ -n "${key_info[Insert]}" ]]; then
+  bindkey "${key_info[Insert]}" overwrite-mode
+fi
+
 bindkey "${key_info[Delete]}" delete-char
 bindkey "${key_info[Backspace]}" backward-delete-char
 
@@ -69,7 +78,9 @@ bindkey ' ' magic-space
 bindkey "${key_info[Control]}L" clear-screen
 
 # Bind Shift + Tab to go to the previous menu item.
-bindkey "${key_info[BackTab]}" reverse-menu-complete
+if [[ -n "${key_info[BackTab]}" ]]; then
+  bindkey "${key_info[BackTab]}" reverse-menu-complete
+fi
 
 # Put into application mode and validate ${terminfo}
 zle-line-init() {
