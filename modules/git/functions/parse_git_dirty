@@ -2,7 +2,8 @@
 # not supporting git < 1.7.2; upgrade your shit
 
 local STATUS=''
-local FLAGS=('--porcelain' '--ignore-submodules=dirty')
+local FLAGS
+FLAGS=('--porcelain' '--ignore-submodules=dirty')
 if [[ ${zgit_hide_prompt} != 'true' ]]; then
   if [[ "${zgit_disable_untracked_dirty}" == "true" ]]; then
     FLAGS+='--untracked-files=no'
