@@ -14,7 +14,7 @@ Aliases
 | ----- | ------- | ----------- |
 | `ls` | `ls --group-directories-first --color=auto` | directories first, use color (applies to all ls aliases) |
 | `l` | `ls -lAh` | all files, human-readable sizes |
-| `lm` | `l \| ${PAGER}` | all files, human-readable sizes, use pager |
+| `lm` | `l | ${PAGER}` | all files, human-readable sizes, use pager |
 | `ll` | `ls -lh` | human-readable sizes |
 | `lr` | `ll -R` | human-readable sizes, recursive |
 | `lx` | `ll -XB` | human-readable sizes, sort by extension (GNU only) |
