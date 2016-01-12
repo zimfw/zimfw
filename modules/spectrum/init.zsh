@@ -5,6 +5,10 @@
 # Return if requirements are not found.
 if [[ ${TERM} == 'dumb' ]]; then
   return 1
+elif
+  [[ -n ${FX} ]]; then
+  # FX is set or sourced by another module
+  return 1
 fi
 
 typeset -gA FX FG BG
