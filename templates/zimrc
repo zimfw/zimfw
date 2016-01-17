@@ -28,9 +28,9 @@ zprompt_theme='steeef'
 # Utility
 #
 
-# Enables command correction prompts; setopt CORRECT
+# Uncomment to enable command correction prompts; 'setopt CORRECT'
 # See: http://zsh.sourceforge.net/Doc/Release/Options.html#Input_002fOutput
-zcorrection='false'
+#zcorrection='true'
 
 #
 # Syntax-Highlighting
