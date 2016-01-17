@@ -24,6 +24,13 @@ zmodules=(directory environment git history input utility custom \
 # Set your desired prompt here
 zprompt_theme='steeef'
 
+#
+# Utility
+#
+
+# Enables command correction prompts; setopt CORRECT
+# See: http://zsh.sourceforge.net/Doc/Release/Options.html#Input_002fOutput
+zcorrection='false'
 
 #
 # Syntax-Highlighting

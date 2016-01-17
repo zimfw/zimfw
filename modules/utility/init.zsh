@@ -2,6 +2,13 @@
 # Utility Functions and Options
 #
 
+#
+# Command Correction
+#
+
+if [[ ${zcorrection} == 'true' ]]; then
+  setopt CORRECT
+fi
 
 #
 # ls Colours
