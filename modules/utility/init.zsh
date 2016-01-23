@@ -91,7 +91,10 @@ alias chown='chown --preserve-root -v'
 
 # not aliasing rm -i, but if safe-rm is available, use condom.
 if (( ${+commands[safe-rm]} )); then
-  alias rm='safe-rm'
+  # check that it's the condom safe-rm, not the 'abs path' safe-rm
+  if [[ $(file =safe-rm | grep 'perl') ]]; then
+    alias rm='safe-rm'
+  fi
 fi
 
 
