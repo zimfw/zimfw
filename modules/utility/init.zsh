@@ -86,8 +86,10 @@ alias du='du -kh'
 # Always wear a condom
 #
 
-alias chmod='chmod --preserve-root -v'
-alias chown='chown --preserve-root -v'
+if [[ ${OSTYPE} == linux* ]]; then
+  alias chmod='chmod --preserve-root -v'
+  alias chown='chown --preserve-root -v'
+fi
 
 # not aliasing rm -i, but if safe-rm is available, use condom.
 if (( ${+commands[safe-rm]} )); then
