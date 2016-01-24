@@ -92,11 +92,9 @@ if [[ ${OSTYPE} == linux* ]]; then
 fi
 
 # not aliasing rm -i, but if safe-rm is available, use condom.
-if (( ${+commands[safe-rm]} )); then
-  # check that it's the condom safe-rm, not the 'abs path' safe-rm
-  if [[ $(file =safe-rm | grep 'perl') ]]; then
-    alias rm='safe-rm'
-  fi
+# if safe-rmdir is available, the OS is suse which has its own terrible 'safe-rm' which is not what we want
+if (( ${+commands[safe-rm]} )) && (( ! ${+commands[safe-rmdir]} )); then
+  alias rm='safe-rm'
 fi
 
 
