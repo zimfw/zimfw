@@ -56,7 +56,7 @@ uninstall those first to prevent conflicts.
 
 3. Set Zsh as the default shell:
   ```
-  chsh -s ${commands[zsh]}
+  chsh -s =zsh
   ```
 
 4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
