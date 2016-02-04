@@ -41,12 +41,12 @@ minimal_path() {
 }
 
 git_branch_name() {
-  local branch_name="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+  local branch_name="$(command git rev-parse --abbrev-ref HEAD 2> /dev/null)"
   [[ -n $branch_name ]] && print "$branch_name"
 }
 
 git_repo_status(){
-  local rs="$(git status --porcelain -b)"
+  local rs="$(command git status --porcelain -b)"
 
   if $(print "$rs" | grep -v '^##' &> /dev/null); then # is dirty
     print "%F{red}"

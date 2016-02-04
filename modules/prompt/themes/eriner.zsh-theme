@@ -76,7 +76,7 @@ prompt_context() {
 prompt_git() {
   local color ref
   is_dirty() {
-    test -n "$(git status --porcelain --ignore-submodules)"
+    test -n "$(command git status --porcelain --ignore-submodules)"
   }
   ref=${vcs_info_msg_0_}
   if [[ -n ${ref} ]]; then
