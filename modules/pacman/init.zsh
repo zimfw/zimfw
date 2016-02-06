@@ -22,11 +22,15 @@ you can fix this error by editing the 'zpacman_frontend' variable in your .zimrc
   zpacman_frontend='pacman'
 fi
 
+if [[ ${zpacman_frontend} != "yaourt" ]]; then
+    zpacman_frontend="sudo ${zpacman_frontend}"
+fi
+
 #
 # General
 #
 
-alias pac=${zpacman_frontend}
+alias pac=${zpacman_frontend#* }
 
 #
 # Build
@@ -42,16 +46,16 @@ alias pacb='makepkg -sci'
 #NOTE: Installing/upgrading individual packages is NOT supported. Sync and upgrade ALL on install.
 
 # install, sync, and upgrade packages
-alias paci="sudo ${zpacman_frontend} -Syu"
+alias paci="${zpacman_frontend} -Syu"
 
 # install, sync, and upgrade packages (forcibly refresh package lists)
-alias pacu="sudo ${zpacman_frontend} -Syyu"
+alias pacu="${zpacman_frontend} -Syyu"
 
 # install packages by filename
-alias pacU="sudo ${zpacman_frontend} -U"
+alias pacU="${zpacman_frontend} -U"
 
 # install all packages in current directory
-alias pacd="sudo ${zpacman_frontend} -U *.pkg.tar.xz"
+alias pacd="${zpacman_frontend} -U *.pkg.tar.xz"
 
 
 #
