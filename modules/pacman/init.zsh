@@ -52,10 +52,10 @@ alias paci="${zpacman_frontend} -Syu"
 alias pacu="${zpacman_frontend} -Syyu"
 
 # install packages by filename
-alias pacU="${zpacman_frontend} -U"
+alias pacU="sudo pacman -U"
 
 # install all packages in current directory
-alias pacd="${zpacman_frontend} -U *.pkg.tar.xz"
+alias pacd="sudo pacman -U *.pkg.tar.xz"
 
 
 #
