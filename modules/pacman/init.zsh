@@ -24,8 +24,8 @@ elif (( ! ${+commands[${zpacman_frontend}]} )); then
 You can fix this error by editing the 'zpacman_frontend' variable in your .zimrc" >&2
   zpacman_frontend='pacman'
   zpacman_frontend_priv='sudo pacman'
-elif [[ ${zpacman_frontend} == "yaourt" ]]; then
-  # yaourt handles SUID itself
+elif [[ ${zpacman_frontend} == ("yaourt"|"pacaur") ]]; then
+  # yaourt and pacaur handles SUID themselves
   zpacman_frontend_priv="${zpacman_frontend}"
 else
   zpacman_frontend_priv="sudo ${zpacman_frontend}"
