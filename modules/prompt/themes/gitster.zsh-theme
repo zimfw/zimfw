@@ -8,17 +8,9 @@ gst_get_status() {
 }
 
 gst_get_pwd() {
-  git_root=${PWD}
-  while [[ ${git_root} != / && ! -e ${git_root}/.git ]]; do
-    git_root=${git_root:h}
-  done
-  if [[ ${git_root} = / ]]; then
-    unset git_root
-    prompt_short_dir="$(short_pwd)"
-  else
-    parent=${git_root%\/*}
-    prompt_short_dir=${"$(short_pwd)"#${parent}/}
-  fi
+  prompt_short_dir="$(short_pwd)"
+  git_root="$(command git rev-parse --show-toplevel 2> /dev/null)" && \
+  prompt_short_dir="${prompt_short_dir#${$(short_pwd $git_root):h}/}"
   print ${prompt_short_dir}
 }
 
