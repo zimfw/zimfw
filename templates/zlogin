@@ -19,7 +19,9 @@
   setopt EXTENDED_GLOB
 
   # zcompile the completion cache; siginificant speedup.
-  zcompare ${ZDOTDIR:-${HOME}}/.zcompdump
+  for file in ${ZDOTDIR:-${HOME}}/.zcomp^(*.zwc)(.); do
+    zcompare ${file}
+  done
 
   # zcompile .zshrc
   zcompare ${ZDOTDIR:-${HOME}}/.zshrc
