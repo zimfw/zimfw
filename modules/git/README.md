@@ -103,6 +103,7 @@ Aliases
   - `gld` displays the diff log.
   - `glo` displays the one line log.
   - `glg` displays the graph log.
+  - `glG` displays the graph log with authors and dates.
   - `glb` displays the brief commit log.
   - `glc` displays the commit count for each contributor in descending order.
 
@@ -160,6 +161,7 @@ Aliases
   - `gss` stashes the changes of the dirty working directory, including untracked.
   - `gsS` stashes the changes of the dirty working directory interactively.
   - `gsw` stashes the changes of the dirty working directory retaining the index.
+  - `gsu` unapplies (reverts) applied changes.
 
 ### Submodule
 
