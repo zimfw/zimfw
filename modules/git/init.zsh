@@ -120,7 +120,7 @@ alias gpp='git pull origin "$(git-branch-current 2> /dev/null)" && git push orig
 # Rebase (r)
 alias gr='git rebase'
 alias gra='git rebase --abort'
-alias grr='git rebase --continue'
+alias grc='git rebase --continue'
 alias gri='git rebase --interactive'
 alias grs='git rebase --skip'
 
