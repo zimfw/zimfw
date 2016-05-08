@@ -105,7 +105,7 @@ alias pacS="${zpacman_frontend} -Qs"
 alias pacol="${zpacman_frontend} -Qdt"
 
 # remove orphan packages
-alias pacor="${zpacman_frontend_priv} -Rns $(pacman -Qtdq)"
+alias pacor="${zpacman_frontend_priv} -Rns \$(pacman -Qtdq)"
 
 
 #
