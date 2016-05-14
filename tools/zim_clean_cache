@@ -1,0 +1,8 @@
+#
+# zim_clean_cache - removes all zcompiled files
+#
+
+find ${ZDOTDIR:-${HOME}}/.zim/ -iname '*.zwc' | xargs rm
+rm -f ${ZDOTDIR:-${HOME}}/.{zshrc.zwc,zcompdump,zcompdump.zwc}
+
+print 'To rebuild the completion cache, please restart your terminal'
