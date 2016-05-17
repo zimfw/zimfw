@@ -48,7 +48,13 @@ fi
 
 export GREP_COLOR='37;45'             #BSD
 export GREP_COLORS="mt=${GREP_COLOR}" #GNU
-alias grep='grep --color=auto'
+if [[ ${OSTYPE} == openbsd* ]]; then
+  if (( ${+commands[ggrep]} )); then
+    alias grep='ggrep --color=auto'
+  fi
+else
+ alias grep='grep --color=auto'
+fi
 
 
 #
