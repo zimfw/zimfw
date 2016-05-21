@@ -65,6 +65,18 @@ if [[ -n "${key_info[Insert]}" ]]; then
   bindkey "${key_info[Insert]}" overwrite-mode
 fi
 
+if [[ ${zdouble_dot_expand} ]]; then
+  double-dot-expand() {
+    if [[ ${LBUFFER} == *.. ]]; then
+      LBUFFER+='/..'
+    else
+      LBUFFER+='.'
+    fi
+  }
+  zle -N double-dot-expand
+  bindkey "." double-dot-expand
+fi
+
 bindkey "${key_info[Delete]}" delete-char
 bindkey "${key_info[Backspace]}" backward-delete-char
 
