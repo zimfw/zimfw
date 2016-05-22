@@ -133,5 +133,5 @@ function prepend-sudoas {
 zle -N prepend-sudoas
 
 # Defined shortcut keys: [Esc] [Esc]
-bindkey "\e\e" prepend-sudoas
+bindkey "\e!" prepend-sudoas
 
