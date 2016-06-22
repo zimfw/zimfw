@@ -65,7 +65,7 @@ if [[ -n "${key_info[Insert]}" ]]; then
   bindkey "${key_info[Insert]}" overwrite-mode
 fi
 
-if [[ ${zdouble_dot_expand} ]]; then
+if [[ ${zdouble_dot_expand} == "true" ]]; then
   double-dot-expand() {
     if [[ ${LBUFFER} == *.. ]]; then
       LBUFFER+='/..'
@@ -86,7 +86,7 @@ bindkey "${key_info[Right]}" forward-char
 # Expandpace.
 bindkey ' ' magic-space
 
-# Clear 
+# Clear
 bindkey "${key_info[Control]}L" clear-screen
 
 # Bind Shift + Tab to go to the previous menu item.
