@@ -72,6 +72,16 @@ prompt_context() {
   fi
 }
 
+# Ranger: <https://github.com/ranger/ranger>, which can spawn ${SHELL}
+# under its own process
+prompt_ranger() {
+  if [[ $((RANGER_LEVEL)) -ne 0 ]]; then
+    local color=blue
+    prompt_segment ${color} ${PRIMARY_FG}
+    print -Pn " r"
+  fi
+}
+
 # Git: branch/detached head, dirty status
 prompt_git() {
   local color ref
@@ -122,6 +132,7 @@ prompt_eriner_main() {
   CURRENT_BG='NONE'
   prompt_status
   prompt_context
+  prompt_ranger
   prompt_dir
   prompt_git
   prompt_end
