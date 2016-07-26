@@ -38,7 +38,6 @@ prompt_steeef_precmd() {
     zstyle ':vcs_info:*:prompt:*' formats "${FMT_BRANCH} "
 
     vcs_info 'prompt'
-    PR_GIT_UPDATE=
   fi
 
   PROMPT='
