@@ -61,6 +61,14 @@ if [[ -n "${key_info[End]}" ]]; then
   bindkey "${key_info[End]}" end-of-line
 fi
 
+if [[ -n "${key_info[PageUp]}" ]]; then
+  bindkey "${key_info[PageUp]}" up-line-or-history
+fi
+
+if [[ -n "${key_info[PageDown]}" ]]; then
+  bindkey "${key_info[PageDown]}" down-line-or-history
+fi
+
 if [[ -n "${key_info[Insert]}" ]]; then
   bindkey "${key_info[Insert]}" overwrite-mode
 fi
