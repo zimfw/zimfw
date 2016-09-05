@@ -67,8 +67,38 @@ Installing Zim is easy. If you have a different shell framework installed (like 
 
 5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
+Updating
+--------
+
+To update zim, run:
+
+```
+zmanage update
+```
+
+For more information about the `zmanage` tool, see the [meta module][meta-module] documentation.
+
+Uninstalling
+------------
+
+The best way to remove zim is to manually delete `~/.zim`, `~/.zimrc`, and
+remove the initialization lines from your `~/.zshrc`.
+
+However, there are some **experimental** convenience functions to remove zim:
+
+**NOTE: This functionality is experimental!**
+
+To remove zim, run:
+```
+zmanage remove
+```
+
+**NOTE: This functionality is experimental!**
+
+
 [fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
 [syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
 [speed]: https://github.com/Eriner/zim/wiki/Speed
 [modules]: https://github.com/Eriner/zim/wiki/Modules
 [themes]: https://github.com/Eriner/zim/wiki/Themes
+[meta-module]: https://github.com/Eriner/zim/tree/master/modules/meta
