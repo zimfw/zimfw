@@ -1,0 +1,76 @@
+#
+# zim_info - easily create an issue template
+#
+
+# create our 'pause' function
+waiter_func() {
+  local input_key
+  read -sk \?"Press [Enter] to continue; anything else to quit." input_key
+  if [[ ${input_key} == $'\n' ]]; then
+    print "\r                                                    "
+    return 0
+  else
+    return 1
+  fi
+}
+
+# print init dialog
+print "Please check the existing issues to make sure you\'re not duplicating a report"
+print "https://github.com/Eriner/zim/issues"
+
+# if they don't accept, bail
+if ! waiter_func; then
+  return 1
+fi
+
+# for convenience, this is our new home
+cd ${ZDOTDIR:-${HOME}}/.zim
+
+# collect sys info
+git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
+git_ref=$(command git rev-parse --short HEAD)
+zsh_version=$(zsh --version)
+operating_sys=$(uname -mosr)
+
+
+
+# we're going to template and build the issue here (as an array for convenience)
+
+issue_md=("Environment Info"
+          "----------------"
+	  "- Zim commit ref: ${git_ref}"
+	  "- Zsh version: ${zsh_version}"
+	  "- Operating System Info: ${operating_sys}"
+	  ""
+	  "Description"
+	  "-----------"
+	  "${user_desc}"
+	  ""
+	  "Steps to Reproduce"
+	  "------------------"
+	  "${user_reproduce}"
+	  ""
+	  "Images or other Information"
+	  "---------------------------"
+	  ""
+	  )
+	  
+
+# print the output:
+# hack: we need to iterate over the elements to capture the blank spaces (to print newlines)
+for (( i=0; i < ${#issue_md[@]}; i++ )); do
+  printf '%s\n' ${issue_md[i]}
+done
+
+# if we have a dirty git, report it
+if [[ -n ${git_dirty} ]]; then
+  print "${ZDOTDIR:-${HOME}}/.zim has a dirty git working tree."
+  print "here is the diff:"
+  print '```'
+  print $(command git diff)
+  print '```'
+fi
+
+
+print '\n\n'
+print 'Please copy the above and use this when reporting the issue'
