@@ -73,4 +73,8 @@ fi
 
 
 print '\n\n'
-print 'Please copy the above and use this when reporting the issue'
+print 'Please copy the above and use this when reporting the issue\n'
+
+# optionally, now we can produce debug info
+print 'If you would like to produce some helpful logs about your environment, run:'
+print '$ zmanage debug'
