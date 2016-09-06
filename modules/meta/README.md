@@ -17,3 +17,5 @@ Usage
 | build-cache | Rebuild the zim cache                               |
 | remove      | *experimental* Remove zim as best we can            |
 | reset       | Reset zim to the latest commit                      |
+| help        | Print this usage message                            |
+| debug       | Invokes the trace-zim script which produces logs    |

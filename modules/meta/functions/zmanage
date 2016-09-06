@@ -7,7 +7,8 @@ Actions:
     | build-cache | Rebuild the zim cache                               |
     | remove      | *experimental* Remove zim as best we can            |
     | reset       | Reset zim to the latest commit                      |
-    | help        | Print this usage message                            |"
+    | help        | Print this usage message                            |
+    | debug       | Invokes the trace-zim script which produces logs    |"
 
 if (( ${#} != 1 )); then
   print ${usage}
@@ -31,6 +32,8 @@ case ${1} in
   remove)      zsh ${tools}/zim_remove
                ;;
   reset)       zsh ${tools}/zim_reset
+               ;;
+  debug)       zsh ${ZIM}/modules/debug/functions/trace-zim
                ;;
   *)           print ${usage}
                ;;
