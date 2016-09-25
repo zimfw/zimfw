@@ -30,7 +30,7 @@ cd ${ZDOTDIR:-${HOME}}/.zim
 git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
 git_ref=$(command git rev-parse --short HEAD)
 zsh_version=$(zsh --version)
-operating_sys=$(uname -mosr)
+operating_sys=$(uname -a)
 
 
 

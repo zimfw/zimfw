@@ -6,4 +6,4 @@ cd ${ZDOTDIR:-${HOME}}/.zim
 
 print "Zim commit ref:   $(command git rev-parse --short HEAD)"
 print "Zsh version:      $(command zsh --version)"
-print "System info:      $(command uname -mosr)"
+print "System info:      $(command uname -a)"
