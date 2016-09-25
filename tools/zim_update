@@ -8,4 +8,4 @@ cd ${ZDOTDIR:-${HOME}/.zim}
 git remote update -p
 git merge --ff-only @\{u\}
 # and update the submodules
-git submodule update --init --recursive
+git submodule foreach --quiet --recursive git pull origin master
