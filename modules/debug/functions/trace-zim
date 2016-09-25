@@ -32,10 +32,10 @@ Deleting old logs now..."
 fi
 
 # get some basic system information (kernel and zsh version)
-print "Zsh version: 
+print "Zsh version:
   $(zsh --version)
 Kernel information:
-  $(uname -mosr)
+  $(uname -a)
 fpath info:
   ${fpath}" >! /tmp/ztrace/sysinfo
 
