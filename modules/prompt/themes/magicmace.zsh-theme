@@ -13,9 +13,9 @@ function {
   COLOR_ERROR="%F{red}"
 
   if [[ "$EUID" -ne "0" ]]; then
-    USER_LEVEL="${COLOR_USER}"
+    COLOR_USER_LEVEL="${COLOR_USER}"
   else
-    USER_LEVEL="${COLOR_ROOT}"
+    COLOR_USER_LEVEL="${COLOR_ROOT}"
   fi
 }
 
@@ -23,17 +23,17 @@ function {
 # - was there an error?
 # - are there background jobs?
 # - are we in a ranger session?
-prompt_status() {
+prompt_magicmace_status() {
   local symbols=""
 
-  [[ ${RETVAL} -ne 0 ]]          && symbols+='${COLOR_ERROR}${RETVAL}${COLOR_NORMAL}'  # 'e' for error.
+  [[ ${RETVAL} -ne 0 ]]          && symbols+="${COLOR_ERROR}${RETVAL}${COLOR_NORMAL}"  # $? for error.
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+='b' # 'b' for background.
   [[ ${RANGER_LEVEL} -ne 0 ]]    && symbols+='r' # 'r' for... you guessed it!
 
-  [[ -n ${symbols} ]] && print -Pn "─${COLOR_NORMAL}${symbols}${COLOR_USER}─"
+  [[ -n ${symbols} ]] && print -n "─${COLOR_NORMAL}${symbols}${COLOR_USER_LEVEL}─"
 }
 
-prompt_git() {
+prompt_magicmace_git() {
   local ico_dirty='*'
   local ico_ahead='🠙'
   local ico_behind='🠛'
@@ -60,8 +60,7 @@ prompt_git() {
       *);;
     esac
 
-    print -Pn \
-    "${USER_LEVEL}─[${COLOR_NORMAL}${git_info}${USER_LEVEL}]"
+    print -n "─[${COLOR_NORMAL}${git_info}${COLOR_USER_LEVEL}]"
   fi
 }
 
@@ -73,8 +72,6 @@ prompt_magicmace_precmd() {
   # We could also just set $? as an argument, and thus get our nifty local variable,
   # but that's stretching it, and makes the code harder to read.
   RETVAL=$?
-
-  PROMPT='${USER_LEVEL}$(prompt_status)[${COLOR_NORMAL}$(short_pwd)${USER_LEVEL}]$(prompt_git)── -%f '
 }
 
 prompt_magicmace_setup() {
@@ -83,6 +80,8 @@ prompt_magicmace_setup() {
   autoload -Uz vcs_info
 
   prompt_opts=(cr subst percent)
+
+  add-zsh-hook precmd prompt_magicmace_precmd
 
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes false
@@ -93,8 +92,7 @@ prompt_magicmace_setup() {
 
   # Call git directly, ignoring aliases under the same name.
   zstyle ':vcs_info:git:*:-all-' command =git
-
-  add-zsh-hook precmd prompt_magicmace_precmd
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]$(prompt_magicmace_git)── ─%f '
 }
 
 prompt_magicmace_setup "$@"
