@@ -48,53 +48,25 @@ else
   cp -R ${ZDOTDIR:-${HOME}}/.zim /tmp/ztrace/
 fi
 
-# trace code to add to modified .zshrc
-if [[ ${OSTYPE} == linux-gnu ]]; then
-  read -d '' tracetop << EOF || true
+# create a modified .zshrc to produce a trace log
+cat <<EOF >! /tmp/ztrace/.zshrc
 ###################
 # zim trace start #
 ###################
-exec 3>&2 2> >(tee /tmp/ztrace/sample-time.\$\$.log |
-  sed -u 's/^.*$/now/' |
-  date -f - +%s.%N >/tmp/ztrace/sample-time.\$\$.tim)
+PS4=$'%D{%s%6.}-_-'
+exec 3>&2 2>/tmp/ztrace/sample-time.$$.log
 zmodload zsh/zprof
-set -x
+setopt xtrace prompt_subst
 EOF
 
-# we need gnu-utils to do this, so we must check for darwin/bsd.
-# if these platforms, we need to call gsed and gdate explicitly.
-elif [[ ${OSTYPE} == (darwin*|*bsd*) ]]; then
-  if (( ${+commands[gdate]} && ${+commands[gsed]} )); then
-    read -d '' tracetop << EOF || true
-###################
-# zim trace start #
-###################
-exec 3>&2 2> >(tee /tmp/ztrace/sample-time.\$\$.log |
-  gsed -u 's/^.*$/now/' |
-  gdate -f - +%s.%N >/tmp/ztrace/sample-time.\$\$.tim)
-zmodload zsh/zprof
-set -x
-EOF
-  else
-    print "debug module requires both gnu-sed (gsed) and gnu-date (gdate).
-Please install these with brew before attempting to trace."
-    return 1
-  fi
-else
-  print "your system, ${OSTYPE}, is an unknown system.
-Please create an issue at:
-  https://github.com/Eriner/zim/issues
-Include the following output in your report:
-  ${OSTYPE}  -  $(uname -mosr)"
-  return 1
-fi
+cat /tmp/ztrace/.zshrc.orig >>! /tmp/ztrace/.zshrc
 
-read -d '' tracebot << EOF || true
+cat <<EOF >>! /tmp/ztrace/.zshrc
 #################
 # zim trace end #
 #################
 
-set +x
+unsetopt xtrace
 zprof >! /tmp/ztrace/zprof
 #non-linux systems have weird fd; also, no real need to redirect back
 #prompt is (practically speaking) non-interactive, fd exists only for that process
@@ -103,20 +75,13 @@ zprof >! /tmp/ztrace/zprof
 #exec 2>&3 3>&-
 EOF
 
-# create a modified .zshrc to produce a trace log
-origzshrc=$(</tmp/ztrace/.zshrc.orig)
-print "${tracetop}\n${origzshrc}\n${tracebot}" >! /tmp/ztrace/.zshrc
-
-# clean up the vars now that we are done with them.
-unset origzshrc tracetop tracebot
-
 print "\nSpawning zsh and producing trace...\n\n"
-ZDOTDIR=/tmp/ztrace zsh -ic 'exit' 
+ZDOTDIR=/tmp/ztrace zsh -ic 'exit'
 print "Trace complete.
 Parsing logs to a nicer format; this may take some time..."
 
 # this is ugly thing makes it pretty...
-paste <( while read tim; do crt=000000000$((${tim//.}-10#0$last)); printf "%12.9f\n" ${crt:0:${#crt}-9}.${crt:${#crt}-9}; last=${tim//.}; done < /tmp/ztrace/sample-time.(*).tim; ) /tmp/ztrace/sample-time.(*).log > /tmp/ztrace/ztrace.log 
+while read line; do if [[ ${line} =~ '^[0-9]+-_-' ]]; then crt=000000$((${line%%-_-*}-10#0$last)); printf "%12.9f %s\n" ${crt:0:${#crt}-6}.${crt:${#crt}-6} ${line#*-_-}; last=${line%%-_-*}; fi; done < /tmp/ztrace/sample-time.(*).log > /tmp/ztrace/ztrace.log
 print "Parsing complete!"
 
 # safe to remove old, unneeded environment files 
@@ -130,7 +95,7 @@ rm -f /tmp/ztrace/.zcompdump*
 
 print "Archiving trace logs...\n"
 
-tar -cf /tmp/ztrace.tar.gz /tmp/ztrace/
+tar -czf /tmp/ztrace.tar.gz /tmp/ztrace/
 
 print "Archive complete!\n
 Trace by with execution time available at:
