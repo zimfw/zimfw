@@ -6,7 +6,7 @@ For bug reports, please provide the following information:
 - gist of .zimrc:
 - Zsh version:
 - gist of .zshrc:
-- $(uname -mosr):
+- $(uname -a):
 
 Description
 -----------
