@@ -77,7 +77,7 @@ alias gfu='git remote update -p; git merge --ff-only @\{u\}'
 alias gg='git grep'
 alias ggi='git grep --ignore-case'
 alias ggl='git grep --files-with-matches'
-alias ggL='git grep --files-without-matches'
+alias ggL='git grep --files-without-match'
 alias ggv='git grep --invert-match'
 alias ggw='git grep --word-regexp'
 
