@@ -3,14 +3,6 @@
 #
 
 #
-# Command Correction
-#
-
-if [[ ${zcorrection} == 'true' ]]; then
-  setopt CORRECT
-fi
-
-#
 # ls Colours
 #
 
@@ -23,7 +15,7 @@ if (( ${+commands[dircolors]} )); then
   fi
 
   alias ls='ls --group-directories-first --color=auto'
-  
+
 else
   # BSD
 
