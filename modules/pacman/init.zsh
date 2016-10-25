@@ -54,6 +54,9 @@ alias pacb='makepkg -sci'
 # install, sync, and upgrade packages
 alias paci="${zpacman_frontend_priv} -Syu"
 
+# install packages without syncing
+alias pacI="${zpacman_frontend_priv} -S"
+
 # install, sync, and upgrade packages (forcibly refresh package lists)
 alias pacu="${zpacman_frontend_priv} -Syyu"
 
