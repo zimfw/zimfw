@@ -1,4 +1,4 @@
-usage="${0} [action]
+local usage="${0} [action]
 Actions:
     | update      | Fetches and merges upstream zim commits if possible |
     | info        | Prints zim and system info                          |
