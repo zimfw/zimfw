@@ -21,7 +21,7 @@ fi
 # Treat single word simple commands without redirection as candidates for resumption of an existing job.
 setopt AUTO_RESUME
 
-# List jobs in the long format by default. 
+# List jobs in the long format by default.
 setopt LONG_LIST_JOBS
 
 # Report the status of background jobs immediately, rather than waiting until just before printing a prompt.
@@ -33,7 +33,16 @@ unsetopt BG_NICE
 # Send the HUP signal to running jobs when the shell exits.
 unsetopt HUP
 
-# Report the status of background and suspended jobs before exiting a shell with job control; 
-# a second attempt to exit the shell will succeed. 
-# NO_CHECK_JOBS is best used only in combination with NO_HUP, else such jobs will be killed automatically
+# Report the status of background and suspended jobs before exiting a shell with job control;
+# a second attempt to exit the shell will succeed.
+# NO_CHECK_JOBS is best used only in combination with NO_HUP, else such jobs will be killed automatically.
 unsetopt CHECK_JOBS
+
+# Set less or more as the default pager.
+if [[ -z ${PAGER} ]]; then
+  if (( ${+commands[less]} )); then
+    export PAGER=less
+  else
+    export PAGER=more
+  fi
+fi
