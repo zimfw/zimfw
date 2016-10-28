@@ -3,7 +3,7 @@ Utility
 
 Utility aliases and functions.
 
-Adds colour to `ls` and `grep`.
+Adds colour to `ls`, `grep` and `less`.
 
 Aliases
 -------
@@ -30,7 +30,7 @@ Aliases `get` to ( `aria2c` || `axel` || `wget` || `curl` ).
 
 | alias | command |
 | ----- | ------- |
-| `df` | `df -kh` | 
+| `df` | `df -kh` |
 | `du` | `du -kh` |
 
 ### Condoms
