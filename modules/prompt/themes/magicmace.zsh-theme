@@ -12,10 +12,10 @@ function {
   COLOR_NORMAL="%F{white}"
   COLOR_ERROR="%F{red}"
 
-  if [[ "$EUID" -ne "0" ]]; then
-    COLOR_USER_LEVEL="${COLOR_USER}"
+  if [[ ${EUID} -ne 0 ]]; then
+    COLOR_USER_LEVEL=${COLOR_USER}
   else
-    COLOR_USER_LEVEL="${COLOR_ROOT}"
+    COLOR_USER_LEVEL=${COLOR_ROOT}
   fi
 }
 
@@ -33,37 +33,6 @@ prompt_magicmace_status() {
   [[ -n ${symbols} ]] && print -n "─${COLOR_NORMAL}${symbols}${COLOR_USER_LEVEL}─"
 }
 
-prompt_magicmace_git() {
-  local ico_dirty='*'
-  local ico_ahead='🠙'
-  local ico_behind='🠛'
-  local ico_diverged='⥮'
-  local git_info=""
-
-  is_dirty() {
-    test -n "$(git status --porcelain --ignore-submodules)"
-  }
-
-  vcs_info
-  git_info=${vcs_info_msg_0_} # branch name
-  if [[ -n ${git_info} ]]; then
-
-    if is_dirty; then
-      git_info+=${ico_dirty}
-    fi
-
-    stat=$(git status 2> /dev/null | command sed -n 2p)
-    case "${stat}" in
-      *ahead*)    git_info+=${ico_ahead}    ;;
-      *behind*)   git_info+=${ico_behind}   ;;
-      *diverged*) git_info+=${ico_diverged} ;;
-      *);;
-    esac
-
-    print -n "─[${COLOR_NORMAL}${git_info}${COLOR_USER_LEVEL}]"
-  fi
-}
-
 prompt_magicmace_precmd() {
   # While it would be apt to have this as a local variable in prompt_status(),
   # $? (returned value) and ${(%):-%?} ("The return status of the last command
@@ -72,27 +41,30 @@ prompt_magicmace_precmd() {
   # We could also just set $? as an argument, and thus get our nifty local variable,
   # but that's stretching it, and makes the code harder to read.
   RETVAL=$?
+  if [[ ${+functions[git-info]} ]]; then
+    git-info
+  fi
 }
 
 prompt_magicmace_setup() {
   autoload -Uz colors && colors
   autoload -Uz add-zsh-hook
-  autoload -Uz vcs_info
 
-  prompt_opts=(cr subst percent)
+  prompt_opts=(cr percent subst)
 
   add-zsh-hook precmd prompt_magicmace_precmd
 
-  zstyle ':vcs_info:*' enable git
-  zstyle ':vcs_info:*' check-for-changes false
-  zstyle ':vcs_info:*' use-simple true
-  # Only export branch name, as that is the only data we need.
-  zstyle ':vcs_info:*' max-exports 1
-  zstyle ':vcs_info:git*' formats '%b'
+  zstyle ':zim:git-info:branch' format '%b'
+  zstyle ':zim:git-info:commit' format '%c...'
+  zstyle ':zim:git-info:dirty' format '*'
+  zstyle ':zim:git-info:ahead' format '↑'
+  zstyle ':zim:git-info:behind' format '↓'
+  zstyle ':zim:git-info:keys' format \
+    'prompt' '─[${COLOR_NORMAL}%b%c%D%A%B${COLOR_USER_LEVEL}]'
 
   # Call git directly, ignoring aliases under the same name.
-  zstyle ':vcs_info:git:*:-all-' command =git
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]$(prompt_magicmace_git)── ─%f '
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
+  RPROMPT=''
 }
 
 prompt_magicmace_setup "$@"
