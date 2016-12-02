@@ -2,11 +2,14 @@ Please check the existing issues to make sure you're not duplicating a report.
 
 For bug reports, please provide the following information:
 
-- Zim commit ref:
+In a terminal, run `zmanage info` and paste the output below:
+
+```
+#Paste the output here
+```
+
 - gist of .zimrc:
-- Zsh version:
 - gist of .zshrc:
-- $(uname -mosr):
 
 Description
 -----------
