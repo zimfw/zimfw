@@ -28,16 +28,16 @@ also untracked files. It can be enabled with the following zstyle:
     zstyle ':zim:git-info' verbose 'yes'
 
 In non-verbose mode, the 'untracked' context is not available (see Main
-Contexts below), and also untracked files are not considered for computing the
-'dirty' context. Using `git status` or checking for untracked files is
+Contexts below), and untracked files are also not considered for computing the
+'dirty' context. Using `git status` or checking for untracked files can be
 [expensive](https://gist.github.com/sindresorhus/3898739).
 
 Theming
 -------
 
-To display information about the current repository in a prompt, define the
-following styles in the `prompt_name_setup` function, where the syntax for
-setting a style is:
+To display information about the current repository in a prompt, define your
+custom styles in the `prompt_name_setup` function, where the syntax for setting
+a style is:
 
     zstyle ':zim:git-info:context' format 'string'
 
@@ -59,7 +59,7 @@ setting a style is:
 | stashed   |   %S   | Stashed states count
 | untracked |   %u   | Untracked files count (only if verbose enabled)
 
-### Untracked Contexts
+### Special Action Contexts
 
 | Name                        | Format  | Default Value
 | --------------------------- | :-----: | -------------------------------------
