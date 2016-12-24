@@ -6,7 +6,7 @@
 # Navigation
 #
 
-# If a command is issued that can’t be executed as a normal command, 
+# If a command is issued that can’t be executed as a normal command,
 # and the command is the name of a directory, perform the cd command to that directory.
 setopt AUTO_CD
 
@@ -33,6 +33,6 @@ setopt EXTENDED_GLOB
 # Perform implicit tees or cats when multiple redirections are attempted.
 setopt MULTIOS
 
-# Allows ‘>’ redirection to truncate existing files. Otherwise ‘>!’ or ‘>|’ must be used to truncate a file.
-# If the option is not set, and the option APPEND_CREATE is also not set, ‘>>!’ or ‘>>|’ must be used to create a file.
-unsetopt CLOBBER
+# Disallow ‘>’ redirection to overwrite existing files.
+# ‘>|’ or ‘>!’ must be used to overwrite a file.
+setopt NO_CLOBBER
