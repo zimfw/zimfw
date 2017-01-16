@@ -208,7 +208,6 @@ You can temporarily bypass an alias by prefixing it with a backward slash:
 Functions
 ---------
 
-  General:
   - `git-branch-current` displays the current branch.
   - `git-commit-lost` lists lost commits.
   - `git-dir` displays the path to the Git directory.
@@ -221,7 +220,3 @@ Functions
   - `git-stash-recover` recovers given dropped stashed states.
   - `git-submodule-move` moves a submodule.
   - `git-submodule-remove` removes a submodule.
-
-  Prompt:
-  - `git_prompt_info` provides git information to oh-my-zsh sourced prompts.
-  - `parse-git-dirty` needed for `git-prompt-info` to check if repo is dirty.
