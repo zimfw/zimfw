@@ -68,7 +68,7 @@ prompt_end() {
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
   if [[ ${USER} != ${DEFAULT_USER} || -n ${SSH_CONNECTION} ]]; then
-    prompt_segment ${PRIMARY_FG} default " %(!.%{%F{yellow}%}.)${USER}@%m "
+    prompt_segment ${PRIMARY_FG} default "%(!.%{%F{yellow}%}.)${USER}@%m "
   fi
 }
 
@@ -109,7 +109,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment cyan ${PRIMARY_FG} " $(short_pwd) "
+  prompt_segment green ${PRIMARY_FG} " $(short_pwd) "
 }
 
 # Status:
@@ -123,7 +123,7 @@ prompt_status() {
   [[ ${UID} -eq 0 ]] && symbols+="%{%F{yellow}%}${LIGHTNING}"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}${GEAR}"
 
-  [[ -n ${symbols} ]] && prompt_segment ${PRIMARY_FG} default " ${symbols} "
+  [[ -n ${symbols} ]] && prompt_segment ${PRIMARY_FG} default "${symbols} "
 }
 
 ## Main prompt
@@ -140,7 +140,14 @@ prompt_eriner_main() {
 
 prompt_eriner_precmd() {
   vcs_info
-  PROMPT='%{%f%b%k%}$(prompt_eriner_main) '
+  print -rP '%{%f%b%k%}$(prompt_eriner_main)'
+}
+
+function zle-keymap-select zle-line-init {
+  local INSM=""
+  local NORM="%{%F{red}%}"
+  PROMPT="${${KEYMAP/vicmd/$NORM}/(main|viins)/$INSM} "
+  zle reset-prompt
 }
 
 prompt_eriner_setup() {
@@ -150,6 +157,8 @@ prompt_eriner_setup() {
   prompt_opts=(cr subst percent)
 
   add-zsh-hook precmd prompt_eriner_precmd
+  zle -N zle-keymap-select
+  zle -N zle-line-init
 
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes false
