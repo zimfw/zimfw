@@ -14,8 +14,10 @@ gst_get_pwd() {
   print ${prompt_short_dir}
 }
 
-prompt_gitster_precmd() {
+function zle-line-init zle-keymap-select prompt_gitster_precmd() {
   PROMPT='$(gst_get_status) %F{white}$(gst_get_pwd) $(git_prompt_info)%f '
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
+  zle reset-prompt
 }
 
 prompt_gitster_setup() {
@@ -26,7 +28,9 @@ prompt_gitster_setup() {
 
   autoload -Uz add-zsh-hook
 
-  add-zsh-hook precmd prompt_gitster_precmd
+  #add-zsh-hook precmd prompt_gitster_precmd
+  zle -N zle-keymap-select
+  zle -N zle-line-init
   prompt_opts=(cr subst percent)
 }
 

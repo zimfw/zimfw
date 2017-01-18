@@ -27,7 +27,6 @@ PRIMARY_FG=black
 function {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
   SEGMENT_SEPARATOR="\ue0b0"
-  NORM_INDICATOR="\ue0b1"
   PLUSMINUS="\u00b1"
   BRANCH="\ue0a0"
   DETACHED="\u27a6"
@@ -55,11 +54,7 @@ prompt_segment() {
 # End the prompt, closing any open segments
 prompt_end() {
   if [[ -n $CURRENT_BG ]]; then
-<<<<<<< HEAD
-    print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/${NORM_INDICATOR}}/(main|viins)/${SEGMENT_SEPARATOR}}"
-=======
-    print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/$NORM_INDICATOR}/(main|viins)/$SEGMENT_SEPARATOR}"
->>>>>>> parent of 55ea696... RPROMPT Method
+    print -n "%{%k%F{${CURRENT_BG}}%}${SEGMENT_SEPARATOR}"
   else
     print -n "%{%k%}"
   fi
@@ -144,18 +139,9 @@ prompt_eriner_main() {
   prompt_end
 }
 
-prompt_eriner_precmd() {
-  vcs_info
-}
-
 function zle-keymap-select zle-line-init {
   PROMPT="%{%f%b%k%}$(prompt_eriner_main)"
-<<<<<<< HEAD
-  RPROMPT=
-=======
-#  local INSM="$TEMP"
-  #local NORM="$TEMP%{%F{red}%}"
->>>>>>> parent of 55ea696... RPROMPT Method
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
   zle reset-prompt
 }
 
@@ -165,7 +151,6 @@ prompt_eriner_setup() {
 
   prompt_opts=(cr subst percent)
 
-#  add-zsh-hook precmd prompt_eriner_precmd
   zle -N zle-keymap-select
   zle -N zle-line-init
 
