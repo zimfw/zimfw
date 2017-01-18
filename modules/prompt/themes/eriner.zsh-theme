@@ -27,7 +27,7 @@ PRIMARY_FG=black
 function {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
   SEGMENT_SEPARATOR="\ue0b0"
-  NORM_INDICATOR="\ue0b2"
+  NORM_INDICATOR="\ue0b1"
   PLUSMINUS="\u00b1"
   BRANCH="\ue0a0"
   DETACHED="\u27a6"
@@ -55,7 +55,7 @@ prompt_segment() {
 # End the prompt, closing any open segments
 prompt_end() {
   if [[ -n $CURRENT_BG ]]; then
-    print -n "%{%k%F{${CURRENT_BG}}%}${SEGMENT_SEPARATOR}"
+    print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/${NORM_INDICATOR}}/(main|viins)/${SEGMENT_SEPARATOR}}"
   else
     print -n "%{%k%}"
   fi
@@ -146,7 +146,7 @@ prompt_eriner_precmd() {
 
 function zle-keymap-select zle-line-init {
   PROMPT="%{%f%b%k%}$(prompt_eriner_main)"
-  RPROMPT="${${KEYMAP/vicmd/[normal]}/(main|viins)/[insert]}"
+  RPROMPT=
   zle reset-prompt
 }
 
