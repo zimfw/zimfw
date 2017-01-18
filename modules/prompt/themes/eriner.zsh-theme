@@ -55,7 +55,11 @@ prompt_segment() {
 # End the prompt, closing any open segments
 prompt_end() {
   if [[ -n $CURRENT_BG ]]; then
+<<<<<<< HEAD
     print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/${NORM_INDICATOR}}/(main|viins)/${SEGMENT_SEPARATOR}}"
+=======
+    print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/$NORM_INDICATOR}/(main|viins)/$SEGMENT_SEPARATOR}"
+>>>>>>> parent of 55ea696... RPROMPT Method
   else
     print -n "%{%k%}"
   fi
@@ -146,7 +150,12 @@ prompt_eriner_precmd() {
 
 function zle-keymap-select zle-line-init {
   PROMPT="%{%f%b%k%}$(prompt_eriner_main)"
+<<<<<<< HEAD
   RPROMPT=
+=======
+#  local INSM="$TEMP"
+  #local NORM="$TEMP%{%F{red}%}"
+>>>>>>> parent of 55ea696... RPROMPT Method
   zle reset-prompt
 }
 
