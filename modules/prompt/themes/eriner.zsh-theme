@@ -27,6 +27,7 @@ PRIMARY_FG=black
 function {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
   SEGMENT_SEPARATOR="\ue0b0"
+  NORM_INDICATOR="\ue0b2"
   PLUSMINUS="\u00b1"
   BRANCH="\ue0a0"
   DETACHED="\u27a6"
@@ -54,7 +55,7 @@ prompt_segment() {
 # End the prompt, closing any open segments
 prompt_end() {
   if [[ -n $CURRENT_BG ]]; then
-    print -n "%{%k%F{${CURRENT_BG}}%}${SEGMENT_SEPARATOR}"
+    print -n "%{%k%F{${CURRENT_BG}}%}${${KEYMAP/vicmd/$NORM_INDICATOR}/(main|viins)/$SEGMENT_SEPARATOR}"
   else
     print -n "%{%k%}"
   fi
@@ -128,6 +129,7 @@ prompt_status() {
 
 ## Main prompt
 prompt_eriner_main() {
+  vcs_info
   RETVAL=$?
   CURRENT_BG='NONE'
   prompt_status
@@ -140,13 +142,12 @@ prompt_eriner_main() {
 
 prompt_eriner_precmd() {
   vcs_info
-  print -rP '%{%f%b%k%}$(prompt_eriner_main)'
 }
 
 function zle-keymap-select zle-line-init {
-  local INSM=""
-  local NORM="%{%F{red}%}"
-  PROMPT="${${KEYMAP/vicmd/$NORM}/(main|viins)/$INSM} "
+  PROMPT="%{%f%b%k%}$(prompt_eriner_main)"
+#  local INSM="$TEMP"
+  #local NORM="$TEMP%{%F{red}%}"
   zle reset-prompt
 }
 
@@ -156,7 +157,7 @@ prompt_eriner_setup() {
 
   prompt_opts=(cr subst percent)
 
-  add-zsh-hook precmd prompt_eriner_precmd
+#  add-zsh-hook precmd prompt_eriner_precmd
   zle -N zle-keymap-select
   zle -N zle-line-init
 
