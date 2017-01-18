@@ -45,6 +45,11 @@ prompt_steeef_precmd() {
 %(!.#.$) '
 }
 
+function zle-line-init zle-keymap-select {
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
+  zle reset-prompt
+}
+
 prompt_steeef_setup() {
   #use extended color pallete if available
   if [[ ${TERM} == *256* || ${TERM} == *rxvt* ]]; then
@@ -92,6 +97,9 @@ prompt_steeef_setup() {
   autoload -Uz add-zsh-hook
   autoload -Uz vcs_info
   autoload -Uz colors && colors
+
+  zle -N zle-line-init
+  zle -N zle-keymap-select
 
   add-zsh-hook preexec steeef_preexec
   add-zsh-hook chpwd steeef_chpwd
