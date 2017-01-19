@@ -44,6 +44,13 @@ prompt_magicmace_precmd() {
   if [[ ${+functions[git-info]} ]]; then
     git-info
   fi
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
+}
+
+function zle-line-init zle-keymap-select {
+  prompt_magicmace_precmd
+  zle reset-prompt
 }
 
 prompt_magicmace_setup() {
@@ -62,9 +69,8 @@ prompt_magicmace_setup() {
   zstyle ':zim:git-info:keys' format \
     'prompt' '─[${COLOR_NORMAL}%b%c%D%A%B${COLOR_USER_LEVEL}]'
 
-  # Call git directly, ignoring aliases under the same name.
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
-  RPROMPT=''
+  zle -N zle-line-init
+  zle -N zle-keymap-select
 }
 
 prompt_magicmace_setup "$@"

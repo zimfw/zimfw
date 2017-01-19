@@ -40,9 +40,15 @@ prompt_steeef_precmd() {
     vcs_info 'prompt'
   fi
 
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
   PROMPT='
 %{$purple%}%n${${reset_color}%} at %{$orange%}%m${${reset_color}%} in %{$limegreen%}%~${${reset_color}%} $vcs_info_msg_0_$(virtualenv_info)%{${reset_color}%}
 %(!.#.$) '
+}
+
+function zle-line-init zle-keymap-select {
+  prompt_steeef_precmd
+  zle reset-prompt
 }
 
 prompt_steeef_setup() {
@@ -92,6 +98,9 @@ prompt_steeef_setup() {
   autoload -Uz add-zsh-hook
   autoload -Uz vcs_info
   autoload -Uz colors && colors
+
+  zle -N zle-line-init
+  zle -N zle-keymap-select
 
   add-zsh-hook preexec steeef_preexec
   add-zsh-hook chpwd steeef_chpwd
