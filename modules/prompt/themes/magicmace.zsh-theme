@@ -44,11 +44,12 @@ prompt_magicmace_precmd() {
   if [[ ${+functions[git-info]} ]]; then
     git-info
   fi
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
+  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
 }
 
 function zle-line-init zle-keymap-select {
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
-  RPROMPT="${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/}"
+  prompt_magicmace_precmd
   zle reset-prompt
 }
 
