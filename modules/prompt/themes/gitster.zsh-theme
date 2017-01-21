@@ -15,6 +15,12 @@ prompt_gitster_get_pwd() {
 
 prompt_gitster_precmd() {
   [[ ${+functions[git-info]} ]] && git-info
+  RPROMPT="${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}"
+}
+
+zle-keymap-select() {
+    prompt_gitster_precmd
+    zle reset-prompt
 }
 
 prompt_gitster_setup() {
@@ -24,6 +30,8 @@ prompt_gitster_setup() {
   prompt_opts=(cr percent subst)
 
   add-zsh-hook precmd prompt_gitster_precmd
+  
+  zle -N zle-keymap-select
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
