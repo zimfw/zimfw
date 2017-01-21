@@ -46,3 +46,14 @@ if [[ -z ${PAGER} ]]; then
     export PAGER=more
   fi
 fi
+
+# sets the window title and updates upon directory change
+# more work probably needs to be done here to support multiplexers
+if (($+ztermtitle)); then
+  case ${TERM} in
+    xterm*)
+      precmd() { print -Pn "\e]0;${ztermtitle}\a" }
+      precmd  # we execute it once to initialize the window title
+      ;;
+  esac
+fi
