@@ -102,7 +102,7 @@ prompt_steeef_setup() {
   add-zsh-hook preexec steeef_preexec
   add-zsh-hook chpwd steeef_chpwd
   add-zsh-hook precmd prompt_steeef_precmd
-  zle -N zle-keymap-select
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
   prompt_opts=(cr subst percent)
 }
 

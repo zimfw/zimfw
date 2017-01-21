@@ -32,7 +32,7 @@ prompt_gitster_setup() {
 
   add-zsh-hook precmd prompt_gitster_precmd
   
-  zle -N zle-keymap-select
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'

@@ -157,7 +157,7 @@ prompt_eriner_setup() {
 
   add-zsh-hook prompt_eriner_precmd
 
-  zle -N zle-keymap-select
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
 
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes false

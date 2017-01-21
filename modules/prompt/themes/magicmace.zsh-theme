@@ -61,6 +61,8 @@ prompt_magicmace_setup() {
 
   add-zsh-hook precmd prompt_magicmace_precmd
 
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
+
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c...'
   zstyle ':zim:git-info:dirty' format '*'
