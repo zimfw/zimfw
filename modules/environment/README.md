@@ -5,6 +5,8 @@ Sets generic Zsh built-in environment options.
 
 Also enables smart URL-pasting. This prevents the user from having to manually escape URLs.
 
+Uses `.zimrc` defined `${ztermtitle}` variable to set the terminal title, if defined.
+
 ZSH Options
 -----------
 
