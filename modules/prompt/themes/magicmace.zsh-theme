@@ -45,7 +45,7 @@ prompt_magicmace_precmd() {
     git-info
   fi
   PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
-  RPROMPT="${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}"
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
 }
 
 zle-keymap-select() {

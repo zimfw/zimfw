@@ -141,7 +141,7 @@ prompt_eriner_main() {
 prompt_eriner_precmd() {
   vcs_info
   PROMPT='%{%f%b%k%}$(prompt_eriner_main) '
-  RPROMPT="${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}"
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
 }
 
 zle-keymap-slect() {

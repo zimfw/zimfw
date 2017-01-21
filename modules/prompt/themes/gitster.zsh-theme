@@ -15,7 +15,8 @@ prompt_gitster_get_pwd() {
 
 prompt_gitster_precmd() {
   [[ ${+functions[git-info]} ]] && git-info
-  RPROMPT="${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}"
+  PROMPT='$(prompt_gitster_get_status)%F{white}$(prompt_gitster_get_pwd)${(e)git_info[prompt]}%f '
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
 }
 
 zle-keymap-select() {
@@ -39,9 +40,6 @@ prompt_gitster_setup() {
   zstyle ':zim:git-info:dirty' format '%F{yellow}✗'
   zstyle ':zim:git-info:keys' format \
     'prompt' ' %F{cyan}%b%c %C%D'
-
-  PROMPT='$(prompt_gitster_get_status)%F{white}$(prompt_gitster_get_pwd)${(e)git_info[prompt]}%f '
-  RPROMPT=''
 }
 
 prompt_gitster_setup "$@"

@@ -40,7 +40,7 @@ prompt_steeef_precmd() {
     vcs_info 'prompt'
   fi
 
-  RPROMPT="${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}"
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
   PROMPT='
 %{$purple%}%n${${reset_color}%} at %{$orange%}%m${${reset_color}%} in %{$limegreen%}%~${${reset_color}%} $vcs_info_msg_0_$(virtualenv_info)%{${reset_color}%}
 %(!.#.$) '
