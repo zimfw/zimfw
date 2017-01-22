@@ -16,3 +16,6 @@
 [submodule "modules/prompt/external-themes/lean"]
 	path = modules/prompt/external-themes/lean
 	url = https://github.com/miekg/lean
+[submodule "modules/fasd/fasd"]
+	path = modules/fasd/fasd
+	url = https://github.com/clvv/fasd
