@@ -1,5 +1,0 @@
-# zsh command mode completion
-local compl
-read -c compl
-(( $+compstate )) && compstate[insert]=menu # no expand if compsys loaded
-reply=(${(f)"$(fasd --complete "$compl")"})

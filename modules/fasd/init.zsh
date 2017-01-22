@@ -1,17 +1,40 @@
 fasd --init env
 
+# function to execute built-in cd
+fasd_cd() {
+  if [ $# -le 1 ]; then
+    fasd "$@"
+  else
+    local _fasd_ret="$(fasd -e 'printf %s' "$@")"
+    [ -z "$_fasd_ret" ] && return
+    [ -d "$_fasd_ret" ] && cd "$_fasd_ret" || printf %s\n "$_fasd_ret"
+  fi
+}
+
 alias a='fasd -a'
 alias s='fasd -si'
 alias sd='fasd -sid'
 alias sf='fasd -sif'
 alias d='fasd -d'
 alias f='fasd -f'
+alias v='f -e vim -b viminfo'
 alias z='fasd_cd -d'
 alias zz='fasd_cd -d -i'
 
 # add zsh hook
+_fasd_preexec() {
+  { eval "fasd --proc $(fasd --sanitize $2)"; } >> "/dev/null" 2>&1
+}
 autoload -Uz add-zsh-hook
 add-zsh-hook preexec _fasd_preexec
+
+# zsh command mode completion
+_fasd_zsh_cmd_complete() {
+  local compl
+  read -c compl
+  (( $+compstate )) && compstate[insert]=menu # no expand if compsys loaded
+  reply=(${(f)"$(fasd --complete "$compl")"})
+}
 
 # enable command mode completion
 compctl -U -K _fasd_zsh_cmd_complete -V fasd -x 'C[-1,-*e],s[-]n[1,e]' -c - \
@@ -20,6 +43,15 @@ compctl -U -K _fasd_zsh_cmd_complete -V fasd -x 'C[-1,-*e],s[-]n[1,e]' -c - \
 (( $+functions[compdef] )) && {
   # zsh word mode completion
   _fasd_zsh_word_complete() {
+    [ "$2" ] && local _fasd_cur="$2"
+    [ -z "$_fasd_cur" ] && local _fasd_cur="${words[CURRENT]}"
+    local fnd="${_fasd_cur//,/ }"
+    local typ=${1:-e}
+    fasd --query $typ "$fnd" 2>> "/dev/null" | \
+      sort -nr | sed 's/^[^ ]*[ ]*//' | while read -r line; do
+        compadd -U -V fasd "$line"
+      done
+    compstate[insert]=menu # no expand
   }
   _fasd_zsh_word_complete_f() { _fasd_zsh_word_complete f ; }
   _fasd_zsh_word_complete_d() { _fasd_zsh_word_complete d ; }
