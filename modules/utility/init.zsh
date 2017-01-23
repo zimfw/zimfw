@@ -6,8 +6,7 @@
 # Colours
 #
 
-COLORS=${terminfo[colors]}
-if (( ${COLORS:=0} >= 8 )); then
+if [[ ! -z ${terminfo[colors]} ]] && (( ${terminfo[colors]} >= 8 )); then
   # ls Colors
   if (( ${+commands[dircolors]} )); then
     # GNU
