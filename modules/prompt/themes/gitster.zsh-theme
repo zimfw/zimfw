@@ -15,6 +15,13 @@ prompt_gitster_get_pwd() {
 
 prompt_gitster_precmd() {
   [[ ${+functions[git-info]} ]] && git-info
+  PROMPT='$(prompt_gitster_get_status)%F{white}$(prompt_gitster_get_pwd)${(e)git_info[prompt]}%f '
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
+}
+
+zle-keymap-select() {
+    prompt_gitster_precmd
+    zle reset-prompt
 }
 
 prompt_gitster_setup() {
@@ -24,6 +31,8 @@ prompt_gitster_setup() {
   prompt_opts=(cr percent subst)
 
   add-zsh-hook precmd prompt_gitster_precmd
+  
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
@@ -31,9 +40,6 @@ prompt_gitster_setup() {
   zstyle ':zim:git-info:dirty' format '%F{yellow}✗'
   zstyle ':zim:git-info:keys' format \
     'prompt' ' %F{cyan}%b%c %C%D'
-
-  PROMPT='$(prompt_gitster_get_status)%F{white}$(prompt_gitster_get_pwd)${(e)git_info[prompt]}%f '
-  RPROMPT=''
 }
 
 prompt_gitster_setup "$@"

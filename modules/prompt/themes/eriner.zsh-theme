@@ -141,6 +141,12 @@ prompt_eriner_main() {
 prompt_eriner_precmd() {
   vcs_info
   PROMPT='%{%f%b%k%}$(prompt_eriner_main) '
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
+}
+
+zle-keymap-slect() {
+        prompt_eriner_precmd
+        zle reset-prompt
 }
 
 prompt_eriner_setup() {
@@ -149,7 +155,9 @@ prompt_eriner_setup() {
 
   prompt_opts=(cr subst percent)
 
-  add-zsh-hook precmd prompt_eriner_precmd
+  add-zsh-hook prompt_eriner_precmd
+
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
 
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes false

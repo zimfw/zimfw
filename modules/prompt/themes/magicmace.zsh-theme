@@ -44,6 +44,13 @@ prompt_magicmace_precmd() {
   if [[ ${+functions[git-info]} ]]; then
     git-info
   fi
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
+  RPROMPT="${ZIM_PROMPT_INSERTMODE:+${${KEYMAP/vicmd/[NORMAL]}/(main|viins)/}}"
+}
+
+zle-keymap-select() {
+    prompt_magicmace_precmd
+    zle reset-prompt
 }
 
 prompt_magicmace_setup() {
@@ -54,6 +61,8 @@ prompt_magicmace_setup() {
 
   add-zsh-hook precmd prompt_magicmace_precmd
 
+  [[ "$ZIM_PROMPT_INSERTMODE" != '' ]] && zle -N zle-keymap-select
+
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c...'
   zstyle ':zim:git-info:dirty' format '*'
@@ -63,8 +72,6 @@ prompt_magicmace_setup() {
     'prompt' '─[${COLOR_NORMAL}%b%c%D%A%B${COLOR_USER_LEVEL}]'
 
   # Call git directly, ignoring aliases under the same name.
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
-  RPROMPT=''
 }
 
 prompt_magicmace_setup "$@"
