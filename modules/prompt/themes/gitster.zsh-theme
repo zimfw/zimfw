@@ -2,19 +2,24 @@
 # Gitster theme
 # https://github.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
 #
+# Requires the `git-info` zmodule to be included in the .zimrc file.
 
-prompt_gitster_get_status() {
-  print '%(?:%F{green}➜:%F{red}➜) '
+prompt_gitster_status() {
+  print -n '%(?:%F{green}➜:%F{red}➜) '
 }
 
-prompt_gitster_get_pwd() {
+prompt_gitster_pwd() {
   prompt_short_dir=$(short_pwd)
   git_root=$(command git rev-parse --show-toplevel 2> /dev/null) && prompt_short_dir=${prompt_short_dir#${$(short_pwd $git_root):h}/}
-  print ${prompt_short_dir}
+  print -n "%F{white}${prompt_short_dir}"
+}
+
+prompt_gitster_git() {
+  [[ -n ${git_info} ]] && print -n "${(e)git_info[prompt]}"
 }
 
 prompt_gitster_precmd() {
-  [[ ${+functions[git-info]} ]] && git-info
+  (( ${+functions[git-info]} )) && git-info
 }
 
 prompt_gitster_setup() {
@@ -32,7 +37,7 @@ prompt_gitster_setup() {
   zstyle ':zim:git-info:keys' format \
     'prompt' ' %F{cyan}%b%c %C%D'
 
-  PROMPT='$(prompt_gitster_get_status)%F{white}$(prompt_gitster_get_pwd)${(e)git_info[prompt]}%f '
+  PROMPT='$(prompt_gitster_status)$(prompt_gitster_pwd)$(prompt_gitster_git)%f '
   RPROMPT=''
 }
 
