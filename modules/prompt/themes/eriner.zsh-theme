@@ -15,7 +15,7 @@
 # jobs are running in this shell will all be displayed automatically when
 # appropriate.
 #
-# Uses the 'git-info' Zim module.
+# Requires the `git-info` zmodule to be included in the .zimrc file.
 
 ### Segment drawing
 # Utility functions to make it easy and re-usable to draw segmented prompts.
@@ -90,7 +90,7 @@ prompt_eriner_main() {
 }
 
 prompt_eriner_precmd() {
-  [[ ${+functions[git-info]} ]] && git-info
+  (( ${+functions[git-info]} )) && git-info
 }
 
 prompt_eriner_setup() {
