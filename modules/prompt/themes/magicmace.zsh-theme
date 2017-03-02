@@ -4,6 +4,7 @@
 #   xero's zsh prompt <http://code.xero.nu/dotfiles>
 #   eriner's eriner prompt <https://github.com/Eriner/zim/blob/master/modules/prompt/themes/eriner.zsh-theme>
 #
+# Requires the `git-info` zmodule to be included in the .zimrc file.
 
 # Global variables
 function {
@@ -12,7 +13,7 @@ function {
   COLOR_NORMAL="%F{white}"
   COLOR_ERROR="%F{red}"
 
-  if [[ ${EUID} -ne 0 ]]; then
+  if (( ${EUID} )); then
     COLOR_USER_LEVEL=${COLOR_USER}
   else
     COLOR_USER_LEVEL=${COLOR_ROOT}
@@ -26,11 +27,15 @@ function {
 prompt_magicmace_status() {
   local symbols=""
 
-  [[ ${RETVAL} -ne 0 ]]          && symbols+="${COLOR_ERROR}${RETVAL}${COLOR_NORMAL}"  # $? for error.
-  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+='b' # 'b' for background.
-  [[ ${RANGER_LEVEL} -ne 0 ]]    && symbols+='r' # 'r' for... you guessed it!
+  (( ${RETVAL} )) && symbols+="${COLOR_ERROR}${RETVAL}${COLOR_NORMAL}" # $? for error.
+  (( $(jobs -l | wc -l) > 0 )) && symbols+='b' # 'b' for background.
+  (( ${RANGER_LEVEL} )) && symbols+='r' # 'r' for... you guessed it!
 
   [[ -n ${symbols} ]] && print -n "─${COLOR_NORMAL}${symbols}${COLOR_USER_LEVEL}─"
+}
+
+prompt_magicmace_git() {
+  [[ -n ${git_info} ]] && print -n "${(e)git_info[prompt]}"
 }
 
 prompt_magicmace_precmd() {
@@ -41,9 +46,7 @@ prompt_magicmace_precmd() {
   # We could also just set $? as an argument, and thus get our nifty local variable,
   # but that's stretching it, and makes the code harder to read.
   RETVAL=$?
-  if [[ ${+functions[git-info]} ]]; then
-    git-info
-  fi
+  (( ${+functions[git-info]} )) && git-info
 }
 
 prompt_magicmace_setup() {
@@ -63,7 +66,7 @@ prompt_magicmace_setup() {
     'prompt' '─[${COLOR_NORMAL}%b%c%D%A%B${COLOR_USER_LEVEL}]'
 
   # Call git directly, ignoring aliases under the same name.
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]${(e)git_info[prompt]}── ─%f '
+  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]$(prompt_magicmace_git)── ─%f '
   RPROMPT=''
 }
 
