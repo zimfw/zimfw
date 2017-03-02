@@ -42,19 +42,26 @@ prompt_eriner_end() {
 # Each component will draw itself, or hide itself if no information needs to be
 # shown.
 
-# Status: Was there an error? Am I root? Are there background jobs? Ranger
-# spawned shell? Who and where am I (user@hostname)?
+# Status: Was there an error? Am I root? Are there background jobs? Who and
+# where am I (user@hostname)?
 prompt_eriner_status() {
   local segment=''
   (( ${RETVAL} )) && segment+=' %F{red}✘'
   (( ${UID} == 0 )) && segment+=' %F{yellow}⚡'
   (( $(jobs -l | wc -l) > 0 )) && segment+=' %F{cyan}⚙'
-  (( ${RANGER_LEVEL} )) && segment+=' %F{cyan}r'
   if [[ ${USER} != ${DEFAULT_USER} || -n ${SSH_CLIENT} ]]; then
      segment+=' %F{%(!.yellow.default)}${USER}@%m'
   fi
   if [[ -n ${segment} ]]; then
     prompt_eriner_segment black "${segment} "
+  fi
+}
+
+# Ranger: <https://github.com/ranger/ranger>, which can spawn a shell under its
+# own process.
+prompt_eriner_ranger() {
+  if (( ${RANGER_LEVEL} )); then
+    prompt_eriner_segment blue ' %F{black}r '
   fi
 }
 
@@ -76,6 +83,7 @@ prompt_eriner_git() {
 prompt_eriner_main() {
   RETVAL=$?
   prompt_eriner_status
+  prompt_eriner_ranger
   prompt_eriner_pwd
   prompt_eriner_git
   prompt_eriner_end
