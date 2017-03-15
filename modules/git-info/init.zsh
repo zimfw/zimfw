@@ -5,7 +5,7 @@
 
 # Gets the Git special action (am, bisect, cherry, merge, rebase).
 # Borrowed from vcs_info and edited.
-function _git-action {
+_git-action() {
   local git_dir=$(git-dir)
   local action_dir
   for action_dir in \
@@ -87,7 +87,7 @@ function _git-action {
 }
 
 # Gets the Git status information.
-function git-info {
+git-info() {
   # Extended globbing is needed to parse repository status.
   setopt LOCAL_OPTIONS EXTENDED_GLOB
 
@@ -148,6 +148,7 @@ function git-info {
   local behind_formatted
   local branch_formatted
   local commit_formatted
+  local diverged_formatted
   local position_formatted
   local remote_formatted
   if [[ -n ${branch} ]]; then
@@ -172,25 +173,31 @@ function git-info {
 
     local ahead_format
     local behind_format
+    local diverged_format
     zstyle -s ':zim:git-info:ahead' format 'ahead_format'
     zstyle -s ':zim:git-info:behind' format 'behind_format'
-    if [[ -n ${ahead_format} || -n ${behind_format} ]]; then
+    zstyle -s ':zim:git-info:diverged' format 'diverged_format'
+    if [[ -n ${ahead_format} || -n ${behind_format} || -n ${diverged_format} ]]; then
       # Gets the commit difference counts between local and remote.
       local ahead_and_behind_cmd='git rev-list --count --left-right HEAD...@{upstream}'
 
       # Get ahead and behind counts.
       local ahead_and_behind=$(${(z)ahead_and_behind_cmd} 2>/dev/null)
+      local ahead=${ahead_and_behind[(w)1]}
+      local behind=${ahead_and_behind[(w)2]}
 
-      # Format ahead.
-      if [[ -n ${ahead_format} ]]; then
-        local ahead=${ahead_and_behind[(w)1]}
-        (( ahead )) && zformat -f ahead_formatted ${ahead_format} "A:${ahead}"
-      fi
-
-      # Format behind.
-      if [[ -n ${behind_format} ]]; then
-        local behind=${ahead_and_behind[(w)2]}
-        (( behind )) && zformat -f behind_formatted ${behind_format} "B:${behind}"
+      if [[ -n ${diverged_format} && ${ahead} -gt 0 && ${behind} -gt 0 ]]; then
+        # Format diverged.
+        diverged_formatted=${diverged_format}
+      else
+        # Format ahead.
+        if [[ -n ${ahead_format} && ${ahead} -gt 0 ]]; then
+          zformat -f ahead_formatted ${ahead_format} "A:${ahead}"
+        fi
+        # Format behind.
+        if [[ -n ${behind_format} && ${behind} -gt 0 ]]; then
+          zformat -f behind_formatted ${behind_format} "B:${behind}"
+        fi
       fi
     fi
   else
@@ -328,7 +335,8 @@ function git-info {
       "R:${remote_formatted}" \
       "s:${action_formatted}" \
       "S:${stashed_formatted}" \
-      "u:${untracked_formatted}"
+      "u:${untracked_formatted}" \
+      "V:${diverged_formatted}"
     git_info[${info_format}]=${reply}
   done
 
