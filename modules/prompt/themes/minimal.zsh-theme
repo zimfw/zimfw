@@ -2,97 +2,87 @@
 # Minimal theme
 # https://github.com/S1cK94/minimal
 #
+# Requires the `git-info` zmodule to be included in the .zimrc file.
 
-minimal_user() {
-  print "%(!.$on_color.$off_color)$prompt_char%f"
+# Global variables
+function {
+  PROMPT_CHAR='❯'
+
+  ON_COLOR='%F{green}'
+  OFF_COLOR='%f'
+  ERR_COLOR='%F{red}'
 }
 
-minimal_jobs() {
-  print "%(1j.$on_color.$off_color)$prompt_char%f"
+prompt_minimal_user() {
+  print -n '%(!.${ON_COLOR}.${OFF_COLOR})${PROMPT_CHAR}'
 }
 
-minimal_vimode(){
-  local ret=""
+prompt_minimal_jobs() {
+  print -n '%(1j.${ON_COLOR}.${OFF_COLOR})${PROMPT_CHAR}'
+}
 
-  case $KEYMAP in
+prompt_minimal_vimode() {
+  local color
+
+  case ${KEYMAP} in
     main|viins)
-      ret+="$on_color"
+      color=${ON_COLOR}
       ;;
-    vicmd)
-      ret+="$off_color"
+    *)
+      color=${OFF_COLOR}
       ;;
   esac
 
-  ret+="$prompt_char%f"
-
-  print "$ret"
+  print -n "${color}${PROMPT_CHAR}"
 }
 
-minimal_status() {
-  print "%(0?.$on_color.$err_color)$prompt_char%f"
+prompt_minimal_status() {
+  print -n '%(0?.${ON_COLOR}.${ERR_COLOR})${PROMPT_CHAR}'
 }
 
-minimal_path() {
-  local path_color="%F{244}"
-  local rsc="%f"
-  local sep="$rsc/$path_color"
-
-  print "$path_color$(sed s_/_${sep}_g <<< $(short_pwd))$rsc"
+prompt_minimal_path() {
+  local path_color='%F{244}'
+  print -n "${path_color}${$(short_pwd)//\//%f\/${path_color}}%f"
 }
 
-git_branch_name() {
-  local branch_name="$(command git rev-parse --abbrev-ref HEAD 2> /dev/null)"
-  [[ -n $branch_name ]] && print "$branch_name"
-}
-
-git_repo_status(){
-  local rs="$(command git status --porcelain -b)"
-
-  if $(print "$rs" | grep -v '^##' &> /dev/null); then # is dirty
-    print "%F{red}"
-  elif $(print "$rs" | grep '^## .*diverged' &> /dev/null); then # has diverged
-    print "%F{red}"
-  elif $(print "$rs" | grep '^## .*behind' &> /dev/null); then # is behind
-    print "%F{11}"
-  elif $(print "$rs" | grep '^## .*ahead' &> /dev/null); then # is ahead
-    print "%f"
-  else # is clean
-    print "%F{green}"
+prompt_minimal_git() {
+  if [[ -n ${git_info} ]]; then
+    print -n " ${(e)git_info[color]}${(e)git_info[prompt]}"
   fi
 }
 
-minimal_git() {
-  local bname=$(git_branch_name)
-  if [[ -n ${bname} ]]; then
-    local infos="$(git_repo_status)${bname}%f"
-    print " $infos"
-  fi
-}
-
-function zle-line-init zle-line-finish zle-keymap-select {
+function zle-line-init zle-keymap-select {
   zle reset-prompt
   zle -R
 }
 
 prompt_minimal_precmd() {
-  zle -N zle-line-init
-  zle -N zle-keymap-select
-  zle -N zle-line-finish
-
-  PROMPT='$(minimal_user)$(minimal_jobs)$(minimal_vimode)$(minimal_status) '
-  RPROMPT='$(minimal_path)$(minimal_git)'
+  (( ${+functions[git-info]} )) && git-info
 }
 
 prompt_minimal_setup() {
-  prompt_char="❯"
-  on_color="%F{green}"
-  off_color="%f"
-  err_color="%F{red}"
+  zle -N zle-line-init
+  zle -N zle-keymap-select
 
+  autoload -Uz colors && colors
   autoload -Uz add-zsh-hook
 
+  prompt_opts=(cr percent subst)
+
   add-zsh-hook precmd prompt_minimal_precmd
-  prompt_opts=(cr subst percent)
+
+  zstyle ':zim:git-info:branch' format '%b'
+  zstyle ':zim:git-info:commit' format '%c'
+  zstyle ':zim:git-info:dirty' format '${ERR_COLOR}'
+  zstyle ':zim:git-info:diverged' format '${ERR_COLOR}'
+  zstyle ':zim:git-info:behind' format '%F{11}'
+  zstyle ':zim:git-info:ahead' format '${OFF_COLOR}'
+  zstyle ':zim:git-info:keys' format \
+    'prompt' '%b%c' \
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "${ON_COLOR}")'
+
+  PROMPT="$(prompt_minimal_user)$(prompt_minimal_jobs)\$(prompt_minimal_vimode)$(prompt_minimal_status)%f "
+  RPROMPT='$(prompt_minimal_path)$(prompt_minimal_git)'
 }
 
 prompt_minimal_setup "$@"
