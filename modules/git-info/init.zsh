@@ -100,22 +100,6 @@ git-info() {
     return 1
   fi
 
-  if (( $# )); then
-    if [[ $1 == [Oo][Nn] ]]; then
-      git config --bool prompt.showinfo true
-    elif [[ $1 == [Oo][Ff][Ff] ]]; then
-      git config --bool prompt.showinfo false
-    else
-      print "usage: $0 [ on | off ]" >&2
-    fi
-    return 0
-  fi
-
-  # Return if git-info is disabled.
-  if ! is-true ${$(git config --bool prompt.showinfo):-true}; then
-    return 1
-  fi
-
   # Ignore submodule status.
   local ignore_submodules
   zstyle -s ':zim:git-info' ignore-submodules 'ignore_submodules' || ignore_submodules='all'
