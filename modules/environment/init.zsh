@@ -51,7 +51,7 @@ fi
 # more work probably needs to be done here to support multiplexers
 if (($+ztermtitle)); then
   case ${TERM} in
-    xterm*)
+    xterm*|*rxvt)
       precmd() { print -Pn "\e]0;${ztermtitle}\a" }
       precmd  # we execute it once to initialize the window title
       ;;
