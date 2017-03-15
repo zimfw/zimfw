@@ -48,16 +48,22 @@ a style is:
 | action    |   %s   | Special action name (see Special Action Contexts below)
 | ahead     |   %A   | Commits ahead of remote count
 | behind    |   %B   | Commits behind of remote count
+| diverged  |   %V   | Diverged commits (both ahead and behind are yield when it's not defined)
 | branch    |   %b   | Branch name
 | commit    |   %c   | Commit short hash (when in 'detached HEAD' state)
 | clean     |   %C   | Clean state
-| dirty     |   %D   | Dirty state (count with untracked files if verbose enabled)
-| indexed   |   %i   | Indexed files (count if verbose enabled)
-| unindexed |   %I   | Unindexed files (count if verbose enabled)
+| dirty     |   %D   | Dirty state (count with untracked files when verbose mode enabled)
+| indexed   |   %i   | Indexed files (count when verbose mode enabled)
+| unindexed |   %I   | Unindexed files (count when verbose mode enabled)
 | position  |   %p   | Commits from nearest tag count (when in 'detached HEAD' state)
 | remote    |   %R   | Remote name
 | stashed   |   %S   | Stashed states count
-| untracked |   %u   | Untracked files count (only if verbose enabled)
+| untracked |   %u   | Untracked files count (only when verbose mode enabled)
+
+While `commit` and `position` are only available when in ['detached HEAD'
+state](http://gitfaq.org/articles/what-is-a-detached-head.html), on the other
+hand, `ahead`, `behind`, `diverged`, `branch` and `remote` are only available
+when an actual branch is checked out (so when **not** in 'detached HEAD' state).
 
 ### Special Action Contexts
 
