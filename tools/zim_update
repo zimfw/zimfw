@@ -11,4 +11,4 @@ git merge --ff-only @\{u\}
 git submodule update --init --recursive
 
 # return to previous directory after update
-cd ~-
+cd $OLDPWD
