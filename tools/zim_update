@@ -9,3 +9,6 @@ git remote update -p
 git merge --ff-only @\{u\}
 # and update the submodules
 git submodule update --init --recursive
+
+# return to previous directory after update
+cd ~-
