@@ -258,15 +258,11 @@ git-info() {
     local untracked
     # Get current status.
     while IFS=$'\n' read line; do
-      # T (type change) is undocumented, see http://git.io/FnpMGw.
-      if [[ ${line} == \?\?\ * ]]; then
+      if [[ ${line:0:2} == '??' ]]; then
         (( untracked++ ))
-      elif [[ ${line} == \ [DMT]\ * ]]; then
-        (( unindexed++ ))
-      elif [[ ${line} == [ACDMRT]\ \ * ]]; then
-        (( indexed++ ))
-      elif [[ ${line} == ([ACMRT][DMT]|D[MT])\ * ]]; then
-        (( indexed++, unindexed++ ))
+      else
+        [[ ${line:0:1} != ' ' ]] && (( indexed++ ))
+        [[ ${line:1:1} != ' ' ]] && (( unindexed++ ))
       fi
       (( dirty++ ))
     done < <(${(z)status_cmd} 2>/dev/null)

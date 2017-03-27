@@ -100,5 +100,5 @@ Second, format how the above attributes are displayed in prompts:
       'rprompt' '[%R]'
 
 Last, add `$git_info[prompt]` to `$PROMPT` and `$git_info[rprompt]` to
-`$RPROMPT` respectively and call `git-info` in the `prompt_name_preexec` hook
+`$RPROMPT` respectively and call `git-info` in the `prompt_name_precmd` hook
 function.
