@@ -1,102 +1,64 @@
 # prompt style and colors based on Steve Losh's Prose theme:
 # http://github.com/sjl/oh-my-zsh/blob/master/themes/prose.zsh-theme
 #
-# vcs_info modifications from Bart Trojanowski's zsh prompt:
-# http://www.jukie.net/bart/blog/pimping-out-zsh-prompt
-#
-# git untracked files modification from Brian Carper:
-# http://briancarper.net/blog/570/git-info-in-your-zsh-prompt
+# Requires the `git-info` zmodule to be included in the .zimrc file.
 
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-
-virtualenv_info() {
-  [ ${VIRTUAL_ENV} ] && print '('${fg[blue]}${VIRTUAL_ENV:t}%{${reset_color}%}') '
+prompt_steeef_git() {
+  [[ -n ${git_info} ]] && print -n " ${(e)git_info[prompt]}"
 }
 
-steeef_preexec() {
-  case "$(history $HISTCMD)" in
-    *git*)PR_GIT_UPDATE=1
-          ;;
-    *svn*)PR_GIT_UPDATE=1
-          ;;
-  esac
-}
-
-steeef_chpwd() {
-  PR_GIT_UPDATE=1
+prompt_steeef_virtualenv() {
+  [[ -n ${VIRTUAL_ENV} ]] && print -n " (%F{blue}${VIRTUAL_ENV:t}%f)"
 }
 
 prompt_steeef_precmd() {
-  if [[ -n "$PR_GIT_UPDATE" ]] ; then
-    # check for untracked files or updated submodules, since vcs_info doesn't
-    if git ls-files --other --exclude-standard 2> /dev/null | grep -q "."; then
-      PR_GIT_UPDATE=1
-      FMT_BRANCH="(%{$turquoise%}%b%u%c%{$hotpink%}●${PR_RST})"
-    else
-      FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
-    fi
-    zstyle ':vcs_info:*:prompt:*' formats "${FMT_BRANCH} "
-
-    vcs_info 'prompt'
-  fi
-
-  PROMPT='
-%{$purple%}%n${${reset_color}%} at %{$orange%}%m${${reset_color}%} in %{$limegreen%}%~${${reset_color}%} $vcs_info_msg_0_$(virtualenv_info)%{${reset_color}%}
-%(!.#.$) '
+  (( ${+functions[git-info]} )) && git-info
 }
 
 prompt_steeef_setup() {
-  #use extended color pallete if available
-  if [[ ${TERM} == *256* || ${TERM} == *rxvt* ]]; then
-    turquoise="%F{81}"
-    orange="%F{166}"
-    purple="%F{135}"
-    hotpink="%F{161}"
-    limegreen="%F{118}"
+  [[ -n ${VIRTUAL_ENV} ]] && export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+  local purple
+  local orange
+  local limegreen
+  local turquoise
+  local hotpink
+  # use extended color palette if available
+  if [[ -n ${terminfo[colors]} && ${terminfo[colors]} -ge 256 ]]; then
+    purple='%F{135}'
+    orange='%F{166}'
+    limegreen='%F{118}'
+    turquoise='%F{81}'
+    hotpink='%F{161}'
   else
-    turquoise="%F{cyan}"
-    orange="%F{yellow}"
-    purple="%F{magenta}"
-    hotpink="%F{red}"
-    limegreen="%F{green}"
+    purple='%F{magenta}'
+    orange='%F{yellow}'
+    limegreen='%F{green}'
+    turquoise='%F{cyan}'
+    hotpink='%F{red}'
   fi
 
-  # enable VCS systems you use
-  zstyle ':vcs_info:*' enable git svn
-
-  # check-for-changes can be really slow.
-  # you should disable it, if you work with large repositories
-  zstyle ':vcs_info:*:prompt:*' check-for-changes true
-
-  # set formats
-  # %b - branchname
-  # %u - unstagedstr (see below)
-  # %c - stagedstr (see below)
-  # %a - action (e.g. rebase-i)
-  # %R - repository path
-  # %S - path in the repository
-  PR_RST="%f"
-  FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
-  FMT_ACTION="(%{$limegreen%}%a${PR_RST})"
-  FMT_UNSTAGED="%{$orange%}●"
-  FMT_STAGED="%{$limegreen%}●"
-
-  zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
-  zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
-  zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
-  zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
-  zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
-
-  PR_GIT_UPDATE=1
-
   autoload -Uz add-zsh-hook
-  autoload -Uz vcs_info
   autoload -Uz colors && colors
 
-  add-zsh-hook preexec steeef_preexec
-  add-zsh-hook chpwd steeef_chpwd
+  prompt_opts=(cr percent subst)
+
   add-zsh-hook precmd prompt_steeef_precmd
-  prompt_opts=(cr subst percent)
+
+  zstyle ':zim:git-info' verbose 'yes'
+  zstyle ':zim:git-info:branch' format '%b'
+  zstyle ':zim:git-info:commit' format '%c'
+  zstyle ':zim:git-info:action' format "(${limegreen}%s%f)"
+  zstyle ':zim:git-info:unindexed' format "${orange}●"
+  zstyle ':zim:git-info:indexed' format "${limegreen}●"
+  zstyle ':zim:git-info:untracked' format "${hotpink}●"
+  zstyle ':zim:git-info:keys' format \
+    'prompt' "(${turquoise}%b%c%I%i%u%f)%s"
+
+  PROMPT="
+${purple}%n%f at ${orange}%m%f in ${limegreen}%~%f\$(prompt_steeef_git)\$(prompt_steeef_virtualenv)
+%(!.#.$) "
+  RPROMPT=''
 }
 
 prompt_steeef_setup "$@"
