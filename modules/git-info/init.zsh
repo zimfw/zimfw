@@ -125,8 +125,16 @@ git-info() {
     fi
   fi
 
+  # The contents of git_info are subject to expansion by the shell. Avoid
+  # putting raw ref names in the prompt to protect the user from arbitrary code
+  # execution via specially crafted ref names (e.g., a ref named
+  # '$(IFS=_;cmd=sudo_rm_-rf_/;$cmd)' would execute 'sudo rm -rf /' when the
+  # prompt is drawn). Instead, put the ref names in new global variables and
+  # reference these variables from git_info.
+  # See https://github.com/njhartwell/pw3nage
+
   # Get the branch.
-  local branch=$(git symbolic-ref -q --short HEAD 2>/dev/null)
+  __GIT_INFO_BRANCH=$(git symbolic-ref -q --short HEAD 2>/dev/null)
 
   local ahead_formatted
   local behind_formatted
@@ -135,12 +143,14 @@ git-info() {
   local diverged_formatted
   local position_formatted
   local remote_formatted
-  if [[ -n ${branch} ]]; then
+  if [[ -n ${__GIT_INFO_BRANCH} ]]; then
+    unset __GIT_INFO_POSITION
+
     # Format branch.
     local branch_format
     zstyle -s ':zim:git-info:branch' format 'branch_format'
     if [[ -n ${branch_format} ]]; then
-      zformat -f branch_formatted ${branch_format} "b:${branch}"
+      zformat -f branch_formatted ${branch_format} 'b:${__GIT_INFO_BRANCH}'
     fi
 
     # Format remote.
@@ -149,9 +159,11 @@ git-info() {
     if [[ -n ${remote_format} ]]; then
       # Gets the remote name.
       local remote_cmd='git rev-parse --symbolic-full-name --verify HEAD@{upstream}'
-      local remote=${$(${(z)remote_cmd} 2>/dev/null)##refs/remotes/}
-      if [[ -n ${remote} ]]; then
-        zformat -f remote_formatted ${remote_format} "R:${remote}"
+      __GIT_INFO_REMOTE=${$(${(z)remote_cmd} 2>/dev/null)##refs/remotes/}
+      if [[ -n ${__GIT_INFO_REMOTE} ]]; then
+        zformat -f remote_formatted ${remote_format} 'R:${__GIT_INFO_REMOTE}'
+      else
+        unset __GIT_INFO_REMOTE
       fi
     fi
 
@@ -185,6 +197,9 @@ git-info() {
       fi
     fi
   else
+    unset __GIT_INFO_BRANCH
+    unset __GIT_INFO_REMOTE
+
     # Format commit.
     local commit_format
     zstyle -s ':zim:git-info:commit' format 'commit_format'
@@ -199,9 +214,9 @@ git-info() {
     local position_format
     zstyle -s ':zim:git-info:position' format 'position_format'
     if [[ -n ${position_format} ]]; then
-      local position=$(git describe --contains --all HEAD 2>/dev/null)
-      if [[ -n ${position} ]]; then
-        zformat -f position_formatted ${position_format} "p:${position}"
+      __GIT_INFO_POSITION=$(git describe --contains --all HEAD 2>/dev/null)
+      if [[ -n ${__GIT_INFO_POSITION} ]]; then
+        zformat -f position_formatted ${position_format} 'p:${__GIT_INFO_POSITION}'
       fi
     fi
   fi
