@@ -96,7 +96,7 @@ git-info() {
   typeset -gA git_info
 
   # Return if not inside a Git repository work tree.
-  if ! is-true $(git rev-parse --is-inside-work-tree 2>/dev/null); then
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     return 1
   fi
 
@@ -230,9 +230,7 @@ git-info() {
   zstyle -s ':zim:git-info:clean' format 'clean_format'
 
   local dirty
-  local indexed
   local indexed_formatted
-  local unindexed
   local unindexed_formatted
   local untracked_formatted
   if ! zstyle -t ':zim:git-info' verbose; then
@@ -240,11 +238,9 @@ git-info() {
     local unindexed_format
     zstyle -s ':zim:git-info:unindexed' format 'unindexed_format'
     if [[ -n ${unindexed_format} || -n ${dirty_format} || -n ${clean_format} ]]; then
-      (git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} 2>/dev/null)
-      unindexed=$?
-      if (( unindexed )); then
+      if ! git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} >/dev/null 2>&1; then
         unindexed_formatted=${unindexed_format}
-        dirty=${unindexed}
+        dirty=1
       fi
     fi
 
@@ -252,11 +248,9 @@ git-info() {
     local indexed_format
     zstyle -s ':zim:git-info:indexed' format 'indexed_format'
     if [[ -n ${indexed_format} || (${dirty} -eq 0 && (-n ${dirty_format} || -n ${clean_format})) ]]; then
-      (git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD 2>/dev/null)
-      indexed=$?
-      if (( indexed )); then
+      if ! git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD >/dev/null 2>&1; then
         indexed_formatted=${indexed_format}
-        dirty=${indexed}
+        dirty=1
       fi
     fi
 
@@ -270,6 +264,8 @@ git-info() {
     # Use porcelain status for easy parsing.
     local status_cmd="git status --porcelain --ignore-submodules=${ignore_submodules}"
 
+    local indexed
+    local unindexed
     local untracked
     # Get current status.
     while IFS=$'\n' read line; do
