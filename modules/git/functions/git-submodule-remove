@@ -1,4 +1,4 @@
-if ! is-true "$(command git rev-parse --is-inside-work-tree 2> /dev/null)"; then
+if ! command git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   print "${0}: not a repository work tree: ${PWD}" >&2
   return 1
 elif [[ "${PWD}" != "$(git-root)" ]]; then
