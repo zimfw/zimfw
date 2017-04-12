@@ -6,7 +6,7 @@
 # Gets the Git special action (am, bisect, cherry, merge, rebase).
 # Borrowed from vcs_info and edited.
 _git-action() {
-  local git_dir=$(git-dir)
+  local git_dir=${$(command git rev-parse --git-dir):A}
   local action_dir
   for action_dir in \
     "${git_dir}/rebase-apply" \
@@ -96,7 +96,7 @@ git-info() {
   typeset -gA git_info
 
   # Return if not inside a Git repository work tree.
-  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if ! command git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     return 1
   fi
 
@@ -108,9 +108,9 @@ git-info() {
   local stashed_format
   local stashed_formatted
   zstyle -s ':zim:git-info:stashed' format 'stashed_format'
-  if [[ -n ${stashed_format} && -f "$(git-dir)/refs/stash" ]]; then
+  if [[ -n ${stashed_format} ]]; then
     local stashed
-    (( stashed=$(git stash list 2>/dev/null | wc -l) ))
+    (( stashed=$(command git stash list 2>/dev/null | wc -l) ))
     (( stashed )) && zformat -f stashed_formatted ${stashed_format} "S:${stashed}"
   fi
 
@@ -134,7 +134,7 @@ git-info() {
   # See https://github.com/njhartwell/pw3nage
 
   # Get the branch.
-  __GIT_INFO_BRANCH=$(git symbolic-ref -q --short HEAD 2>/dev/null)
+  __GIT_INFO_BRANCH=$(command git symbolic-ref -q --short HEAD 2>/dev/null)
 
   local ahead_formatted
   local behind_formatted
@@ -158,7 +158,7 @@ git-info() {
     zstyle -s ':zim:git-info:remote' format 'remote_format'
     if [[ -n ${remote_format} ]]; then
       # Gets the remote name.
-      local remote_cmd='git rev-parse --symbolic-full-name --verify HEAD@{upstream}'
+      local remote_cmd='command git rev-parse --symbolic-full-name --verify HEAD@{upstream}'
       __GIT_INFO_REMOTE=${$(${(z)remote_cmd} 2>/dev/null)##refs/remotes/}
       if [[ -n ${__GIT_INFO_REMOTE} ]]; then
         zformat -f remote_formatted ${remote_format} 'R:${__GIT_INFO_REMOTE}'
@@ -175,7 +175,7 @@ git-info() {
     zstyle -s ':zim:git-info:diverged' format 'diverged_format'
     if [[ -n ${ahead_format} || -n ${behind_format} || -n ${diverged_format} ]]; then
       # Gets the commit difference counts between local and remote.
-      local ahead_and_behind_cmd='git rev-list --count --left-right HEAD...@{upstream}'
+      local ahead_and_behind_cmd='command git rev-list --count --left-right HEAD...@{upstream}'
 
       # Get ahead and behind counts.
       local ahead_and_behind=$(${(z)ahead_and_behind_cmd} 2>/dev/null)
@@ -204,7 +204,7 @@ git-info() {
     local commit_format
     zstyle -s ':zim:git-info:commit' format 'commit_format'
     if [[ -n ${commit_format} ]]; then
-      local commit=$(git rev-parse --short HEAD 2>/dev/null)
+      local commit=$(command git rev-parse --short HEAD 2>/dev/null)
       if [[ -n ${commit} ]]; then
         zformat -f commit_formatted ${commit_format} "c:${commit}"
       fi
@@ -214,7 +214,7 @@ git-info() {
     local position_format
     zstyle -s ':zim:git-info:position' format 'position_format'
     if [[ -n ${position_format} ]]; then
-      __GIT_INFO_POSITION=$(git describe --contains --all HEAD 2>/dev/null)
+      __GIT_INFO_POSITION=$(command git describe --contains --all HEAD 2>/dev/null)
       if [[ -n ${__GIT_INFO_POSITION} ]]; then
         zformat -f position_formatted ${position_format} 'p:${__GIT_INFO_POSITION}'
       fi
@@ -238,7 +238,7 @@ git-info() {
     local unindexed_format
     zstyle -s ':zim:git-info:unindexed' format 'unindexed_format'
     if [[ -n ${unindexed_format} || -n ${dirty_format} || -n ${clean_format} ]]; then
-      if ! git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} >/dev/null 2>&1; then
+      if ! command git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} >/dev/null 2>&1; then
         unindexed_formatted=${unindexed_format}
         dirty=1
       fi
@@ -248,7 +248,7 @@ git-info() {
     local indexed_format
     zstyle -s ':zim:git-info:indexed' format 'indexed_format'
     if [[ -n ${indexed_format} || (${dirty} -eq 0 && (-n ${dirty_format} || -n ${clean_format})) ]]; then
-      if ! git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD >/dev/null 2>&1; then
+      if ! command git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD >/dev/null 2>&1; then
         indexed_formatted=${indexed_format}
         dirty=1
       fi
@@ -262,7 +262,7 @@ git-info() {
     fi
   else
     # Use porcelain status for easy parsing.
-    local status_cmd="git status --porcelain --ignore-submodules=${ignore_submodules}"
+    local status_cmd="command git status --porcelain --ignore-submodules=${ignore_submodules}"
 
     local indexed
     local unindexed
