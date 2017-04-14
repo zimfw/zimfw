@@ -1,13 +1,12 @@
 prompt_liquidprompt_setup() {
   autoload -Uz ex-liquidprompt
-
   ext-liquidprompt
-  prompt_opts=(cr subst percent)
 }
 
 prompt_liquidprompt_preview() {
   _lp_set_prompt
   prompt_preview_theme liquidprompt
+  prompt_off
 }
 
 prompt_liquidprompt_setup "$@"
