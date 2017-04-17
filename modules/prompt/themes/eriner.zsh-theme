@@ -68,7 +68,7 @@ prompt_eriner_git() {
   if [[ -n ${git_info} ]]; then
     local indicator
     [[ ${git_info[color]} == yellow ]] && indicator='± '
-    prompt_eriner_segment ${git_info[color]} " %F{black}${(e)git_info[prompt]} ${indicator}"
+    prompt_eriner_segment ${git_info[color]} ' %F{black}${(e)git_info[prompt]} ${indicator}'
   fi
 }
 
