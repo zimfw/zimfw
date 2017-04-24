@@ -120,3 +120,20 @@ fi
 mkcd() {
   [[ -n ${1} ]] && mkdir -p ${1} && builtin cd ${1}
 }
+
+# Inserts 'doas ' or 'sudo ' at the beginning of a line.
+function prepend-sudoas {
+  if [[ "$BUFFER" != (doas|su(do|))\ * ]]; then
+    if [[ $OSTYPE == openbsd* ]]; then
+      BUFFER="doas $BUFFER"
+    else
+      BUFFER="sudo $BUFFER"
+    fi
+    (( CURSOR += 5 ))
+  fi
+}
+zle -N prepend-sudoas
+
+# Defined shortcut keys: [Esc] [Esc]
+bindkey "\e!" prepend-sudoas
+
