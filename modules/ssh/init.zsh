@@ -1,6 +1,12 @@
 #
 # sets up ssh-agent
 #
+# The GNOME Keyring daemon will cause issues with ssh-agent
+# Please make sure to disable the GNOME Keyring SSH intergration if you wish to use ssh-agent
+# This can be done with the following commands: 
+#   mkdir ~/.config/autostart
+#   cp /etc/xdg/autostart/gnome-keyring-ssh.desktop ~/.config/autostart/ &&
+#   printf '%s\n' 'Hidden=true' >> ~/.config/autostart/gnome-keyring-ssh.desktop 
 
 # don't do anything unless we can actually use ssh-agent
 if (( ! ${+commands[ssh-agent]} )); then
