@@ -16,3 +16,6 @@
 [submodule "modules/prompt/external-themes/lean"]
 	path = modules/prompt/external-themes/lean
 	url = https://github.com/miekg/lean
+[submodule "modules/autosuggestions/external"]
+	path = modules/autosuggestions/external
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
