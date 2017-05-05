@@ -2,7 +2,7 @@ ZIM - Zsh IMproved
 ==================
 
 <div align="center">
-  <a href="https://github.com/Eriner/zim">
+  <a href="https://github.com/bmenant/zim">
     <img width=650px src="https://i.eriner.me/zim_banner.png">
   </a>
 </div>
@@ -42,7 +42,7 @@ Installing Zim is easy. If you have a different shell framework installed (like 
 
 1. In a Zsh shell, clone the repository:
   ```
-  git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
+  git clone --recursive https://github.com/bmenant/zim.git ${ZDOTDIR:-${HOME}}/.zim
   ```
 
 2. Paste this into your terminal to prepend the initialization templates to your configs:
