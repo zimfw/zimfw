@@ -39,7 +39,7 @@ unsetopt HUP
 unsetopt CHECK_JOBS
 
 # Set less or more as the default pager.
-if [[ -z ${PAGER} ]]; then
+if (( ${+PAGER} )); then
   if (( ${+commands[less]} )); then
     export PAGER=less
   else
