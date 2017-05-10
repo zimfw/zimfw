@@ -179,7 +179,7 @@ git-info() {
 
       # Get ahead and behind counts.
       local ahead_and_behind      
-      ahead_and_behind=$(${(z)ahead_and_behind_cmd} 2>/dev/null)
+      ahead_and_behind=${(z)$(${ahead_and_behind_cmd} 2>/dev/null)}
       local ahead=${ahead_and_behind[(w)1]}
       local behind=${ahead_and_behind[(w)2]}
 
