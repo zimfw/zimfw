@@ -174,9 +174,11 @@ git-info() {
     zstyle -s ':zim:git-info:behind' format 'behind_format'
     zstyle -s ':zim:git-info:diverged' format 'diverged_format'
     if [[ -n ${ahead_format} || -n ${behind_format} || -n ${diverged_format} ]]; then
-      # Get ahead and behind counts from the commit difference counts between local and remote.
-      local ahead_and_behind
-      ahead_and_behind=${(z)$(command git rev-list --count --left-right HEAD...@{upstream} 2>/dev/null)}
+      # Gets the commit difference counts between local and remote.
+      local ahead_and_behind_cmd='command git rev-list --count --left-right HEAD...@{upstream}'
+
+      # Get ahead and behind counts.
+      local ahead_and_behind=$(${(z)ahead_and_behind_cmd} 2>/dev/null)
       local ahead=${ahead_and_behind[(w)1]}
       local behind=${ahead_and_behind[(w)2]}
 
