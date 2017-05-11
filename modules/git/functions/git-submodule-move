@@ -12,7 +12,7 @@ local url
 
 url="$(command git config --file "$(git-root)/.gitmodules" --get "submodule.${src}.url")"
 
-if (( "${+url}" )); then
+if ! (( "${+url}" )); then
   print "${0}: submodule not found: ${src}" >&2
   return 1
 fi
