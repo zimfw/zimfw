@@ -22,8 +22,12 @@ if [[ ! -z ${terminfo[colors]} ]] && (( ${terminfo[colors]} >= 8 )); then
     # BSD
 
     # colours for ls and completion
-    export LSCOLORS='exfxcxdxbxGxDxabagacad'
-    export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
+    if (( ! ${+LSCOLORS} )); then
+      export LSCOLORS='exfxcxdxbxGxDxabagacad'
+    fi
+    if (( ! ${+LS_COLORS} )); then
+      export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
+    fi
 
     # stock OpenBSD ls does not support colors at all, but colorls does.
     if [[ $OSTYPE == openbsd* ]]; then
@@ -36,8 +40,12 @@ if [[ ! -z ${terminfo[colors]} ]] && (( ${terminfo[colors]} >= 8 )); then
   fi
 
   # grep Colours
-  export GREP_COLOR='37;45'             #BSD
-  export GREP_COLORS="mt=${GREP_COLOR}" #GNU
+  if (( ! ${+GREP_COLOR} )); then
+    export GREP_COLOR='37;45'             #BSD
+  fi
+  if (( ! ${+GREP_COLORS} )); then
+    export GREP_COLORS="mt=${GREP_COLOR}" #GNU
+  fi
   if [[ ${OSTYPE} == openbsd* ]]; then
     if (( ${+commands[ggrep]} )); then
       alias grep='ggrep --color=auto'
@@ -48,13 +56,27 @@ if [[ ! -z ${terminfo[colors]} ]] && (( ${terminfo[colors]} >= 8 )); then
 
   # less Colours
   if [[ ${PAGER} == 'less' ]]; then
-    export LESS_TERMCAP_mb=$'\E[1;31m'    # Begins blinking.
-    export LESS_TERMCAP_md=$'\E[1;31m'    # Begins bold.
-    export LESS_TERMCAP_me=$'\E[0m'       # Ends mode.
-    export LESS_TERMCAP_se=$'\E[0m'       # Ends standout-mode.
-    export LESS_TERMCAP_so=$'\E[7m'       # Begins standout-mode.
-    export LESS_TERMCAP_ue=$'\E[0m'       # Ends underline.
-    export LESS_TERMCAP_us=$'\E[1;32m'    # Begins underline.
+    if (( ! ${+LESS_TERMCAP_mb} )); then
+      export LESS_TERMCAP_mb=$'\E[1;31m'    # Begins blinking.
+    fi
+    if (( ! ${+LESS_TERMCAP_md} )); then
+      export LESS_TERMCAP_md=$'\E[1;31m'    # Begins bold.
+    fi
+    if (( ! ${+LESS_TERMCAP_me} )); then
+      export LESS_TERMCAP_me=$'\E[0m'       # Ends mode.
+    fi
+    if (( ! ${+LESS_TERMCAP_se} )); then
+      export LESS_TERMCAP_se=$'\E[0m'       # Ends standout-mode.
+    fi
+    if (( ! ${+LESS_TERMCAP_so} )); then
+      export LESS_TERMCAP_so=$'\E[7m'       # Begins standout-mode.
+    fi
+    if (( ! ${+LESS_TERMCAP_ue} )); then
+      export LESS_TERMCAP_ue=$'\E[0m'       # Ends underline.
+    fi
+    if (( ! ${+LESS_TERMCAP_us} )); then
+      export LESS_TERMCAP_us=$'\E[1;32m'    # Begins underline.
+    fi
   fi
 fi
 
