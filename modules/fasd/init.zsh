@@ -6,7 +6,7 @@ fasd_cd() {
     fasd "$@"
   else
     local _fasd_ret="$(fasd -e 'printf %s' "$@")"
-    (( ! "${+_fasd_ret}" )) && return
+    [ -z "$_fasd_ret" ] && return
     [ -d "$_fasd_ret" ] && cd "$_fasd_ret" || printf %s\n "$_fasd_ret"
   fi
 }
@@ -44,7 +44,7 @@ compctl -U -K _fasd_zsh_cmd_complete -V fasd -x 'C[-1,-*e],s[-]n[1,e]' -c - \
   # zsh word mode completion
   _fasd_zsh_word_complete() {
     [ "$2" ] && local _fasd_cur="$2"
-    (( ! "${+_fasd_cur}" )) && local _fasd_cur="${words[CURRENT]}"
+    [ -z "$_fasd_cur" ] && local _fasd_cur="${words[CURRENT]}"
     local fnd="${_fasd_cur//,/ }"
     local typ=${1:-e}
     fasd --query $typ "$fnd" 2>> "/dev/null" | \

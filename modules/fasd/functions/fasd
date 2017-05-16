@@ -125,7 +125,7 @@ case $1 in
   # add current pwd if the option is set
   [ "$_FASD_TRACK_PWD" = "1" -a "$PWD" != "$HOME" ] && paths="$paths|$PWD"
 
-  (( ! "${+paths##\|}" )) && return # stop if we have nothing to add
+  [ -z "${paths##\|}" ] && return # stop if we have nothing to add
 
   # maintain the file
   local tempfile
@@ -312,12 +312,12 @@ $(fasd --backend $each)"
   while [ "$1" ]; do case $1 in
     --complete) [ "$2" = "--" ] && shift; set -- $2; local lst=1 r=r comp=1;;
     --query|--add|--delete|-A|-D) fasd "$@"; return $?;;
-    --version) (( ! "${+comp}" )) && echo "1.0.1" && return;;
+    --version) [ -z "$comp" ] && echo "1.0.1" && return;;
     --) while [ "$2" ]; do shift; fnd="$fnd $1"; last="$1"; done;;
     -*) local o="${1#-}"; while [ "$o" ]; do case $o in
         s*) local show=1;;
         l*) local lst=1;;
-        i*) (( ! "${+comp}" )) && local interactive=1 show=1;;
+        i*) [ -z "$comp" ] && local interactive=1 show=1;;
         r*) local mode=rank;;
         t*) local mode=recent;;
         e*) o="${o#?}"; if [ "$o" ]; then # there are characters after "-e"
@@ -343,7 +343,7 @@ $(fasd --backend $each)"
         f*) local typ=f;;
         R*) local r=r;;
     [0-9]*) local _fasd_i="$o"; break;;
-        h*) (( ! "${+comp}" )) && echo "fasd [options] [query ...]
+        h*) [ -z "$comp" ] && echo "fasd [options] [query ...]
 [f|a|s|d|z] [options] [query ...]
   options:
     -s         list paths with scores
@@ -376,7 +376,7 @@ fasd [-A|-D] [paths ...]
          fi;;
   esac
 
-  local R; (( ! "${+r}" )) && R=r || R= # let $R be the opposite of $r
+  local R; [ -z "$r" ] && R=r || R= # let $R be the opposite of $r
   fnd="${fnd# }"
 
   local res
@@ -407,7 +407,7 @@ fasd [-A|-D] [paths ...]
   fi
   if [ "$res" ]; then
     fasd --add "$res"
-    (( ! "${+exec}" )) && exec='printf %s\n'
+    [ -z "$exec" ] && exec='printf %s\n'
     $exec "$res"
   fi
   ;;
