@@ -37,35 +37,19 @@ Zim has many modules! Enable as many or as few as you'd like.
 
 Installation
 ------------
-Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
-*uninstall those first to prevent conflicts*. It can be installed manually by following the instructions below:
+Installing Zim is easy. Just run one of these commands:
 
-1. In a Zsh shell, clone the repository:
+#### via curl
   ```
-  git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
-  ```
-
-2. Paste this into your terminal to prepend the initialization templates to your configs:
-  ```
-  setopt EXTENDED_GLOB
-  for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
-    user_file="${ZDOTDIR:-${HOME}}/.${template_file:t}"
-    touch ${user_file}
-    ( print -rn "$(<${template_file})$(<${user_file})" >! ${user_file} ) 2>/dev/null
-  done
+  sh -c "$(curl -fsSL --proto-redir -all,https https://raw.githubusercontent.com/Eriner/zim/master/tools/zim_install)"
   ```
 
-3. Set Zsh as the default shell:
+#### via wget
   ```
-  chsh -s =zsh
-  ```
-
-4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
-  ```
-  source ${ZDOTDIR:-${HOME}}/.zlogin
+  sh -c "$(wget -q --secure-protocol=auto https://raw.githubusercontent.com/Eriner/zim/master/tools/zim_install) -O -)"
   ```
 
-5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
+That's all there is to it. Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
 Updating
 --------
