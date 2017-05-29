@@ -2,131 +2,113 @@ main() {
   # Use colors, but only if connected to a terminal, and that terminal
   # supports them.
   if which tput >/dev/null 2>&1; then
-      ncolors=$(tput colors);
-  fi;
+      ncolors=$(tput colors)
+  fi
   if [ -t 1 ] && [ -n "${ncolors}" ] && [ "${ncolors}" -ge 8 ]; then
-    RED="$(tput setaf 1)";
-    GREEN="$(tput setaf 2)";
-    YELLOW="$(tput setaf 3)";
-    BLUE="$(tput setaf 4)";
-    BOLD="$(tput bold)";
-    NORMAL="$(tput sgr0)";
+    red="$(tput setaf 1)"
+    green="$(tput setaf 2)"
+    yellow="$(tput setaf 3)"
+    blue="$(tput setaf 4)"
+    bold="$(tput bold)"
+    normal="$(tput sgr0)"
   else
-    RED="";
-    GREEN="";
-    YELLOW="";
-    BLUE="";
-    BOLD="";
-    NORMAL="";
-  fi;
+    red=""
+    green=""
+    yellow=""
+    blue=""
+    bold=""
+    normal=""
+  fi
 
   # Only enable exit-on-error after the non-critical colorization stuff,
   # which may fail on systems lacking tput or terminfo
   set -e
 
-  ZSH_INSTALLED=$(grep /zsh$ /etc/shells | wc -l)
-  if [ ! "${ZSH_INSTALLED}" -ge 1 ]; then
-    printf "${RED}Error: zsh is not installed!${BLUE} Please install zsh first!${NORMAL}\n";
-    exit 1;
-  fi;
-  unset ZSH_INSTALLED
-
-  # Set Zim directory
-  if [ ! -n "${ZIM_DIR}" ]; then
-    ZIM_DIR="${ZDOTDIR:-${HOME}}/.zim";
-  fi;
+  # Check if zsh exists
+  if [ ! "$(grep "/zsh$" "/etc/shells" | wc -l)" = 1 ]; then
+    # try installing from Homebrew
+    if [ ! "$(which -s brew)" = 0 ]; then
+      brew install zsh >/dev/null 2>&1
+      printf "${yellow}Installing zsh via Homebrew.. ${normal}\n"
+    else
+    printf "${red}Error: zsh isn't available! ${blue}Please install zsh first!${normal}\n"
+    exit 1
+    fi
+  fi
 
   # Check if Zim is already installed
-  if [ -d "${ZIM_DIR}" ]; then
-    printf "${RED}Error: You already have Zim installed!${NORMAL}\n";
-    exit 1;
-  fi;
+  if [ -e "${ZDOTDIR:-${HOME}}/.zimrc" ]; then
+    printf "${red}Error: You already have Zim installed!${normal}\n";
+    exit 1
+  fi
 
   # Check if other frameworks are installed
   if [ -d "${HOME}/.oh-my-zsh" ]; then
-    mv "${HOME}/.oh-my-zsh" "${HOME}/.oh-my-zsh_zimbackup";
-    printf "${YELLOW}Oh-My-Zsh detected and backed up to \
-    ${HOME}/.oh-my-zsh_zimbackup${NORMAL}\n";
-    printf "${BLUE}This is done to prevent framework conflicts.${NORMAL}\n";
+    mv "${HOME}/.oh-my-zsh" "${HOME}/.oh-my-zsh_zimbackup"
+    printf "${yellow}Oh-My-Zsh detected and backed up to\
+     ${HOME}/.oh-my-zsh_zimbackup${normal}\n"
+    printf "${blue}This is done to prevent framework conflicts.${normal}\n"
   elif [ -d "${HOME}/.zplug" ]; then
-    mv "${HOME}/.zplug" "${HOME}/.zplug_zimbackup";
-    printf "${YELLOW}Zplug detected and backed up to \
-    ${HOME}/.zplug_zimbackup${NORMAL}\n";
-    printf "${BLUE}This is done to prevent framework conflicts.${NORMAL}\n";
+    mv "${HOME}/.zplug" "${HOME}/.zplug_zimbackup"
+    printf "${yellow}Zplug detected and backed up to\
+     ${HOME}/.zplug_zimbackup${normal}\n"
+    printf "${blue}This is done to prevent framework conflicts.${normal}\n"
   elif [ -d "${HOME}/.zprezto" ]; then
-    mv "${HOME}/.zprezto" "${HOME}/.zprezto_zimbackup";
-    printf "${YELLOW}Prezto detected and backed up to \
-    ${HOME}/.zprezto_zimbackup${NORMAL}\n";
-    printf "${BLUE}This is done to prevent framework conflicts.${NORMAL}\n";
+    mv "${HOME}/.zprezto" "${HOME}/.zprezto_zimbackup"
+    printf "${yellow}Prezto detected and backed up to\
+     ${HOME}/.zprezto_zimbackup${normal}\n"
+    printf "${blue}This is done to prevent framework conflicts.${normal}\n"
   else
     : # Do nothing
-  fi;
+  fi
 
   # Prevent the cloned repository from having insecure permissions.
   umask g-w,o-w
 
-  # Check if git is installed
-  hash git >/dev/null 2>&1 || {
-    printf "${RED}Error: git is not installed!${NORMAL}\n";
-    exit 1;
-  }
-
   # The Windows (MSYS) Git is not compatible with normal use on cygwin
-  if [ "${OSTYPE}" = cygwin ]; then
-    if git --version | grep msysgit > /dev/null; then
-      printf "${RED}Error: Windows/MSYS Git is not supported on Cygwin${NORMAL}\n";
-      printf "${RED}Error: Make sure the Cygwin git package is installed and is first on the path${NORMAL}\n";
-      exit 1;
-    fi;
-  fi;
-
-  ZIM_REPO="https://github.com/Eriner/zim.git"
-  # Clone the repo, including submodules. `-j8` allows parallel downloading
-  env git clone --recursive -j8 "${ZIM_REPO}" "${ZIM_DIR}" &> /dev/null || {
-    printf "${RED}Error: git clone of Zim repo failed${NORMAL}\n";
-    exit 1;
-  }
-  unset ZIM_REPO
-
-  unset ZIM_DIR
+  if [ "${OSTYPE}" = "cygwin" ]; then
+    if git --version | grep msysgit >/dev/null; then
+      printf "${red}Error: Windows/MSYS Git is not supported on Cygwin${normal}\n"
+      printf "${red}Error: Make sure the Cygwin git package is installed and is first on the path${normal}\n"
+      exit 1
+    fi
+  fi
 
   # Back-up old zsh dotfiles
   if [ -f "${HOME}/.zshrc" ] || [ -L "${HOME}/.zshrc" ]; then
-    printf "${YELLOW}Found ${HOME}/.zshrc!${NORMAL} ${BLUE}Backing up to ${HOME}/.zshrc_zimbackup.${NORMAL}\n";
-    mv "${HOME}/.zshrc" "${HOME}/.zshrc_zimbackup";
-  fi;
+    printf "${yellow}Found ${HOME}/.zshrc! ${blue}Backing up to ${HOME}/.zshrc_zimbackup.${normal}\n"
+    mv "${HOME}/.zshrc" "${HOME}/.zshrc_zimbackup"
+  fi
   if [ -f "${HOME}/.zlogin" ] || [ -L "${HOME}/.zlogin" ]; then
-    printf "${YELLOW}Found ${HOME}/.zlogin!${NORMAL} ${BLUE}Backing up to ${HOME}/.zlogin_zimbackup${NORMAL}\n";
-    mv "${HOME}/.zlogin" "${HOME}/.zlogin_zimbackup";
-  fi;
+    printf "${yellow}Found ${HOME}/.zlogin!$ ${blue}Backing up to ${HOME}/.zlogin_zimbackup${normal}\n"
+    mv "${HOME}/.zlogin" "${HOME}/.zlogin_zimbackup"
+  fi
 
-  # Place template files in ${HOME}
+  # Place template files in ~/
   cp -a "${HOME}/.zim/templates/" "${HOME}/"
 
-  # If this user's login shell is not already "zsh", attempt to switch.
-  CURRENT_SHELL=$(expr "${SHELL}" : '.*/\(.*\)')
-  if [ "${CURRENT_SHELL}" != "zsh" ]; then
+  # If this user's login shell is not already "zsh", attempt to switch
+  if [ ! "$(expr "${SHELL}" : '.*/\(.*\)')" = "zsh" ]; then
     # Auto-change shell if platform provides "chsh" command
     if hash chsh >/dev/null 2>&1; then
-      printf "${BLUE}Changing your default shell to zsh!${NORMAL}\n";
-      chsh -s $(grep /zsh$ /etc/shells | tail -1);
+      printf "${blue}Changing your default shell to zsh!${normal}\n"
+      chsh -s $(grep "/zsh$" "/etc/shells" | tail -1)
     # If not, suggest user do so manually.
     else
-      printf "${YELLOW}I can't change your shell automatically because this system does not have chsh.${NORMAL}\n";
-      printf "${YELLOW}Please manually change your default shell to zsh!${NORMAL}\n";
-    fi;
-  fi;
-  unset CURRENT_SHELL
+      printf "${yellow}I can't change your shell automatically because this system does not have chsh.${normal}\n"
+      printf "${yellow}Please manually change your default shell to zsh!${normal}\n"
+    fi
+  fi
 
-  Z="${RED}Z${GREEN}"
-  printf "${GREEN}   ______    _       _____ __  __                              _               ${NORMAL}\n"
-  printf "${GREEN}  |$Z$Z$Z$Z$Z/   | |     |$Z$Z$Z$Z$Z|$Z$Z\/$Z$Z|                            | |${NORMAL}\n"
-  printf "${GREEN}     /$Z/ ___| |__     |$Z| |$Z\\$Z$Z/$Z|_ __  _ __ _____   _____  __| |       ${NORMAL}\n"
-  printf "${GREEN}    /$Z/ / __| '_ \    |$Z| |$Z|\/|$Z| '_ \| '__/ _ \ \ / / _ \/ _\` |          ${NORMAL}\n"
-  printf "${GREEN}   /$Z/__\__ | | | |  _|$Z|_|$Z|  |$Z| |_) | | | (_) \ V |  __| (_| |          ${NORMAL}\n"
-  printf "${GREEN}  /$Z$Z$Z$Z$Z|___|_| |_| |$Z$Z$Z$Z$Z|$Z|  |$Z| .__/|_|  \___/ \_/ \___|\__,_|  ${NORMAL}\n"
-  printf "${GREEN}                                 | |                                           ${NORMAL}\n"
-  printf "${GREEN}                                 |_|                                           ${NORMAL}\n"
+  Z="${red}Z${green}"
+  printf "${green}   ______    _       _____ __  __                              _               ${normal}\n"
+  printf "${green}  |$Z$Z$Z$Z$Z/   | |     |$Z$Z$Z$Z$Z|$Z$Z\/$Z$Z|                            | |${normal}\n"
+  printf "${green}     /$Z/ ___| |__     |$Z| |$Z\\$Z$Z/$Z|_ __  _ __ _____   _____  __| |       ${normal}\n"
+  printf "${green}    /$Z/ / __| '_ \    |$Z| |$Z|\/|$Z| '_ \| '__/ _ \ \ / / _ \/ _\` |          ${normal}\n"
+  printf "${green}   /$Z/__\__ | | | |  _|$Z|_|$Z|  |$Z| |_) | | | (_) \ V |  __| (_| |          ${normal}\n"
+  printf "${green}  /$Z$Z$Z$Z$Z|___|_| |_| |$Z$Z$Z$Z$Z|$Z|  |$Z| .__/|_|  \___/ \_/ \___|\__,_|  ${normal}\n"
+  printf "${green}                                 | |                                           ${normal}\n"
+  printf "${green}                                 |_|                                           ${normal}\n"
   unset Z
 
   # For archival purposes
@@ -141,15 +123,15 @@ main() {
 
   # Remind user to copy back old settings
   if [ -f "${HOME}/.zshrc_zimbackup" ] || [ -L "${HOME}/.zshrc_zimbackup" ]; then
-    printf "${YELLOW}Please inspect ${HOME}/.zshrc_zimbackup and copy over${NORMAL}\n";
-    printf "${YELLOW}wanted settings to ${HOME}/.zshrc${NORMAL}\n";
-  fi;
+    printf "${yellow}Please inspect ${HOME}/.zshrc_zimbackup and copy over${normal}\n"
+    printf "${yellow}wanted settings to ${HOME}/.zshrc${normal}\n"
+  fi
   if [ -f "${HOME}/.zlogin_zimbackup" ] || [ -L "${HOME}/.zlogin_zimbackup" ]; then
-    printf "${YELLOW}Please inspect ${HOME}/.zlogin_zimbackup and copy over${NORMAL}\n";
-    printf "${YELLOW}wanted settings to ${HOME}/.zlogin${NORMAL}\n";
-  fi;
+    printf "${yellow}Please inspect ${HOME}/.zlogin_zimbackup and copy over${normal}\n"
+    printf "${yellow}wanted settings to ${HOME}/.zlogin${normal}\n"
+  fi
 
-  # Reload zsh
+  # Load zsh
   env zsh
 }
 
