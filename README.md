@@ -37,19 +37,14 @@ Zim has many modules! Enable as many or as few as you'd like.
 
 Installation
 ------------
-Installing Zim is easy. Just run one of these commands:
+Installing Zim is very easy. Just run this command:
 
-#### via curl
-  ```
-  sh -c "$(curl -fsSL --proto-redir -all,https https://raw.githubusercontent.com/Eriner/zim/master/tools/zim_install)"
-  ```
+```
+git clone --recursive -j8 "https://github.com/Eriner/zim.git" "~/.zim" &&\
+ sh -c "~/.zim/tools/zim_install"
+```
 
-#### via wget
-  ```
-  sh -c "$(wget -q --secure-protocol=auto https://raw.githubusercontent.com/Eriner/zim/master/tools/zim_install) -O -)"
-  ```
-
-That's all there is to it. Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
+That's all there is to it. Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and personalize your `.zshrc` file.
 
 Updating
 --------
