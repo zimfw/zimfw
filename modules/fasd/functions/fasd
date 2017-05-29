@@ -41,26 +41,26 @@ case $1 in
         fi
 
         # set default options
-        (( ! "${+_FASD_DATA}" )) && _FASD_DATA="$HOME/.fasd"
-        (( ! "${+_FASD_BLACKLIST}" )) && _FASD_BLACKLIST="--help"
-        (( ! "${+_FASD_SHIFT}" )) && _FASD_SHIFT="sudo busybox"
-        (( ! "${+_FASD_IGNORE}" )) && _FASD_IGNORE="fasd ls echo"
-        (( ! "${+_FASD_SINK}" )) && _FASD_SINK=/dev/null
-        (( ! "${+_FASD_TRACK_PWD}" )) && _FASD_TRACK_PWD=1
-        (( ! "${+_FASD_MAX}" )) && _FASD_MAX=2000
-        (( ! "${+_FASD_BACKENDS}" )) && _FASD_BACKENDS=native
-        (( ! "${+_FASD_FUZZY}" )) && _FASD_FUZZY=2
-        (( ! "${+_FASD_VIMINFO}" )) && _FASD_VIMINFO="$HOME/.viminfo"
-        (( ! "${+_FASD_RECENTLY_USED_XBEL}" )) && \
+        (( ! ${+_FASD_DATA} )) && _FASD_DATA="$HOME/.fasd"
+        (( ! ${+_FASD_BLACKLIST} )) && _FASD_BLACKLIST="--help"
+        (( ! ${+_FASD_SHIFT} )) && _FASD_SHIFT="sudo busybox"
+        (( ! ${+_FASD_IGNORE} )) && _FASD_IGNORE="fasd ls echo"
+        (( ! ${+_FASD_SINK} )) && _FASD_SINK=/dev/null
+        (( ! ${+_FASD_TRACK_PWD} )) && _FASD_TRACK_PWD=1
+        (( ! ${+_FASD_MAX} )) && _FASD_MAX=2000
+        (( ! ${+_FASD_BACKENDS} )) && _FASD_BACKENDS=native
+        (( ! ${+_FASD_FUZZY} )) && _FASD_FUZZY=2
+        (( ! ${+_FASD_VIMINFO} )) && _FASD_VIMINFO="$HOME/.viminfo"
+        (( ! ${+_FASD_RECENTLY_USED_XBEL} )) && \
           _FASD_RECENTLY_USED_XBEL="$HOME/.local/share/recently-used.xbel"
 
-        if (( ! "${+_FASD_AWK}" )); then
+        if (( ! "${+_FASD_AWK} )); then
           # awk preferences
           local awk; for awk in mawk gawk original-awk nawk awk; do
             $awk "" && _FASD_AWK=$awk && break
           done
         fi
-      } >> "${_FASD_SINK:-/dev/null}" 2>&1
+      } >> ${_FASD_SINK:-/dev/null} 2>&1
       ;;
     esac; shift
   done
