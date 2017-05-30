@@ -54,7 +54,7 @@ case $1 in
         (( ! ${+_FASD_RECENTLY_USED_XBEL} )) && \
           _FASD_RECENTLY_USED_XBEL="$HOME/.local/share/recently-used.xbel"
 
-        if (( ! "${+_FASD_AWK} )); then
+        if (( ! ${+_FASD_AWK} )); then
           # awk preferences
           local awk; for awk in mawk gawk original-awk nawk awk; do
             $awk "" && _FASD_AWK=$awk && break
