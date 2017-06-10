@@ -17,7 +17,7 @@
     fi
   }
 
-  zim_mods=${ZDOTDIR:-${HOME}}/.zim/modules
+  zim_mods=${ZIM_HOME}/modules
   setopt EXTENDED_GLOB
 
   # zcompile the completion cache; siginificant speedup.

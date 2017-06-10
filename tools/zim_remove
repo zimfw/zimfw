@@ -10,4 +10,4 @@ sed '/# The following code helps/,/) &!/d' ${ZDOTDIR:-${HOME}}/.zlogin
 rm -f ${ZDOTDIR:-${HOME}}/.zimrc
 
 # not forcing this one, as it is recursive. It's possible something went wrong.
-rm -r ${ZDOTDIR:-${HOME}}/.zim/
+rm -r ${ZIM_HOME}
