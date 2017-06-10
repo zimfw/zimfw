@@ -2,4 +2,4 @@
 # zim_build_cache - rebuilds the zim cache
 #
 
-source ${ZDOTDIR:-${HOME}}/.zim/templates/zlogin
+source ${ZIM_HOME}/templates/zlogin
