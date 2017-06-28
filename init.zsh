@@ -2,6 +2,11 @@
 # Zim initializition
 #
 
+autoload -Uz is-at-least
+if ! is-at-least 5.2; then
+  print "WARNING: Support for zsh < 5.2 will be removed in a future update. Update your version of zsh now to prevent any interruptions." >&2
+fi
+
 # Define zim location
 ZIM="${ZDOTDIR:-${HOME}}/.zim"
 
