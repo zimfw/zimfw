@@ -2,7 +2,7 @@ main() {
   # Use colors, but only if connected to a terminal, and that terminal
   # supports them.
   if which tput >/dev/null 2>&1; then
-      ncolors=$(tput colors)
+    ncolors=$(tput colors)
   fi
   if [ -t 1 ] && [ -n "${ncolors}" ] && [ "${ncolors}" -ge 8 ]; then
     red="$(tput setaf 1)"
@@ -24,22 +24,44 @@ main() {
   # which may fail on systems lacking tput or terminfo
   set -e
 
-  # Check if zsh exists
-  if [ ! "$(grep "/zsh$" "/etc/shells" | wc -l)" = 1 ]; then
-    # try installing from Homebrew
-    if [ ! "$(which -s brew)" = 0 ]; then
-      brew install zsh >/dev/null 2>&1
-      printf "${yellow}Installing zsh via Homebrew.. ${normal}\n"
+  # Yes or no function
+  yesno() {
+    printf "${*} "
+    read answer
+    if printf "${answer}\n" | grep -iq "^y"; then
+        return 0
     else
-    printf "${red}Error: zsh isn't available! ${blue}Please install zsh first!${normal}\n"
-    exit 1
+        return 1
+    fi;
+  }
+
+  # Check if `zsh` exists, or if `zsh` isn't too old
+  if [ ! "$(grep "/zsh$" "/etc/shells")" ] || \
+    env zsh -c "autoload -Uz 'is-at-least'; ! is-at-least 5.2"; then
+    yesno "Do you want the installer to automatically install 'zsh'?"
+    # try installing from 'brew' (Mac)
+    if hash "brew" 2>/dev/null; then
+      brew install "zsh" >/dev/null 2>&1
+      printf "${yellow}Installing zsh via Homebrew.. ${normal}\n"
+    # try installing from 'apt-get' (Debian/Ubuntu)
+    elif hash "apt-get" 2>/dev/null; then
+      apt-get install "zsh" >/dev/null 2>&1
+    # try installing from 'dnf' (Fedora)
+    elif hash "dnf" 2>/dev/null; then
+      dnf install "zsh" >/dev/null 2>&1
+    # try installing from 'pacman' (Arch)
+    elif hash "pacman" 2>/dev/null; then
+      pacman -S "zsh" >/dev/null 2>&1
+    else
+      printf "${red}Error: 'zsh' isn't available.. ${blue}please install manually!${normal}\n"
+      return 1
     fi
   fi
 
   # Check if Zim is already installed
   if [ -e "${ZDOTDIR:-${HOME}}/.zimrc" ]; then
     printf "${red}Error: You already have Zim installed!${normal}\n";
-    exit 1
+    return 1
   fi
 
   # Check if other frameworks are installed
@@ -58,8 +80,6 @@ main() {
     printf "${yellow}Prezto detected and backed up to\
      ${HOME}/.zprezto_zimbackup${normal}\n"
     printf "${blue}This is done to prevent framework conflicts.${normal}\n"
-  else
-    : # Do nothing
   fi
 
   # Prevent the cloned repository from having insecure permissions.
@@ -70,16 +90,16 @@ main() {
     if git --version | grep msysgit >/dev/null; then
       printf "${red}Error: Windows/MSYS Git is not supported on Cygwin${normal}\n"
       printf "${red}Error: Make sure the Cygwin git package is installed and is first on the path${normal}\n"
-      exit 1
+      return 1
     fi
   fi
 
   # Back-up old zsh dotfiles
-  if [ -f "${HOME}/.zshrc" ] || [ -L "${HOME}/.zshrc" ]; then
+  if [ -e "${HOME}/.zshrc" ]; then
     printf "${yellow}Found ${HOME}/.zshrc! ${blue}Backing up to ${HOME}/.zshrc_zimbackup.${normal}\n"
     mv "${HOME}/.zshrc" "${HOME}/.zshrc_zimbackup"
   fi
-  if [ -f "${HOME}/.zlogin" ] || [ -L "${HOME}/.zlogin" ]; then
+  if [ -e "${HOME}/.zlogin" ]; then
     printf "${yellow}Found ${HOME}/.zlogin!$ ${blue}Backing up to ${HOME}/.zlogin_zimbackup${normal}\n"
     mv "${HOME}/.zlogin" "${HOME}/.zlogin_zimbackup"
   fi
@@ -112,14 +132,14 @@ main() {
   unset Z
 
   # For archival purposes
-  #   ______      _       _____  __  __                                    _ 
+  #   ______      _       _____  __  __                                    _
   #  |___  /     | |     |_   _||  \/  |                                  | |
   #     / /  ___ | |__     | |  | \  / | _ __   _ __  ___ __   __ ___   __| |
   #    / /  / __|| '_ \    | |  | |\/| || '_ \ | '__|/ _ \\ \ / // _ \ / _` |
   #   / /__ \__ \| | | |  _| |_ | |  | || |_) || |  | (_) |\ V /|  __/| (_| |
   #  /_____||___/|_| |_| |_____||_|  |_|| .__/ |_|   \___/  \_/  \___| \__,_|
-  #                                      | |                                  
-  #                                      |_|                                  
+  #                                      | |
+  #                                      |_|
 
   # Remind user to copy back old settings
   if [ -f "${HOME}/.zshrc_zimbackup" ] || [ -L "${HOME}/.zshrc_zimbackup" ]; then
