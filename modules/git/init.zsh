@@ -9,7 +9,7 @@
 # Log
 _git_log_medium_format='%C(bold)Commit:%C(reset) %C(green)%H%C(red)%d%n%C(bold)Author:%C(reset) %C(cyan)%an <%ae>%n%C(bold)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
 _git_log_oneline_format='%C(green)%h%C(reset) %s%C(red)%d%C(reset)%n'
-_git_log_fullgraph_format='%C(green)%h%C(reset) %<|(50,trunc)%s %C(bold blue)<%an>%C(reset) %C(yellow)(%cd)%C(reset)%C(auto)%d%C(reset)%n'
+_git_log_fullgraph_format='%C(green)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an>%C(reset) %C(yellow)(%cd)%C(reset)%C(auto)%d%C(reset)%n'
 _git_log_brief_format='%C(green)%h%C(reset) %s%n%C(blue)(%ar by %an)%C(red)%d%C(reset)%n'
 
 #
@@ -22,14 +22,14 @@ alias g='git'
 # Branch (b)
 alias gb='git branch'
 alias gbc='git checkout -b'
-alias gbl='git branch -v'
-alias gbL='git branch -av'
-alias gbx='git branch -d'
-alias gbX='git branch -D'
-alias gbm='git branch -m'
-alias gbM='git branch -M'
+alias gbl='git branch --verbose'
+alias gbL='git branch --all --verbose'
+alias gbm='git branch --move'
+alias gbM='git branch --move --force'
 alias gbs='git show-branch'
-alias gbS='git show-branch -a'
+alias gbS='git show-branch --all'
+alias gbx='git branch --delete'
+alias gbX='git branch --delete --force'
 
 # Commit (c)
 alias gc='git commit --verbose'
@@ -71,7 +71,7 @@ alias gf='git fetch'
 alias gfc='git clone'
 alias gfm='git pull'
 alias gfr='git pull --rebase'
-alias gfu='git remote update -p; git merge --ff-only @\{u\}'
+alias gfu='git remote update --prune; git merge --ff-only @\{u\}'
 
 # Grep (g)
 alias gg='git grep'
@@ -90,7 +90,7 @@ alias giD='git diff --no-ext-diff --cached --word-diff'
 alias gir='git reset'
 alias giR='git reset --patch'
 alias gix='git rm -r --cached'
-alias giX='git rm -rf --cached'
+alias giX='git rm -r --cached --force'
 
 # Log (l)
 alias gl='git log --topo-order --pretty=format:"${_git_log_medium_format}"'
@@ -150,7 +150,7 @@ alias gsr='git-stash-recover'
 alias gss='git stash save --include-untracked'
 alias gsS='git stash save --patch --no-keep-index'
 alias gsw='git stash save --include-untracked --keep-index'
-alias gsu='git stash show -p | git apply -R'
+alias gsu='git stash show --patch | git apply --reverse'
 
 # Submodule (S)
 alias gS='git submodule'
@@ -165,7 +165,7 @@ alias gSu='git submodule foreach git pull origin master'
 alias gSx='git-submodule-remove'
 
 # Tag (t)
-alias gts='git tag -s'
+alias gts='git tag --sign'
 alias gtv='git verify-tag'
 
 # Working Copy (w)
@@ -175,10 +175,10 @@ alias gwd='git diff --no-ext-diff'
 alias gwD='git diff --no-ext-diff --word-diff'
 alias gwr='git reset --soft'
 alias gwR='git reset --hard'
-alias gwc='git clean -n'
-alias gwC='git clean -df'
+alias gwc='git clean --dry-run'
+alias gwC='git clean -d --force'
 alias gwx='git rm -r'
-alias gwX='git rm -rf'
+alias gwX='git rm -r --force'
 
 # Misc
 alias g..='cd $(git-root || print .)'
