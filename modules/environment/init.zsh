@@ -27,6 +27,9 @@ setopt LONG_LIST_JOBS
 # Report the status of background jobs immediately, rather than waiting until just before printing a prompt.
 setopt NOTIFY
 
+# Recognize comments starting with `#`.
+setopt INTERACTIVE_COMMENTS
+
 # Run all background jobs at a lower priority. This option is set by default.
 unsetopt BG_NICE
 
