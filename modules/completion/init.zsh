@@ -15,6 +15,11 @@ fi
 # add the completions to the fpath
 fpath=(${0:h}/external/src ${fpath})
 
+# add the brew completions to the fpath
+if (( $+commands[brew] )); then
+  fpath=($(brew --prefix)/share/zsh/site-functions ${fpath})
+fi
+
 # load and initialize the completion system
 autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.zcompdump}"
 
