@@ -3,8 +3,9 @@
 #
 
 autoload -Uz is-at-least
-if ! is-at-least 5.2; then
-  print "WARNING: Support for zsh < 5.2 will be removed in a future update. Update your version of zsh now to prevent any interruptions." >&2
+if ! is-at-least 5.0; then
+  print "ERROR: Zim didn't start. You're using zsh version ${ZSH_VERSION}, and versions < 5.0 are not supported. Update your zsh." >&2
+  return 1
 fi
 
 # Define zim location
