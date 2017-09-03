@@ -9,7 +9,7 @@ if ! is-at-least 5.2; then
 fi
 
 # Define zim location
-(( ! ${+ZIM_HOME} )) && ZIM_HOME="${ZDOTDIR:-${HOME}}/.zim"
+(( ! ${+ZIM_HOME} )) && export ZIM_HOME="${ZDOTDIR:-${HOME}}/.zim"
 
 # Source user configuration
 if [[ -s "${ZDOTDIR:-${HOME}}/.zimrc" ]]; then
