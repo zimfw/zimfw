@@ -43,9 +43,9 @@ cp ${ZDOTDIR:-${HOME}}/.zshrc /tmp/ztrace/.zshrc.orig
 cp ${ZDOTDIR:-${HOME}}/.zimrc /tmp/ztrace/.zimrc
 # rsync will allow us to not have to copy the .git folder; use if available 
 if (( ${+commands[rsync]} )); then
-  rsync -az --exclude .git ${ZDOTDIR:-${HOME}}/.zim /tmp/ztrace/
+  rsync -az --exclude .git ${ZIM_HOME} /tmp/ztrace/
 else
-  cp -R ${ZDOTDIR:-${HOME}}/.zim /tmp/ztrace/
+  cp -R ${ZIM_HOME} /tmp/ztrace/
 fi
 
 # create a modified .zshrc to produce a trace log
