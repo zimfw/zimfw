@@ -16,7 +16,7 @@ if (( ${#} != 1 )); then
 fi
 
 local tools
-tools="${ZIM}/tools"
+tools="${ZIM_DATA_DIR}/tools"
 
 case ${1} in
   update)      zsh ${tools}/zim_update
@@ -33,7 +33,7 @@ case ${1} in
                ;;
   reset)       zsh ${tools}/zim_reset
                ;;
-  debug)       zsh ${ZIM}/modules/debug/functions/trace-zim
+  debug)       zsh ${ZIM_DATA_DIR}/modules/debug/functions/trace-zim
                ;;
   *)           print ${usage}
                ;;

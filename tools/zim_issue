@@ -24,7 +24,7 @@ if ! waiter_func; then
 fi
 
 # for convenience, this is our new home
-cd ${ZDOTDIR:-${HOME}}/.zim
+cd ${ZIM_DATA_DIR}
 
 # collect sys info
 git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
@@ -64,7 +64,7 @@ done
 
 # if we have a dirty git, report it
 if [[ -n ${git_dirty} ]]; then
-  print "${ZDOTDIR:-${HOME}}/.zim has a dirty git working tree."
+  print "${ZIM_DATA_DIR} has a dirty git working tree."
   print "here is the diff:"
   print '```'
   print $(command git diff)
