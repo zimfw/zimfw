@@ -42,13 +42,13 @@ Installing Zim is easy. If you have a different shell framework installed (like 
 
 1. In a Zsh shell, clone the repository:
   ```
-  git clone --recursive https://github.com/Eriner/zim.git ${ZDOTDIR:-${HOME}}/.zim
+  git clone --recursive https://github.com/Eriner/zim.git "${XDG_DATA_HOME:-"${HOME}/.local/share"}/zim"
   ```
 
 2. Paste this into your terminal to prepend the initialization templates to your configs:
   ```
   setopt EXTENDED_GLOB
-  for template_file ( ${ZDOTDIR:-${HOME}}/.zim/templates/* ); do
+  for template_file ( ${ZIM_DATA_DIR}/templates/* ); do
     user_file="${ZDOTDIR:-${HOME}}/.${template_file:t}"
     touch ${user_file}
     ( print -rn "$(<${template_file})$(<${user_file})" >! ${user_file} ) 2>/dev/null
@@ -81,7 +81,7 @@ For more information about the `zmanage` tool, see the [meta module][meta-module
 Uninstalling
 ------------
 
-The best way to remove zim is to manually delete `~/.zim`, `~/.zimrc`, and
+The best way to remove zim is to manually delete `~/.local/share/zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshrc`.
 
 However, there are some **experimental** convenience functions to remove zim:
