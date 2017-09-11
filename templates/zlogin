@@ -47,7 +47,7 @@
   done
 
   # syntax-highlighting
-  for file in ${zim_mods}/syntax-highlighting/external/highlighters/**/*.zsh; do
+  for file in ${zim_mods}/syntax-highlighting/external/highlighters/**^test-data/*.zsh; do
     zcompare ${file}
   done
   zcompare ${zim_mods}/syntax-highlighting/external/zsh-syntax-highlighting.zsh
