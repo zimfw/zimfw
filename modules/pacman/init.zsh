@@ -64,7 +64,7 @@ alias pacu="${zpacman_frontend_priv} -Syyu"
 alias pacU="${zpacman_frontend_priv} -U"
 
 # install all packages in current directory
-alias pacd="${zpacman_frontend_priv} -U *.pkg.tar.xz"
+alias pacd="${zpacman_frontend_priv} -U *.pkg.*"
 
 
 #
