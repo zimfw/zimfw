@@ -4,5 +4,5 @@
 
 if [[ ! ${TERM} == (linux|*bsd*|dumb) ]] && (( ${+zprompt_theme} )); then
   autoload -Uz promptinit && promptinit
-  prompt ${zprompt_theme}
+  prompt ${(ps: :)${zprompt_theme}}
 fi
