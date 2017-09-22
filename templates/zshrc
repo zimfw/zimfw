@@ -4,11 +4,11 @@
 # User configuration sourced by interactive shells
 #
 
-# Change default zim location 
-export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+# Define zim location 
+(( ! ${+ZIM_DATA_DIR} )) && export ZIM_DATA_DIR="${XDG_DATA_HOME:-"${HOME}/.local/share"}/zim"
 
 # Source zim
-if [[ -s ${ZIM_HOME}/init.zsh ]]; then
-  source ${ZIM_HOME}/init.zsh
+if [[ -s "${ZIM_DATA_DIR}/init.zsh" ]]; then
+  source "${ZIM_DATA_DIR}/init.zsh"
 fi
 

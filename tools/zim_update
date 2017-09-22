@@ -2,7 +2,7 @@
 # zim_update - update the zim repository
 #
 
-cd ${ZIM_HOME}
+cd ${ZIM_DATA_DIR}
 
 # this is the cleanest way I know how to update a repository
 git remote update -p
