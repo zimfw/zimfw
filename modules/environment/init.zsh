@@ -31,6 +31,9 @@ unsetopt HUP
 # NO_CHECK_JOBS is best used only in combination with NO_HUP, else such jobs will be killed automatically.
 unsetopt CHECK_JOBS
 
+# Remove path separtor from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
+
 # Set less or more as the default pager.
 if (( ! ${+PAGER} )); then
   if (( ${+commands[less]} )); then
