@@ -25,7 +25,7 @@ case ${1} in
                ;;
   issue)       zsh ${tools}/zim_issue
                ;;
-  clean-cache) zsh ${tools}/zim_clean_cache && print 'Cleaned cache'
+  clean-cache) source ${tools}/zim_clean_cache && print 'Cleaned cache'
                ;;
   build-cache) source ${tools}/zim_build_cache && print 'Rebuilt cache'
                ;;
