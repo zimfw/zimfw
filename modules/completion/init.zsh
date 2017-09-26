@@ -23,13 +23,8 @@ source ${0:h}/compdefs.zsh
 
 {
   # zcomple the .zcompdump in the background
-  zcompdump=${ZDOTDIR:-${HOME}}/.zcompdump
-
-  if [[ -s ${zcompdump} && ( ! -s ${zcompdump}.zwc || ${zcompdump} -nt ${zcompdump}.zwc) ]]; then
-    zcompile ${zcompdump}
-  fi
-  
-  unset zcompdump
+  autoload -U zrecompile
+  zrecompile -pq ${ZDOTDIR:-${HOME}}/${zcompdump_file:-.zcompdump}
 } &!
 
 
