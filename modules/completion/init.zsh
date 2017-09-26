@@ -21,17 +21,6 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 # set any compdefs
 source ${0:h}/compdefs.zsh
 
-{
-  # zcomple the .zcompdump in the background
-  zcompdump=${ZDOTDIR:-${HOME}}/.zcompdump
-
-  if [[ -s ${zcompdump} && ( ! -s ${zcompdump}.zwc || ${zcompdump} -nt ${zcompdump}.zwc) ]]; then
-    zcompile ${zcompdump}
-  fi
-  
-  unset zcompdump
-} &!
-
 
 #
 # zsh options
