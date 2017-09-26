@@ -33,7 +33,7 @@ load_zim_function() {
   local mod_function
 
   # autoload searches fpath for function locations; add enabled module function paths
-  fpath=(${${zmodules}:+${ZIM_HOME}/modules/${^zmodules}/functions(/FN)} ${fpath})
+  fpath=(${ZIM_HOME}/functions.zwc ${ZIM_HOME}/modules/prompt/functions ${fpath})
 
   function {
     setopt LOCAL_OPTIONS EXTENDED_GLOB
