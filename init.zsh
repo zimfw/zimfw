@@ -9,44 +9,33 @@ if ! is-at-least 5.2; then
 fi
 
 # Define zim location
-(( ! ${+ZIM_HOME} )) && export ZIM_HOME="${ZDOTDIR:-${HOME}}/.zim"
+(( ! ${+ZIM_HOME} )) && export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 
 # Source user configuration
-if [[ -s "${ZDOTDIR:-${HOME}}/.zimrc" ]]; then
-  source "${ZDOTDIR:-${HOME}}/.zimrc"
-fi
+[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
-load_zim_module() {
-  local wanted_module
-
-  for wanted_module (${zmodules}); do
-    if [[ -s "${ZIM_HOME}/modules/${wanted_module}/init.zsh" ]]; then
-      source "${ZIM_HOME}/modules/${wanted_module}/init.zsh"
-    elif [[ ! -d "${ZIM_HOME}/modules/${wanted_module}" ]]; then
-      print "No such module \"${wanted_module}\"." >&2
-    fi
-  done
-}
-
-load_zim_function() {
-  local function_glob='^([_.]*|prompt_*_setup|README*)(-.N:t)'
+# Autoload module functions
+() {
   local mod_function
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   # autoload searches fpath for function locations; add enabled module function paths
   fpath=(${ZIM_HOME}/functions.zwc ${ZIM_HOME}/modules/prompt/functions ${fpath})
 
-  function {
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
-
-    for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/${~function_glob}; do
-      autoload -Uz ${mod_function}
-    done
-  }
+  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^([_.]*|prompt_*_setup|README*)(-.N:t); do
+    autoload -Uz ${mod_function}
+  done
 }
 
-# initialize zim modules
-load_zim_function
-load_zim_module
+# Initialize modules
+() {
+  local zmodule
 
-unset zmodules
-unfunction load_zim_{module,function}
+  for zmodule (${zmodules}); do
+    if [[ -s ${ZIM_HOME}/modules/${zmodule}/init.zsh ]]; then
+      source ${ZIM_HOME}/modules/${zmodule}/init.zsh
+    elif [[ ! -d ${ZIM_HOME}/modules/${zmodule} ]]; then
+      print "No such module \"${zmodule}\"." >&2
+    fi
+  done
+}

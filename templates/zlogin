@@ -8,38 +8,34 @@
 #
 
 (
-  local zim_mods=${ZIM_HOME}/modules
-  setopt EXTENDED_GLOB
+  local file
+  local zmodule
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
   autoload -U zrecompile
-
-  # zcompile the completion cache; siginificant speedup.
-  for file in ${ZDOTDIR:-${HOME}}/.zcomp^(*.zwc)(.); do
-    zrecompile -pq ${file}
-  done
 
   # zcompile .zshrc
   zrecompile -pq ${ZDOTDIR:-${HOME}}/.zshrc
 
-  # zcompile all module init scripts
-  for file in ${zim_mods}/*/init.zsh; do
-    zrecompile -pq ${file}
+  # zcompile enabled module autoloaded functions
+  zrecompile -pq ${ZIM_HOME}/functions ${ZIM_HOME}/modules/${^zmodules}/functions/^([_.]*|prompt_*_setup|README*|*.zwc)(-.N)
+
+  # zcompile enabled module init scripts
+  for zmodule (${zmodules}); do
+    zrecompile -pq ${ZIM_HOME}/modules/${zmodule}/init.zsh
   done
 
-  # zcompile all autoloaded functions
-  zrecompile -pq ${ZIM_HOME}/functions ${zim_mods}/*/functions/^([_.]*|prompt_*_setup|README*|*.zwc)(.)
-
   # zcompile all prompt setup scripts
-  for file in ${zim_mods}/prompt/functions/prompt_*_setup; do
+  for file in ${ZIM_HOME}/modules/prompt/functions/prompt_*_setup; do
     zrecompile -pq ${file}
   done
 
   # syntax-highlighting
-  for file in ${zim_mods}/syntax-highlighting/external/highlighters/**^test-data/*.zsh; do
+  for file in ${ZIM_HOME}/modules/syntax-highlighting/external/highlighters/**^test-data/*.zsh; do
     zrecompile -pq ${file}
   done
-  zrecompile -pq ${zim_mods}/syntax-highlighting/external/zsh-syntax-highlighting.zsh
+  zrecompile -pq ${ZIM_HOME}/modules/syntax-highlighting/external/zsh-syntax-highlighting.zsh
 
   # zsh-histery-substring-search
-  zrecompile -pq ${zim_mods}/history-substring-search/external/zsh-history-substring-search.zsh
+  zrecompile -pq ${ZIM_HOME}/modules/history-substring-search/external/zsh-history-substring-search.zsh
 
 ) &!
