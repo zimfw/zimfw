@@ -61,6 +61,9 @@ if [[ -n "${key_info[End]}" ]]; then
   bindkey "${key_info[End]}" end-of-line
 fi
 
+bindkey "${key_info[Control]}A" beginning-of-line
+bindkey "${key_info[Control]}E" end-of-line
+
 if [[ -n "${key_info[PageUp]}" ]]; then
   bindkey "${key_info[PageUp]}" up-line-or-history
 fi
