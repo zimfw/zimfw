@@ -41,7 +41,7 @@ prompt_steeef_setup() {
   autoload -Uz add-zsh-hook
   autoload -Uz colors && colors
 
-  prompt_opts=(cr percent subst)
+  prompt_opts=(cr percent sp subst)
 
   add-zsh-hook precmd prompt_steeef_precmd
 

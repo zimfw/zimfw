@@ -53,7 +53,7 @@ prompt_magicmace_setup() {
   autoload -Uz colors && colors
   autoload -Uz add-zsh-hook
 
-  prompt_opts=(cr percent subst)
+  prompt_opts=(cr percent sp subst)
 
   add-zsh-hook precmd prompt_magicmace_precmd
 
