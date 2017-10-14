@@ -37,6 +37,6 @@ case "${archive_name}" in
   (*.rar) unrar &> /dev/null \
     && unrar x -ad "${archive_name}" \
     || rar x -ad "${archive_name}" ;;
-  (*.7z) 7za x "${archive_name}" ;;
+  (*.7z|*.001) 7za x "${archive_name}" ;;
   (*) print "${0}: unknown archive type: ${archive_name}" ;;
 esac
