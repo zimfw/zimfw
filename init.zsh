@@ -39,3 +39,43 @@ fi
     fi
   done
 }
+
+zmanage() {
+  local usage="zmanage [action]
+Actions:
+  update       Fetch and merge upstream zim commits if possible
+  info         Print zim and system info
+  issue        Create a template for reporting an issue
+  clean-cache  Clean the zim cache
+  build-cache  Rebuild the zim cache
+  remove       *experimental* Remove zim as best we can
+  reset        Reset zim to the latest commit
+  debug        Invoke the trace-zim script which produces logs
+  help         Print this usage message"
+
+  if (( ${#} != 1 )); then
+    print ${usage}
+    return 1
+  fi
+
+  case ${1} in
+    update)      zsh ${ZIM_HOME}/tools/zim_update
+                 ;;
+    info)        zsh ${ZIM_HOME}/tools/zim_info
+                 ;;
+    issue)       zsh ${ZIM_HOME}/tools/zim_issue
+                 ;;
+    clean-cache) source ${ZIM_HOME}/tools/zim_clean_cache && print 'Cache cleaned'
+                 ;;
+    build-cache) source ${ZIM_HOME}/tools/zim_build_cache && print 'Cache rebuilt'
+                 ;;
+    remove)      zsh ${ZIM_HOME}/tools/zim_remove
+                 ;;
+    reset)       zsh ${ZIM_HOME}/tools/zim_reset
+                 ;;
+    debug)       zsh ${ZIM_HOME}/modules/debug/functions/trace-zim
+                 ;;
+    *)           print ${usage}; return 1
+                 ;;
+  esac
+}

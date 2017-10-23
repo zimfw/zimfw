@@ -27,40 +27,25 @@ fi
 cd ${ZIM_HOME}
 
 # collect sys info
-git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
-git_ref=$(command git rev-parse --short HEAD)
-zsh_version=$(zsh --version)
-operating_sys=$(uname -a)
+local git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
+local zim_info=$(zsh tools/zim_info)
 
+print "Environment Info
+----------------
+${zim_info}
 
+Description
+-----------
+${user_desc}
 
-# we're going to template and build the issue here (as an array for convenience)
+Steps to Reproduce
+------------------
+${user_reproduce}
 
-issue_md=("Environment Info"
-          "----------------"
-	  "- Zim commit ref: ${git_ref}"
-	  "- Zsh version: ${zsh_version}"
-	  "- Operating System Info: ${operating_sys}"
-	  ""
-	  "Description"
-	  "-----------"
-	  "${user_desc}"
-	  ""
-	  "Steps to Reproduce"
-	  "------------------"
-	  "${user_reproduce}"
-	  ""
-	  "Images or other Information"
-	  "---------------------------"
-	  ""
-	  )
-	  
+Images or other Information
+---------------------------
+"
 
-# print the output:
-# hack: we need to iterate over the elements to capture the blank spaces (to print newlines)
-for (( i=0; i < ${#issue_md[@]}; i++ )); do
-  printf '%s\n' ${issue_md[i]}
-done
 
 # if we have a dirty git, report it
 if [[ -n ${git_dirty} ]]; then
