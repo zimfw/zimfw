@@ -27,8 +27,8 @@ fi
 # near-liner decrease in compression time based on on the number of available cores.
 
 case "${archive_name}" in
-  (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="${_gzip_bin:-gzip}" "${dir_to_archive}" ;;
-  (*.tar.bz2|*.tbz|*.tbz2) tar -cvf "${archive_name}" --use-compress-program="${_bzip2_bin:-bzip2}" "${dir_to_archive}" ;; 
+  (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="gzip" "${dir_to_archive}" ;;
+  (*.tar.bz2|*.tbz|*.tbz2) tar -cvf "${archive_name}" --use-compress-program="bzip2" "${dir_to_archive}" ;;
   (*.tar.xz|*.txz) tar --xz --help &> /dev/null && tar -cvJf "${archive_name}" "${dir_to_archive}" ;;
   (*.tar.lzma|*.tlz) tar --lzma --help &> /dev/null && tar -cvf "${archive_name}" --lzma "${dir_to_archive}" ;;
   (*.tar) tar -cvf "${archive_name}" "${dir_to_archive}" ;;
