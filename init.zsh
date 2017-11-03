@@ -9,44 +9,73 @@ if ! is-at-least 5.2; then
 fi
 
 # Define zim location
-(( ! ${+ZIM_HOME} )) && export ZIM_HOME="${ZDOTDIR:-${HOME}}/.zim"
+(( ! ${+ZIM_HOME} )) && export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 
 # Source user configuration
-if [[ -s "${ZDOTDIR:-${HOME}}/.zimrc" ]]; then
-  source "${ZDOTDIR:-${HOME}}/.zimrc"
-fi
+[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
-load_zim_module() {
-  local wanted_module
+# Autoload module functions
+() {
+  local mod_function
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
-  for wanted_module (${zmodules}); do
-    if [[ -s "${ZIM_HOME}/modules/${wanted_module}/init.zsh" ]]; then
-      source "${ZIM_HOME}/modules/${wanted_module}/init.zsh"
-    elif [[ ! -d "${ZIM_HOME}/modules/${wanted_module}" ]]; then
-      print "No such module \"${wanted_module}\"." >&2
+  # autoload searches fpath for function locations; add enabled module function paths
+  fpath=(${ZIM_HOME}/functions.zwc ${ZIM_HOME}/modules/prompt/functions ${fpath})
+
+  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^([_.]*|prompt_*_setup|README*)(-.N:t); do
+    autoload -Uz ${mod_function}
+  done
+}
+
+# Initialize modules
+() {
+  local zmodule
+
+  for zmodule (${zmodules}); do
+    if [[ -s ${ZIM_HOME}/modules/${zmodule}/init.zsh ]]; then
+      source ${ZIM_HOME}/modules/${zmodule}/init.zsh
+    elif [[ ! -d ${ZIM_HOME}/modules/${zmodule} ]]; then
+      print "No such module \"${zmodule}\"." >&2
     fi
   done
 }
 
-load_zim_function() {
-  local function_glob='^([_.]*|prompt_*_setup|README*)(-.N:t)'
-  local mod_function
+zmanage() {
+  local usage="zmanage [action]
+Actions:
+  update       Fetch and merge upstream zim commits if possible
+  info         Print zim and system info
+  issue        Create a template for reporting an issue
+  clean-cache  Clean the zim cache
+  build-cache  Rebuild the zim cache
+  remove       *experimental* Remove zim as best we can
+  reset        Reset zim to the latest commit
+  debug        Invoke the trace-zim script which produces logs
+  help         Print this usage message"
 
-  # autoload searches fpath for function locations; add enabled module function paths
-  fpath=(${${zmodules}:+${ZIM_HOME}/modules/${^zmodules}/functions(/FN)} ${fpath})
+  if (( ${#} != 1 )); then
+    print ${usage}
+    return 1
+  fi
 
-  function {
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
-
-    for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/${~function_glob}; do
-      autoload -Uz ${mod_function}
-    done
-  }
+  case ${1} in
+    update)      zsh ${ZIM_HOME}/tools/zim_update
+                 ;;
+    info)        zsh ${ZIM_HOME}/tools/zim_info
+                 ;;
+    issue)       zsh ${ZIM_HOME}/tools/zim_issue
+                 ;;
+    clean-cache) source ${ZIM_HOME}/tools/zim_clean_cache && print 'Cache cleaned'
+                 ;;
+    build-cache) source ${ZIM_HOME}/tools/zim_build_cache && print 'Cache rebuilt'
+                 ;;
+    remove)      zsh ${ZIM_HOME}/tools/zim_remove
+                 ;;
+    reset)       zsh ${ZIM_HOME}/tools/zim_reset
+                 ;;
+    debug)       zsh ${ZIM_HOME}/modules/debug/functions/trace-zim
+                 ;;
+    *)           print ${usage}; return 1
+                 ;;
+  esac
 }
-
-# initialize zim modules
-load_zim_function
-load_zim_module
-
-unset zmodules
-unfunction load_zim_{module,function}
