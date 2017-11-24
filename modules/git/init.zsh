@@ -7,10 +7,10 @@
 #
 
 # Log
-_git_log_medium_format='%C(bold)Commit:%C(reset) %C(green)%H%C(red)%d%n%C(bold)Author:%C(reset) %C(cyan)%an <%ae>%n%C(bold)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
-_git_log_oneline_format='%C(green)%h%C(reset) %s%C(red)%d%C(reset)%n'
+_git_log_medium_format='%C(bold)Commit:%C(reset) %C(green)%H%C(yellow)%d%n%C(bold)Author:%C(reset) %C(cyan)%an <%ae>%n%C(bold)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
+_git_log_oneline_format='%C(green)%h%C(reset) %s%C(yellow)%d%C(reset)%n'
 _git_log_fullgraph_format='%C(green)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an>%C(reset) %C(yellow)(%cd)%C(reset)%C(auto)%d%C(reset)%n'
-_git_log_brief_format='%C(green)%h%C(reset) %s%n%C(blue)(%ar by %an)%C(red)%d%C(reset)%n'
+_git_log_brief_format='%C(green)%h%C(reset) %s%n%C(blue)(%ar by %an)%C(yellow)%d%C(reset)%n'
 
 #
 # Aliases
