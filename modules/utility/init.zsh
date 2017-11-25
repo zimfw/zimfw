@@ -110,12 +110,3 @@ fi
 if (( ${+commands[safe-rm]} && ! ${+commands[safe-rmdir]} )); then
   alias rm='safe-rm'
 fi
-
-
-#
-# Misc
-#
-
-mkcd() {
-  [[ -n ${1} ]] && mkdir -p ${1} && builtin cd ${1}
-}
