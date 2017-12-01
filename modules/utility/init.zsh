@@ -6,10 +6,12 @@
 # Colours
 #
 
-if (( ${terminfo[colors]} >= 8 )); then
+if (( terminfo[colors] >= 8 )); then
   if [[ ${OSTYPE} == (*bsd*|darwin*) ]]; then
     # BSD
+
     (( ! ${+LSCOLORS} )) && export LSCOLORS='exfxcxdxbxGxDxabagacad'
+
     if [[ ${OSTYPE} == openbsd* ]]; then
       # stock OpenBSD ls does not support colours at all, but colorls does.
       if (( ${+commands[colorls]} )); then
@@ -22,6 +24,7 @@ if (( ${terminfo[colors]} >= 8 )); then
     (( ! ${+GREP_COLOR} )) && export GREP_COLOR='37;45'
   else
     # GNU
+
     (( ! ${+LS_COLORS} )) && if [[ ${+commands[dircolors]} -ne 0 && -s ${HOME}/.dir_colors ]]; then
       eval "$(dircolors --sh ${HOME}/.dir_colors)"
     else
