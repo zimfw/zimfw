@@ -6,37 +6,38 @@
 # Colours
 #
 
-if (( terminfo[colors] >= 8 )); then
-  if [[ ${OSTYPE} == (*bsd*|darwin*) ]]; then
+if [[ ! -z ${terminfo[colors]} ]] && (( ${terminfo[colors]} >= 8 )); then
+  # ls Colours
+  if (( ${+commands[dircolors]} )); then
+    # GNU
+    if [[ -s ${HOME}/.dir_colors ]]; then
+      eval "$(dircolors --sh ${HOME}/.dir_colors)"
+    else
+      eval "$(dircolors --sh)"
+    fi
+
+    alias ls='ls --group-directories-first --color=auto'
+
+  else
     # BSD
 
+    # colours for ls and completion
     (( ! ${+LSCOLORS} )) && export LSCOLORS='exfxcxdxbxGxDxabagacad'
+    (( ! ${+LS_COLORS} )) && export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
 
-    if [[ ${OSTYPE} == openbsd* ]]; then
-      # stock OpenBSD ls does not support colours at all, but colorls does.
+    # stock OpenBSD ls does not support colors at all, but colorls does.
+    if [[ $OSTYPE == openbsd* ]]; then
       if (( ${+commands[colorls]} )); then
         alias ls='colorls -G'
       fi
     else
       alias ls='ls -G'
     fi
-
-    (( ! ${+GREP_COLOR} )) && export GREP_COLOR='37;45'
-  else
-    # GNU
-
-    (( ! ${+LS_COLORS} )) && if [[ ${+commands[dircolors]} -ne 0 && -s ${HOME}/.dir_colors ]]; then
-      eval "$(dircolors --sh ${HOME}/.dir_colors)"
-    else
-      export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=1;36:cd=1;33:su=30;41:sg=30;46:tw=30;42:ow=30;43'
-    fi
-
-    alias ls='ls --group-directories-first --color=auto'
-
-    (( ! ${+GREP_COLORS} )) && export GREP_COLORS="mt=37;45"
   fi
 
   # grep Colours
+  (( ! ${+GREP_COLOR} )) && export GREP_COLOR='37;45'               #BSD
+  (( ! ${+GREP_COLORS} )) && export GREP_COLORS="mt=${GREP_COLOR}"  #GNU
   if [[ ${OSTYPE} == openbsd* ]]; then
     if (( ${+commands[ggrep]} )); then
       alias grep='ggrep --color=auto'
