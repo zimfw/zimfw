@@ -16,7 +16,7 @@ waiter_func() {
 
 # print init dialog
 print "Please check the existing issues to make sure you\'re not duplicating a report"
-print "https://github.com/Eriner/zim/issues"
+print "https://github.com/zimfw/zimfw/issues"
 
 # if they don't accept, bail
 if ! waiter_func; then

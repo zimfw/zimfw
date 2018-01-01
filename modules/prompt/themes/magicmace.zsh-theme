@@ -2,7 +2,7 @@
 # magicmace theme
 # Ideas and code taken from:
 #   xero's zsh prompt <http://code.xero.nu/dotfiles>
-#   eriner's eriner prompt <https://github.com/Eriner/zim/blob/master/modules/prompt/themes/eriner.zsh-theme>
+#   eriner's eriner prompt <https://github.com/zimfw/zimfw/blob/master/modules/prompt/themes/eriner.zsh-theme>
 #
 # Requires the `git-info` zmodule to be included in the .zimrc file.
 
