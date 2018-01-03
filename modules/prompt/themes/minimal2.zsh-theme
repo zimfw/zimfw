@@ -243,7 +243,7 @@ prompt_minimal2_setup() {
   zstyle ':zim:git-info:ahead' format '%f'
   zstyle ':zim:git-info:keys' format \
     'prompt' '%b%c' \
-    'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MINIMAL_OK_COLOR}m%}")'
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MNML_OK_COLOR}m%}")'
 
   PROMPT='$(mnml_wrap MNML_PROMPT) '
   RPROMPT='$(mnml_wrap MNML_RPROMPT)'
