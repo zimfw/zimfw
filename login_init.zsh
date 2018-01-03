@@ -20,7 +20,7 @@
   zrecompile -pq ${ZDOTDIR:-${HOME}}/.zshrc
 
   # zcompile enabled module autoloaded functions
-  zrecompile -pq ${ZIM_HOME}/functions ${ZIM_HOME}/modules/${^zmodules}/functions/^(prompt_*_setup|README*|*.zwc|*.zwc.old)(-.N)
+  zrecompile -pq ${ZIM_HOME}/functions ${ZIM_HOME}/modules/${^zmodules}/functions/^([_.]*|prompt_*_setup|README*|*.zwc|*.zwc.old)(-.N)
 
   # zcompile enabled module init scripts
   for zmodule (${zmodules}); do

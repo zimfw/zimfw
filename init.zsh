@@ -22,7 +22,7 @@ fi
   # autoload searches fpath for function locations; add enabled module function paths
   fpath=(${ZIM_HOME}/functions.zwc ${ZIM_HOME}/modules/prompt/functions ${fpath})
 
-  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^(prompt_*_setup|README*|*.zwc|*.zwc.old)(-.N:t); do
+  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^([_.]*|prompt_*_setup|README*|*.zwc|*.zwc.old)(-.N:t); do
     autoload -Uz ${mod_function}
   done
 }
