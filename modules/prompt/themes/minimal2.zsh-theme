@@ -5,150 +5,217 @@
 # Requires the `git-info` zmodule to be included in the .zimrc file.
 
 function {
-  # Switches
-  MINIMAL_PROMPT="${MINIMAL_PROMPT:-yes}"
-  MINIMAL_RPROMPT="${MINIMAL_RPROMPT:-yes}"
-  MINIMAL_MAGIC_ENTER="${MINIMAL_MAGIC_ENTER:-yes}"
-  MINIMAL_SSH_HOSTNAME="${MINIMAL_SSH_HOSTNAME:-yes}"
+  # Global settings
+  MNML_OK_COLOR="${MNML_OK_COLOR:-2}"
+  MNML_ERR_COLOR="${MNML_ERR_COLOR:-1}"
 
-  # Parameters
-  MINIMAL_OK_COLOR="${MINIMAL_OK_COLOR:-2}"
-  MINIMAL_USER_CHAR="${MINIMAL_USER_CHAR:-λ}"
-  MINIMAL_INSERT_CHAR="${MINIMAL_INSERT_CHAR:-›}"
-  MINIMAL_NORMAL_CHAR="${MINIMAL_NORMAL_CHAR:-·}"
-  MINIMAL_PWD_LEN="${MINIMAL_PWD_LEN:-2}"
-  MINIMAL_PWD_CHAR_LEN="${MINIMAL_PWD_CHAR_LEN:-10}"
-  MINIMAL_MAGIC_ENTER_MARGIN="${MINIMAL_MAGIC_ENTER_MARGIN:-  | }"
+  MNML_USER_CHAR="${MNML_USER_CHAR:-λ}"
+  MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
+  MNML_NORMAL_CHAR="${MNML_NORMAL_CHAR:-·}"
+
+  [ -z "$MNML_PROMPT" ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
+  [ -z "$MNML_RPROMPT" ] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
+  [ -z "$MNML_INFOLN" ] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
+
+  [ -z "$MNML_MAGICENTER" ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
 }
 
-# Extensions
-function prompt_minimal2_magic_output {
-  prompt_minimal2_magic_output_base
+# Components
+function mnml_status {
+    local okc="$MNML_OK_COLOR"
+    local errc="$MNML_ERR_COLOR"
+    local uchar="$MNML_USER_CHAR"
+
+    local job_ansi="0"
+    if [ -n "$(jobs | sed -n '$=')" ]; then
+        job_ansi="4"
+    fi
+
+    local err_ansi="$MNML_OK_COLOR"
+    if [ "$MNML_LAST_ERR" != "0" ]; then
+        err_ansi="$MNML_ERR_COLOR"
+    fi
+
+    echo -n "%{\e[$job_ansi;3${err_ansi}m%}%(!.#.$uchar)%{\e[0m%}"
 }
 
-function prompt_minimal2_vcs {
+function mnml_keymap {
+    local kmstat="$MNML_INSERT_CHAR"
+    [ "$KEYMAP" = 'vicmd' ] && kmstat="$MNML_NORMAL_CHAR"
+    echo -n "$kmstat"
+}
+
+function mnml_cwd {
+    local segments="${1:-2}"
+    local seg_len="${2:-0}"
+
+    local _w="%{\e[0m%}"
+    local _g="%{\e[38;5;244m%}"
+
+    if [ "$segments" -le 0 ]; then
+        segments=1
+    fi
+    if [ "$seg_len" -gt 0 ] && [ "$seg_len" -lt 4 ]; then
+        seg_len=4
+    fi
+    local seg_hlen=$((seg_len / 2 - 1))
+
+    local cwd="%${segments}~"
+    cwd="${(%)cwd}"
+    cwd=("${(@s:/:)cwd}")
+
+    local pi=""
+    for i in {1..${#cwd}}; do
+        pi="$cwd[$i]"
+        if [ "$seg_len" -gt 0 ] && [ "${#pi}" -gt "$seg_len" ]; then
+            cwd[$i]="${pi:0:$seg_hlen}$_w..$_g${pi: -$seg_hlen}"
+        fi
+    done
+
+    echo -n "$_g${(j:/:)cwd//\//$_w/$_g}$_w"
+}
+
+function mnml_git {
   # git
   if [[ -n ${git_info} ]]; then
     echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}%{\e[0m%}"
   fi
 }
 
-function prompt_minimal2_env {
-  # python virtual env
-  if [ -n "${VIRTUAL_ENV}" ]; then
-    _venv="$(basename ${VIRTUAL_ENV})"
-    echo -n "${_venv%%.*} "
-  fi
+function mnml_uhp {
+    local _w="%{\e[0m%}"
+    local _g="%{\e[38;5;244m%}"
+    local cwd="%~"
+    cwd="${(%)cwd}"
+
+    echo -n "$_g%n$_w@$_g%m$_w:$_g${cwd//\//$_w/$_g}$_w"
 }
 
-function prompt_minimal2_ssh_hostname {
-  if [[ "${MINIMAL_SSH_HOSTNAME}" == "yes" ]] && ([[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]); then
-    echo -n "$(hostname -s) "
-  fi
-}
-
-# Left Prompt
-function prompt_minimal2_lprompt {
-  local user_status="%{\e[%(1j.4.0);3%(0?.${MINIMAL_OK_COLOR}.1)m%}\
-%(!.#.${MINIMAL_USER_CHAR})"
-  local kmstatus="${MINIMAL_INSERT_CHAR}"
-  [ "$KEYMAP" = 'vicmd' ] && kmstatus="${MINIMAL_NORMAL_CHAR}"
-
-  echo -n "$user_status%{\e[0m%} $kmstatus"
-}
-
-function prompt_minimal2_ps2 {
-  local kmstatus="$MINIMAL_INSERT_CHAR"
-  local offset="$((${#_venv} + 2))"
-  [ "$KEYMAP" = 'vicmd' ] && kmstatus="${MINIMAL_NORMAL_CHAR}"
-
-  printf " %.0s" {1..${offset}}
-  echo -n "${kmstatus}"
-}
-
-# Right Prompt
-function prompt_minimal2_path {
-  local w="%{\e[0m%}"
-  local cwd="%${MINIMAL_PWD_LEN}~"
-  local pi=""
-  local len="${MINIMAL_PWD_CHAR_LEN}"
-  [ "$len" -lt 4 ] && len=4
-  local hlen=$((len / 2 - 1))
-  cwd="${(%)cwd}"
-  cwd=("${(@s:/:)cwd}")
-
-  for i in {1..${#cwd}}; do
-    pi="$cwd[$i]"
-    [ "${#pi}" -gt "$len" ] && cwd[$i]="${pi:0:$hlen}$w..$_greyp${pi: -$hlen}"
-  done
-
-  echo -n "$_greyp${(j:/:)cwd//\//$w/$_greyp}$w"
-}
-
-# Magic Enter
-function prompt_minimal2_infoline {
-  local last_err="$1"
-  local w="\e[0m"
-  local rn="\e[0;31m"
-  local rb="\e[1;31m"
-
-  local user_host_pwd="${_grey}%n$w@${_grey}%m$w:${_grey}%~$w"
-  user_host_pwd="${${(%)user_host_pwd}//\//$w/${_grey}}"
-
-  local v_files="$(ls -1 | sed -n '$=')"
-  local h_files="$(ls -1A | sed -n '$=')"
-
-  local job_n="$(jobs | sed -n '$=')"
-
-  local iline="[$user_host_pwd] [${_grey}${v_files:-0}$w (${_grey}${h_files:-0}$w)]"
-  [ "${job_n}" -gt 0 ] && iline="${iline} [${_grey}${job_n}$w&]"
-
-  if [ "$last_err" != "0" ]; then
-    iline="${iline} \e[1;31m[\e[0;31m$last_err\e[1;31m]$w"
-  fi
-
-  echo "${iline}"
-}
-
-function prompt_minimal2_magic_output_base {
-  local margin="${#MINIMAL_MAGIC_ENTER_MARGIN}"
-
-  if [ "$(dirs -p | wc -l)" -gt 1 ]; then
-    local stack="$(dirs)"
-    echo "[${_grey}dirs\e[0m - ${_grey}${stack//\//\e[0m/$_grey}\e[0m]"
-  fi
-
-  if [ "$(uname)" = "Darwin" ] && ! ls --version &> /dev/null; then
-    COLUMNS=$((COLUMNS - margin)) CLICOLOR_FORCE=1 ls -C -G
-  else
-    ls -C --color="always" -w $((COLUMNS - margin))
-  fi
-
-  git -c color.status=always status -sb 2> /dev/null
-}
-
-function prompt_minimal2_wrap_output {
-  local output="$1"
-  local output_len="$(echo "$output" | sed -n '$=')"
-  if [ -n "$output" ]; then
-    if [ "$output_len" -gt "$((LINES - 2))" -a -n "${PAGER}" ]; then
-      printf "$output\n" | "${PAGER}" -R
-    else
-      printf "$output\n" | sed "s/^/${MINIMAL_MAGIC_ENTER_MARGIN}/"
+function mnml_ssh {
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo -n "$(hostname -s)"
     fi
-  fi
 }
 
-function prompt_minimal2_magic_enter {
-  local last_err="$?" # I need to capture this ASAP
+function mnml_pyenv {
+    if [ -n "$VIRTUAL_ENV" ]; then
+        _venv="$(basename $VIRTUAL_ENV)"
+        echo -n "${_venv%%.*}"
+    fi
+}
 
-  if [ -z "$BUFFER" ]; then
-    prompt_minimal2_infoline $last_err
-    prompt_minimal2_wrap_output "$(prompt_minimal2_magic_output)"
-    zle redisplay
-  else
-    zle accept-line
-  fi
+function mnml_err {
+    local _w="%{\e[0m%}"
+    local _err="%{\e[3${MNML_ERR_COLOR}m%}"
+
+    if [ "${MNML_LAST_ERR:-0}" != "0" ]; then
+        echo -n "$_err$MNML_LAST_ERR$_w"
+    fi
+}
+
+function mnml_jobs {
+    local _w="%{\e[0m%}"
+    local _g="%{\e[38;5;244m%}"
+
+    local job_n="$(jobs | sed -n '$=')"
+    if [ "$job_n" -gt 0 ]; then
+        echo -n "$_g$job_n$_w&"
+    fi
+}
+
+function mnml_files {
+    local _w="%{\e[0m%}"
+    local _g="%{\e[38;5;244m%}"
+
+    local a_files="$(ls -1A | sed -n '$=')"
+    local v_files="$(ls -1 | sed -n '$=')"
+    local h_files="$((a_files - v_files))"
+
+    local output="${_w}[$_g${v_files:-0}"
+    if [ "${h_files:-0}" -gt 0 ]; then
+        output="$output $_w($_g$h_files$_w)"
+    fi
+    output="$output${_w}]"
+
+    echo -n "$output"
+}
+
+# Magic enter functions
+function mnml_me_dirs {
+    local _w="\e[0m"
+    local _g="\e[38;5;244m"
+
+    if [ "$(dirs -p | sed -n '$=')" -gt 1 ]; then
+        local stack="$(dirs)"
+        echo "$_g${stack//\//$_w/$_g}$_w"
+    fi
+}
+
+function mnml_me_ls {
+    if [ "$(uname)" = "Darwin" ] && ! ls --version &> /dev/null; then
+        COLUMNS=$COLUMNS CLICOLOR_FORCE=1 ls -C -G -F
+    else
+        ls -C -F --color="always" -w $COLUMNS
+    fi
+}
+
+function mnml_me_git {
+    git -c color.status=always status -sb 2> /dev/null
+}
+
+# Wrappers & utils
+# join outpus of components
+function mnml_wrap {
+    local arr=()
+    local cmd_out=""
+    for cmd in ${(P)1}; do
+        cmd_out="$(eval "$cmd")"
+        if [ -n "$cmd_out" ]; then
+            arr+="$cmd_out"
+        fi
+    done
+
+    echo -n "${(j: :)arr}"
+}
+
+# expand string as prompt would do
+function mnml_iline {
+    echo "${(%)1}"
+}
+
+# display magic enter
+function mnml_me {
+    local output=()
+    local cmd_output=""
+    for cmd in $MNML_MAGICENTER; do
+        cmd_out="$(eval "$cmd")"
+        if [ -n "$cmd_out" ]; then
+            output+="$cmd_out"
+        fi
+    done
+    echo -n "${(j:\n:)output}" | less -XFR
+}
+
+# capture exit status and reset prompt
+function mnml_line_init {
+    MNML_LAST_ERR="$?" # I need to capture this ASAP
+    zle reset-prompt
+}
+
+# redraw prompt on keymap select
+function mnml_keymap_select {
+    zle reset-prompt
+}
+
+# draw infoline if no command is given
+function mnml_buffer_empty {
+    if [ -z "$BUFFER" ]; then
+        mnml_iline "$(mnml_wrap MNML_INFOLN)"
+        mnml_me
+        zle redisplay
+    else
+        zle accept-line
+    fi
 }
 
 prompt_minimal2_precmd() {
@@ -160,43 +227,29 @@ prompt_minimal2_setup() {
   autoload -Uz colors && colors
   autoload -Uz add-zsh-hook
 
-  _grey="\e[38;5;244m"
-  _greyp="%{$_grey%}"
+  prompt_opts=(cr percent sp subst)
 
-  # Apply Switches
-  if [ "$MINIMAL_PROMPT" = "yes" ]; then
-    # prompt redraw on vimode change
-    function reset_prompt {
-      zle reset-prompt
-    }
+  zle -N zle-line-init mnml_line_init
+  zle -N zle-keymap-select mnml_keymap_select
+  zle -N buffer-empty mnml_buffer_empty
 
-    prompt_opts=(cr percent sp subst)
+  add-zsh-hook precmd prompt_minimal2_precmd
 
-    zle -N zle-line-init reset_prompt
-    zle -N zle-keymap-select reset_prompt
+  zstyle ':zim:git-info:branch' format '%b'
+  zstyle ':zim:git-info:commit' format '%c'
+  zstyle ':zim:git-info:dirty' format '%{\e[0;3${MNML_ERR_COLOR}m%}'
+  zstyle ':zim:git-info:diverged' format '%{\e[0;31m%}'
+  zstyle ':zim:git-info:behind' format '%F{11}'
+  zstyle ':zim:git-info:ahead' format '%f'
+  zstyle ':zim:git-info:keys' format \
+    'prompt' '%b%c' \
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MINIMAL_OK_COLOR}m%}")'
 
-    add-zsh-hook precmd prompt_minimal2_precmd
+  PROMPT='$(mnml_wrap MNML_PROMPT) '
+  RPROMPT='$(mnml_wrap MNML_RPROMPT)'
 
-    zstyle ':zim:git-info:branch' format '%b'
-    zstyle ':zim:git-info:commit' format '%c'
-    zstyle ':zim:git-info:dirty' format '%{\e[0;31m%}'
-    zstyle ':zim:git-info:diverged' format '%{\e[0;31m%}'
-    zstyle ':zim:git-info:behind' format '%F{11}'
-    zstyle ':zim:git-info:ahead' format '%f'
-    zstyle ':zim:git-info:keys' format \
-      'prompt' '%b%c' \
-      'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MINIMAL_OK_COLOR}m%}")'
-
-    PROMPT='$(prompt_minimal2_env)$(prompt_minimal2_ssh_hostname)$(prompt_minimal2_lprompt) '
-    PS2='$(prompt_minimal2_ps2) '
-    [ "$MINIMAL_RPROMPT" = "yes" ] && RPROMPT='$(prompt_minimal2_path)$(prompt_minimal2_vcs)'
-  fi
-
-  if [ "$MINIMAL_MAGIC_ENTER" = "yes" ]; then
-    zle -N prompt_minimal2-magic-enter prompt_minimal2_magic_enter
-    bindkey -M main  "^M" prompt_minimal2-magic-enter
-    bindkey -M vicmd "^M" prompt_minimal2-magic-enter
-  fi
+  bindkey -M main "^M" buffer-empty
+  bindkey -M vicmd "^M" buffer-empty
 }
 
 prompt_minimal2_setup "$@"
