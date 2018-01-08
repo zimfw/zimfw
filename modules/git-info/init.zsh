@@ -1,4 +1,4 @@
-# vim: et ts=2 sts=2 sw=2 ft=zsh
+# vim:et sts=2 sw=2 ft=zsh
 #
 # Exposes Git repository information via the git_info associative array.
 #
@@ -14,8 +14,7 @@ _git-action() {
     "${git_dir}/../.dotest"
   do
     if [[ -d ${action_dir} ]]; then
-      local apply_formatted
-      local rebase_formatted
+      local apply_formatted rebase_formatted
       zstyle -s ':zim:git-info:action:apply' format 'apply_formatted' || apply_formatted='apply'
       zstyle -s ':zim:git-info:action:rebase' format 'rebase_formatted' || rebase_formatted='rebase'
 
@@ -105,18 +104,16 @@ git-info() {
   zstyle -s ':zim:git-info' ignore-submodules 'ignore_submodules' || ignore_submodules='all'
 
   # Format stashed.
-  local stashed_format
-  local stashed_formatted
+  local stashed_format stashed_formatted
   zstyle -s ':zim:git-info:stashed' format 'stashed_format'
   if [[ -n ${stashed_format} ]]; then
-    local stashed
+    local -i stashed
     (( stashed=$(command git stash list 2>/dev/null | wc -l) ))
     (( stashed )) && zformat -f stashed_formatted ${stashed_format} "S:${stashed}"
   fi
 
   # Format action.
-  local action_format
-  local action_formatted
+  local action_format action_formatted
   zstyle -s ':zim:git-info:action' format 'action_format'
   if [[ -n ${action_format} ]]; then
     local action=$(_git-action)
@@ -136,13 +133,7 @@ git-info() {
   # Get the branch.
   __GIT_INFO_BRANCH=$(command git symbolic-ref -q --short HEAD 2>/dev/null)
 
-  local ahead_formatted
-  local behind_formatted
-  local branch_formatted
-  local commit_formatted
-  local diverged_formatted
-  local position_formatted
-  local remote_formatted
+  local ahead_formatted behind_formatted branch_formatted commit_formatted diverged_formatted position_formatted remote_formatted
   if [[ -n ${__GIT_INFO_BRANCH} ]]; then
     unset __GIT_INFO_POSITION
 
@@ -167,9 +158,7 @@ git-info() {
       fi
     fi
 
-    local ahead_format
-    local behind_format
-    local diverged_format
+    local ahead_format behind_format diverged_format
     zstyle -s ':zim:git-info:ahead' format 'ahead_format'
     zstyle -s ':zim:git-info:behind' format 'behind_format'
     zstyle -s ':zim:git-info:diverged' format 'diverged_format'
@@ -179,8 +168,8 @@ git-info() {
 
       # Get ahead and behind counts.
       local ahead_and_behind=$(${(z)ahead_and_behind_cmd} 2>/dev/null)
-      local ahead=${ahead_and_behind[(w)1]}
-      local behind=${ahead_and_behind[(w)2]}
+      local -i ahead=${ahead_and_behind[(w)1]}
+      local -i behind=${ahead_and_behind[(w)2]}
 
       if [[ -n ${diverged_format} && ${ahead} -gt 0 && ${behind} -gt 0 ]]; then
         # Format diverged.
@@ -222,17 +211,12 @@ git-info() {
   fi
 
   # Dirty and clean format.
-  local dirty_format
-  local dirty_formatted
-  local clean_format
-  local clean_formatted
+  local dirty_format dirty_formatted clean_format clean_formatted
   zstyle -s ':zim:git-info:dirty' format 'dirty_format'
   zstyle -s ':zim:git-info:clean' format 'clean_format'
 
-  local dirty
-  local indexed_formatted
-  local unindexed_formatted
-  local untracked_formatted
+  local -i dirty
+  local indexed_formatted unindexed_formatted untracked_formatted
   if ! zstyle -t ':zim:git-info' verbose; then
     # Format unindexed.
     local unindexed_format
@@ -264,9 +248,7 @@ git-info() {
     # Use porcelain status for easy parsing.
     local status_cmd="command git status --porcelain --ignore-submodules=${ignore_submodules}"
 
-    local indexed
-    local unindexed
-    local untracked
+    local -i indexed unindexed untracked
     # Get current status.
     while IFS=$'\n' read line; do
       if [[ ${line:0:2} == '??' ]]; then
@@ -308,9 +290,8 @@ git-info() {
   fi
 
   # Format info.
-  local info_format
   local -A info_formats
-  local reply
+  local info_format reply
   zstyle -a ':zim:git-info:keys' format 'info_formats'
   for info_format in ${(k)info_formats}; do
     zformat -f reply "${info_formats[${info_format}]}" \
