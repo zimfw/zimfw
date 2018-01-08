@@ -20,10 +20,10 @@ prompt_eriner_help () {
   cat <<EOH
 This prompt is color-scheme-able. You can customize it using:
 
-    prompt eriner [<status> [<pwd> [<git_clean> [<git_dirty>]]]]
+    prompt eriner [status_color] [pwd_color] [git_clean_color] [git_dirty_color]
 
 where the parameters are the background colors for each segment. The default
-colors are black, cyan, green, yellow.
+values are black, cyan, green, and yellow.
 
 In order for this prompt to render correctly, a font with Powerline symbols is
 required. A simple way to install a font with Powerline symbols is to follow
@@ -126,8 +126,8 @@ prompt_eriner_setup() {
     'prompt' '%b%c%s' \
     'color' '%C%D'
 
-  PROMPT="\${(e)\$(prompt_eriner_main ${@:1:2})}"
-  RPROMPT=''
+  PS1="\${(e)\$(prompt_eriner_main ${@:1:2})}"
+  RPS1=''
 }
 
 prompt_eriner_preview () {
