@@ -9,8 +9,8 @@
 # Log colour scheme has yellow commit hash, bold blue author, cyan date, auto ref names
 # See https://git-scm.com/docs/pretty-formats
 _git_log_medium_format='%C(bold)Commit:%C(reset) %C(yellow)%H%C(auto)%d%n%C(bold)Author:%C(reset) %C(bold blue)%an <%ae>%n%C(bold)Date:%C(reset)   %C(cyan)%ai (%ar)%C(reset)%n%+B'
-_git_log_oneline_format='%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)%n'
-_git_log_fullgraph_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%cd)%C(auto)%d%C(reset)%n'
+_git_log_oneline_format='%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
+_git_log_fullgraph_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)%n'
 _git_log_brief_format='%C(yellow)%h%C(reset) %s%n%C(bold blue)(%ar by %an)%C(auto)%d%C(reset)%n'
 
 #
@@ -136,7 +136,6 @@ alias gRm='git remote rename'
 alias gRu='git remote update'
 alias gRp='git remote prune'
 alias gRs='git remote show'
-alias gRb='git-hub-browse'
 
 # Stash (s)
 alias gs='git stash'
@@ -182,4 +181,4 @@ alias gwx='git rm -r'
 alias gwX='git rm -r --force'
 
 # Misc
-alias g..='cd $(git-root || print .)'
+alias g..='cd "$(git-root || print .)"'

@@ -1,9 +1,10 @@
+# vim:et sts=2 sw=2 ft=zsh
 # slightly modified git_current_branch from oh-my-zsh for theme compatibility
 local ref
-ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
-local ret=${?}
-if [[ ${ret} != 0 ]]; then
-  [[ ${ret} == 128 ]] && return  # no git repo.
-  ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
+ref=$(command git symbolic-ref -q --short HEAD 2>/dev/null)
+local -i ret=${?}
+if (( ret )); then
+  (( ret == 128 )) && return  # no git repo.
+  ref=$(command git rev-parse --short HEAD 2>/dev/null) || return
 fi
-print ${ref#refs/heads/}
+print ${ref}

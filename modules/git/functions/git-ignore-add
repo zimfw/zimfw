@@ -1,10 +1,8 @@
-# make sure we have a git-root
-if ! git-root &> /dev/null; then
-  print 'not in a git repository' >&2
-  return 1
-fi
+# vim:et sts=2 sw=2 ft=zsh
+local git_root
+git_root=$(git-root) || return 1
 
 # we are in a git repository. add parameters to .gitignore
 for file in "${@}"; do
-  print "${file}" >>! $(git-root)/.gitignore
+  print "${file}" >>! "${git_root}/.gitignore"
 done

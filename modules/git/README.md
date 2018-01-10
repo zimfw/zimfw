@@ -211,8 +211,6 @@ Functions
   - `git-branch-current` displays the current branch.
   - `git-commit-lost` lists lost commits.
   - `git-dir` displays the path to the Git directory.
-  - `git-hub-browse` opens the GitHub repository in the default browser.
-  - `git-hub-shorten-url` shortens GitHub URLs.
   - `git-ignore-add` adds any arguments to the .gitignore in the project root.
   - `git-root` displays the path to the working tree root.
   - `git-stash-clear-interactive` asks for confirmation before clearing the stash.

@@ -1,9 +1,2 @@
-local root="$(command git rev-parse --show-toplevel 2> /dev/null)"
-
-if [[ -n "${root}" ]]; then
-  print "${root}"
-  return 0
-else
-  print "${0}: not a repository work tree: ${PWD}" >&2
-  return 1
-fi
+# vim:et sts=2 sw=2 ft=zsh
+command git rev-parse --show-toplevel
