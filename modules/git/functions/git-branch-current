@@ -1,1 +1,2 @@
-git_current_branch
+# vim:et sts=2 sw=2 ft=zsh
+command git symbolic-ref -q --short HEAD

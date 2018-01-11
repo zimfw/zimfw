@@ -43,8 +43,8 @@ Aliases
      commits.
   - `gcR` removes the *HEAD* commit.
   - `gcs` shows one or more objects (blobs, trees, tags and commits).
-  - `gcl` lists lost commits.
   - `gcS` commits with GPG signature.
+  - `gcv` verifies the GPG signature of commits.
 
 ### Conflict
 
@@ -104,7 +104,7 @@ Aliases
   - `glG` displays the graph log with authors and dates.
   - `glb` displays the brief commit log.
   - `glc` displays the commit count for each contributor in descending order.
-  - `glS` displays the log verifying the GPG signature of commits.
+  - `glv` displays the log verifying the GPG signature of commits.
 
 ### Merge
 
@@ -152,7 +152,6 @@ Aliases
   - `gsx` drops a stashed state.
   - `gsX` drops all the stashed states.
   - `gsl` lists stashed states.
-  - `gsL` lists dropped stashed states.
   - `gsd` displays changes between the stash and its original parent.
   - `gsp` removes and applies a single stashed state from the stash list.
   - `gsr` recovers a given stashed state.
@@ -219,12 +218,10 @@ Functions
 ---------
 
   - `git-branch-current` displays the current branch.
-  - `git-commit-lost` lists lost commits.
   - `git-dir` displays the path to the Git directory.
   - `git-ignore-add` adds any arguments to the .gitignore in the project root.
   - `git-root` displays the path to the working tree root.
   - `git-stash-clear-interactive` asks for confirmation before clearing the stash.
-  - `git-stash-dropped` lists dropped stashed states.
   - `git-stash-recover` recovers given dropped stashed states.
   - `git-submodule-move` moves a submodule.
   - `git-submodule-remove` removes a submodule.

@@ -45,9 +45,8 @@ alias gcP='git cherry-pick --no-commit'
 alias gcr='git revert'
 alias gcR='git reset "HEAD^"'
 alias gcs='git show --pretty=format:"${_git_log_medium_format}"'
-alias gcl='git-commit-lost'
 alias gcS='git commit -S'
-alias gpS='git show --pretty=short --show-signature'
+alias gcv='git verify-commit'
 
 # Conflict (C)
 alias gCl='git --no-pager diff --diff-filter=U --name-only'
@@ -102,7 +101,7 @@ alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_onelin
 alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_fullgraph_format}"'
 alias glb='git log --topo-order --pretty=format:"${_git_log_brief_format}"'
 alias glc='git shortlog --summary --numbered'
-alias glS='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
+alias glv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
 
 # Merge (m)
 alias gm='git merge'
@@ -143,7 +142,6 @@ alias gsa='git stash apply'
 alias gsx='git stash drop'
 alias gsX='git-stash-clear-interactive'
 alias gsl='git stash list'
-alias gsL='git-stash-dropped'
 alias gsd='git stash show --patch --stat'
 alias gsp='git stash pop'
 alias gsr='git-stash-recover'
