@@ -2,14 +2,12 @@
 Note:
 
 Please check the existing issues to make sure you're not duplicating a report.
-
 For bug reports, please provide the following information:
-
 In a terminal, run `zmanage info` and paste the output below: -->
 
 #### Output of `zmanage info`:
   ```
-  #In a terminal, run `zmanage info` and paste the output here
+  #Paste the output here
   ```
 
 ##### Gist of .zimrc:
