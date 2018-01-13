@@ -10,8 +10,7 @@
 # See https://git-scm.com/docs/pretty-formats
 _git_log_medium_format='%C(bold)Commit:%C(reset) %C(yellow)%H%C(auto)%d%n%C(bold)Author:%C(reset) %C(bold blue)%an <%ae>%n%C(bold)Date:%C(reset)   %C(cyan)%ai (%ar)%C(reset)%n%+B'
 _git_log_oneline_format='%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
-_git_log_fullgraph_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)%n'
-_git_log_brief_format='%C(yellow)%h%C(reset) %s%n%C(bold blue)(%ar by %an)%C(auto)%d%C(reset)%n'
+_git_log_oneline_medium_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)'
 
 #
 # Aliases
@@ -97,11 +96,11 @@ alias gl='git log --topo-order --pretty=format:"${_git_log_medium_format}"'
 alias gls='git log --topo-order --stat --pretty=format:"${_git_log_medium_format}"'
 alias gld='git log --topo-order --stat --patch --full-diff --pretty=format:"${_git_log_medium_format}"'
 alias glo='git log --topo-order --pretty=format:"${_git_log_oneline_format}"'
+alias glO='git log --topo-order --pretty=format:"${_git_log_oneline_medium_format}"'
 alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}%n"'
-alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_fullgraph_format}"'
-alias glb='git log --topo-order --pretty=format:"${_git_log_brief_format}"'
-alias glc='git shortlog --summary --numbered'
+alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}%n"'
 alias glv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
+alias glc='git shortlog --summary --numbered'
 
 # Merge (m)
 alias gm='git merge'

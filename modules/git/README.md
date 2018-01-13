@@ -100,11 +100,11 @@ Aliases
   - `gls` displays the stats log.
   - `gld` displays the diff log.
   - `glo` displays the one line log.
+  - `glO` displays the one line log with authors and dates.
   - `glg` displays the graph log.
   - `glG` displays the graph log with authors and dates.
-  - `glb` displays the brief commit log.
-  - `glc` displays the commit count for each contributor in descending order.
   - `glv` displays the log verifying the GPG signature of commits.
+  - `glc` displays the commit count for each contributor in descending order.
 
 ### Merge
 
