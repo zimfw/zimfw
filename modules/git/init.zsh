@@ -29,8 +29,8 @@ alias gbm='git branch --move'
 alias gbM='git branch --move --force'
 alias gbs='git show-branch'
 alias gbS='git show-branch --all'
-alias gbx='git branch --delete'
-alias gbX='git branch --delete --force'
+alias gbx='git-branch-delete-interactive'
+alias gbX='git-branch-delete-interactive --force'
 
 # Commit (c)
 alias gc='git commit --verbose'
