@@ -2,8 +2,6 @@
 # Creates archive files
 #
 
-local archive_name dir_to_archive
-
 if (( ${#} != 2 )); then
   print "usage: ${0} [archive_name.ext] [/path/to/include/in/archive]" >&2
   return 1
@@ -13,9 +11,9 @@ fi
 # so we don't need any argc check here.
 
 # strip the path, just in case one is provided for some reason
-archive_name="${1:t}"
+local archive_name="${1:t}"
 # use absolute paths, and follow symlinks
-dir_to_archive="${2}"
+local dir_to_archive="${2}"
 
 # if the directory doesn't exist, quit. Nothing to archive
 if [[ ! -e "${dir_to_archive}" ]]; then
@@ -29,8 +27,8 @@ fi
 case "${archive_name}" in
   (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="gzip" "${dir_to_archive}" ;;
   (*.tar.bz2|*.tbz|*.tbz2) tar -cvf "${archive_name}" --use-compress-program="bzip2" "${dir_to_archive}" ;;
-  (*.tar.xz|*.txz) tar --xz --help &> /dev/null && tar -cvJf "${archive_name}" "${dir_to_archive}" ;;
-  (*.tar.lzma|*.tlz) tar --lzma --help &> /dev/null && tar -cvf "${archive_name}" --lzma "${dir_to_archive}" ;;
+  (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar -cvJf "${archive_name}" "${dir_to_archive}" ;;
+  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar -cvf "${archive_name}" --lzma "${dir_to_archive}" ;;
   (*.tar) tar -cvf "${archive_name}" "${dir_to_archive}" ;;
   (*.zip) zip -r "${archive_name}" "${dir_to_archive}" ;;
   (*.rar) rar a "${archive_name}" "${dir_to_archive}" ;;
