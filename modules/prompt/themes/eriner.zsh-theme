@@ -107,12 +107,9 @@ prompt_eriner_precmd() {
 }
 
 prompt_eriner_setup() {
-  autoload -Uz colors && colors
-  autoload -Uz add-zsh-hook
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_eriner_precmd
 
   prompt_opts=(cr percent sp subst)
-
-  add-zsh-hook precmd prompt_eriner_precmd
 
   local prompt_eriner_color3=${3:-green}
   local prompt_eriner_color4=${4:-yellow}
@@ -131,7 +128,7 @@ prompt_eriner_setup() {
 }
 
 prompt_eriner_preview () {
-  if (( $# )); then
+  if (( ${#} )); then
     prompt_preview_theme eriner "${@}"
   else
     prompt_preview_theme eriner

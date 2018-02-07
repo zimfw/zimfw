@@ -1,3 +1,4 @@
+# vim:et sts=2 sw=2 ft=zsh
 #
 # magicmace theme
 # Ideas and code taken from:
@@ -50,12 +51,10 @@ prompt_magicmace_precmd() {
 }
 
 prompt_magicmace_setup() {
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_magicmace_precmd
   autoload -Uz colors && colors
-  autoload -Uz add-zsh-hook
 
   prompt_opts=(cr percent sp subst)
-
-  add-zsh-hook precmd prompt_magicmace_precmd
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c...'
@@ -66,8 +65,8 @@ prompt_magicmace_setup() {
     'prompt' '─[${COLOR_NORMAL}%b%c%D%A%B${COLOR_USER_LEVEL}]'
 
   # Call git directly, ignoring aliases under the same name.
-  PROMPT='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]$(prompt_magicmace_git)── ─%f '
-  RPROMPT=''
+  PS1='${COLOR_USER_LEVEL}$(prompt_magicmace_status)[${COLOR_NORMAL}$(short_pwd)${COLOR_USER_LEVEL}]$(prompt_magicmace_git)── ─%f '
+  RPS1=''
 }
 
-prompt_magicmace_setup "$@"
+prompt_magicmace_setup "${@}"
