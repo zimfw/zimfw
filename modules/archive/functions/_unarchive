@@ -1,0 +1,4 @@
+#compdef unarchive
+
+_arguments \
+  ":archive:_files -g '(#i)*.(tar|gz|tgz|bz2|tbz|tbz2|xz|txz|tlz|lzma|Z|zip|rar|7z|001)(-.)'"
