@@ -23,7 +23,7 @@ case "${archive_name}" in
   (*.tar.bz2|*.tbz|*.tbz2) tar -xvjf "${archive_name}" ;;
   (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar --xz -xvf "${archive_name}" \
     || xzcat "${archive_name}" | tar xvf - ;;
-  (*.tar.zma|*.tlz) tar --lzma --help &>/dev/null && tar --lzma -xvf "${archive_name}" \
+  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar --lzma -xvf "${archive_name}" \
     || lzcat "${archive_name}" | tar xvf - ;;
   (*.tar) tar xvf "${archive_name}" ;;
   (*.gz) gunzip "${archive_name}" ;;
