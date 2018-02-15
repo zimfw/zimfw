@@ -10,8 +10,7 @@
 # See https://git-scm.com/docs/pretty-formats
 _git_log_medium_format='%C(bold)Commit:%C(reset) %C(yellow)%H%C(auto)%d%n%C(bold)Author:%C(reset) %C(bold blue)%an <%ae>%n%C(bold)Date:%C(reset)   %C(cyan)%ai (%ar)%C(reset)%n%+B'
 _git_log_oneline_format='%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
-_git_log_fullgraph_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)%n'
-_git_log_brief_format='%C(yellow)%h%C(reset) %s%n%C(bold blue)(%ar by %an)%C(auto)%d%C(reset)%n'
+_git_log_oneline_medium_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)'
 
 #
 # Aliases
@@ -45,9 +44,8 @@ alias gcP='git cherry-pick --no-commit'
 alias gcr='git revert'
 alias gcR='git reset "HEAD^"'
 alias gcs='git show --pretty=format:"${_git_log_medium_format}"'
-alias gcl='git-commit-lost'
 alias gcS='git commit -S'
-alias gpS='git show --pretty=short --show-signature'
+alias gcv='git verify-commit'
 
 # Conflict (C)
 alias gCl='git --no-pager diff --diff-filter=U --name-only'
@@ -98,11 +96,11 @@ alias gl='git log --topo-order --pretty=format:"${_git_log_medium_format}"'
 alias gls='git log --topo-order --stat --pretty=format:"${_git_log_medium_format}"'
 alias gld='git log --topo-order --stat --patch --full-diff --pretty=format:"${_git_log_medium_format}"'
 alias glo='git log --topo-order --pretty=format:"${_git_log_oneline_format}"'
+alias glO='git log --topo-order --pretty=format:"${_git_log_oneline_medium_format}"'
 alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}%n"'
-alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_fullgraph_format}"'
-alias glb='git log --topo-order --pretty=format:"${_git_log_brief_format}"'
+alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}%n"'
+alias glv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
 alias glc='git shortlog --summary --numbered'
-alias glS='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
 
 # Merge (m)
 alias gm='git merge'
@@ -143,7 +141,6 @@ alias gsa='git stash apply'
 alias gsx='git stash drop'
 alias gsX='git-stash-clear-interactive'
 alias gsl='git stash list'
-alias gsL='git-stash-dropped'
 alias gsd='git stash show --patch --stat'
 alias gsp='git stash pop'
 alias gsr='git-stash-recover'
