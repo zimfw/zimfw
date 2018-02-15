@@ -50,7 +50,7 @@ alias gcS='git commit -S'
 alias gpS='git show --pretty=short --show-signature'
 
 # Conflict (C)
-alias gCl='git diff --diff-filter=U --name-only --no-pager'
+alias gCl='git --no-pager diff --diff-filter=U --name-only'
 alias gCa='git add $(gCl)'
 alias gCe='git mergetool $(gCl)'
 alias gCo='git checkout --ours --'
