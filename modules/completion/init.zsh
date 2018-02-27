@@ -36,6 +36,9 @@ setopt PATH_DIRS
 # Make globbing (filename generation) not sensitive to case.
 unsetopt CASE_GLOB
 
+# Don't beep on an ambiguous completion.
+unsetopt LIST_BEEP
+
 
 #
 # completion module options
