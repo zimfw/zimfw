@@ -24,8 +24,20 @@
   done
 
   # zcompile enabled module init scripts
-  for file in ${ZIM_HOME}/modules/${^zmodules}/init.zsh(-.N); do
-    zrecompile -pq ${file}
+  local zmodule zmodule_dir
+  for zmodule (${zmodules}); do
+    zmodule_dir=${ZIM_HOME}/modules/${zmodule}
+    if [[ -d ${zmodule_dir} ]]; then
+      for file (${zmodule_dir}/{,zsh-}${zmodule}.zsh-theme \
+          ${zmodule_dir}/init.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.plugin.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.{z,}sh); do
+        if [[ -f ${file} ]]; then
+          zrecompile -pq ${file}
+          break
+        fi
+      done
+    fi
   done
 
   # zcompile all prompt setup scripts

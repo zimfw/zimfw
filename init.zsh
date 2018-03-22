@@ -29,13 +29,22 @@ fi
 
 # Initialize modules
 () {
-  local zmodule
+  local zmodule zmodule_dir zmodule_file
 
   for zmodule (${zmodules}); do
-    if [[ -s ${ZIM_HOME}/modules/${zmodule}/init.zsh ]]; then
-      source ${ZIM_HOME}/modules/${zmodule}/init.zsh
-    elif [[ ! -d ${ZIM_HOME}/modules/${zmodule} ]]; then
+    zmodule_dir=${ZIM_HOME}/modules/${zmodule}
+    if [[ ! -d ${zmodule_dir} ]]; then
       print "No such module \"${zmodule}\"." >&2
+    else
+      for zmodule_file (${zmodule_dir}/{,zsh-}${zmodule}.zsh-theme \
+          ${zmodule_dir}/init.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.plugin.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.{z,}sh); do
+        if [[ -f ${zmodule_file} ]]; then
+          source ${zmodule_file}
+          break
+        fi
+      done
     fi
   done
 }
