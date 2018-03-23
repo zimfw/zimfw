@@ -3,7 +3,7 @@ ZIM - Zsh IMproved
 
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
-    <img width=650px src="https://i.imgur.com/3nD5Q9m.png">
+    <img width=650px src="https://i.imgur.com/0i3nuds.png">
   </a>
 </div>
 
