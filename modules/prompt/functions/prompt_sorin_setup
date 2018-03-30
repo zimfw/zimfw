@@ -1,0 +1,117 @@
+#
+# A simple theme that displays relevant, contextual information.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+# Screenshots:
+#   http://i.imgur.com/nrGV6pg.png
+#
+
+#
+# 16 Terminal Colors
+# -- ---------------
+#  0 black
+#  1 red
+#  2 green
+#  3 yellow
+#  4 blue
+#  5 magenta
+#  6 cyan
+#  7 white
+#  8 bright black
+#  9 bright red
+# 10 bright green
+# 11 bright yellow
+# 12 bright blue
+# 13 bright magenta
+# 14 bright cyan
+# 15 bright white
+#
+
+function prompt_sorin_git {
+  cd -q "$1"
+  echo `git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'`
+}
+function prompt-pwd {
+
+setopt localoptions extendedglob
+
+local current_pwd="${PWD/#$HOME/~}"
+local ret_directory
+
+if [[ "$current_pwd" == (#m)[/~] ]]; then
+  ret_directory="$MATCH"
+  unset MATCH
+elif zstyle -m ':zim:module:prompt' pwd-length 'full'; then
+  ret_directory=${PWD}
+elif zstyle -m ':zim:module:prompt' pwd-length 'long'; then
+  ret_directory=${current_pwd}
+else
+  ret_directory="${${${${(@j:/:M)${(@s:/:)current_pwd}##.#?}:h}%/}//\%/%%}/${${current_pwd:t}//\%/%%}"
+fi
+
+unset current_pwd
+
+print "$ret_directory"
+
+}
+function prompt_sorin_precmd {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+
+  # Format PWD.
+  # PWD taken from Prezto
+  _prompt_sorin_pwd=$(prompt-pwd)
+
+  # Handle updating git data. We also clear the git prompt data if we're in a
+  # different git root now.
+  if (( $+functions[git-dir] )); then
+    local new_git_root="$(git-dir 2> /dev/null)"
+    if [[ $new_git_root != $_sorin_cur_git_root ]]; then
+      _prompt_sorin_git=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'`
+      _sorin_cur_git_root=$new_git_root
+    fi
+  fi
+
+  # Run python info (this should be fast and not require any async)
+  if (( $+functions[python-info] )); then
+    python-info
+  fi
+}
+
+function prompt_sorin_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent sp subst)
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_sorin_precmd
+
+
+
+  # Set up non-zero return value display
+  local show_return="✘ "
+
+  # Get the async worker set up
+  _sorin_cur_git_root=''
+
+  _prompt_sorin_git=''
+  _prompt_sorin_pwd=''
+  # Define prompts.
+  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} %F{9}>%F{3}>%F{10}> '
+  RPROMPT='$python_info[virtualenv]${editor_info[overwrite]}%(?:: %F{1}'
+  RPROMPT+=${show_return}
+  RPROMPT+='%f)${VIM:+" %B%F{6}V%f%b"}${_prompt_sorin_git}'
+  # SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
+}
+
+function prompt_sorin_preview {
+  local +h PROMPT=''
+  local +h RPROMPT=''
+  local +h SPROMPT=''
+
+  editor-info 2> /dev/null
+  prompt_preview_theme 'sorin'
+}
+
+prompt_sorin_setup "$@"
