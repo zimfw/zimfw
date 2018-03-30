@@ -31,7 +31,7 @@
 
 function prompt_sorin_git {
   cd -q "$1"
-  echo `git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'`
+  echo $(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')
 }
 function prompt-pwd {
 
