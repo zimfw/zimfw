@@ -34,14 +34,6 @@ fi
   for zmodule (${zmodules}); do
     if [[ -s ${ZIM_HOME}/modules/${zmodule}/init.zsh ]]; then
       source ${ZIM_HOME}/modules/${zmodule}/init.zsh
-    elif [[ -s ${ZIM_HOME}/modules/${zmodule}/${zmodule}.plugin.zsh ]]; then
-        source ${ZIM_HOME}/modules/${zmodule}/${zmodule}.plugin.zsh 
-    elif [[ -s ${ZIM_HOME}/modules/${zmodule}/${zmodule}.zsh ]]; then
-        source ${ZIM_HOME}/modules/${zmodule}/${zmodule}.zsh
-    elif [[ -s ${ZIM_HOME}/modules/${zmodule}/zsh-${zmodule}.plugin.zsh ]]; then
-        source ${ZIM_HOME}/modules/${zmodule}/zsh-${zmodule}.plugin.zsh  
-    elif [[ -s ${ZIM_HOME}/modules/${zmodule}/zsh-${zmodule}.zsh ]]; then
-        source ${ZIM_HOME}/modules/${zmodule}/zsh-${zmodule}.zsh  
     elif [[ ! -d ${ZIM_HOME}/modules/${zmodule} ]]; then
       print "No such module \"${zmodule}\"." >&2
     fi
