@@ -69,7 +69,7 @@ function prompt_sorin_precmd {
   if (( $+functions[git-dir] )); then
     local new_git_root="$(git-dir 2> /dev/null)"
     if [[ $new_git_root != $_sorin_cur_git_root ]]; then
-      _prompt_sorin_git=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'`
+      _prompt_sorin_git$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')
       _sorin_cur_git_root=$new_git_root
     fi
   fi
