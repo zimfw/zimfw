@@ -29,10 +29,6 @@
 # 15 bright white
 #
 
-function prompt_sorin_git {
-  cd -q "$1"
-  echo $(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')
-}
 function prompt-pwd {
 
 setopt localoptions extendedglob
@@ -69,7 +65,7 @@ function prompt_sorin_precmd {
   if (( $+functions[git-dir] )); then
     local new_git_root="$(git-dir 2> /dev/null)"
     if [[ $new_git_root != $_sorin_cur_git_root ]]; then
-      _prompt_sorin_git$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')
+      _prompt_sorin_git=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')
       _sorin_cur_git_root=$new_git_root
     fi
   fi
@@ -98,10 +94,10 @@ function prompt_sorin_setup {
   _prompt_sorin_git=''
   _prompt_sorin_pwd=''
   # Define prompts.
-  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} %F{9}>%F{3}>%F{10}> '
+  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} %F{9}>%F{3}>%F{2}>%f '
   RPROMPT='$python_info[virtualenv]${editor_info[overwrite]}%(?:: %F{1}'
   RPROMPT+=${show_return}
-  RPROMPT+='%f)${VIM:+" %B%F{6}V%f%b"}${_prompt_sorin_git}'
+  RPROMPT+='%f)${VIM:+" %B%F{6}V%f%b"}%F{4}${_prompt_sorin_git}%f'
   # SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
 
