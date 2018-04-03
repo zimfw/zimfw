@@ -76,7 +76,7 @@ To update zim, run:
 zmanage update
 ```
 
-For more information about the `zmanage` tool, see the [meta module][meta-module] documentation.
+For more information about the `zmanage` tool, run `zmanage help`.
 
 Uninstalling
 ------------
@@ -101,4 +101,3 @@ zmanage remove
 [speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://github.com/zimfw/zimfw/wiki/Modules
 [themes]: https://github.com/zimfw/zimfw/wiki/Themes
-[meta-module]: https://github.com/zimfw/zimfw/tree/master/modules/meta
