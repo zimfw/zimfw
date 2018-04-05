@@ -1,0 +1,65 @@
+#
+# zim_info - easily create an issue template
+#
+
+# create our 'pause' function
+waiter_func() {
+  local input_key
+  read -sk \?"Press [Enter] to continue; anything else to quit." input_key
+  if [[ ${input_key} == $'\n' ]]; then
+    print "\r                                                    "
+    return 0
+  else
+    return 1
+  fi
+}
+
+# print init dialog
+print "Please check the existing issues to make sure you\'re not duplicating a report"
+print "https://github.com/zimfw/zimfw/issues"
+
+# if they don't accept, bail
+if ! waiter_func; then
+  return 1
+fi
+
+# for convenience, this is our new home
+cd ${ZIM_HOME}
+
+# collect sys info
+local git_dirty=$(command git status --porcelain 2>/dev/null | tail -n1)
+local zim_info=$(zsh tools/zim_info)
+
+print "Environment Info
+----------------
+${zim_info}
+
+Description
+-----------
+${user_desc}
+
+Steps to Reproduce
+------------------
+${user_reproduce}
+
+Images or other Information
+---------------------------
+"
+
+
+# if we have a dirty git, report it
+if [[ -n ${git_dirty} ]]; then
+  print "${ZIM_HOME} has a dirty git working tree."
+  print "here is the diff:"
+  print '```'
+  print $(command git diff)
+  print '```'
+fi
+
+
+print '\n\n'
+print 'Please copy the above and use this when reporting the issue\n'
+
+# optionally, now we can produce debug info
+print 'If you would like to produce some helpful logs about your environment, run:'
+print '$ zmanage debug'

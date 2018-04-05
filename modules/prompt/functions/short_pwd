@@ -1,0 +1,13 @@
+# shortens the pwd for use in prompt
+
+local current_dir="${1:-${PWD}}"
+local return_dir='~'
+
+current_dir="${current_dir/#${HOME}/~}"
+
+# if we aren't in ~
+if [[ ${current_dir} != '~' ]]; then
+  return_dir="${${${${(@j:/:M)${(@s:/:)current_dir}##.#?}:h}%/}//\%/%%}/${${current_dir:t}//\%/%%}"
+fi
+
+print ${return_dir}

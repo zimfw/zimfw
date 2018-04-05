@@ -1,0 +1,39 @@
+#
+# Unarchives files
+#
+
+if (( ${#} != 1 )); then
+  print "usage: ${0} [archive.ext]" >&2
+  return 1
+fi
+
+if [[ ! -s ${1} ]]; then
+  print "archive \"${1}\" was not found or has size 0." >&2
+  return 1
+fi
+
+# strip the path, just in case one is provided for some reason
+local archive_name="${1:t}"
+
+# using unpigz/pbunzip2 provides little to decompression time; the benefit is mainly in compression time.
+# setting it as an alias in the init.zsh file should be sufficient here.
+
+case "${archive_name}" in
+  (*.tar.gz|*.tgz) tar -xvzf "${archive_name}" ;;
+  (*.tar.bz2|*.tbz|*.tbz2) tar -xvjf "${archive_name}" ;;
+  (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar --xz -xvf "${archive_name}" \
+    || xzcat "${archive_name}" | tar xvf - ;;
+  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar --lzma -xvf "${archive_name}" \
+    || lzcat "${archive_name}" | tar xvf - ;;
+  (*.tar) tar xvf "${archive_name}" ;;
+  (*.gz) gunzip "${archive_name}" ;;
+  (*.bz2) bunzip2 "${archive_name}" ;;
+  (*.xz) unxz "${archive_name}" ;;
+  (*.lzma) unlzma "${archive_name}" ;;
+  (*.Z) uncompress "${archive_name}" ;;
+  (*.zip) unzip "${archive_name}";;
+  (*.rar) (( $+{commands[unrar]} )) && unrar x -ad "${archive_name}" \
+    || rar x -ad "${archive_name}" ;;
+  (*.7z|*.001) 7za x "${archive_name}" ;;
+  (*) print "${0}: unknown archive type: ${archive_name}" ;;
+esac

@@ -1,0 +1,2 @@
+# vim:et sts=2 sw=2 ft=zsh
+command git rev-parse --show-toplevel

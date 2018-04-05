@@ -1,0 +1,41 @@
+#
+# Creates archive files
+#
+
+if (( ${#} != 2 )); then
+  print "usage: ${0} [archive_name.ext] [/path/to/include/in/archive]" >&2
+  return 1
+fi
+
+# we are quitting (above) if there are not exactly 2 vars,
+# so we don't need any argc check here.
+
+# strip the path, just in case one is provided for some reason
+local archive_name="${1:t}"
+# use absolute paths, and follow symlinks
+local dir_to_archive="${2}"
+
+# if the directory doesn't exist, quit. Nothing to archive
+if [[ ! -e "${dir_to_archive}" ]]; then
+  print "${0}: file or directory not valid: ${dir_to_archive}" >&2
+  return 1
+fi
+
+# pigz and pbzip2 are aliased in the init.zsh file. This provides a significant speedup, resulting in a
+# near-liner decrease in compression time based on on the number of available cores.
+
+case "${archive_name}" in
+  (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="gzip" "${dir_to_archive}" ;;
+  (*.tar.bz2|*.tbz|*.tbz2) tar -cvf "${archive_name}" --use-compress-program="bzip2" "${dir_to_archive}" ;;
+  (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar -cvJf "${archive_name}" "${dir_to_archive}" ;;
+  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar -cvf "${archive_name}" --lzma "${dir_to_archive}" ;;
+  (*.tar) tar -cvf "${archive_name}" "${dir_to_archive}" ;;
+  (*.zip) zip -r "${archive_name}" "${dir_to_archive}" ;;
+  (*.rar) rar a "${archive_name}" "${dir_to_archive}" ;;
+  (*.7z) 7za a "${archive_name}" "${dir_to_archive}" ;;
+  (*.gz) print "${0}: .gz is only useful for single files, and does not capture permissions. Use .tar.gz" ;;
+  (*.bz2) print "${0}: .bzip2 is only useful for single files, and does not capture permissions. Use .tar.bz2" ;;
+  (*.xz) print "${0}: .xz is only useful for single files, and does not capture permissions. Use .tar.xz" ;;
+  (*.lzma) print "${0}: .lzma is only useful for single files, and does not capture permissions. Use .tar.lzma" ;;
+  (*) print "${0}: unknown archive type: ${archive_name}" ;;
+esac

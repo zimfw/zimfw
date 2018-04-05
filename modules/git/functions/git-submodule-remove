@@ -1,0 +1,21 @@
+# vim:et sts=2 sw=2 ft=zsh
+local git_dir
+git_dir=$(git-dir) || return 1
+
+if [[ ${PWD} != $(git-root) ]]; then
+  print "${0}: must be run from the root of the work tree" >&2
+  return 1
+elif ! command git config --file .gitmodules --get "submodule.${1}.path" &>/dev/null; then
+  print "${0}: submodule not found: ${1}" >&2
+  return 1
+fi
+
+command git config --file "${git_dir}/config" --remove-section "submodule.${1}" &>/dev/null
+command git config --file .gitmodules --remove-section "submodule.${1}" &>/dev/null
+command git add .gitmodules
+
+command git rm --cached "${1}" &>/dev/null
+rm -rf "${1}"
+rm -rf "${git_dir}/modules/${1}"
+
+return 0

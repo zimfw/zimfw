@@ -1,0 +1,105 @@
+#!/usr/bin/env zsh
+#
+# Generates trace log to debug zim and zsh issues
+#
+
+print "This function creates a trace log to debug
+Zsh and Zim functionality.
+
+It will copy your .zshrc to /tmp/ztrace/, ammend profiling
+code, launch a new shell, log the trace, close the shell,
+archive the logs, and finally print the path to the archive."
+
+read \?"Press [Enter] to begin trace."
+
+mkdir -p /tmp/ztrace
+# make sure that we were able to create the directory
+if [[ ! -d /tmp/ztrace ]]; then
+  print 'failed to create /tmp/ztrace directory. Aborting.'
+  return 1
+else
+  # check if known output file, if exists
+  # rm all directory contents
+  if [[ -e /tmp/ztrace/ztrace.log ]]; then
+    print "\nLogs from previous run of trace-zim are present
+Deleting old logs now..."
+    # use of anonymous function for dotglob opt
+    () {
+      setopt dotglob
+      rm -rf /tmp/ztrace/*
+    }
+  fi
+fi
+
+# get some basic system information (kernel and zsh version)
+print "Zsh version:
+  $(zsh --version)
+Kernel information:
+  $(uname -a)
+fpath info:
+  ${fpath}" >! /tmp/ztrace/sysinfo
+
+cp ${ZDOTDIR:-${HOME}}/.zshrc /tmp/ztrace/.zshrc.orig
+cp ${ZDOTDIR:-${HOME}}/.zimrc /tmp/ztrace/.zimrc
+# rsync will allow us to not have to copy the .git folder; use if available 
+if (( ${+commands[rsync]} )); then
+  rsync -az --exclude .git ${ZIM_HOME} /tmp/ztrace/
+else
+  cp -R ${ZIM_HOME} /tmp/ztrace/
+fi
+
+# create a modified .zshrc to produce a trace log
+cat <<EOF >! /tmp/ztrace/.zshrc
+###################
+# zim trace start #
+###################
+PS4=$'%D{%s%6.}-_-'
+exec 3>&2 2>/tmp/ztrace/sample-time.$$.log
+zmodload zsh/zprof
+setopt xtrace prompt_subst
+EOF
+
+cat /tmp/ztrace/.zshrc.orig >>! /tmp/ztrace/.zshrc
+
+cat <<EOF >>! /tmp/ztrace/.zshrc
+#################
+# zim trace end #
+#################
+
+unsetopt xtrace
+zprof >! /tmp/ztrace/zprof
+#non-linux systems have weird fd; also, no real need to redirect back
+#prompt is (practically speaking) non-interactive, fd exists only for that process
+#which is closed (by typing exit)
+
+#exec 2>&3 3>&-
+EOF
+
+print "\nSpawning zsh and producing trace...\n\n"
+ZDOTDIR=/tmp/ztrace zsh -ic 'exit'
+print "Trace complete.
+Parsing logs to a nicer format; this may take some time..."
+
+# this is ugly thing makes it pretty...
+while read line; do if [[ ${line} =~ '^[0-9]+-_-' ]]; then crt=000000$((${line%%-_-*}-10#0$last)); printf "%12.9f %s\n" ${crt:0:${#crt}-6}.${crt:${#crt}-6} ${line#*-_-}; last=${line%%-_-*}; fi; done < /tmp/ztrace/sample-time.(*).log > /tmp/ztrace/ztrace.log
+print "Parsing complete!"
+
+# safe to remove old, unneeded environment files 
+print "Tidying up before archive..."
+rm -f /tmp/ztrace/sample-time.*
+rm -rf /tmp/ztrace/.zim
+rm -f /tmp/ztrace/.zshrc
+mv /tmp/ztrace/.zshrc.orig /tmp/ztrace/.zshrc
+rm -f /tmp/ztrace/.zhistory
+rm -f /tmp/ztrace/.zcompdump*
+
+print "Archiving trace logs...\n"
+
+tar -czf /tmp/ztrace.tar.gz /tmp/ztrace/
+
+print "Archive complete!\n
+Trace by with execution time available at:
+  /tmp/ztrace/ztrace.log
+Archive (for sharing/help) available at:
+  /tmp/ztrace.tar.gz"
+

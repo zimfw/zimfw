@@ -1,0 +1,13 @@
+#
+# zim_remove - removes zim from the system
+#
+# Note: this doesn't remove _everything_. It removes as much as
+#       possible while maintaining safety (don't delete custom user content).
+#
+
+sed '/# Source zim/,/fi/d' ${ZDOTDIR:-${HOME}}/.zshrc
+sed '/# The following code helps/,/) &!/d' ${ZDOTDIR:-${HOME}}/.zlogin
+rm -f ${ZDOTDIR:-${HOME}}/.zimrc
+
+# not forcing this one, as it is recursive. It's possible something went wrong.
+rm -r ${ZIM_HOME}

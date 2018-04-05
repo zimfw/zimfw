@@ -1,0 +1,7 @@
+#
+# zim_build_cache - rebuilds the zim cache
+#
+
+source ${ZIM_HOME}/login_init.zsh
+
+print 'To rebuild the completion cache, please restart your terminal'

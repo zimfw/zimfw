@@ -1,0 +1,10 @@
+# vim:et sts=2 sw=2 ft=zsh
+setopt LOCAL_OPTIONS PIPE_FAIL
+
+local -i stashed
+stashed=$(command git stash list | wc -l) || return 1
+if (( stashed )) && \
+    read -q "?Clear ${stashed} stashed state(s) [y/N]? "; then
+  print
+  command git stash clear
+fi
