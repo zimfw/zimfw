@@ -27,6 +27,13 @@ zmodules=(directory environment git git-info history input utility custom \
 zprompt_theme='steeef'
 
 #
+# Input
+#
+
+# Set to vi or emacs
+zinput_mode='emacs'
+
+#
 # Completion
 #
 

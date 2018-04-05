@@ -14,6 +14,11 @@ fi
 # Source user configuration
 [[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
+if zinput_mode='emacs'; then
+  set -o emacs
+else
+  set -o vi
+
 # Autoload module functions
 () {
   local mod_function
