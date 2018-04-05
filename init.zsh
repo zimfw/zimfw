@@ -15,7 +15,7 @@ fi
 [[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
 # If necessary, set vi mode before loading modules
-if zinput_mode='vi'; then
+if ${zinput_mode}='vi'; then
   set -o vi
 else
   set -o emacs
