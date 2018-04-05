@@ -14,8 +14,8 @@ fi
 # Source user configuration
 [[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
-# If necessary, set vi mode before loading modules
-if ${zinput_mode}='vi'; then
+# If necessary, set vi mode before loading modules to ensure history search with arrow keys works in vi mode
+if [ ${zinput_mode}='vi' ]; then
   set -o vi
 else
   set -o emacs
