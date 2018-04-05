@@ -65,7 +65,7 @@ Installing Zim is easy. If you have a different shell framework installed (like 
   source ${ZDOTDIR:-${HOME}}/.zlogin
   ```
 
-5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file. To set vi mode, set `zinput_mode` in `.zimrc`.
+5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file. To set input mode, set `zinput_mode` in `.zimrc`.
 
 Updating
 --------
