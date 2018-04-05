@@ -45,4 +45,4 @@ Aliases `get` to ( `aria2c` || `axel` || `wget` || `curl` ).
 
 | alias | description |
 | ----- | ----------- |
-| `mkcd` | mkdir and cd |
+| `mkcd` | `mkdir -p` and `cd` |
