@@ -36,10 +36,8 @@ fi
     if [[ ! -d ${zmodule_dir} ]]; then
       print "No such module \"${zmodule}\"." >&2
     else
-      for zmodule_file (${zmodule_dir}/{,zsh-}${zmodule}.zsh-theme \
-          ${zmodule_dir}/init.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.plugin.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.{z,}sh); do
+      for zmodule_file (${zmodule_dir}/init.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}); do
         if [[ -f ${zmodule_file} ]]; then
           source ${zmodule_file}
           break

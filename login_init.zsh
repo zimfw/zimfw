@@ -8,7 +8,7 @@
 #
 
 (
-  local dir file
+  local dir file zmodule zmodule_dir
   setopt LOCAL_OPTIONS EXTENDED_GLOB
   autoload -U zrecompile
 
@@ -24,14 +24,11 @@
   done
 
   # zcompile enabled module init scripts
-  local zmodule zmodule_dir
   for zmodule (${zmodules}); do
     zmodule_dir=${ZIM_HOME}/modules/${zmodule}
     if [[ -d ${zmodule_dir} ]]; then
-      for file (${zmodule_dir}/{,zsh-}${zmodule}.zsh-theme \
-          ${zmodule_dir}/init.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.plugin.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.{z,}sh); do
+      for file (${zmodule_dir}/init.zsh \
+          ${zmodule_dir}/{,zsh-}${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}); do
         if [[ -f ${file} ]]; then
           zrecompile -pq ${file}
           break
