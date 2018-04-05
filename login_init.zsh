@@ -29,7 +29,7 @@
     zmodule_dir=${ZIM_HOME}/modules/${zmodule}
     if [[ -d ${zmodule_dir} ]]; then
       for file (${zmodule_dir}/**/*.{zsh,sh} \
-            ${zmodule_dir}/*.{zsh,sh}); do
+          ${zmodule_dir}/*.{zsh,sh}); do
         if [[ -f ${file} ]]; then
           zrecompile -pq ${file}
         fi
