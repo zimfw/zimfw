@@ -57,6 +57,9 @@ ztermtitle='%n@%m:%~'
 # Input
 #
 
+# Set to vi or emacs
+zinput_mode='emacs'
+
 # Uncomment to enable double-dot expansion.
 # This appends '../' to your input for each '.' you type after an initial '..'
 #zdouble_dot_expand='true'

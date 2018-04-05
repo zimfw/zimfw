@@ -13,6 +13,13 @@ fi
 # Source user configuration
 [[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
+# Set input mode before loading modules
+if [ ${zinput_mode}='vi' ]; then
+  set -o vi
+else
+  set -o emacs
+fi
+
 # Autoload module functions
 () {
   local mod_function
