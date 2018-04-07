@@ -42,6 +42,9 @@ zprompt_theme='steeef'
 # See: http://zsh.sourceforge.net/Doc/Release/Options.html#Input_002fOutput
 #setopt CORRECT
 
+# Set custom spelling correction prompt
+#SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+
 #
 # Environment
 #
