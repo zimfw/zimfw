@@ -21,6 +21,8 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 # set any compdefs
 source ${0:h}/compdefs.zsh
 
+# set custom sprompt
+SPROMPT="Correct %F{1}%R%f to %F{2}%r%f? (%UY%ues, %UN%uo, %UA%ubort, %UE%udit)? "
 
 #
 # zsh options
