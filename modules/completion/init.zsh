@@ -26,7 +26,7 @@ if [[ ! ${TERM} = 'dumb' ]]; then
 	if (( ${+zsprompt} )); then
 		SPROMPT=$zsprompt
   else
-  	SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
+  	SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 	fi
 fi
 
