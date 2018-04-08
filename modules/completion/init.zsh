@@ -22,7 +22,15 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 source ${0:h}/compdefs.zsh
 
 # set custom sprompt
-SPROMPT="Correct %F{1}%R%f to %F{2}%r%f? (%UY%ues, %UN%uo, %UA%ubort, %UE%udit)? "
+if [[ ! ${TERM} = 'dumb' ]]; then
+	if (( ${+zsprompt_theme} )); then
+		if [ $zsprompt_theme = "zim" ]; then
+		  SPROMPT="Correct %F{1}%R%f to %F{2}%r%f? (%UY%ues, %UN%uo, %UA%ubort, %UE%udit)? "
+		elif [ $zsprompt_theme = "color" ]; then
+			SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
+	  fi
+	fi
+fi
 
 #
 # zsh options

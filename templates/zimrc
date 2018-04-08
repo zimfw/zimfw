@@ -26,6 +26,9 @@ zmodules=(directory environment git git-info history input utility custom \
 # Set your desired prompt here
 zprompt_theme='steeef'
 
+# Set your completion prompt here, options are 'zim' and 'color'
+zsprompt_theme='zim'
+
 #
 # Completion
 #
