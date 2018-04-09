@@ -18,7 +18,7 @@
 
   # zcompile enabled module autoloaded functions
   for dir in ${ZIM_HOME}/modules/${^zmodules}/functions(/FN); do
-    zrecompile -pq ${dir}.zwc ${dir}/^(_*|*.*)(-.N)
+    zrecompile -pq ${dir}.zwc ${dir}/^(_*|prompt_*_setup|*.*)(-.N)
   done
 
   # zcompile enabled module scripts
