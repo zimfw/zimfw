@@ -97,8 +97,8 @@ alias gls='git log --topo-order --stat --pretty=format:"${_git_log_medium_format
 alias gld='git log --topo-order --stat --patch --full-diff --pretty=format:"${_git_log_medium_format}"'
 alias glo='git log --topo-order --pretty=format:"${_git_log_oneline_format}"'
 alias glO='git log --topo-order --pretty=format:"${_git_log_oneline_medium_format}"'
-alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}%n"'
-alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}%n"'
+alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}"'
+alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}"'
 alias glv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
 alias glc='git shortlog --summary --numbered'
 
