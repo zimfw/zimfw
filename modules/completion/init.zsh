@@ -30,6 +30,9 @@ source ${0:h}/compdefs.zsh
 # the cursor is moved to the end of the word
 setopt ALWAYS_TO_END
 
+# Glob completions
+setopt GLOB_COMPLETE
+
 # Perform a path search even on command names with slashes in them.
 setopt PATH_DIRS
 
