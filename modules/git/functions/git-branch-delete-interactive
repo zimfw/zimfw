@@ -1,6 +1,6 @@
 # vim:et sts=2 sw=2 ft=zsh
 local -a remotes
-if (( ${*[(I)-r]} || ${*[(I)--remotes]} )); then
+if (( ${*[(I)(-r|--remotes)]} )); then
   remotes=(${^*:#-*})
 else
   remotes=(${(f)"$(command git rev-parse --abbrev-ref ${^*:#-*}@{u} 2>/dev/null)"})

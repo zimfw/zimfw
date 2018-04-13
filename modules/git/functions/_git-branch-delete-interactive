@@ -1,0 +1,3 @@
+#compdef git-branch-delete-interactive
+
+words[1]=(git branch); (( CURRENT++ )); service=git; _git
