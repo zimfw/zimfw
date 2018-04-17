@@ -3,17 +3,18 @@ local updated=0
 local failed=0
 local module
 local mlocation
+local nfailed
 local ncolors red green yelllow blue bold normal 
 if which tput >/dev/null 2>&1; then
     ncolors=$(tput colors)
   fi
 if [ -t 1 ] && [ -n "${ncolors}" ] && [ "${ncolors}" -ge 8 ]; then
-  red=$(tput setaf 1)
-  green=$(tput setaf 2)
-  yellow=$(tput setaf 3)
-  blue=$(tput setaf 4)
-  bold=$(tput bold)
-  normal=$(tput sgr0)
+  red="$(tput setaf 1)"
+  green="$(tput setaf 2)"
+  yellow="$(tput setaf 3)"
+  blue="$(tput setaf 4)"
+  bold="$(tput bold)"
+  normal="$(tput sgr0)"
 else
   red=""
   green=""
@@ -23,6 +24,7 @@ else
   normal=""
 fi
 for module in $umodules; do
+  nfailed=0
   if [ -d ${ZIM_HOME}/modules/${module} ]; then
     mlocation=${ZIM_HOME}/modules/${module}
   elif [ -d ${ZIM_HOME}/modules/prompt/external-themes/${module} ]; then
@@ -36,12 +38,15 @@ for module in $umodules; do
   if [ $? -ne 0 ]; then
   	echo -ne "${red}Failed to update $module...\n $output $normal"\\r
   	failed=$((failed+1))
+  	nfailed=1
   fi
+  if ! [ ${nfailed} = "1" ]; then
   if echo "$output" | grep -i "up to date" > /dev/null; then
   	echo -ne "${blue}$module at latest version.      $normal"\\r
   else
   	echo -ne "${green}Updated $module!      $normal"\\r
       updated=$((updated+1))
+  fi
   fi
   printf '\n'
 done
