@@ -54,6 +54,14 @@ zprompt_theme='steeef'
 ztermtitle='%n@%m:%~'
 
 #
+# Updater
+#
+
+# Set modules or themes to update (they must be a valid git repo)
+#umodules=()
+
+
+#
 # Input
 #
 

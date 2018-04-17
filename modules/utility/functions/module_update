@@ -1,0 +1,62 @@
+local currentdir=$(pwd)
+local commandgood="0"
+local updated=0
+local failed=0
+local module
+local mlocation
+for module in $umodules; do
+  if [ -d ${ZIM_HOME}/modules/${module} ]; then
+    mlocation=${ZIM_HOME}/modules/${module}
+  elif [ -d ${ZIM_HOME}/modules/prompt/external-themes/${module} ]; then
+    mlocation=${ZIM_HOME}/modules/prompt/external-themes/${module}
+  else 
+    echo "$fg[red]Cant find $module module...$reset_color"
+    break
+  fi
+  echo -ne "$fg[blue]Updating $module... $reset_color"\\r
+  output=$(cd $mlocation && git remote update -p && git merge --ff-only @\{u\})
+  if [ $? -ne 0 ]; then
+  	echo -ne "$fg[red]Failed to update $module...\n $output $reset_color"\\r
+  	failed=$((failed+1))
+  fi
+  if echo "$output" | grep -i "up to date" > /dev/null; then
+  	echo -ne "$fg[blue]$module at latest version.      $reset_color"\\r
+  else
+  	echo -ne "$fg[green]Updated $module!      $reset_color"\\r
+      updated=$((updated+1))
+  fi
+  printf '\n'
+done
+for pmodule in $pmodules; do
+    echo -ne "$fg[blue]Updating $pmodule... $reset_color"\\r
+    output=$(cd ${ZIM_HOME}/modules/prompt/external-themes/$pmodule && git remote update -p && git merge --ff-only @\{u\})
+    if [ $? -ne 0 ]; then
+        echo -ne "$fg[red]Failed to update $pmodule...\n $output $reset_color"\\r
+        failed=$((failed+1))
+    fi
+    if echo "$output" | grep -i "up to date" > /dev/null; then
+        echo -ne "$fg[blue]$pmodule at latest version.      $reset_color"\\r
+    else
+        echo -ne "$fg[green]Updated $pmodule!      $reset_color"\\r
+        updated=$((updated+1))
+    fi
+    printf '\n'
+done
+if [ $updated -gt 0 ]; then
+	if [ $failed -eq 0 ]; then
+		echo "$fg[green]\033[1mSucessfully updated $updated modules!$reset_color"
+	fi
+else
+	if [ $failed -eq 0 ]; then
+		echo "$fg[blue]\033[1mNo module updates avaliable.$reset_color"
+	fi
+fi
+if [ $failed -gt 0 ]; then
+	if [ $updated -gt 0 ]; then
+		echo "$fg[blue]\033[1mSucessfully updated $updated modules and failed to update $failed modules.$reset_color"
+	else
+        echo "$fg[red]\033[1mFailed to update $failed modules, no module updates available.$rest_color"
+	fi
+
+fi
+cd $currentdir
