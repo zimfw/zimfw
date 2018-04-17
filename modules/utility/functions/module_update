@@ -3,58 +3,77 @@ local updated=0
 local failed=0
 local module
 local mlocation
+local ncolors red green yelllow blue bold normal 
+if which tput >/dev/null 2>&1; then
+    ncolors=$(tput colors)
+  fi
+if [ -t 1 ] && [ -n "${ncolors}" ] && [ "${ncolors}" -ge 8 ]; then
+  red=$(tput setaf 1)
+  green=$(tput setaf 2)
+  yellow=$(tput setaf 3)
+  blue=$(tput setaf 4)
+  bold=$(tput bold)
+  normal=$(tput sgr0)
+else
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  bold=""
+  normal=""
+fi
 for module in $umodules; do
   if [ -d ${ZIM_HOME}/modules/${module} ]; then
     mlocation=${ZIM_HOME}/modules/${module}
   elif [ -d ${ZIM_HOME}/modules/prompt/external-themes/${module} ]; then
     mlocation=${ZIM_HOME}/modules/prompt/external-themes/${module}
   else 
-    echo "$fg[red]Cant find $module module...$reset_color"
+    echo "${red}Cant find $module module...$normal"
     break
   fi
-  echo -ne "$fg[blue]Updating $module... $reset_color"\\r
+  echo -ne "${blue}Updating $module... $normal"\\r
   output=$(cd $mlocation && git remote update -p && git merge --ff-only @\{u\})
   if [ $? -ne 0 ]; then
-  	echo -ne "$fg[red]Failed to update $module...\n $output $reset_color"\\r
+  	echo -ne "${red}Failed to update $module...\n $output $normal"\\r
   	failed=$((failed+1))
   fi
   if echo "$output" | grep -i "up to date" > /dev/null; then
-  	echo -ne "$fg[blue]$module at latest version.      $reset_color"\\r
+  	echo -ne "${blue}$module at latest version.      $normal"\\r
   else
-  	echo -ne "$fg[green]Updated $module!      $reset_color"\\r
+  	echo -ne "${green}Updated $module!      $normal"\\r
       updated=$((updated+1))
   fi
   printf '\n'
 done
 for pmodule in $pmodules; do
-    echo -ne "$fg[blue]Updating $pmodule... $reset_color"\\r
+    echo -ne "${blue}Updating $pmodule... $normal"\\r
     output=$(cd ${ZIM_HOME}/modules/prompt/external-themes/$pmodule && git remote update -p && git merge --ff-only @\{u\})
     if [ $? -ne 0 ]; then
-        echo -ne "$fg[red]Failed to update $pmodule...\n $output $reset_color"\\r
+        echo -ne "${red}Failed to update $pmodule...\n $output $normal"\\r
         failed=$((failed+1))
     fi
     if echo "$output" | grep -i "up to date" > /dev/null; then
-        echo -ne "$fg[blue]$pmodule at latest version.      $reset_color"\\r
+        echo -ne "${blue}$pmodule at latest version.      $normal"\\r
     else
-        echo -ne "$fg[green]Updated $pmodule!      $reset_color"\\r
+        echo -ne "${green}Updated $pmodule!      $normal"\\r
         updated=$((updated+1))
     fi
     printf '\n'
 done
 if [ $updated -gt 0 ]; then
 	if [ $failed -eq 0 ]; then
-		echo "$fg[green]\033[1mSucessfully updated $updated modules!$reset_color"
+		echo "${green}${bold}Sucessfully updated $updated modules!$normal"
 	fi
 else
 	if [ $failed -eq 0 ]; then
-		echo "$fg[blue]\033[1mNo module updates avaliable.$reset_color"
+		echo "${blue}${bold}No module updates avaliable.$normal"
 	fi
 fi
 if [ $failed -gt 0 ]; then
 	if [ $updated -gt 0 ]; then
-		echo "$fg[blue]\033[1mSucessfully updated $updated modules and failed to update $failed modules.$reset_color"
+		echo "${blue}${bold}Sucessfully updated $updated modules and failed to update $failed modules.$normal"
 	else
-        echo "$fg[red]\033[1mFailed to update $failed modules, no module updates available.$rest_color"
+        echo "${red}${bold}Failed to update $failed modules, no module updates available.$normal"
 	fi
 
 fi
