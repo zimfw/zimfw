@@ -1,5 +1,4 @@
 local currentdir=$(pwd)
-local commandgood="0"
 local updated=0
 local failed=0
 local module
