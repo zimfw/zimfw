@@ -46,3 +46,11 @@ Aliases `get` to ( `aria2c` || `axel` || `wget` || `curl` ).
 | alias | description |
 | ----- | ----------- |
 | `mkcd` | `mkdir -p` and `cd` |
+
+Commands
+--------
+
+| command | description |
+| ----- | ----------- |
+| `module_update` | `Updates git-installed modules and themes specified in the zimrc` |
+
