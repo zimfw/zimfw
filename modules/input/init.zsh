@@ -9,7 +9,7 @@ if [[ ${TERM} == 'dumb' ]]; then
 fi
 
 # Use human-friendly identifiers.
-zmodload -F zsh/terminfo +p:terminfo
+zmodload -F zsh/terminfo +b:echoti +p:terminfo
 typeset -gA key_info
 key_info=(
   'Control'      '\C-'
