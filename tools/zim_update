@@ -34,8 +34,8 @@ else
 fi
 cd ${ZIM_HOME}
 # this is the cleanest way I know how to update a repository
-git remote update -p > /dev/null 2>&1
 echo -ne "${blue}Updating Zim...${normal}"\\r
+git remote update -p > /dev/null 2>&1
 output=$(git merge --ff-only @\{u\} 2>&1)
 if echo "$output" | grep "up to date" > /dev/null; then
   echo -ne "${blue}Zim at latest version.   ${normal}"\\r
