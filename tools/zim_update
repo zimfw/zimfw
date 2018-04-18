@@ -10,7 +10,6 @@ local mlocation
 local nfailed
 local submodules
 local umodule
-local nmodule=0
 local currentdir
 local ncolors red green yelllow blue bold normal
 currentdir=$(pwd)
