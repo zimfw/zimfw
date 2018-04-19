@@ -14,10 +14,10 @@ fi
 [[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
 # Set input mode before loading modules
-if [ ${zinput_mode}='vi' ]; then
-  set -o vi
+if [[ ${zinput_mode} == 'vi' ]]; then
+  bindkey -v
 else
-  set -o emacs
+  bindkey -e
 fi
 
 # Autoload module functions
