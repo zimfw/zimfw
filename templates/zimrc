@@ -34,9 +34,6 @@ zprompt_theme='steeef'
 # if none is provided, the default '.zcompdump' is used.
 #zcompdump_file=".zcompdump-${HOST}-${ZSH_VERSION}"
 
-# Set your own completion prompt, comment out for default
-#zsprompt='Correct %F{red}%R%f to %F{green}%r%f? (%UY%ues, %UN%uo, %UA%ubort, %UE%udit)? '
-
 #
 # Utility
 #

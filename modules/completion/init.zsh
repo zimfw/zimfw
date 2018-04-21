@@ -22,12 +22,8 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 source ${0:h}/compdefs.zsh
 
 # set custom sprompt
-if [[ ! ${TERM} = 'dumb' ]]; then
-	if (( ${+zsprompt} )); then
-		SPROMPT=$zsprompt
-  else
-  	SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
-	fi
+if [ ${SPROMPT} = "zsh: correct '%R' to '%r' [nyae]?" ]; then
+  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 fi
 
 #
