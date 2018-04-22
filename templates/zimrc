@@ -34,6 +34,9 @@ zprompt_theme='steeef'
 # if none is provided, the default '.zcompdump' is used.
 #zcompdump_file=".zcompdump-${HOST}-${ZSH_VERSION}"
 
+# Set custom completion prompt
+SPROMPT="zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? "
+
 #
 # Utility
 #
