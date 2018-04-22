@@ -21,11 +21,6 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 # set any compdefs
 source ${0:h}/compdefs.zsh
 
-# set custom sprompt
-if [ ${SPROMPT} = "zsh: correct '%R' to '%r' [nyae]?" ]; then
-  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
-fi
-
 #
 # zsh options
 #
