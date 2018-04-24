@@ -30,16 +30,16 @@ zprompt_theme='steeef'
 # Completion
 #
 
-# set an optional host-specific filename for the completion cache file
-# if none is provided, the default '.zcompdump' is used.
+# Set an optional host-specific filename for the completion cache file. If none
+# is provided, the default '.zcompdump' is used.
 #zcompdump_file=".zcompdump-${HOST}-${ZSH_VERSION}"
 
 #
 # Utility
 #
 
-# Uncomment to enable command correction prompts
-# See: http://zsh.sourceforge.net/Doc/Release/Options.html#Input_002fOutput
+# Uncomment to enable spelling correction prompt for commands. See:
+# http://zsh.sourceforge.net/Doc/Release/Options.html#Input_002fOutput
 #setopt CORRECT
 
 # Set custom spelling correction prompt
@@ -63,8 +63,8 @@ ztermtitle='%n@%m:%~'
 # Set to vi or emacs
 zinput_mode='emacs'
 
-# Uncomment to enable double-dot expansion.
-# This appends '../' to your input for each '.' you type after an initial '..'
+# Uncomment to enable double-dot expansion. This appends '../' to your input for
+# each '.' you type after an initial '..'
 #zdouble_dot_expand='true'
 
 #
