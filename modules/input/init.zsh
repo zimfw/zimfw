@@ -46,12 +46,8 @@ key_info=(
 # Bind the keys
 
 local key
-for key in "${(s: :)key_info[ControlLeft]}"; do
-  bindkey ${key} backward-word
-done
-for key in "${(s: :)key_info[ControlRight]}"; do
-  bindkey ${key} forward-word
-done
+for key (${(s: :)key_info[ControlLeft]}) bindkey ${key} backward-word
+for key (${(s: :)key_info[ControlRight]}) bindkey ${key} forward-word
 
 [[ -n ${key_info[Home]} ]] && bindkey ${key_info[Home]} beginning-of-line
 [[ -n ${key_info[End]} ]] && bindkey ${key_info[End]} end-of-line

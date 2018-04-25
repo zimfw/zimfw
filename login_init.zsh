@@ -22,7 +22,7 @@
   done
 
   # zcompile enabled module scripts
-  for file (${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#*.zsh{,-theme}(.NLk+1)); do
+  for file in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#*.zsh{,-theme}(.NLk+1); do
     zrecompile -pq ${file}
   done
 
