@@ -10,7 +10,5 @@ if command git branch --delete ${@} && \
     read -q "?Also delete remote branch(es) ${remotes} [y/N]? "; then
   print
   local remote
-  for remote (${remotes}); do
-    command git push ${remote%%/*} :${remote#*/}
-  done
+  for remote (${remotes}) command git push ${remote%%/*} :${remote#*/}
 fi
