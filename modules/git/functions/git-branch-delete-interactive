@@ -3,7 +3,7 @@ local -a remotes
 if (( ${*[(I)(-r|--remotes)]} )); then
   remotes=(${^*:#-*})
 else
-  remotes=(${(f)"$(command git rev-parse --abbrev-ref ${^*:#-*}@{u} 2>/dev/null)"})
+  remotes=(${(f)"$(command git rev-parse --abbrev-ref ${^*:#-*}@{u} 2>/dev/null)"}) || remotes=()
 fi
 if command git branch --delete ${@} && \
     (( ${#remotes[@]} )) && \
