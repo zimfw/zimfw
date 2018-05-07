@@ -19,3 +19,6 @@
 [submodule "modules/autosuggestions/external"]
 	path = modules/autosuggestions/external
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "modules/fasd/external"]
+	path = modules/fasd/external
+	url = https://github.com/clvv/fasd
