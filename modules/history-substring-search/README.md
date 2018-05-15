@@ -1,22 +1,19 @@
-History-Substring-Search
+history-substring-search
 ========================
 
-Allows for fish shell-like searching of history with UP and DOWN.
+Allows for fish-like searching of history with UP and DOWN.
 
-![example][fish_shell]
+![example][example]
 
-This module requires the [input](https://github.com/zimfw/zimfw/blob/master/modules/input/README.md) module. Without it, you may experience odd behavior.
-Put 'input' in the first line and 'history-substring-search' on the second line of `zmodules` in your `.zimrc`.
-
-Additionally, if you use [syntax-highlighting](https://github.com/zimfw/zimfw/blob/master/modules/syntax-highlighting/README.md), place 'syntax-highlighting' before 'history-substring-search' on the second line of `zmodules` in your `.zimrc`.
-
-The options set explicitly by init.zsh are the default options, and are only set for consistancy.
-
-Functionality is sourced from [history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)
+If you use
+[syntax-highlighting](https://github.com/zimfw/zimfw/tree/master/modules/syntax-highlighting),
+make sure you place 'syntax-highlighting' before 'history-substring-search' on
+the second line of `zmodules` in your `.zimrc`.
 
 Contributing
 ------------
 
-Contributions should be submitted [upstream to history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)
+Contributions should be submitted [upstream to
+zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search).
 
-[fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
+[example]: https://i.eriner.me/zim_history-substring-search.gif

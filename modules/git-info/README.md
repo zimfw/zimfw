@@ -1,4 +1,4 @@
-Git-info
+git-info
 ========
 
 Exposes git repository status information to prompts.
@@ -15,8 +15,8 @@ Settings
 ### Ignore Submodules
 
 Retrieving the status of a repository with submodules can take a long time.
-Submodules may be ignored when 'none', 'untracked', 'dirty', or 'all', which is
-the default.
+So by default 'all' submodules are ignored. Optionally, 'untracked', 'dirty', or
+'none' submodules can be ignored:
 
     zstyle ':zim:git-info' ignore-submodules 'none'
 
@@ -25,11 +25,11 @@ the default.
 Verbose mode uses `git status` and computes the count of indexed, unindexed and
 also untracked files. It can be enabled with the following zstyle:
 
-    zstyle ':zim:git-info' verbose 'yes'
+    zstyle ':zim:git-info' verbose yes
 
 In non-verbose mode, the 'untracked' context is not available (see Main
 Contexts below), and untracked files are also not considered for computing the
-'dirty' context. Using `git status` or checking for untracked files can be
+'dirty' context. Using `git status` to check for untracked files can be
 [expensive](https://gist.github.com/sindresorhus/3898739).
 
 Theming
@@ -99,6 +99,5 @@ Second, format how the above attributes are displayed in prompts:
       'prompt'  'git(%b%c)' \
       'rprompt' '[%R]'
 
-Last, add `$git_info[prompt]` to `$PROMPT` and `$git_info[rprompt]` to
-`$RPROMPT` respectively and call `git-info` in the `prompt_name_precmd` hook
-function.
+Last, add `${git_info[prompt]}` to `PS1` and `${git_info[rprompt]}` to `RPS1`
+respectively and call `git-info` in the `prompt_name_precmd` hook function.
