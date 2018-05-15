@@ -15,4 +15,4 @@ ZSH options
 | PUSHD_TO_HOME | pushd without arguments acts like `pushd ${HOME}` |
 | EXTENDED_GLOB | Treat `#`, `~`, and `^` as patterns for filename globbing |
 | MULTIOS | Performs implicit tees or cats when using redirections |
-| NO_CLOBBER | Disables overwrite existing files with `>`. Use `>|` or `>!` instead |
+| NO_CLOBBER | Disables overwrite existing files with `>`. Use `>\|` or `>!` instead |
