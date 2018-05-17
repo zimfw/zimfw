@@ -1,4 +1,4 @@
-Utility
+utility
 =======
 
 Utility aliases and functions.
@@ -10,39 +10,31 @@ Aliases
 
 ### ls
 
-| alias | command | description |
-| ----- | ------- | ----------- |
-| `ls` | `ls --group-directories-first --color=auto` | directories first, use color (applies to all ls aliases) |
-| `l` | `ls -lAh` | all files, human-readable sizes |
-| `lm` | `l | ${PAGER}` | all files, human-readable sizes, use pager |
-| `ll` | `ls -lh` | human-readable sizes |
-| `lr` | `ll -R` | human-readable sizes, recursive |
-| `lx` | `ll -XB` | human-readable sizes, sort by extension (GNU only) |
-| `lk` | `ll -Sr` | human-readable sizes, largest last |
-| `lt` | `ll -tr` | human-readable sizes, most recent last |
-| `lc` | `lt -c` | human-readable sizes, most recent last, change time |
+  * `ls` lists directories first (GNU only) and with colour (applies to all aliases below).
+  * `ll` lists with long format and human-readable sizes (applies to all aliases below).
+  * `l`  lists all files.
+  * `lm` lists all files using pager.
+  * `lr` lists recursively.
+  * `lx` lists sorted by extension (GNU only).
+  * `lk` lists sorted by largest file size last.
+  * `lt` lists sorted by newest modification time last.
+  * `lc` lists sorted by newest status change (ctime) last.
 
 ### File Downloads
 
-Aliases `get` to ( `aria2c` || `axel` || `wget` || `curl` ).
+  * `get` is short for ( `aria2c` || `axel` || `wget` || `curl` ).
 
 ### Resource Usage
 
-| alias | command |
-| ----- | ------- |
-| `df` | `df -kh` |
-| `du` | `du -kh` |
+  * `df` reports file system disk usage with human-readable sizes.
+  * `du` reports file disk usage with human-readable sizes.
 
 ### Condoms
 
-| alias | command |
-| ----- | ------- |
-| `chmod` | `chmod --preserve-root -v` |
-| `chown` | `chown --preserve-root -v` |
-| `rm` | if available, `safe-rm` |
+  * `chmod` changes file mode verbosely, not operating from `/` (GNU only).
+  * `chown` changes file owner verbosely, not operating from `/` (GNU only).
+  * `rm` uses `safe-rm` if available.
 
 ### Misc
 
-| alias | description |
-| ----- | ----------- |
-| `mkcd` | `mkdir -p` and `cd` |
+  * `mkcd` creates and changes to the given directory.
