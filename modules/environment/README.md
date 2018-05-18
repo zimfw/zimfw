@@ -1,21 +1,19 @@
-Environment
+environment
 ===========
 
-Sets generic Zsh built-in environment options.
+Sets generic zsh built-in environment options.
 
 Also enables smart URL-pasting. This prevents the user from having to manually escape URLs.
 
 Uses `.zimrc` defined `${ztermtitle}` variable to set the terminal title, if defined.
 
-ZSH Options
+zsh options
 -----------
 
-| Option | Effect |
-| ------ | ------ |
-| AUTO_RESUME | Resume existing jobs before creating a new job |
-| LONG_LIST_JOBS | Use the verbose list format by default |
-| NOTIFY | Report job status immediately instead of waiting for new prompt |
-| INTERACTIVE_COMMENTS | Recognize comments starting with `#` |
-| BG_NICE | Disabled to prevent jobs being given a lower priority |
-| HUP | Disabed to prevent SIGHUP to jobs on shell close |
-| CHECK_JOBS | Disabled to prevent job report on shell close |
+  * `AUTO_RESUME` resumes an existing job before creating a new one.
+  * `INTERACTIVE_COMMENTS` allows comments starting with `#` in the shell.
+  * `LONG_LIST_JOBS` lists jobs in verbose format by default.
+  * `NOTIFY` reports job status immediately instead of waiting for the prompt.
+  * `NO_BG_NICE` prevents background jobs being given a lower priority.
+  * `NO_CHECK_JOBS` prevents status report of jobs on shell exit.
+  * `NO_HUP` prevents SIGHUP to jobs on shell exit.
