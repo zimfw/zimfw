@@ -13,6 +13,10 @@
 # line. These dependencies are noted on the respective module's README.md.
 zmodules=(directory environment git git-info history input utility custom \
           syntax-highlighting history-substring-search prompt completion)
+          
+# Select what modules or external-themes to update that are not git submodules (must be git repos)
+# Leave commented if not needed
+#umodules=()
 
 
 ###################

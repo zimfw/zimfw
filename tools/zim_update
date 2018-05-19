@@ -1,11 +1,116 @@
 #
 # zim_update - update the zim repository
 #
-
+trap 'unset ncolors red green yelllow blue bold normal zimmodules updated failed zimmodule mlocation nfailed umodule submodules currentdir; cd ${currentdir}; return' INT
+local zimmodules
+local updated=0
+local failed=0
+local zimmodule
+local mlocation
+local nfailed
+local submodules
+local umodule
+local currentdir
+local ncolors red green yelllow blue bold normal
+currentdir=$(pwd)
+if which tput >/dev/null 2>&1; then
+    ncolors=$(tput colors)
+  fi
+if [ -t 1 ] && [ -n "${ncolors}" ] && [ "${ncolors}" -ge 8 ]; then
+  red="$(tput setaf 1)"
+  green="$(tput setaf 2)"
+  yellow="$(tput setaf 3)"
+  blue="$(tput setaf 4)"
+  bold="$(tput bold)"
+  normal="$(tput sgr0)"
+else
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  bold=""
+  normal=""
+fi
 cd ${ZIM_HOME}
-
 # this is the cleanest way I know how to update a repository
-git remote update -p
-git merge --ff-only @\{u\}
-# and update the submodules
-git submodule update --init --recursive
+echo -ne "${blue}Updating Zim...${normal}"\\r
+git remote update -p > /dev/null 2>&1
+output=$(git merge --ff-only @\{u\} 2>&1)
+if echo "$output" | grep "up to date" > /dev/null; then
+  echo -ne "${blue}Zim at latest version.   ${normal}"\\r
+else
+  echo -ne "${green}Updated Zim!   ${normal}"\\r
+fi
+printf '\n'
+# and update the submodules and git repos
+# Get submodules
+zimmodules=("${(@f)$(git submodule | awk '{print $2 }')}")
+# Update submodules
+for zimmodule in $zimmodules; do
+  nmodule=$((nmodule+1))
+  nfailed=0
+  echo -ne "${blue}Updating ${zimmodule}... $normal"\\r
+  output=$(git submodule update --init --recursive ${zimmodule})
+  if [ $? -ne 0 ]; then
+  	echo -ne "${red}Failed to update ${zimmodule}...\n $output $normal"
+  	failed=$((failed+1))
+  	nfailed=1
+  fi
+  if ! [ ${nfailed} = "1" ]; then
+    if ! [[ -z "${output// }" ]]; then
+      echo -ne "${green}Updated ${zimmodule}!      $normal"\\r
+      updated=$((updated+1))
+    else
+      echo -ne "${blue}${zimmodule} at latest version.      $normal"\\r
+    fi
+  fi
+  printf '\n'
+done
+# Update git repos
+for umodule in $umodules; do
+  nfailed=0
+  if [ -d ${ZIM_HOME}/modules/${umodule} ]; then
+    mlocation=${ZIM_HOME}/modules/${umodule}
+  elif [ -d ${ZIM_HOME}/modules/prompt/external-themes/${umodule} ]; then
+    mlocation=${ZIM_HOME}/modules/prompt/external-themes/${umodule}
+  else
+    echo "${red}Cant find ${umodule} module...$normal"
+    break
+  fi
+  echo -ne "${blue}Updating ${umodule}... $normal"\\r
+  output=$(cd $mlocation && git remote update -p && git merge --ff-only @\{u\})
+  if [ $? -ne 0 ]; then
+    echo -ne "${red}Failed to update ${umodule}...\n $output $normal"\\r
+    failed=$((failed+1))
+    nfailed=1
+  fi
+  if ! [ ${nfailed} = "1" ]; then
+  if echo "$output" | grep -i "up to date" > /dev/null; then
+    echo -ne "${blue}${umodule} at latest version.      $normal"\\r
+  else
+    echo -ne "${green}Updated ${umodule}!      $normal"\\r
+    updated=$((updated+1))
+  fi
+  fi
+  printf '\n'
+done
+if [ $updated -gt 0 ]; then
+  if [ $failed -eq 0 ]; then
+    echo "${green}${bold}Sucessfully updated $updated modules!$normal"
+  fi
+else
+  if [ $failed -eq 0 ]; then
+    echo "${blue}${bold}No module updates avaliable.$normal"
+  fi
+fi
+if [ $failed -gt 0 ]; then
+  if [ $updated -gt 0 ]; then
+    echo "${blue}${bold}Sucessfully updated $updated modules and failed to update $failed modules.$normal"
+  else
+        echo "${red}${bold}Failed to update $failed modules, no module updates available.$normal"
+  fi
+
+fi
+# Cleanup
+unset ncolors red green yelllow blue bold normal zimmodules updated failed zimmodule mlocation nfailed umodule submodules currentdir
+cd ${currentdir}
