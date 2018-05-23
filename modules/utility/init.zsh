@@ -12,9 +12,6 @@ if (( terminfo[colors] >= 8 )); then
   # GNU colours are used by completion module for all OSTYPEs
   (( ! ${+LS_COLORS} )) && export LS_COLORS='di=1;34:ln=35:so=32:pi=33:ex=31:bd=1;36:cd=1;33:su=30;41:sg=30;46:tw=30;42:ow=30;43'
 
-  # Set completion colors to LS_COLORS
-  zstyle ':completion:*' list-colors $LS_COLORS
-
   if (( ${+commands[dircolors]} )); then
     # GNU
 

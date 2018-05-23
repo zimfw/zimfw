@@ -59,6 +59,14 @@ zstyle ':completion:*' verbose yes
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' '+r:|?=**'
 
 # directories
+# If LS_COLORS is set, just use it
+if (( ${+LS_COLORS} )); then
+  # Set completion colors to LS_COLORS
+  zstyle ':completion:*' list-colors $LS_COLORS
+else
+  # Fallback to default LS_COLORS
+  zstyle ':completion:*' list-colors 'di=1;34:ln=35:so=32:pi=33:ex=31:bd=1;36:cd=1;33:su=30;41:sg=30;46:tw=30;42:ow=30;43'
+fi
 zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'expand'
