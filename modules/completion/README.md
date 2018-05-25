@@ -1,4 +1,4 @@
-Completion
+completion
 ==========
 
 Enables and configures smart and extensive tab completion.
