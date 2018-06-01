@@ -12,7 +12,7 @@
 # The second line of modules may depend on options set by modules in the first
 # line. These dependencies are noted on the respective module's README.md.
 zmodules=(directory environment git git-info history input utility custom \
-          syntax-highlighting history-substring-search prompt completion)
+          prompt completion syntax-highlighting history-substring-search )
 
 
 ###################
