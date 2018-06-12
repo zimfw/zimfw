@@ -6,7 +6,7 @@ mkdir -p ${ZIM_HOME}/modules
 for zmodule in ${zmodules}; do
   dir=$ZIM_HOME/modules/${${${zmodule%/}%.git}##*/}
   if [ -d ${dir} ]; then
-    print "${zmodule} is already installed"
+    print "\n${zmodule} module is already installed"
   else
     arr=("${(@s|/|)${zmodule%/}}")
     if [ ${#arr} = 1 ]; then
@@ -16,7 +16,9 @@ for zmodule in ${zmodules}; do
     else
       repo=${zmodule}
     fi
+    print "\nInstalling ${zmodule} module"
     GIT_ASKPASS=/bin/echo git clone --recursive ${repo} ${dir} 2> /dev/null \
-      && print "${zmodule} got installed" || print "${repo} could not be installed"
+      || print "${repo} module could not be installed"
   fi
 done
+print

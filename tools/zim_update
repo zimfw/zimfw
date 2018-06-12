@@ -2,6 +2,7 @@
 # zim_update - update the zim repository
 #
 
+echo "\nUpdating Zim"
 cd ${ZIM_HOME}
 
 # this is the cleanest way I know how to update a repository
@@ -18,7 +19,7 @@ for zmodule in ${zmodules}; do
   dir=${${${zmodule%/}%.git}##*/}
   if [ -d ${ZIM_HOME}/modules/${dir} ]; then
 
-    echo "\nUpdating ${zmodule} module."
+    print "\nUpdating ${zmodule} module"
     cd ${ZIM_HOME}/modules/${dir}
 
     # update the modules repository
@@ -29,6 +30,7 @@ for zmodule in ${zmodules}; do
     git submodule update --init --recursive
 
   else
-      print "No such module \"${zmodule}\", run \"zmanage install\" to install missing modules" >&2
+      print "\nNo such module \"${zmodule}\", run \"zmanage install\" to install missing modules" >&2
   fi
 done
+print
