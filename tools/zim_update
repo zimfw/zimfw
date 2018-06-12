@@ -9,3 +9,26 @@ git remote update -p
 git merge --ff-only @\{u\}
 # and update the submodules
 git submodule update --init --recursive
+
+# Source user configuration
+[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
+
+# Update zmodules
+for zmodule in ${zmodules}; do
+  dir=${${${zmodule%/}%.git}##*/}
+  if [ -d ${ZIM_HOME}/modules/${dir} ]; then
+
+    echo "\nUpdating ${zmodule} module."
+    cd ${ZIM_HOME}/modules/${dir}
+
+    # update the modules repository
+    git remote update -p
+    git merge --ff-only @\{u\}
+
+    # and update the submodules
+    git submodule update --init --recursive
+
+  else
+      print "No such module \"${zmodule}\", run \"zmanage install\" to install missing modules" >&2
+  fi
+done

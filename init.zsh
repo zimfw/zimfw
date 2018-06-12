@@ -20,15 +20,25 @@ else
   bindkey -e
 fi
 
+# Map modules to dirs
+for zmodule in ${zmodules}; do
+  dir=${${${zmodule%/}%.git}##*/}
+  if [ -d ${ZIM_HOME}/modules/${dir} ]; then
+    zmodule_dirs+=(${dir})
+  else
+      print "No such module \"${zmodule}\", run \"zmanage install\" to install missing modules" >&2
+  fi
+done
+
 # Autoload module functions
 () {
   local mod_function
   setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   # autoload searches fpath for function locations; add enabled module function paths
-  fpath=(${ZIM_HOME}/modules/${^zmodules}/functions(/FN) ${fpath})
+  fpath=(${ZIM_HOME}/modules/${^zmodule_dirs}/functions(/FN) ${fpath})
 
-  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^(_*|prompt_*_setup|*.*)(-.N:t); do
+  for mod_function in ${ZIM_HOME}/modules/${^zmodule_dirs}/functions/^(_*|prompt_*_setup|*.*)(-.N:t); do
     autoload -Uz ${mod_function}
   done
 }
@@ -37,26 +47,23 @@ fi
 () {
   local zmodule zmodule_dir zmodule_file
 
-  for zmodule in ${zmodules}; do
+  for zmodule in ${zmodule_dirs}; do
     zmodule_dir=${ZIM_HOME}/modules/${zmodule}
-    if [[ ! -d ${zmodule_dir} ]]; then
-      print "No such module \"${zmodule}\"." >&2
-    else
-      for zmodule_file in ${zmodule_dir}/init.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}; do
-        if [[ -f ${zmodule_file} ]]; then
-          source ${zmodule_file}
-          break
-        fi
-      done
-    fi
+    for zmodule_file in ${zmodule_dir}/init.zsh \
+        ${zmodule_dir}/{,zsh-}${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}; do
+      if [[ -f ${zmodule_file} ]]; then
+        source ${zmodule_file}
+        break
+      fi
+    done
   done
 }
 
 zmanage() {
   local usage="zmanage [action]
 Actions:
-  update       Fetch and merge upstream zim commits if possible
+  install      Install zmodules
+  update       Update zim and zmodules
   info         Print zim and system info
   issue        Create a template for reporting an issue
   clean-cache  Clean the zim cache
@@ -72,6 +79,8 @@ Actions:
   fi
 
   case ${1} in
+    install)      zsh ${ZIM_HOME}/tools/zim_install
+                 ;;
     update)      zsh ${ZIM_HOME}/tools/zim_update
                  ;;
     info)        zsh ${ZIM_HOME}/tools/zim_info

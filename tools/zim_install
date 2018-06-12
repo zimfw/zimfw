@@ -1,0 +1,22 @@
+# Source user configuration
+[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
+
+# Install Modules
+mkdir -p ${ZIM_HOME}/modules
+for zmodule in ${zmodules}; do
+  dir=$ZIM_HOME/modules/${${${zmodule%/}%.git}##*/}
+  if [ -d ${dir} ]; then
+    print "${zmodule} is already installed"
+  else
+    arr=("${(@s|/|)${zmodule%/}}")
+    if [ ${#arr} = 1 ]; then
+      repo="https://github.com/zimfw/${zmodule}"
+    elif [ ${#arr} = 2 ]; then
+      repo="https://github.com/${zmodule}"
+    else
+      repo=${zmodule}
+    fi
+    GIT_ASKPASS=/bin/echo git clone --recursive ${repo} ${dir} 2> /dev/null \
+      && print "${zmodule} got installed" || print "${repo} could not be installed"
+  fi
+done
