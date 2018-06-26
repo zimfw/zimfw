@@ -35,5 +35,5 @@ alias casko='brew cask outdated'
 alias caskx='brew cask uninstall'
 
 casks() {
-	print "Calling \`brew cask search\` is deprecated! Please use \`brews\` instead!"
+  print "Calling \`brew cask search\` is deprecated! Please use \`brews\` instead!"
 }
