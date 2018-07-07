@@ -48,6 +48,7 @@ Installing Zim is easy. If you have a different shell framework installed (like 
     echo "Installing zim"
     git clone --recursive https://github.com/zimfw/zimfw.git $ZIM_HOME
     cat $ZIM_HOME/templates/zlogin >> $HOME/.zlogin
+    source $HOME/.zlogin
   fi
 
   zmodules=(git git-info prompt completion syntax-highlighting autosuggestions fzf-zsh)
