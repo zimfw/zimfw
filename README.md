@@ -38,7 +38,7 @@ Zim has many modules! Enable as many or as few as you'd like.
 Installation
 ------------
 Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
-*uninstall those first to prevent conflicts*. Then put following instructions at the end of your .zshrc:
+*uninstall those first to prevent conflicts*. Then put following instructions at the end of your `~/.zshrc`:
 
   ```bash
   # Zim initializition
