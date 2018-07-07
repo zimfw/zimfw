@@ -24,4 +24,4 @@
 	url = https://github.com/Piping/fzf-zsh.git
 [submodule "modules/prompt/external-themes/lambda"]
 	path = modules/prompt/external-themes/lambda
-	url = https://github.com/subnixr/minimal.git 
+	url = https://github.com/subnixr/minimal.git
