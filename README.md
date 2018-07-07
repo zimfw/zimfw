@@ -38,34 +38,27 @@ Zim has many modules! Enable as many or as few as you'd like.
 Installation
 ------------
 Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
-*uninstall those first to prevent conflicts*. It can be installed manually by following the instructions below:
+**uninstall those first to prevent conflicts**. Then put following instructions at the end of your `~/.zshrc`:
 
-1. In a Zsh shell, clone the repository:
-  ```
-  git clone --recursive https://github.com/zimfw/zimfw.git ${ZDOTDIR:-${HOME}}/.zim
-  ```
+  ```bash
+  # Zim initializition
+  export ZIM_HOME="$HOME/.zim"
 
-2. Paste this into your terminal to prepend the initialization templates to your configs:
-  ```
-  setopt EXTENDED_GLOB
-  for template_file in ${ZDOTDIR:-${HOME}}/.zim/templates/*; do
-    user_file="${ZDOTDIR:-${HOME}}/.${template_file:t}"
-    touch ${user_file}
-    ( print -rn "$(<${template_file})$(<${user_file})" >! ${user_file} ) 2>/dev/null
-  done
-  ```
+  if [ ! -f "$ZIM_HOME/init.zsh" ]; then
+    echo "Installing zim"
+    git clone --recursive https://github.com/zimfw/zimfw.git $ZIM_HOME
+    cat $ZIM_HOME/templates/zlogin >> $HOME/.zlogin
+    source $HOME/.zlogin
+  fi
 
-3. Set Zsh as the default shell:
-  ```
-  chsh -s =zsh
+  zmodules=(git git-info prompt completion syntax-highlighting autosuggestions)
+  zprompt_theme='steeef'
+  zhighlighters=(main brackets cursor)
+
+  source $ZIM_HOME/init.zsh #make sure init after zmodules lists etcs..
   ```
 
-4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
-  ```
-  source ${ZDOTDIR:-${HOME}}/.zlogin
-  ```
-
-5. You're done! Enjoy your Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
+You're done! Enjoy your Blazing Fast Zsh IMproved! Take some time to read about the [available modules][modules] and tweak your `.zshrc` file.
 
 Updating
 --------
