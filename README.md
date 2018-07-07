@@ -40,7 +40,7 @@ Installation
 Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
 *uninstall those first to prevent conflicts*. Then put following instructions at the end of your .zshrc:
 
-  ```
+  ```zshrc
   # Zim initializition
   export ZIM_HOME="$HOME/.zsh"
 
