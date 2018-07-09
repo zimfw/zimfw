@@ -7,19 +7,6 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
   return 1
 fi
 
-# Define zim location
-(( ! ${+ZIM_HOME} )) && export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
-
-# Source user configuration
-[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
-
-# Set input mode before loading modules
-if [[ ${zinput_mode} == 'vi' ]]; then
-  bindkey -v
-else
-  bindkey -e
-fi
-
 # Autoload module functions
 () {
   local mod_function
@@ -81,6 +68,8 @@ Actions:
     clean-cache) source ${ZIM_HOME}/tools/zim_clean_cache && print 'Cache cleaned'
                  ;;
     build-cache) source ${ZIM_HOME}/tools/zim_build_cache && print 'Cache rebuilt'
+                 ;;
+    reload)      zmanage clean-cache && zmanage build-cache
                  ;;
     remove)      zsh ${ZIM_HOME}/tools/zim_remove
                  ;;
