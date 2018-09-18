@@ -92,3 +92,7 @@ zstyle ':completion:*:history-words' menu yes
 # ignore multiple entries.
 zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
 zstyle ':completion:*:rm:*' file-patterns '*:all-files'
+
+# fix ssh not completing with hosts from ~/.ssh/config
+zstyle -e ':completion:*:*:ssh:*:my-accounts' users-hosts \
+  '[[ -f ~/.ssh/config && $key = hosts ]] && key=my_hosts reply=()'
