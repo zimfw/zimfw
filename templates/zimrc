@@ -1,5 +1,3 @@
-
-
 #################
 # CORE SETTINGS #
 #################
@@ -78,14 +76,12 @@ zinput_mode='emacs'
 # removing the 'cursor' highlighter will fix the disappearing cursor problem
 zhighlighters=(main brackets cursor)
 
-
 #
 # SSH
 #
 
 # Load these ssh identities with the ssh module
 #zssh_ids=(id_rsa)
-
 
 #
 # Pacman
@@ -96,3 +92,5 @@ zhighlighters=(main brackets cursor)
 
 # Load any helper scripts as defined here
 #zpacman_helper=(aur)
+
+
