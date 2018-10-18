@@ -118,7 +118,8 @@ Aliases
 ### Push
 
   * `gp` updates remote refs along with associated objects.
-  * `gpf` forces a push.
+  * `gpf` forces a push safely (with "lease").
+  * `gpF` forces a push.
   * `gpa` pushes all branches.
   * `gpA` pushes all branches and tags.
   * `gpt` pushes all tags.
