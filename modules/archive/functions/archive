@@ -2,40 +2,47 @@
 # Creates archive files
 #
 
-if (( ${#} != 2 )); then
-  print "usage: ${0} [archive_name.ext] [/path/to/include/in/archive]" >&2
-  return 1
-fi
+archive() { # compress a file or folder
+  local name="${1%.[^.]*}"
+  local type="${1##*.}"
+  local input="$2"
 
-# we are quitting (above) if there are not exactly 2 vars,
-# so we don't need any argc check here.
+  if [ "$#" -eq 1 ]; then
+    echo "archive(): archive a file or directory."
+    echo "Usage:   archive <archive> <files>"
+    echo "Error: Please give a valid file or directory name!"
+    return 1
+  fi
 
-# strip the path, just in case one is provided for some reason
-local archive_name="${1:t}"
-# use absolute paths, and follow symlinks
-local dir_to_archive="${2}"
+  if [ -f "${name}.${type}" ]; then
+    echo "archive(): file ${name}.${type} already exists."
+    name=$(mktemp --dry-run "./${name}_XXX.${type}")
+    echo "archive(): using ${name}.${type} instead."
+  fi
 
-# if the directory doesn't exist, quit. Nothing to archive
-if [[ ! -e "${dir_to_archive}" ]]; then
-  print "${0}: file or directory not valid: ${dir_to_archive}" >&2
-  return 1
-fi
-
-# pigz and pbzip2 are aliased in the init.zsh file. This provides a significant speedup, resulting in a
-# near-liner decrease in compression time based on on the number of available cores.
-
-case "${archive_name}" in
-  (*.tar.gz|*.tgz) tar -cvf "${archive_name}" --use-compress-program="gzip" "${dir_to_archive}" ;;
-  (*.tar.bz2|*.tbz|*.tbz2) tar -cvf "${archive_name}" --use-compress-program="bzip2" "${dir_to_archive}" ;;
-  (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar -cvJf "${archive_name}" "${dir_to_archive}" ;;
-  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar -cvf "${archive_name}" --lzma "${dir_to_archive}" ;;
-  (*.tar) tar -cvf "${archive_name}" "${dir_to_archive}" ;;
-  (*.zip) zip -r "${archive_name}" "${dir_to_archive}" ;;
-  (*.rar) rar a "${archive_name}" "${dir_to_archive}" ;;
-  (*.7z) 7za a "${archive_name}" "${dir_to_archive}" ;;
-  (*.gz) print "${0}: .gz is only useful for single files, and does not capture permissions. Use .tar.gz" ;;
-  (*.bz2) print "${0}: .bzip2 is only useful for single files, and does not capture permissions. Use .tar.bz2" ;;
-  (*.xz) print "${0}: .xz is only useful for single files, and does not capture permissions. Use .tar.xz" ;;
-  (*.lzma) print "${0}: .lzma is only useful for single files, and does not capture permissions. Use .tar.lzma" ;;
-  (*) print "${0}: unknown archive type: ${archive_name}" ;;
-esac
+  case "$type" in
+    tar)          shift; tar      cvf            "${name}.tar"       "${@%%}" ;;
+    tbz|tar.bz)   shift; tar      cvjf           "${name}.tar.bz2"   "${@%}"  ;;
+    tbz2|tar.bz2) shift; tar      cvjf           "${name}.tar.bz2"   "${@%%}" ;;
+    txz|tar.xz)   shift; env XZ_OPT=-T0 tar cvJf "${name}.tar.xz"    "${@%%}" ;;
+    tgz|tar.gz)   shift; tar      cvzf           "${name}.tar.gz"    "${@%%}" ;;
+    tZ|tar.Z)     shift; tar      cvZf           "${name}.tar.Z"     "${@%%}" ;;
+    gz|gzip)      shift; gzip     -vcf           "${@%%}"          > "${name}.gz" ;;
+    bz|bzip)      shift; bzip2    -vcf           "${@%%}"          > "${name}.bz" ;;
+    bz2|bzip2)    shift; bzip2    -vcf           "${@%%}"          > "${name}.bz2" ;;
+    Z|compress)   shift; compress -vcf           "${@%%}"          > "${name}.Z" ;;
+    zip)          shift; zip      -rull          "${name}.zip"       "${@%%}" ;;
+    7z|7zip)      shift; 7z       u              "${name}.7z"        "${@%%}" ;;
+    rar)          shift; rar      a              "${name}.rar"       "${@%%}" ;;
+    lzo)          shift; lzop     -vc            "${@%%}"          > "${name}.lzo" ;;
+    xz)           shift; xz       -vc -T0        "${@%%}"          > "${name}.xz" ;;
+    lzma)         shift; lzma     -vc            "${@%%}"          > "${name}.lzma" ;;
+    *)  echo "archive(): archive a file or directory."
+        echo "Usage:   archive <archive> <files>"
+        echo "Example: archive file.tbz2 file.txt file.png"
+        echo "Please specify archive and files."
+        echo "Valid archive file extensions are:"
+        echo "tar, tbz2, txz, tgz, tZ, gz, bz2, Z,"
+        echo "zip, 7z, rar, lzo, xz, and lzma."                   ;;
+  esac
+}
