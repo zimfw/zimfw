@@ -2,17 +2,20 @@
 # Creates archive files
 #
 
-archive() { # compress a file or folder
+archive() {
   local name="${1%.[^.]*}"
   local type="${1##*.}"
-  local input="$2"
+  shift
+  local files="${@}"
 
-  if [ "$#" -eq 1 ]; then
+  if [ -z "${#}" ]; then
     echo "archive(): archive a file or directory."
-    echo "Usage:   archive <archive> <files>"
-    echo "Error: Please give a valid file or directory name!"
+    echo "Usage:     archive <archive> <files>"
+    echo "Error:     Please give a valid file or directory name!"
     return 1
   fi
+
+# we are quitting (above) if there is only 1 var
 
   if [ -f "${name}.${type}" ]; then
     echo "archive(): file ${name}.${type} already exists."
@@ -20,29 +23,35 @@ archive() { # compress a file or folder
     echo "archive(): using ${name}.${type} instead."
   fi
 
-  case "$type" in
-    tar)          shift; tar      cvf            "${name}.tar"       "${@%%}" ;;
-    tbz|tar.bz)   shift; tar      cvjf           "${name}.tar.bz2"   "${@%}"  ;;
-    tbz2|tar.bz2) shift; tar      cvjf           "${name}.tar.bz2"   "${@%%}" ;;
-    txz|tar.xz)   shift; env XZ_OPT=-T0 tar cvJf "${name}.tar.xz"    "${@%%}" ;;
-    tgz|tar.gz)   shift; tar      cvzf           "${name}.tar.gz"    "${@%%}" ;;
-    tZ|tar.Z)     shift; tar      cvZf           "${name}.tar.Z"     "${@%%}" ;;
-    gz|gzip)      shift; gzip     -vcf           "${@%%}"          > "${name}.gz" ;;
-    bz|bzip)      shift; bzip2    -vcf           "${@%%}"          > "${name}.bz" ;;
-    bz2|bzip2)    shift; bzip2    -vcf           "${@%%}"          > "${name}.bz2" ;;
-    Z|compress)   shift; compress -vcf           "${@%%}"          > "${name}.Z" ;;
-    zip)          shift; zip      -rull          "${name}.zip"       "${@%%}" ;;
-    7z|7zip)      shift; 7z       u              "${name}.7z"        "${@%%}" ;;
-    rar)          shift; rar      a              "${name}.rar"       "${@%%}" ;;
-    lzo)          shift; lzop     -vc            "${@%%}"          > "${name}.lzo" ;;
-    xz)           shift; xz       -vc -T0        "${@%%}"          > "${name}.xz" ;;
-    lzma)         shift; lzma     -vc            "${@%%}"          > "${name}.lzma" ;;
+# ensure xz uses all available CPU cores by additional options
+
+  case "${type}" in
+    tar)          shift; tar      cvf            "${name}.tar"       ${files} ;;
+    tbz|tar.bz)   shift; tar      cvjf           "${name}.tar.bz2"   ${files} ;;
+    tbz2|tar.bz2) shift; tar      cvjf           "${name}.tar.bz2"   ${files} ;;
+    txz|tar.xz)   shift; env XZ_OPT=-T0 tar cvJf "${name}.tar.xz"    ${files} ;;
+    tgz|tar.gz)   shift; tar      cvzf           "${name}.tar.gz"    ${files} ;;
+    tZ|tar.Z)     shift; tar      cvZf           "${name}.tar.Z"     ${files} ;;
+    gz|gzip)      shift; gzip     -vcf           ${files}          > "${name}.gz" ;;
+    bz|bzip)      shift; bzip2    -vcf           ${files}          > "${name}.bz" ;;
+    bz2|bzip2)    shift; bzip2    -vcf           ${files}          > "${name}.bz2" ;;
+    Z|compress)   shift; compress -vcf           "${files}"          > "${name}.Z" ;;
+    zip)          shift; zip      -rull          "${name}.zip"       ${files} ;;
+    7z|7zip)      shift; 7z       u              "${name}.7z"        ${files} ;;
+    rar)          shift; rar      a              "${name}.rar"       ${files} ;;
+    lzo)          shift; lzop     -vc            ${files}          > "${name}.lzo" ;;
+    xz)           shift; xz       -vc -T0        ${files}          > "${name}.xz" ;;
+    lzma)         shift; lzma     -vc            ${files}          > "${name}.lzma" ;;
     *)  echo "archive(): archive a file or directory."
         echo "Usage:   archive <archive> <files>"
         echo "Example: archive file.tbz2 file.txt file.png"
         echo "Please specify archive and files."
         echo "Valid archive file extensions are:"
         echo "tar, tbz2, txz, tgz, tZ, gz, bz2, Z,"
-        echo "zip, 7z, rar, lzo, xz, and lzma."                   ;;
+        echo "zip, 7z, rar, lzo, xz, and lzma."
+        echo "Note: .gz, .bzip2, .xz and .lzma only"
+        echo "accept a single file and no directories!"
+        echo "Use tar instead for multiple files and "
+        echo "other compression algorithms for directories." ;;
   esac
 }
