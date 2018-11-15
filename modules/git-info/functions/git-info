@@ -11,7 +11,7 @@ unset git_info
 typeset -gA git_info
 
 # Return if not inside a Git repository work tree.
-if ! command git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+if ! command git rev-parse --is-inside-work-tree &>/dev/null; then
   return 1
 fi
 
@@ -21,16 +21,14 @@ zstyle -s ':zim:git-info' ignore-submodules 'ignore_submodules' || ignore_submod
 
 # Format stashed.
 local stashed_format stashed_formatted
-zstyle -s ':zim:git-info:stashed' format 'stashed_format'
-if [[ -n ${stashed_format} ]]; then
+if zstyle -s ':zim:git-info:stashed' format 'stashed_format'; then
   local -i stashed=$(command git stash list 2>/dev/null | wc -l)
   (( stashed )) && zformat -f stashed_formatted ${stashed_format} "S:${stashed}"
 fi
 
 # Format action.
 local action_format action_formatted
-zstyle -s ':zim:git-info:action' format 'action_format'
-if [[ -n ${action_format} ]]; then
+if zstyle -s ':zim:git-info:action' format 'action_format'; then
   local action=$(git-action)
   if [[ -n ${action} ]]; then
     zformat -f action_formatted ${action_format} "s:${action}"
@@ -54,15 +52,13 @@ if [[ -n ${__GIT_INFO_BRANCH} ]]; then
 
   # Format branch.
   local branch_format
-  zstyle -s ':zim:git-info:branch' format 'branch_format'
-  if [[ -n ${branch_format} ]]; then
+  if zstyle -s ':zim:git-info:branch' format 'branch_format'; then
     zformat -f branch_formatted ${branch_format} 'b:${__GIT_INFO_BRANCH}'
   fi
 
   # Format remote.
   local remote_format
-  zstyle -s ':zim:git-info:remote' format 'remote_format'
-  if [[ -n ${remote_format} ]]; then
+  if zstyle -s ':zim:git-info:remote' format 'remote_format'; then
     # Gets the remote name.
     local remote_cmd='command git rev-parse --symbolic-full-name --verify HEAD@{upstream}'
     __GIT_INFO_REMOTE=${$(${(z)remote_cmd} 2>/dev/null)##refs/remotes/}
@@ -106,8 +102,7 @@ else
 
   # Format commit.
   local commit_format
-  zstyle -s ':zim:git-info:commit' format 'commit_format'
-  if [[ -n ${commit_format} ]]; then
+  if zstyle -s ':zim:git-info:commit' format 'commit_format'; then
     local commit=$(command git rev-parse --short HEAD 2>/dev/null)
     if [[ -n ${commit} ]]; then
       zformat -f commit_formatted ${commit_format} "c:${commit}"
@@ -116,8 +111,7 @@ else
 
   # Format position.
   local position_format
-  zstyle -s ':zim:git-info:position' format 'position_format'
-  if [[ -n ${position_format} ]]; then
+  if zstyle -s ':zim:git-info:position' format 'position_format'; then
     __GIT_INFO_POSITION=$(command git describe --contains --all HEAD 2>/dev/null)
     if [[ -n ${__GIT_INFO_POSITION} ]]; then
       zformat -f position_formatted ${position_format} 'p:${__GIT_INFO_POSITION}'
@@ -137,7 +131,7 @@ if ! zstyle -t ':zim:git-info' verbose; then
   local unindexed_format
   zstyle -s ':zim:git-info:unindexed' format 'unindexed_format'
   if [[ -n ${unindexed_format} || -n ${dirty_format} || -n ${clean_format} ]]; then
-    if ! command git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} >/dev/null 2>&1; then
+    if ! command git diff-files --no-ext-diff --quiet --ignore-submodules=${ignore_submodules} &>/dev/null; then
       unindexed_formatted=${unindexed_format}
       dirty=1
     fi
@@ -147,7 +141,7 @@ if ! zstyle -t ':zim:git-info' verbose; then
   local indexed_format
   zstyle -s ':zim:git-info:indexed' format 'indexed_format'
   if [[ -n ${indexed_format} || (${dirty} -eq 0 && (-n ${dirty_format} || -n ${clean_format})) ]]; then
-    if ! command git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD >/dev/null 2>&1; then
+    if ! command git diff-index --no-ext-diff --quiet --cached --ignore-submodules=${ignore_submodules} HEAD &>/dev/null; then
       indexed_formatted=${indexed_format}
       dirty=1
     fi

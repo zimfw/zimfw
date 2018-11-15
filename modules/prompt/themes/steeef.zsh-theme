@@ -91,7 +91,9 @@ prompt_steeef_setup() {
   zstyle ':zim:git-info:unindexed' format "${col_unidx}${ind_unidx}"
   zstyle ':zim:git-info:indexed' format "${col_idx}${ind_idx}"
   zstyle ':zim:git-info:untracked' format "${col_untrk}${ind_untrk}"
-  zstyle ':zim:git-info:stashed' format "${col_stash}${ind_stash}"
+  if [[ -n ${ind_stash} ]]; then
+    zstyle ':zim:git-info:stashed' format "${col_stash}${ind_stash}"
+  fi
   zstyle ':zim:git-info:keys' format \
     'prompt' "(${col_brnch}%b%c%I%i%u%f%S%f)%s"
 

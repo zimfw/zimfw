@@ -1,0 +1,3 @@
+#compdef aurman packer wrapaur yaourt
+
+service=pacman; _pacman
