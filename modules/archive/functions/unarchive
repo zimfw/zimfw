@@ -2,7 +2,7 @@
 # Unarchives files
 #
 
-if (( ${#} != 1 )); then
+if (( # != 1 )); then
   print "usage: ${0} [archive.ext]" >&2
   return 1
 fi
@@ -21,7 +21,7 @@ local archive_name="${1:t}"
 case "${archive_name}" in
   (*.tar.gz|*.tgz) tar -xvzf "${archive_name}" ;;
   (*.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar -xvjf "${archive_name}" ;;
-  (*.tar.xz|*.txz) tar --xz --help &>/dev/null && tar --xz -xvf "${archive_name}" \
+  (*.tar.xz|*.txz) tar -J --help &>/dev/null && tar -xvJf "${archive_name}" \
     || xzcat "${archive_name}" | tar xvf - ;;
   (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar --lzma -xvf "${archive_name}" \
     || lzcat "${archive_name}" | tar xvf - ;;
