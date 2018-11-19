@@ -22,15 +22,12 @@ if (( terminfo[colors] >= 8 )); then
   else
     # BSD
 
+    (( ! ${+CLICOLOR} )) && export CLICOLOR=1
     (( ! ${+LSCOLORS} )) && export LSCOLORS='ExfxcxdxbxGxDxabagacad'
 
     # stock OpenBSD ls does not support colors at all, but colorls does.
-    if [[ ${OSTYPE} == openbsd* ]]; then
-      if (( ${+commands[colorls]} )); then
-        alias ls='colorls -G'
-      fi
-    else
-      alias ls='ls -G'
+    if [[ ${OSTYPE} == openbsd* && ${+commands[colorls]} -ne 0 ]]; then
+      alias ls='colorls'
     fi
   fi
 
