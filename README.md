@@ -57,7 +57,7 @@ Installing Zim is easy. If you have a different shell framework installed (like 
 
 3. Set Zsh as the default shell:
   ```
-  chsh -s =zsh
+  chsh -s $(which zsh)
   ```
 
 4. Open a new terminal and finish optimization (this is only needed once, hereafter it will happen upon desktop/tty login):
