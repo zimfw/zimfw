@@ -6,7 +6,7 @@ else
   remotes=(${(f)"$(command git rev-parse --abbrev-ref ${^*:#-*}@{u} 2>/dev/null)"}) || remotes=()
 fi
 if command git branch --delete ${@} && \
-    (( ${#remotes[@]} )) && \
+    (( ${#remotes} )) && \
     read -q "?Also delete remote branch(es) ${remotes} [y/N]? "; then
   print
   local remote
