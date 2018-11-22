@@ -1,17 +1,17 @@
+# vim:et sts=2 sw=2 ft=zsh
 #
 # Creates archive files
 #
 
 if (( # < 2 )); then
-  print "usage: ${0} [archive_name.ext] [file]..." >&2
+  print "usage: ${0} <archive_name.ext> <file>..." >&2
   return 1
 fi
 
 # we are quitting (above) if there are less than 2 vars,
 # so we don't need any argc check here.
 
-# strip the path, just in case one is provided for some reason
-local archive_name="${1:t}"
+local archive_name="${1}"
 shift
 
 # pigz and pbzip2 are aliased in the init.zsh file. This provides a significant speedup, resulting in a
