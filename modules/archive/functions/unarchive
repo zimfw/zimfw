@@ -1,19 +1,14 @@
+# vim:et sts=2 sw=2 ft=zsh
 #
 # Unarchives files
 #
 
 if (( # != 1 )); then
-  print "usage: ${0} [archive.ext]" >&2
+  print "usage: ${0} <archive_name.ext>" >&2
   return 1
 fi
 
-if [[ ! -s ${1} ]]; then
-  print "archive \"${1}\" was not found or has size 0." >&2
-  return 1
-fi
-
-# strip the path, just in case one is provided for some reason
-local archive_name="${1:t}"
+local archive_name="${1}"
 
 # using unpigz/pbunzip2 provides little to decompression time; the benefit is mainly in compression time.
 # setting it as an alias in the init.zsh file should be sufficient here.
