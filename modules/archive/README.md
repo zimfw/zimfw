@@ -9,7 +9,7 @@ Functions
 ---------
 
   * `archive` generates an archive based on file extension. Syntax is `archive myarchive.tar.gz /path/to/archive`
-  * `unarchive` unarchives a file based on the extension. Syntax is `unarchive myarchive.7z`
+  * `unarchive` unarchives files based on the extensions. Syntax is `unarchive myarchive.7z`
 
 Archive formats
 ---------------
