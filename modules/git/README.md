@@ -1,10 +1,10 @@
 git
 ===
 
-Provides nice git aliases and functions.
+Provides handy git aliases and functions.
 
 Many thanks to [Sorin Ionescu](https://github.com/sorin-ionescu) for the
-excellent aliases.
+excellent original aliases.
 
 Aliases
 -------
@@ -71,7 +71,9 @@ Aliases
   * `gf` downloads objects and references from another repository.
   * `gfc` clones a repository into a new directory.
   * `gfm` fetches from and merges with another repository or local branch.
-  * `gfr` fetches from and rebases on another repository or local branch.
+  * `gfr` fetches from and rebases on top of another repository or local branch.
+  * `gfu` removes unexisting remote-tracking references, fetches all remotes and
+    merges.
 
 ### Grep
 
@@ -171,7 +173,7 @@ Aliases
   * `gSl` lists the commits of all submodules.
   * `gSm` moves a submodule.
   * `gSs` synchronizes submodules' remote URL to the value specified in
-    .gitmodules.
+    `.gitmodules`.
   * `gSu` fetches and merges the latest changes for all submodules.
   * `gSx` removes a submodule.
 
@@ -206,11 +208,15 @@ Aliases
 
 The following aliases may shadow system commands:
 
+  * `gb` shadows a [build tool for the Go programming language](https://getgb.io/).
+  * `gm` shadows [GraphicsMagick](http://www.graphicsmagick.org/).
   * `gpt` shadows the GUID partition table maintenance utility.
-  * `gs` shadows Ghostscript.
+  * `grc` shadows [Generic Colouriser](https://github.com/garabik/grc).
+  * `gs` shadows [Ghostscript](https://www.ghostscript.com/).
 
-If you frequently use the above commands, you may wish to remove said aliases
-from this module or to disable them at the bottom of the zshrc with `unalias`.
+If you frequently use the above commands, you may wish to disable this module
+altogether, or to disable the specific aliases with `unalias` at the bottom of
+your `.zshrc`.
 
 You can temporarily bypass an alias by prefixing it with a backward slash:
 `\gpt`.
@@ -219,6 +225,8 @@ Functions
 ---------
 
   * `git-branch-current` displays the current branch.
+  * `git-branch-delete-interactive` asks for confirmation to also delete the
+    upstream remote branch(es).
   * `git-dir` displays the path to the Git directory.
   * `git-ignore-add` adds any arguments to the .gitignore in the project root.
   * `git-root` displays the path to the working tree root.
