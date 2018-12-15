@@ -23,18 +23,18 @@ autoload -Uz compinit && compinit -C -d "${ZDOTDIR:-${HOME}}/${zcompdump_file:-.
 # zsh options
 #
 
-# If a completion is performed with the cursor within a word, and a full completion is inserted,
-# the cursor is moved to the end of the word
+# If a completion is performed with the cursor within a word, and a full
+# completion is inserted, the cursor is moved to the end of the word.
 setopt ALWAYS_TO_END
 
 # Perform a path search even on command names with slashes in them.
 setopt PATH_DIRS
 
 # Make globbing (filename generation) not sensitive to case.
-unsetopt CASE_GLOB
+setopt NO_CASE_GLOB
 
 # Don't beep on an ambiguous completion.
-unsetopt LIST_BEEP
+setopt NO_LIST_BEEP
 
 
 #
