@@ -1,7 +1,7 @@
 zsh-autosuggestions
 ===================
 
-_[Fish](http://fishshell.com/)-like fast/unobtrusive autosuggestions for zsh._
+_[Fish](http://fishshell.com/)-like fast/unobtrusive autosuggestions for Zsh._
 
 It suggests commands as you type, based on command history.
 

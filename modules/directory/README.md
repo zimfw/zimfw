@@ -3,7 +3,7 @@ directory
 
 Sets directory, navigation, and redirect options.
 
-zsh options
+Zsh options
 -----------
 
   * `AUTO_CD` performs cd to a directory if the typed command is invalid, but is a directory.

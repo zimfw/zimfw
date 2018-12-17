@@ -12,7 +12,7 @@ Git **1.7.2** is the
 Settings
 --------
 
-### Ignore Submodules
+### Ignore submodules
 
 Retrieving the status of a repository with submodules can take a long time.
 So by default 'all' submodules are ignored. Optionally, 'untracked', 'dirty', or
@@ -20,7 +20,7 @@ So by default 'all' submodules are ignored. Optionally, 'untracked', 'dirty', or
 
     zstyle ':zim:git-info' ignore-submodules 'none'
 
-### Verbose Mode
+### Verbose mode
 
 Verbose mode uses `git status` and computes the count of indexed, unindexed and
 also untracked files. It can be enabled with the following zstyle:
@@ -41,7 +41,7 @@ a style is:
 
     zstyle ':zim:git-info:context' format 'string'
 
-### Main Contexts
+### Main contexts
 
 | Name      |  Code  | Description
 | --------- | :----: | --------------------------------------------------------
@@ -65,7 +65,7 @@ state](http://gitfaq.org/articles/what-is-a-detached-head.html), on the other
 hand, `ahead`, `behind`, `diverged`, `branch` and `remote` are only available
 when an actual branch is checked out (so when **not** in 'detached HEAD' state).
 
-### Special Action Contexts
+### Special action contexts
 
 | Name                        | Format  | Default Value
 | --------------------------- | :-----: | -------------------------------------

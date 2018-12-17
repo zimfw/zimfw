@@ -1,4 +1,4 @@
-Prompt
+prompt
 ======
 
 Initializes and provides customizable prompt themes.

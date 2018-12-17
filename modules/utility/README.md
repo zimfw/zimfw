@@ -20,11 +20,11 @@ Aliases
   * `lt` lists sorted by newest modification time last.
   * `lc` lists sorted by newest status change (ctime) last.
 
-### File Downloads
+### File downloads
 
   * `get` is short for ( `aria2c` || `axel` || `wget` || `curl` ).
 
-### Resource Usage
+### Resource usage
 
   * `df` reports file system disk usage with human-readable sizes.
   * `du` reports file disk usage with human-readable sizes.

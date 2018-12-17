@@ -1,4 +1,4 @@
-Pacman
+pacman
 ======
 
 Adds aliases for the pacman package manager.

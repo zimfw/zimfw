@@ -1,13 +1,13 @@
 environment
 ===========
 
-Sets generic zsh built-in environment options.
+Sets generic Zsh built-in environment options.
 
 Also enables smart URL-pasting. This prevents the user from having to manually escape URLs.
 
 Uses `.zimrc` defined `${ztermtitle}` variable to set the terminal title, if defined.
 
-zsh options
+Zsh options
 -----------
 
   * `AUTO_RESUME` resumes an existing job before creating a new one.

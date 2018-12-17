@@ -1,18 +1,19 @@
-Custom
+custom
 ======
 
 Add any custom aliases/settings to the `init.zsh` file.
 
-Any functions should go in the `functions` folder, where the name of the file is the name of the function.
+Any functions should go in the `functions` subdirectory, where the name of the
+file is the name of the function.
 
-For example, this function from your .zshrc:
-```
+For example, this function from your `.zshrc`:
+```zsh
 foo() {
   print 'bar'
 }
 ```
 
-becomes a file named 'foo' in the functions folder containing:
-```
+becomes a file named `foo` in the `functions` subdirectory containing:
+```zsh
 print 'bar'
 ```

@@ -1,4 +1,4 @@
-SSH
+ssh
 ===
 
 Provides a convenient way to load ssh-agent. This enables one-time login and caching of SSH credentials per session.

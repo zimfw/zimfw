@@ -1,4 +1,4 @@
-Syntax-Highlighting
+syntax-highlighting
 ===================
 
 Adds fish shell-like [syntax highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) to your shell.
