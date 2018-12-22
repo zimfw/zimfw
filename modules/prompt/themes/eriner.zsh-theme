@@ -91,8 +91,8 @@ prompt_eriner_main() {
   prompt_eriner_git() {
     if [[ -n ${git_info} ]]; then
       local indicator
-      [[ ${git_info[color]} == yellow ]] && indicator='± '
-      prompt_eriner_standout_segment ${git_info[color]} " \${(e)git_info[prompt]} ${indicator}"
+      [[ ${git_info[color]} == yellow ]] && indicator=' ±'
+      prompt_eriner_standout_segment ${git_info[color]} " ${(e)git_info[prompt]}${indicator} "
     fi
   }
 
@@ -123,7 +123,7 @@ prompt_eriner_setup() {
     'prompt' '%b%c%s' \
     'color' '%C%D'
 
-  PS1="\${(e)\$(prompt_eriner_main ${@:1:2})}"
+  PS1="\$(prompt_eriner_main ${@:1:2})"
   RPS1=''
 }
 

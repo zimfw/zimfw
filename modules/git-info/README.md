@@ -27,8 +27,8 @@ also untracked files. It can be enabled with the following zstyle:
 
     zstyle ':zim:git-info' verbose yes
 
-In non-verbose mode, the 'untracked' context is not available (see Main
-Contexts below), and untracked files are also not considered for computing the
+In non-verbose mode, the 'untracked' context is not available (see *Main
+contexts* below), and untracked files are also not considered for computing the
 'dirty' context. Using `git status` to check for untracked files can be
 [expensive](https://gist.github.com/sindresorhus/3898739).
 
@@ -44,8 +44,8 @@ a style is:
 ### Main contexts
 
 | Name      |  Code  | Description
-| --------- | :----: | --------------------------------------------------------
-| action    |   %s   | Special action name (see Special Action Contexts below)
+| --------- | :----: | ---------------------------------------------------------
+| action    |   %s   | Special action name (see *Special action contexts* below)
 | ahead     |   %A   | Commits ahead of remote count
 | behind    |   %B   | Commits behind of remote count
 | diverged  |   %V   | Diverged commits (both ahead and behind are yield when it's not defined)
@@ -68,7 +68,7 @@ when an actual branch is checked out (so when **not** in 'detached HEAD' state).
 ### Special action contexts
 
 | Name                        | Format  | Default Value
-| --------------------------- | :-----: | -------------------------------------
+| --------------------------- | :-----: | --------------------------------------
 | action:apply                |  value  | 'apply'
 | action:bisect               |  value  | 'bisect'
 | action:cherry-pick          |  value  | 'cherry-pick'
@@ -99,5 +99,5 @@ Second, format how the above attributes are displayed in prompts:
       'prompt'  'git(%b%c)' \
       'rprompt' '[%R]'
 
-Last, add `${git_info[prompt]}` to `PS1` and `${git_info[rprompt]}` to `RPS1`
-respectively and call `git-info` in the `prompt_name_precmd` hook function.
+Last, add `${(e)git_info[prompt]}` and `${(e)git_info[rprompt]}` to `PS1` and
+`RPS1` respectively, and call `git-info` in the `prompt_name_precmd` hook function.
