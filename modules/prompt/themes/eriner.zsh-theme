@@ -75,7 +75,7 @@ prompt_eriner_main() {
     (( $(jobs -l | wc -l) )) && segment+=' %F{cyan}⚙'
     (( RANGER_LEVEL )) && segment+=' %F{cyan}r'
     if [[ ${USER} != ${DEFAULT_USER} || -n ${SSH_CLIENT} ]]; then
-       segment+=' %F{%(!.yellow.default)}${USER}@%m'
+       segment+=" %F{%(!.yellow.default)}${USER}@%m"
     fi
     if [[ -n ${segment} ]]; then
       prompt_eriner_segment ${prompt_eriner_color1} "${segment} "
