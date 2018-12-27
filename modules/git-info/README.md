@@ -101,3 +101,29 @@ Second, format how the above attributes are displayed in prompts:
 
 Last, add `${(e)git_info[prompt]}` and `${(e)git_info[rprompt]}` to `PS1` and
 `RPS1` respectively, and call `git-info` in the `prompt_name_precmd` hook function.
+
+Here's a complete example of a `prompt_example_setup` file:
+```zsh
+prompt_example_precmd() {
+  (( ${+functions[git-info]} )) && git-info
+}
+
+prompt_example_setup() {
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_example_precmd
+
+  prompt_opts=(cr percent sp subst)
+
+  zstyle ':zim:git-info:branch' format 'branch:%b'
+  zstyle ':zim:git-info:commit' format 'commit:%c'
+  zstyle ':zim:git-info:remote' format 'remote:%R'
+
+  zstyle ':zim:git-info:keys' format \
+      'prompt'  'git(%b%c)' \
+      'rprompt' '[%R]'
+
+  PS1='${(e)git_info[prompt]}%# '
+  RPS1='${(e)git_info[rprompt]}'
+}
+
+prompt_example_setup "${@}"
+```
