@@ -52,7 +52,7 @@ Installing Zim is easy. If you have a different shell framework installed (like 
 
        for template_file in ${ZDOTDIR:-${HOME}}/.zim/templates/*; do
          user_file="${ZDOTDIR:-${HOME}}/.${template_file:t}"
-         cat ${template_file} ${user_file}(.N) >! ${user_file}
+         cat ${template_file} ${user_file}(.N) > ${user_file}.tmp && mv ${user_file}{.tmp,}
        done
 
 4. Set Zsh as the default shell:
