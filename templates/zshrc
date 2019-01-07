@@ -2,9 +2,9 @@
 # User configuration sourced by interactive shells
 #
 
-# Define zim location
-export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+# Define Zim location
+ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 
-# Start zim
+# Start Zim
 [[ -s ${ZIM_HOME}/init.zsh ]] && source ${ZIM_HOME}/init.zsh
 
