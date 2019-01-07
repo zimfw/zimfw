@@ -1,6 +1,0 @@
-# vim:et sts=2 sw=2 ft=zsh
-local git_root
-git_root=$(git-root) || return 1
-
-# we are in a git repository. add parameters to .gitignore
-for file (${@}) print ${file} >>! "${git_root}/.gitignore"

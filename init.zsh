@@ -1,51 +1,50 @@
-#
-# Zim initializition
-#
-
 autoload -Uz is-at-least && if ! is-at-least 5.2; then
-  print "ERROR: Zim didn't start. You're using zsh version ${ZSH_VERSION}, and versions < 5.2 are not supported. Update your zsh." >&2
+  print "init: error starting Zim: You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh." >&2
   return 1
 fi
 
-# Define zim location
-(( ! ${+ZIM_HOME} )) && export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+# Define Zim location
+: ${ZIM_HOME=${0:h}}
 
 # Source user configuration
-[[ -s ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
+[[ -f ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
 
 # Set input mode before loading modules
-if [[ ${zinput_mode} == 'vi' ]]; then
+if zstyle -t ':zim:input' mode 'vi'; then
   bindkey -v
 else
   bindkey -e
 fi
 
-# Autoload module functions
+# Autoload enabled modules' functions
 () {
-  local mod_function
+  local zfunction
+  local -a zmodules
+  zstyle -a ':zim' modules 'zmodules'
+
   setopt LOCAL_OPTIONS EXTENDED_GLOB
-
-  # autoload searches fpath for function locations; add enabled module function paths
   fpath=(${ZIM_HOME}/modules/${^zmodules}/functions(/FN) ${fpath})
-
-  for mod_function in ${ZIM_HOME}/modules/${^zmodules}/functions/^(_*|prompt_*_setup|*.*)(-.N:t); do
-    autoload -Uz ${mod_function}
+  for zfunction in ${ZIM_HOME}/modules/${^zmodules}/functions/^(_*|*.*|prompt_*_setup)(-.N:t); do
+    autoload -Uz ${zfunction}
   done
 }
 
-# Initialize modules
+# Source enabled modules' init scripts
 () {
-  local zmodule zmodule_dir zmodule_file
+  local zmodule zdir zfile
+  local -a zmodules
+  zstyle -a ':zim' modules 'zmodules'
 
   for zmodule in ${zmodules}; do
-    zmodule_dir=${ZIM_HOME}/modules/${zmodule}
-    if [[ ! -d ${zmodule_dir} ]]; then
-      print "No such module \"${zmodule}\"." >&2
+    zdir=${ZIM_HOME}/modules/${zmodule}
+    if [[ ! -d ${zdir} ]]; then
+      print "init: module ${zmodule} not installed" >&2
+    elif [[ -f ${zdir}/prompt_${zmodule}_setup ]]; then
+      fpath=(${zdir} ${fpath}) # Will be loaded by promptinit
     else
-      for zmodule_file in ${zmodule_dir}/init.zsh \
-          ${zmodule_dir}/{,zsh-}${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}; do
-        if [[ -f ${zmodule_file} ]]; then
-          source ${zmodule_file}
+      for zfile in ${zdir}/init.zsh ${zdir}/${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}; do
+        if [[ -f ${zfile} ]]; then
+          source ${zfile}
           break
         fi
       done
@@ -53,42 +52,71 @@ fi
   done
 }
 
-zmanage() {
-  local usage="zmanage [action]
-Actions:
-  update       Fetch and merge upstream zim commits if possible
-  info         Print zim and system info
-  issue        Create a template for reporting an issue
-  clean-cache  Clean the zim cache
-  build-cache  Rebuild the zim cache
-  remove       *experimental* Remove zim as best we can
-  reset        Reset zim to the latest commit
-  debug        Invoke the trace-zim script which produces logs
-  help         Print this usage message"
+_zimfw_compile() {
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  autoload -U zrecompile
 
-  if (( ${#} != 1 )); then
-    print ${usage}
+  local zdir zfile
+  local -a zmodules
+  zstyle -a ':zim' modules 'zmodules'
+
+  # Compile the completion cache; significant speedup
+  local zdumpfile
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="${ZDOTDIR:-${HOME}}/.zcompdump"
+  [[ -f ${zdumpfile} ]] && zrecompile -p ${1} ${zdumpfile}
+
+  # Compile .zshrc
+  zrecompile -p ${1} ${ZDOTDIR:-${HOME}}/.zshrc
+
+  # Compile enabled modules' autoloaded functions
+  for zdir in ${ZIM_HOME}/modules/${^zmodules}/functions(/FN); do
+    zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(_*|*.*|prompt_*_setup)(-.N)
+  done
+
+  # Compile enabled modules' scripts
+  for zfile in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#{*.zsh{,-theme},prompt_*_setup}(.NLk+1); do
+    zrecompile -p ${1} ${zfile}
+  done
+
+  # Compile this script
+  zrecompile -p ${1} ${ZIM_HOME}/init.zsh
+
+  if [[ ${1} != -q ]]; then
+    print -P '%F{green}✓%f Done with compile.'
+  fi
+}
+
+zimfw() {
+  if [[ ${#} -ne 1 && ${2} != -q ]]; then
+    source ${ZIM_HOME}/tools/usage.zsh
     return 1
   fi
 
   case ${1} in
-    update)      zsh ${ZIM_HOME}/tools/zim_update
-                 ;;
-    info)        zsh ${ZIM_HOME}/tools/zim_info
-                 ;;
-    issue)       zsh ${ZIM_HOME}/tools/zim_issue
-                 ;;
-    clean-cache) source ${ZIM_HOME}/tools/zim_clean_cache && print 'Cache cleaned'
-                 ;;
-    build-cache) source ${ZIM_HOME}/tools/zim_build_cache && print 'Cache rebuilt'
-                 ;;
-    remove)      zsh ${ZIM_HOME}/tools/zim_remove
-                 ;;
-    reset)       zsh ${ZIM_HOME}/tools/zim_reset
-                 ;;
-    debug)       zsh ${ZIM_HOME}/modules/debug/functions/trace-zim
-                 ;;
-    *)           print ${usage}; return 1
-                 ;;
+    clean)
+      source ${ZIM_HOME}/tools/clean-modules.zsh ${2} && \
+          source ${ZIM_HOME}/tools/clean-compiled.zsh ${2} && \
+          source ${ZIM_HOME}/tools/clean-dumpfile.zsh ${2}
+      ;;
+    clean-modules) source ${ZIM_HOME}/tools/clean-modules.zsh ${2} ;;
+    clean-compiled) source ${ZIM_HOME}/tools/clean-compiled.zsh ${2} ;;
+    clean-dumpfile) source ${ZIM_HOME}/tools/clean-dumpfile.zsh ${2} ;;
+    compile|login-init) _zimfw_compile ${2} ;;
+    info) source ${ZIM_HOME}/tools/info.zsh ${2} ;;
+    install|update)
+      # Source .zimrc to refresh zmodules
+      [[ -f ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
+      source ${ZIM_HOME}/tools/modules.zsh ${2} | xargs -L1 -P10 zsh ${ZIM_HOME}/tools/${1}.zsh && \
+          if [[ ${2} != -q ]]; then
+            print -P "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
+          fi
+      ;;
+    upgrade)
+      zsh ${ZIM_HOME}/tools/update.zsh 'https://github.com/zimfw/zimfw.git' ${ZIM_HOME} branch develop ${2}
+      ;;
+    *)
+      source ${ZIM_HOME}/tools/usage.zsh
+      return 1
+      ;;
   esac
 }

@@ -1,7 +1,0 @@
-#
-# zim_clean_cache - removes all zcompiled files
-#
-
-find ${ZIM_HOME} \( -name '*.zwc' -or -name '*.zwc.old' \) -delete
-rm -f ${ZDOTDIR:-${HOME}}/.zshrc.zwc{,.old}
-rm -f ${ZDOTDIR:-${HOME}}/${zcompdump_file:-.zcompdump}{,.zwc{,.old}}

@@ -1,8 +1,0 @@
-# vim:et sts=2 sw=2 ft=zsh
-# Prints the first non-empty string in the arguments array.
-local arg
-for arg in ${argv}; do
-  print -n ${arg}
-  return 0
-done
-return 1
