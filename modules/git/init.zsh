@@ -6,11 +6,11 @@
 # Settings
 #
 
-# Log colour scheme has yellow commit hash, bold blue author, cyan date, auto ref names
+# Log colour scheme has bold yellow commit hash, bold blue author, cyan date, auto ref names
 # See https://git-scm.com/docs/pretty-formats
-_git_log_medium_format='%C(bold)Commit:%C(reset) %C(yellow)%H%C(auto)%d%n%C(bold)Author:%C(reset) %C(bold blue)%an <%ae>%n%C(bold)Date:%C(reset)   %C(cyan)%ai (%ar)%C(reset)%n%+B'
-_git_log_oneline_format='%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
-_git_log_oneline_medium_format='%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)'
+_git_log_medium_format='%C(bold)Commit: %C(yellow)%H%C(reset)%C(auto)%d%n%C(bold)Author:%C(reset) %C(bold blue)%an <%ae>%n%C(bold)Date:%C(reset)   %C(cyan)%ai (%ar)%C(reset)%n%+B'
+_git_log_oneline_format='%C(bold)%C(yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
+_git_log_oneline_medium_format='%C(bold)%C(yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(reset)%C(cyan)(%ar)%C(auto)%d%C(reset)'
 
 #
 # Aliases
@@ -101,6 +101,7 @@ alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_onelin
 alias glG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}"'
 alias glv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
 alias glc='git shortlog --summary --numbered'
+alias glr='git reflog'
 
 # Merge (m)
 alias gm='git merge'

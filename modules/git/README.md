@@ -107,6 +107,7 @@ Aliases
   * `glG` displays the graph log with authors and dates.
   * `glv` displays the log verifying the GPG signature of commits.
   * `glc` displays the commit count for each contributor in descending order.
+  * `glr` manages reflog information.
 
 ### Merge
 
