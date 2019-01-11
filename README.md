@@ -37,39 +37,15 @@ Zim has many modules! Enable as many or as few as you'd like.
 
 Installation
 ------------
-Installing Zim is easy. If you have a different shell framework installed (like oh-my-zsh or prezto),
-*uninstall those first to prevent conflicts*. It can be installed manually by following the instructions below:
+Installing Zim is easy:
 
-1. Start a Zsh shell:
+    curl -s --proto -all,+https https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
 
-       zsh
+Open a new terminal and you're done! Enjoy your Zsh IMproved! Take some time to
+read about the [available modules][modules] and tweak your `.zshrc` file.
 
-2. Clone the repository:
-
-       git clone --recursive https://github.com/zimfw/zimfw.git ${ZDOTDIR:-${HOME}}/.zim
-
-3. Paste this into your terminal to prepend the initialization templates to your configs:
-
-       for template_file in ${ZDOTDIR:-${HOME}}/.zim/templates/*; do
-         user_file="${ZDOTDIR:-${HOME}}/.${template_file:t}"
-         cat ${template_file} ${user_file}(.N) > ${user_file}.tmp && mv ${user_file}{.tmp,}
-       done
-
-4. Set Zsh as the default shell:
-
-       chsh -s =zsh
-
-5. Open a new terminal and install the enabled modules.
-
-       zimfw install
-
-6. Finish optimization (this is only needed once, hereafter it will happen upon
-   desktop/tty login):
-
-       zimfw login-init
-
-7. You're done! Enjoy your Zsh IMproved! Take some time to read about the
-   [available modules][modules] and tweak your `.zshrc` file.
+If you have a different shell framework installed (like oh-my-zsh or prezto),
+*uninstall those first to prevent conflicts*.
 
 Settings
 --------
@@ -84,54 +60,49 @@ You can provide as many module names as you want. Modules are sourced in the
 order given.
 
 By default, a module is installed from the Zim repository with the same name.
-For example, the `git` module is installed from https://github.com/zimfw/git if
-no additional module configuration is provided.
+For example, the `utility` module is installed from
+https://<em></em>github.com/zimfw/utility.git if no additional module configuration is provided.
 
 ### Module customization
 
-To configure a module, use the following format (where the style name is the
-module name):
+To configure a module, use the following format, where the style name is the
+module name:
 
     zstyle ':zim:module' <module> ['frozen' yes] ['url' <url>] ['branch' <branch>|'tag' <tag>]
 
-If `frozen` is set to `yes`, then the module will not be cleaned, installed or
-updated.
-
-You can provide a custom `url` with the following equivalent formats:
-  * `module`
-  * `zimfw/module`
-  * `https://github.com/zimfw/module.git`
-
-If no `branch` or `tag` name is given, then the default is `branch` `master`.
+| Key | Description | Default value |
+| --- | ----------- | ------------- |
+| frozen | If set to yes, then module will not be cleaned, installed or updated. It can still be freely enabled or disabled with the modules style. | no |
+| url | Repository URL or path. The following formats are equivalent: *module*, zimfw/*module*, https://<em></em>github.com/zimfw/<em>module</em>.git | *module* |
+| branch | Repository branch. | master |
+| tag | Repository tag. Overrides branch, if one was specified. | |
 
 Choose the module name wisely. The first file found in the module root directory,
-in the following order, will be sourced (where `module` is the module name):
-  1. `init.zsh`
-  2. `module.zsh`
-  3. `module.plugin.zsh`
-  4. `module.zsh.theme`
-  5. `module.sh`
+in the following order, will be sourced:
+init.zsh, *module*.zsh, *module*.plugin.zsh, *module*.zsh.theme, *module*.sh
 
-For example, https://github.com/mafredri/zsh-async must be configured as:
+For example, [mafredi/zsh-async](https://github.com/mafredri/zsh-async) must be
+configured as a module called `async`:
 
     zstyle ':zim:module' async 'url' 'mafredri/zsh-async'
 
-because it has a `async.zsh` initialization file, then enabled as `async` in the
-`modules` style.
+because it has an async.zsh initialization file. Then to be enabled, `async` must
+be added to the modules style.
 
 ### Prompt theme
 
 Prompt themes are enabled in one of two different ways, depending on how the
 specific theme you want works:
 
-  1. If it has a `prompt_module_setup` file (where `module` is the module name):
-     it is enabled with Zim's `prompt` module. See [the instructions
-     here](https://github.com/zimfw/prompt/blob/master/README.md#settings). The
-     advantage of these themes is that you can customize them with additional
-     parameters. All [Zim themes](https://github.com/zimfw/zimfw/wiki/Themes)
-     work this way.
+  1. If it has a prompt_<em>module</em>_setup file: it is enabled with Zim's
+     `prompt` module. See [the instructions
+     here](https://github.com/zimfw/prompt/blob/master/README.md#settings). All
+     [Zim themes](https://github.com/zimfw/zimfw/wiki/Themes) work this way.
+     The advantage of these themes is that you can customize them with
+     additional parameters.
   2. If it has one of the initialization files listed above: it is enabled when
-     it's sourced, not with Zim's `prompt` module.
+     it's sourced, not with Zim's `prompt` module. The last sourced prompt
+     overrides any previous ones.
 
 Updating
 --------
