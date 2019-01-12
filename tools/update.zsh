@@ -9,8 +9,8 @@ if ! cd ${DIR} 2>/dev/null; then
   print -P "%F{red}✗ ${MODULE}: Not installed%f"
   return 1
 fi
-if ! command git rev-parse --is-inside-work-tree &>/dev/null; then
-  # Not a git repository. Will not try to update.
+if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
+  # Not in repo root. Will not try to update.
   return 0
 fi
 if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
