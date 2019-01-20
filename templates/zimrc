@@ -8,11 +8,12 @@
 # Select what modules you would like enabled. Modules are sourced in the order given.
 zstyle ':zim' modules \
     directory environment git git-info history input utility \
-    eriner gitster magicmace s1ck94 steeef prompt \
-    zsh-completions completion zsh-autosuggestions zsh-syntax-highlighting history-substring-search
+    steeef \
+    zsh-completions completion \
+    zsh-autosuggestions zsh-syntax-highlighting history-substring-search
 
 # Modules setup configuration.
-# See ...
+# See https://github.com/zimfw/zimfw/blob/develop/README.md#module-customization
 zstyle ':zim:module' zsh-completions 'url' 'zsh-users/zsh-completions'
 zstyle ':zim:module' zsh-autosuggestions 'url' 'zsh-users/zsh-autosuggestions'
 zstyle ':zim:module' zsh-syntax-highlighting 'url' 'zsh-users/zsh-syntax-highlighting'
@@ -65,13 +66,6 @@ zstyle ':zim:module' zsh-syntax-highlighting 'url' 'zsh-users/zsh-syntax-highlig
 
 # Load any helper scripts as defined here.
 #zstyle ':zim:pacman' helpers 'aur'
-
-#
-# prompt
-#
-
-# Set your desired prompt theme.
-zstyle ':zim:prompt' theme 'steeef'
 
 #
 # ssh

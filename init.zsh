@@ -1,5 +1,5 @@
 autoload -Uz is-at-least && if ! is-at-least 5.2; then
-  print "init: error starting Zim: You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh." >&2
+  print -u2 "init: error starting Zim: You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh."
   return 1
 fi
 
@@ -38,11 +38,9 @@ fi
   for zmodule in ${zmodules}; do
     zdir=${ZIM_HOME}/modules/${zmodule}
     if [[ ! -d ${zdir} ]]; then
-      print "init: module ${zmodule} not installed" >&2
-    elif [[ -f ${zdir}/prompt_${zmodule}_setup ]]; then
-      fpath=(${zdir} ${fpath}) # Will be loaded by promptinit
+      print -u2 "init: module ${zmodule} not installed"
     else
-      for zfile in ${zdir}/init.zsh ${zdir}/${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}; do
+      for zfile in ${zdir}/{init.zsh,${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}}; do
         if [[ -f ${zfile} ]]; then
           source ${zfile}
           break
@@ -74,7 +72,7 @@ _zimfw_compile() {
   done
 
   # Compile enabled modules' scripts
-  for zfile in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#{*.zsh{,-theme},prompt_*_setup}(.NLk+1); do
+  for zfile in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#*.zsh{,-theme}(.NLk+1); do
     zrecompile -p ${1} ${zfile}
   done
 
