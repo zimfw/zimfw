@@ -1,0 +1,9 @@
+zimfw() {
+  case ${1} in
+    compile|login-init) _zimfw_compile ${2} ;;
+    *)
+      source ${ZIM_HOME}/<%= script_filename %> <%= second_stage_guard %>
+      zimfw "${@}"
+      ;;
+  esac
+}

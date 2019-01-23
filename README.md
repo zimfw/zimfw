@@ -9,28 +9,28 @@ Zsh IMproved FrameWork
 
 What is Zim?
 ------------
-Zim is a Zsh configuration framework with [blazing speed][speed] and modular extensions.
+Zim is a Zsh configuration framework with [blazing speed] and modular extensions.
 
 Zim is very easy to customize, and comes with a rich set of modules and features without compromising on speed or functionality!
 
 What does Zim offer?
 -----------------
-If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules][modules]!
+If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules]!
 
 Below is a brief showcase of Zim's features.
 
 ### Speed
-For a speed comparison between Zim and other frameworks, see [this wiki entry][speed].
+For a speed comparison between Zim and other frameworks, see [this wiki entry][blazing speed].
 
 ### Themes
 
-To preview some of the available themes, check the [themes wiki page][themes].
+To preview some of the available themes, check the [themes wiki page].
 
 ### Fish-shell history navigation
-![history-substring-search][fish_shell]
+![history-substring-search]
 
 ### Syntax highlighting
-![syntax-highlighting][syntax_highlighting]
+![syntax-highlighting]
 
 ### And much more!
 Zim has many modules! Enable as many or as few as you'd like.
@@ -39,10 +39,16 @@ Installation
 ------------
 Installing Zim is easy:
 
-    curl -s --proto -all,+https https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
+  * With curl:
+
+        curl -fsSL https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
+
+  * With wget:
+
+        wget -nv -O - https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
 
 Open a new terminal and you're done! Enjoy your Zsh IMproved! Take some time to
-read about the [available modules][modules] and tweak your `.zshrc` file.
+read about the [available modules] and tweak your `.zshrc` file.
 
 If you have a different shell framework installed (like oh-my-zsh or prezto),
 *uninstall those first to prevent conflicts*.
@@ -108,8 +114,8 @@ Uninstalling
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshrc` and `~/.zlogin`.
 
-[fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
-[syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
-[speed]: https://github.com/zimfw/zimfw/wiki/Speed
-[modules]: https://github.com/zimfw/zimfw/wiki/Modules
-[themes]: https://github.com/zimfw/zimfw/wiki/Themes
+[history-substring-search]: https://i.eriner.me/zim_history-substring-search.gif
+[syntax-highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
+[blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
+[available modules]: https://github.com/zimfw/zimfw/wiki/Modules
+[themes wiki page]: https://github.com/zimfw/zimfw/wiki/Themes

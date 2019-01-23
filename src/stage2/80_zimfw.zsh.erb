@@ -1,0 +1,57 @@
+unfunction zimfw
+zimfw() {
+  local zusage="usage: ${0} <action> [-q]
+actions:
+  clean            Clean all (see below).
+  clean-modules    Clean unused modules.
+  clean-compiled   Clean Zsh compiled files.
+  clean-dumpfile   Clean completion dump file.
+  compile          Compile Zsh files.
+  info             Print Zim and system info.
+  install          Install new modules.
+  update           Update current modules.
+  upgrade          Upgrade Zim.
+options:
+  -q               Quiet, only outputs errors."
+
+  if [[ ${#} -ne 1 && ${2} != -q ]]; then
+    print -u2 ${zusage}
+    return 1
+  fi
+
+  local ztool
+  case ${1} in
+    install)
+      ztool="<%= render_escaped("src/tools/install.zsh.erb") %>"
+      ;;
+    update)
+      ztool="<%= render_escaped("src/tools/update.zsh.erb") %>"
+      ;;
+  esac
+
+  case ${1} in
+    clean)
+      _zimfw_clean_modules ${2} && \
+          _zimfw_clean_compiled ${2} && \
+          _zimfw_clean_dumpfile ${2}
+      ;;
+    clean-modules) _zimfw_clean_modules ${2} ;;
+    clean-compiled) _zimfw_clean_compiled ${2} ;;
+    clean-dumpfile) _zimfw_clean_dumpfile ${2} ;;
+    compile|login-init) _zimfw_compile ${2} ;;
+    info) _zimfw_info ${2} ;;
+    install|update)
+      # Source .zimrc to refresh zmodules
+      [[ -f <%= home %>/.zimrc ]] && source <%= home %>/.zimrc
+      _zimfw_modules ${2} | xargs -L1 -P10 zsh -c ${ztool} ${1} && \
+          if [[ ${2} != -q ]]; then
+            print -P "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
+          fi
+      ;;
+    upgrade) _zimfw_upgrade ${2} ;;
+    *)
+      print -u2 ${zusage}
+      return 1
+      ;;
+  esac
+}

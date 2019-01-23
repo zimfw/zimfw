@@ -1,0 +1,10 @@
+_zimfw_clean_dumpfile() {
+  setopt LOCAL_OPTIONS PIPE_FAIL
+  local zdumpfile zout zopt
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="<%= home %>/.zcompdump"
+  [[ ${1} != -q ]] && zopt='-v'
+  command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
+  if [[ ${1} != -q ]]; then
+    print -P "%F{green}✓%f Done with clean-dumpfile. Restart your terminal to dump an updated configuration."
+  fi
+}

@@ -1,12 +1,14 @@
 # This runs in a new shell
-URL=${1}
-DIR=${2}
+DIR=${1}
+URL=${2}
 TYPE=${3}
 REV=${4}
 OPT=${5}
 MODULE=${DIR:t}
+CLEAR_LINE="\033[2K\r"
+[[ ${OPT} != -q ]] && print -n "${CLEAR_LINE}Updating ${MODULE} …"
 if ! cd ${DIR} 2>/dev/null; then
-  print -P "%F{red}✗ ${MODULE}: Not installed%f"
+  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Not installed%f"
   return 1
 fi
 if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
@@ -14,32 +16,32 @@ if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
   return 0
 fi
 if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
-  print -P "%F{red}✗ ${MODULE}: URL does not match. Expected ${URL}. Will not try to update.%f"
+  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: URL does not match. Expected ${URL}. Will not try to update.%f"
   return 1
 fi
-if [[ ${TYPE} == 'tag' ]]; then
+if [[ ${TYPE} == tag ]]; then
   if [[ ${REV} == $(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    [[ ${OPT} != -q ]] && print -P "%F{green}✓%f ${MODULE}: Already up to date"
+    [[ ${OPT} != -q ]] && print -P "${CLEAR_LINE}%F{green}✓%f ${MODULE}: Already up to date"
     return 0
   fi
 fi
 if ! ERR=$(command git fetch -pq origin ${REV} 2>&1); then
-  print -P "%F{red}✗ ${MODULE}: Error (1)%f\n${ERR}"
+  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (1)%f\n${ERR}"
   return 1
 fi
-if [[ ${TYPE} == 'branch' ]]; then
+if [[ ${TYPE} == branch ]]; then
   LOG_REV="${REV}@{u}"
 else
   LOG_REV=${REV}
 fi
 LOG=$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} 2>/dev/null)
 if ! ERR=$(command git checkout -q ${REV} -- 2>&1); then
-  print -P "%F{red}✗ ${MODULE}: Error (2)%f\n${ERR}"
+  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (2)%f\n${ERR}"
   return 1
 fi
-if [[ ${TYPE} == 'branch' ]]; then
+if [[ ${TYPE} == branch ]]; then
   if ! OUT=$(command git merge --ff-only --no-progress -n 2>&1); then
-    print -P "%F{red}✗ ${MODULE}: Error (3)%f\n${OUT}"
+    print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (3)%f\n${OUT}"
     return 1
   fi
   # keep just first line of OUT
@@ -50,9 +52,9 @@ fi
 [[ -n ${LOG} ]] && OUT="${OUT}\n${LOG}"
 if ERR=$(command git submodule update --init --recursive -q 2>&1); then
   if [[ ${OPT} != -q ]]; then
-    print -P "%F{green}✓%f ${MODULE}: ${OUT}"
+    print -P "${CLEAR_LINE}%F{green}✓%f ${MODULE}: ${OUT}"
   fi
 else
-  print -P "%F{red}✗ ${MODULE}: Error (4)%f\n${ERR}"
+  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (4)%f\n${ERR}"
   return 1
 fi

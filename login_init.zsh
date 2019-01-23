@@ -1,1 +1,0 @@
-zimfw login-init -q &!
