@@ -1,0 +1,40 @@
+<%# coding: UTF-8 %><%
+class Zim
+  attr_reader :functions_glob, :home, :min_zsh_version, :script_filename, :second_stage_guard, :version
+
+  def initialize
+    @functions_glob = "^(_*|*.*|prompt_*_setup)"
+    @home = "${ZDOTDIR:-${HOME}}"
+    @min_zsh_version = "5.2"
+    @script_filename = "zimfw.zsh"
+    @second_stage_guard = 2
+    @version = "1.0.0-SNAPSHOT"
+  end
+
+  def render(filename)
+    ERB.new(File.read(filename)).result(binding)
+  end
+
+  def render_all(pattern)
+    Dir[pattern].sort.map { |filename| render(filename) }.join("\n")
+  end
+
+  def render_escaped(filename)
+    render(filename).gsub(/(\$[^']|")/, "\\\\\\1")
+  end
+end
+zim = Zim.new
+%># AUTOMATICALLY GENERATED FILE. EDIT ONLY THE SOURCE FILES AND THEN COMPILE.
+# DO NOT DIRECTLY EDIT THIS FILE!
+
+if (( ! # )); then
+
+# Stage 1 of sourcing this script
+<%= zim.render_all("src/stage1/*.erb") %># Stage 1 done
+
+elif [[ ${1} == <%= zim.second_stage_guard %> ]]; then
+
+# Stage 2 of sourcing this script. Should only be done internally by zimfw.
+<%= zim.render_all("src/stage2/*.erb") %># Stage 2 done
+
+fi

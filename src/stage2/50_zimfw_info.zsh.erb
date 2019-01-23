@@ -1,0 +1,5 @@
+_zimfw_info() {
+  print 'Zim version:  <%= version %> (previous commit is <%= `git rev-parse --short HEAD | tr -d '\r\n'` %>)'
+  print "Zsh version:  ${ZSH_VERSION}"
+  print "System info:  $(command uname -a)"
+}
