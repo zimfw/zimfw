@@ -106,6 +106,8 @@ alias glc='git shortlog --summary --numbered'
 alias gm='git merge'
 alias gmC='git merge --no-commit'
 alias gmF='git merge --no-ff'
+alias gmS='git merge -S'
+alias gmV='git merge --verify-signatures'
 alias gma='git merge --abort'
 alias gmt='git mergetool'
 
