@@ -108,9 +108,11 @@ alias ${gprefix}lr='git reflog'
 
 # Merge (m)
 alias ${gprefix}m='git merge'
+alias ${gprefix}ma='git merge --abort'
 alias ${gprefix}mC='git merge --no-commit'
 alias ${gprefix}mF='git merge --no-ff'
-alias ${gprefix}ma='git merge --abort'
+alias ${gprefix}mS='git merge -S'
+alias ${gprefix}mv='git merge --verify-signatures'
 alias ${gprefix}mt='git mergetool'
 
 # Push (p)
