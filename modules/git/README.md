@@ -112,9 +112,12 @@ Aliases
 
   * `gm` joins two or more development histories together.
   * `gmC` performs the merge but does not commit.
-  * `gmF` performs the merge generating a commit even if the merge resolved as a
-    fast-forward.
+  * `gmF` performs the merge generating a commit even if the merge resolved as
+    a fast-forward.
   * `gma` aborts the conflict resolution, and reconstructs the pre-merge state.
+  * `gmS` commits with GPG signature.
+  * `gmv` verifies the GPG signature of the tip commit of the side branch being
+    merged.
   * `gmt` runs the merge conflict resolution tools to resolve conflicts.
 
 ### Push
