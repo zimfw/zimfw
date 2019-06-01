@@ -8,9 +8,9 @@
 
 # Log colour scheme has bold yellow commit hash, bold blue author, cyan date, auto ref names
 # See https://git-scm.com/docs/pretty-formats
-_git_log_medium_format='%C(bold)Commit: %C(yellow)%H%C(auto)%d%n%C(bold)Author: %C(blue)%an <%ae>%n%C(bold)Date:   %C(no-bold cyan)%ai (%ar)%C(reset)%n%+B'
+_git_log_fuller_format='%C(bold yellow)commit %H%C(auto)%d%n%C(bold)Author: %C(blue)%an <%ae> %C(no-bold cyan)%ai (%ar)%n%C(bold)Commit: %C(blue)%cn <%ce> %C(no-bold cyan)%ci (%cr)%C(reset)%n%+B'
 _git_log_oneline_format='%C(bold yellow)%h%C(reset) %s%C(auto)%d%C(reset)'
-_git_log_oneline_medium_format='%C(bold yellow)%h%C(reset) %<|(60,trunc)%s %C(bold blue)<%an> %C(no-bold cyan)(%ar)%C(auto)%d%C(reset)'
+_git_log_oneline_medium_format='%C(bold yellow)%h%C(reset) %<(50,trunc)%s %C(bold blue)<%an> %C(no-bold cyan)(%ar)%C(auto)%d%C(reset)'
 
 #
 # Aliases
@@ -46,7 +46,7 @@ alias ${gprefix}cp='git cherry-pick --ff'
 alias ${gprefix}cP='git cherry-pick --no-commit'
 alias ${gprefix}cr='git revert'
 alias ${gprefix}cR='git reset "HEAD^"'
-alias ${gprefix}cs='git show --pretty=format:"${_git_log_medium_format}"'
+alias ${gprefix}cs='git show --pretty=format:"${_git_log_fuller_format}"'
 alias ${gprefix}cS='git commit -S'
 alias ${gprefix}cv='git verify-commit'
 
@@ -95,14 +95,14 @@ alias ${gprefix}ix='git rm --cached -r'
 alias ${gprefix}iX='git rm --cached -rf'
 
 # Log (l)
-alias ${gprefix}l='git log --topo-order --pretty=format:"${_git_log_medium_format}"'
-alias ${gprefix}ls='git log --topo-order --stat --pretty=format:"${_git_log_medium_format}"'
-alias ${gprefix}ld='git log --topo-order --stat --patch --full-diff --pretty=format:"${_git_log_medium_format}"'
+alias ${gprefix}l='git log --topo-order --pretty=format:"${_git_log_fuller_format}"'
+alias ${gprefix}ls='git log --topo-order --stat --pretty=format:"${_git_log_fuller_format}"'
+alias ${gprefix}ld='git log --topo-order --stat --patch --full-diff --pretty=format:"${_git_log_fuller_format}"'
 alias ${gprefix}lo='git log --topo-order --pretty=format:"${_git_log_oneline_format}"'
 alias ${gprefix}lO='git log --topo-order --pretty=format:"${_git_log_oneline_medium_format}"'
-alias ${gprefix}lg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}"'
-alias ${gprefix}lG='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_medium_format}"'
-alias ${gprefix}lv='git log --topo-order --show-signature --pretty=format:"${_git_log_medium_format}"'
+alias ${gprefix}lg='git log --graph --pretty=format:"${_git_log_oneline_format}"'
+alias ${gprefix}lG='git log --graph --pretty=format:"${_git_log_oneline_medium_format}"'
+alias ${gprefix}lv='git log --topo-order --show-signature --pretty=format:"${_git_log_fuller_format}"'
 alias ${gprefix}lc='git shortlog --summary --numbered'
 alias ${gprefix}lr='git reflog'
 
