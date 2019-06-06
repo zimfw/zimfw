@@ -72,9 +72,7 @@ zinput_mode='emacs'
 # This determines what highlighters will be used with the syntax-highlighting module.
 # Documentation of the highlighters can be found here:
 #   https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
-# For (u)rxvt, termite and gnome-terminal users,
-# removing the 'cursor' highlighter will fix the disappearing cursor problem
-zhighlighters=(main brackets cursor)
+zhighlighters=(main brackets)
 
 #
 # SSH
