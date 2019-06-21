@@ -20,10 +20,10 @@ prompt_eriner_help () {
   cat <<EOH
 This prompt is color-scheme-able. You can customize it using:
 
-    prompt eriner [status_color] [pwd_color] [git_clean_color] [git_dirty_color]
+    prompt eriner [status_color] [pwd_color] [git_clean_color] [git_dirty_color] [foreground_color]
 
 where the parameters are the background colors for each segment. The default
-values are black, cyan, green, and yellow.
+values are black, cyan, green, yellow, default
 
 In order for this prompt to render correctly, a font with Powerline symbols is
 required. A simple way to install a font with Powerline symbols is to follow
@@ -35,6 +35,7 @@ prompt_eriner_main() {
   local prompt_eriner_retval=${?}
   local prompt_eriner_color1=${1:-black}
   local prompt_eriner_color2=${2:-cyan}
+  local prompt_eriner_fg=${5:-default}
 
   ### Segment drawing
   # Utility functions to make it easy and re-usable to draw segmented prompts.
@@ -75,7 +76,7 @@ prompt_eriner_main() {
     (( $(jobs -l | wc -l) )) && segment+=' %F{cyan}⚙'
     (( RANGER_LEVEL )) && segment+=' %F{cyan}r'
     if [[ ${USER} != ${DEFAULT_USER} || -n ${SSH_CLIENT} ]]; then
-       segment+=" %F{%(!.yellow.default)}${USER}@%m"
+       segment+=" %F{${prompt_eriner_fg}}${USER}@%m"
     fi
     if [[ -n ${segment} ]]; then
       prompt_eriner_segment ${prompt_eriner_color1} "${segment} "
@@ -123,7 +124,7 @@ prompt_eriner_setup() {
     'prompt' '%b%c%s' \
     'color' '%C%D'
 
-  PS1="\$(prompt_eriner_main ${@:1:2})"
+  PS1="\$(prompt_eriner_main ${@:1:5})"
   RPS1=''
 }
 
@@ -133,7 +134,7 @@ prompt_eriner_preview () {
   else
     prompt_preview_theme eriner
     print
-    prompt_preview_theme eriner black blue green yellow
+    prompt_preview_theme eriner black blue green yellow default
   fi
 }
 
