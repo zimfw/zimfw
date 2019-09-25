@@ -11,5 +11,9 @@ bindkey '^[[B' history-substring-search-down
 
 # Bind up and down keys
 zmodload -F zsh/terminfo +p:terminfo
-bindkey "${terminfo[kcuu1]}" history-substring-search-up
-bindkey "${terminfo[kcud1]}" history-substring-search-down
+if [[ "${terminfo[kcuu1]}" != "" ]]; then
+  bindkey "${terminfo[kcuu1]}" history-substring-search-up
+fi
+if [[ "${terminfo[kcud1]}" != "" ]]; then
+  bindkey "${terminfo[kcud1]}" history-substring-search-down
+fi
