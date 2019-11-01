@@ -49,8 +49,11 @@ if [[ ${TYPE} == branch ]]; then
 else
   OUT="Updating to ${TYPE} ${REV}"
 fi
-[[ -n ${LOG} ]] && OUT="${OUT}
-${LOG}"
+if [[ -n ${LOG} ]]; then
+  LOG_LINES=('  '${(f)^LOG})
+  OUT="${OUT}
+${(F)LOG_LINES}"
+fi
 if ERR=$(command git submodule update --init --recursive -q 2>&1); then
   if [[ ${OPT} != -q ]]; then
     print -R "$(print -P "${CLEAR_LINE}%F{green}✓%f") ${MODULE}: ${OUT}"

@@ -182,7 +182,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 3af566d)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 601941f)'
   print "Zsh version:  ${ZSH_VERSION}"
   print "System info:  $(command uname -a)"
 }
@@ -306,8 +306,11 @@ if [[ \${TYPE} == branch ]]; then
 else
   OUT=\"Updating to \${TYPE} \${REV}\"
 fi
-[[ -n \${LOG} ]] && OUT=\"\${OUT}
-\${LOG}\"
+if [[ -n \${LOG} ]]; then
+  LOG_LINES=('  '\${(f)^LOG})
+  OUT=\"\${OUT}
+\${(F)LOG_LINES}\"
+fi
 if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
   if [[ \${OPT} != -q ]]; then
     print -R \"\$(print -P \"\${CLEAR_LINE}%F{green}✓%f\") \${MODULE}: \${OUT}\"
