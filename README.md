@@ -3,7 +3,7 @@ Zsh IMproved FrameWork
 
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
-    <img width=650px src="https://i.eriner.me/zim_banner.png">
+    <img width=650px src="https://zimfw-static.s3.wasabisys.com/zimfw_banner.png">
   </a>
 </div>
 
@@ -91,8 +91,8 @@ To remove Zim, run:
 **NOTE: This functionality is experimental!**
 
 
-[fish_shell]: https://i.eriner.me/zim_history-substring-search.gif
-[syntax_highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
+[fish_shell]: https://zimfw-static.s3.wasabisys.com/zimfw_history-substring-search.gif
+[syntax_highlighting]: https://zimfw-static.s3.wasabisys.com/zimfw_syntax-highlighting.gif
 [speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://github.com/zimfw/zimfw/wiki/Modules
 [themes]: https://github.com/zimfw/zimfw/wiki/Themes

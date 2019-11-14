@@ -16,4 +16,4 @@ Contributing
 Contributions should be submitted [upstream to
 zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search).
 
-[example]: https://i.eriner.me/zim_history-substring-search.gif
+[example]: https://zimfw-static.s3.wasabisys.com/zimfw_history-substring-search.gif
