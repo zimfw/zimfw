@@ -1,13 +1,9 @@
 _zimfw_compile() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB
   autoload -U zrecompile
-
-  local zdir zfile
-  local -a zmodules
-  zstyle -a ':zim' modules 'zmodules'
+  local zdumpfile zdir zfile
 
   # Compile the completion cache; significant speedup
-  local zdumpfile
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="<%= home %>/.zcompdump"
   if [[ -f ${zdumpfile} ]]; then
     zrecompile -p ${1} ${zdumpfile} || return 1
@@ -16,18 +12,18 @@ _zimfw_compile() {
   # Compile .zshrc
   zrecompile -p ${1} <%= home %>/.zshrc || return 1
 
-  # Compile enabled modules' autoloaded functions
-  for zdir in ${ZIM_HOME}/modules/${^zmodules}/functions(/FN); do
-    zrecompile -p ${1} ${zdir}.zwc ${zdir}/<%= functions_glob %>(-.N) || return 1
+  # Compile autoloaded functions
+  for zdir in ${fpath}; do
+    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
+    if [[ -w ${zdir:h} ]]; then
+      zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(*.*)(N-.) || return 1
+    fi
   done
 
-  # Compile enabled modules' scripts
-  for zfile in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#*.zsh{,-theme}(.NLk+1); do
+  # Compile scripts
+  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
     zrecompile -p ${1} ${zfile} || return 1
   done
-
-  # Compile this script
-  zrecompile -p ${1} ${ZIM_HOME}/<%= script_filename %> || return 1
 
   if [[ ${1} != -q ]]; then
     print -P '%F{green}✓%f Done with compile.'

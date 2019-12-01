@@ -1,14 +1,14 @@
 # This runs in a new shell
-DIR=${1}
-URL=${2}
-TYPE=${3}
-REV=${4}
-OPT=${5}
-MODULE=${DIR:t}
-CLEAR_LINE="\033[2K\r"
-[[ ${OPT} != -q ]] && print -n "${CLEAR_LINE}Updating ${MODULE} …"
-if ! cd ${DIR} 2>/dev/null; then
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Not installed%f"
+readonly MODULE=${1}
+readonly DIR=${2}
+readonly URL=${3}
+readonly TYPE=${4}
+readonly REV=${5}
+readonly -i QUIET=${6}
+readonly CLEAR_LINE=$'\E[2K\r'
+(( ! QUIET )) && print -Rn ${CLEAR_LINE}"Updating ${MODULE} …"
+if ! builtin cd ${DIR} 2>/dev/null; then
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Not installed%f"
   return 1
 fi
 if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
@@ -16,32 +16,32 @@ if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
   return 0
 fi
 if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: URL does not match. Expected ${URL}. Will not try to update.%f"
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b URL does not match. Expected ${URL}. Will not try to update.%f"
   return 1
 fi
 if [[ ${TYPE} == tag ]]; then
   if [[ ${REV} == $(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    [[ ${OPT} != -q ]] && print -P "${CLEAR_LINE}%F{green}✓%f ${MODULE}: Already up to date"
+    (( ! QUIET )) && print -PR ${CLEAR_LINE}"%F{green}✓%f %B${MODULE}:%b Already up to date"
     return 0
   fi
 fi
 if ! ERR=$(command git fetch -pq origin ${REV} 2>&1); then
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (1)%f\n${ERR}"
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Error during git fetch%f"$'\n'${(F):-  ${(f)^ERR}}
   return 1
 fi
 if [[ ${TYPE} == branch ]]; then
-  LOG_REV="${REV}@{u}"
+  LOG_REV=${REV}@{u}
 else
   LOG_REV=${REV}
 fi
 LOG=$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} 2>/dev/null)
 if ! ERR=$(command git checkout -q ${REV} -- 2>&1); then
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (2)%f\n${ERR}"
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Error during git checkout%f"$'\n'${(F):-  ${(f)^ERR}}
   return 1
 fi
 if [[ ${TYPE} == branch ]]; then
   if ! OUT=$(command git merge --ff-only --no-progress -n 2>&1); then
-    print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (3)%f\n${OUT}"
+    print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Error during git merge%f"$'\n'${(F):-  ${(f)^OUT}}
     return 1
   fi
   # keep just first line of OUT
@@ -49,16 +49,12 @@ if [[ ${TYPE} == branch ]]; then
 else
   OUT="Updating to ${TYPE} ${REV}"
 fi
-if [[ -n ${LOG} ]]; then
-  LOG_LINES=('  '${(f)^LOG})
-  OUT="${OUT}
-${(F)LOG_LINES}"
-fi
 if ERR=$(command git submodule update --init --recursive -q 2>&1); then
-  if [[ ${OPT} != -q ]]; then
-    print -R "$(print -P "${CLEAR_LINE}%F{green}✓%f") ${MODULE}: ${OUT}"
+  if (( ! QUIET )); then
+    [[ -n ${LOG} ]] && OUT=${OUT}$'\n'${(F):-  ${(f)^LOG}}
+    print -PR ${CLEAR_LINE}"%F{green}✓%f %B${MODULE}:%b ${OUT}"
   fi
 else
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error (4)%f\n${ERR}"
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Error during git submodule update%f"$'\n'${(F):-  ${(f)^ERR}}
   return 1
 fi
