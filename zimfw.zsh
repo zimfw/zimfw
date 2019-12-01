@@ -1,71 +1,20 @@
 # AUTOMATICALLY GENERATED FILE. EDIT ONLY THE SOURCE FILES AND THEN COMPILE.
 # DO NOT DIRECTLY EDIT THIS FILE!
 
-if (( ! # )); then
-
-# Stage 1 of sourcing this script
 autoload -Uz is-at-least && if ! is-at-least 5.2; then
-  print -u2 "init: error starting Zim: You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh."
+  print -u2 -R "${0}: Error starting Zim. You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh."
   return 1
 fi
 
 # Define Zim location
-: ${ZIM_HOME=${0:h}}
-
-# Source user configuration
-[[ -f ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
-
-# Set input mode before loading modules
-if zstyle -t ':zim:input' mode 'vi'; then
-  bindkey -v
-else
-  bindkey -e
-fi
-
-# Autoload enabled modules' functions
-() {
-  local zfunction
-  local -a zmodules
-  zstyle -a ':zim' modules 'zmodules'
-
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
-  fpath=(${ZIM_HOME}/modules/${^zmodules}/functions(/FN) ${fpath})
-  for zfunction in ${ZIM_HOME}/modules/${^zmodules}/functions/^(_*|*.*|prompt_*_setup)(-.N:t); do
-    autoload -Uz ${zfunction}
-  done
-}
-
-# Source enabled modules' init scripts
-() {
-  local zmodule zdir zfile
-  local -a zmodules
-  zstyle -a ':zim' modules 'zmodules'
-
-  for zmodule in ${zmodules}; do
-    zdir=${ZIM_HOME}/modules/${zmodule}
-    if [[ ! -d ${zdir} ]]; then
-      print -u2 "init: module ${zmodule} not installed"
-    else
-      for zfile in ${zdir}/{init.zsh,${zmodule}.{zsh,plugin.zsh,zsh-theme,sh}}; do
-        if [[ -f ${zfile} ]]; then
-          source ${zfile}
-          break
-        fi
-      done
-    fi
-  done
-}
+: ${ZIM_HOME=${0:A:h}}
 
 _zimfw_compile() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB
   autoload -U zrecompile
-
-  local zdir zfile
-  local -a zmodules
-  zstyle -a ':zim' modules 'zmodules'
+  local zdumpfile zdir zfile
 
   # Compile the completion cache; significant speedup
-  local zdumpfile
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="${ZDOTDIR:-${HOME}}/.zcompdump"
   if [[ -f ${zdumpfile} ]]; then
     zrecompile -p ${1} ${zdumpfile} || return 1
@@ -74,198 +23,332 @@ _zimfw_compile() {
   # Compile .zshrc
   zrecompile -p ${1} ${ZDOTDIR:-${HOME}}/.zshrc || return 1
 
-  # Compile enabled modules' autoloaded functions
-  for zdir in ${ZIM_HOME}/modules/${^zmodules}/functions(/FN); do
-    zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(_*|*.*|prompt_*_setup)(-.N) || return 1
+  # Compile autoloaded functions
+  for zdir in ${fpath}; do
+    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
+    if [[ -w ${zdir:h} ]]; then
+      zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(*.*)(N-.) || return 1
+    fi
   done
 
-  # Compile enabled modules' scripts
-  for zfile in ${ZIM_HOME}/modules/${^zmodules}/(^*test*/)#*.zsh{,-theme}(.NLk+1); do
+  # Compile scripts
+  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
     zrecompile -p ${1} ${zfile} || return 1
   done
-
-  # Compile this script
-  zrecompile -p ${1} ${ZIM_HOME}/zimfw.zsh || return 1
 
   if [[ ${1} != -q ]]; then
     print -P '%F{green}✓%f Done with compile.'
   fi
 }
 
-zimfw() {
-  case ${1} in
-    compile|login-init) _zimfw_compile ${2} ;;
-    *)
-      source ${ZIM_HOME}/zimfw.zsh 2
-      zimfw "${@}"
-      ;;
-  esac
-}
-# Stage 1 done
+if [[ ${1} == (compile|login-init) && ${2} == (|-q) ]]; then
+  _zimfw_compile ${2}
+  return
+fi
 
-elif [[ ${1} == 2 ]]; then
-
-# Stage 2 of sourcing this script. Should only be done internally by zimfw.
-_zimfw_modules() {
-  local zmodule zurl ztype zrev
-  local -a zmodules
-  local -A zoptions
-  zstyle -a ':zim' modules 'zmodules'
-  for zmodule in ${zmodules}; do
-    zstyle -a ':zim:module' ${zmodule} 'zoptions'
-    [[ ${zoptions[frozen]} == yes ]] && continue
-    zurl=${zoptions[url]:-${zmodule}}
-    if [[ ${zurl} != /* && ${zurl} != *@*:* ]]; then
-      # Count number of slashes
-      case ${#zurl//[^\/]/} in
-        0) zurl="https://github.com/zimfw/${zurl}.git" ;;
-        1) zurl="https://github.com/${zurl}.git" ;;
-      esac
-    fi
-    if [[ -n ${zoptions[tag]} ]]; then
-      ztype=tag
-      zrev=${zoptions[tag]}
+_zimfw_build() {
+  () {
+    local -r ztarget=${ZIM_HOME}/init.zsh
+    if command cmp -s ${ztarget} ${1}; then
+      if (( ! _zquiet )); then
+        print -PR "%F{green}✓%f %B${ztarget}:%b Already up to date"
+      fi
     else
-      ztype=branch
-      zrev=${zoptions[branch]:-master}
+      if [[ -e ${ztarget} ]]; then
+        command mv -f ${ztarget}{,.old} || return 1
+      fi
+      command mv -f ${1} ${ztarget} && \
+          if (( ! _zquiet )); then
+            print -PR "%F{green}✓%f %B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
+          fi
     fi
-    # Cannot have an empty space at the EOL because this is read by xargs -L1
-    print "'${ZIM_HOME}/modules/${zmodule}' '${zurl}' '${ztype}' '${zrev}'${1:+ ${1}}"
+    if (( ! _zquiet )); then
+      print -P '%F{green}✓%f Done with build.'
+    fi
+  } =(
+    print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
+    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
+    (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
+    print -Rn ${(F):-source ${^_zscripts:P}}
+  )
+}
+
+zmodule() {
+  local -r zusage="
+Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
+
+Repository options:
+  %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module
+  %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module
+  %B-z%b|%B--frozen%b                Don't install or update the module
+
+Startup options:
+  %B-f%b|%B--fpath%b <path>              Add specified path to fpath
+  %B-a%b|%B--autoload%b <function_name>  Autoload specified function
+  %B-s%b|%B--source%b <file_path>        Source specified file
+  %B-d%b|%B--disabled%b                  Don't use or clean the module
+"
+  if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
+    print -u2 -PR "%F{red}${0}: Must be called from ${ZDOTDIR:-${HOME}}/.zimrc%f"$'\n'${zusage}
+    return 1
+  fi
+  if (( ! # )); then
+    print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}: Missing zmodule url%f"
+    _zfailed=1
+    return 1
+  fi
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  local zmodule=${1:t} zurl=${1}
+  local ztype=branch zrev=master
+  local -i zdisabled=0 zfrozen=0
+  local -a zfpaths zfunctions zscripts
+  local zarg
+  if [[ ${zurl} =~ ^[^:/]+: ]]; then
+    zmodule=${zmodule%.git}
+  elif [[ ${zurl} != /* ]]; then
+    # Count number of slashes
+    case ${#zurl//[^\/]/} in
+      0) zurl="https://github.com/zimfw/${zurl}.git" ;;
+      1) zurl="https://github.com/${zurl}.git" ;;
+    esac
+  fi
+  shift
+  if [[ ${1} == (-n|--name) ]]; then
+    if (( # < 2 )); then
+      print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+      _zfailed=1
+      return 1
+    fi
+    shift
+    zmodule=${1}
+    shift
+  fi
+  local -r zdir=${ZIM_HOME}/modules/${zmodule}
+  while (( # > 0 )); do
+    case ${1} in
+      -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)
+        if (( # < 2 )); then
+          print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+          _zfailed=1
+          return 1
+        fi
+        ;;
+    esac
+    case ${1} in
+      -b|--branch)
+        shift
+        ztype=branch
+        zrev=${1}
+        ;;
+      -t|--tag)
+        shift
+        ztype=tag
+        zrev=${1}
+        ;;
+      -z|--frozen) zfrozen=1 ;;
+      -f|--fpath)
+        shift
+        zarg=${1}
+        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        zfpaths+=(${zarg})
+        ;;
+      -a|--autoload)
+        shift
+        zfunctions+=(${1})
+        ;;
+      -s|--source)
+        shift
+        zarg=${1}
+        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        zscripts+=(${zarg})
+        ;;
+      -d|--disabled) zdisabled=1 ;;
+      *)
+        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
+        _zfailed=1
+        return 1
+        ;;
+    esac
+    shift
   done
+  if (( zdisabled )); then
+    _zdisableds+=(${zmodule})
+  else
+    (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+    if (( ! ${#zfunctions} )); then
+      # _* functions are autoloaded by compinit
+      # prompt_*_setup functions are autoloaded by promptinit
+      zfunctions+=(${^zfpaths}/^(*.*|_*|prompt_*_setup)(N-.:t))
+    fi
+    if (( ! ${#zscripts} )); then
+      zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+    fi
+    _zfpaths+=(${zfpaths})
+    _zfunctions+=(${zfunctions})
+    _zscripts+=(${zscripts})
+    _zmodules+=(${zmodule})
+  fi
+  if (( ! zfrozen )); then
+    _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+  fi
+}
+
+_zimfw_source_zimrc() {
+  local -i _zfailed=0
+  if ! source ${ZDOTDIR:-${HOME}}/.zimrc || (( _zfailed )); then
+    print -u2 -PR "%F{red}✗ Failed to source ${ZDOTDIR:-${HOME}}/.zimrc%f"
+    return 1
+  fi
 }
 
 _zimfw_clean_modules() {
-  local zdir zmodule
-  local -a zmodules
-  local -A zoptions
-  # Source .zimrc to refresh zmodules
-  [[ -f ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
-  zstyle -a ':zim' modules 'zmodules'
-  for zdir in ${ZIM_HOME}/modules/*(/N); do
+  local zopt zdir zmodule
+  (( ! _zquiet )) && zopt='-v'
+  for zdir in ${ZIM_HOME}/modules/*(N/); do
     zmodule=${zdir:t}
-    # If zmodules does not contain the zmodule
-    if (( ! ${zmodules[(I)${zmodule}]} )); then
-      zstyle -a ':zim:module' ${zmodule} 'zoptions'
-      [[ ${zoptions[frozen]} == yes ]] && continue
-      command rm -rf ${zdir} || return 1
-      [[ ${1} != -q ]] && print ${zdir}
+    # If _zmodules and _zdisableds do not contain the zmodule
+    if (( ! ${_zmodules[(I)${zmodule}]} && ! ${_zdisableds[(I)${zmodule}]} )); then
+      command rm -rf ${zopt} ${zdir} || return 1
     fi
   done
-  if [[ ${1} != -q ]]; then
-    print -P "%F{green}✓%f Done with clean-modules."
+  if (( ! _zquiet )); then
+    print -P '%F{green}✓%f Done with clean-modules.'
   fi
 }
 
 _zimfw_clean_compiled() {
-  setopt LOCAL_OPTIONS PIPE_FAIL
-  local find_opt rm_opt
-  if [[ ${1} != -q ]]; then
-    find_opt='-print'
-    rm_opt='-v'
+  local zopt_find zopt_rm zdir
+  if (( ! _zquiet )); then
+    zopt_find='-print'
+    zopt_rm='-v'
   fi
-  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${find_opt} || return 1
-  command rm -f ${rm_opt} ${ZDOTDIR:-${HOME}}/.zshrc.zwc{,.old} || return 1
-  if [[ ${1} != -q ]]; then
-    print -P "%F{green}✓%f Done with clean-compiled. Run %Bzimfw compile%b to re-compile."
+  for zdir in ${fpath}; do
+    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
+    if [[ -w ${zdir:h} ]]; then
+      command rm -f ${zopt_rm} ${zdir}.zwc{,.old} || return 1
+    fi
+  done
+  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${zopt_find} || return 1
+  command rm -f ${zopt_rm} ${ZDOTDIR:-${HOME}}/.zshrc.zwc{,.old} || return 1
+  if (( ! _zquiet )); then
+    print -P '%F{green}✓%f Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi
 }
 
 _zimfw_clean_dumpfile() {
-  setopt LOCAL_OPTIONS PIPE_FAIL
-  local zdumpfile zout zopt
+  local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="${ZDOTDIR:-${HOME}}/.zcompdump"
-  [[ ${1} != -q ]] && zopt='-v'
+  (( ! _zquiet )) && zopt='-v'
   command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
-  if [[ ${1} != -q ]]; then
-    print -P "%F{green}✓%f Done with clean-dumpfile. Restart your terminal to dump an updated configuration."
+  if (( ! _zquiet )); then
+    print -P '%F{green}✓%f Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
   fi
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 601941f)'
-  print "Zsh version:  ${ZSH_VERSION}"
-  print "System info:  $(command uname -a)"
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is e81c1d1)'
+  print -R "Zsh version:  ${ZSH_VERSION}"
+  print -R "System info:  $(command uname -a)"
 }
 
 _zimfw_upgrade() {
-  local zscript=${ZIM_HOME}/zimfw.zsh
-  local zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh
-  if (( ${+commands[wget]} )); then
-    command wget -nv ${1} -O ${zscript}.new ${zurl} || return 1
-  else
-    command curl -fsSL -o ${zscript}.new ${zurl} || return 1
-  fi
-  if command cmp -s ${zscript}{,.new}; then
-    command rm ${zscript}.new && \
-        if [[ ${1} != -q ]]; then
-          print -P "%F{green}✓%f zimfw.zsh: Already up to date."
-        fi
-  else
-    command mv ${zscript}{,.old} && command mv ${zscript}{.new,} && \
-        if [[ ${1} != -q ]]; then
-          print -P "%F{green}✓%f zimfw.zsh: upgraded. Restart your terminal for changes to take effect."
-        fi
-  fi
+  local -r zscript=${ZIM_HOME}/zimfw.zsh
+  local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh
+  {
+    if (( ${+commands[wget]} )); then
+      command wget -nv ${1} -O ${zscript}.new ${zurl} || return 1
+    else
+      command curl -fsSL -o ${zscript}.new ${zurl} || return 1
+    fi
+    if command cmp -s ${zscript}{,.new}; then
+      if (( ! _zquiet )); then
+        print -P '%F{green}✓%f %Bzimfw.zsh:%b Already up to date'
+      fi
+    else
+      command mv -f ${zscript}{,.old} && command mv -f ${zscript}{.new,} && \
+          if (( ! _zquiet )); then
+            print -P '%F{green}✓%f %Bzimfw.zsh:%b Upgraded. Restart your terminal for changes to take effect.'
+          fi
+    fi
+    if (( ! _zquiet )); then
+      print -P '%F{green}✓%f Done with upgrade.'
+    fi
+  } always {
+    command rm -f ${zscript}.new
+  }
 }
 
-unfunction zimfw
 zimfw() {
-  local zusage="usage: ${0} <action> [-q]
-actions:
-  clean            Clean all (see below).
-  clean-modules    Clean unused modules.
-  clean-compiled   Clean Zsh compiled files.
-  clean-dumpfile   Clean completion dump file.
-  compile          Compile Zsh files.
-  info             Print Zim and system info.
-  install          Install new modules.
-  update           Update current modules.
-  upgrade          Upgrade Zim.
-options:
-  -q               Quiet, only outputs errors."
+  local -r zusage="
+Usage: %B${0}%b <action> [%B-q%b]
 
-  if [[ ${#} -ne 1 && ${2} != -q ]]; then
-    print -u2 ${zusage}
-    return 1
+Actions:
+  %Bbuild%b           Build init script
+  %Bclean%b           Clean all (see below)
+  %Bclean-modules%b   Clean unused modules
+  %Bclean-compiled%b  Clean Zsh compiled files
+  %Bclean-dumpfile%b  Clean completion dump file
+  %Bcompile%b         Compile Zsh files
+  %Binfo%b            Print Zim and system info
+  %Binstall%b         Install new modules
+  %Bupdate%b          Update current modules
+  %Bupgrade%b         Upgrade Zim
+
+Options:
+  %B-q%b              Quiet, only outputs errors
+"
+  local ztool _zmodules_xargs
+  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
+  local -i _zquiet=0
+  if (( # > 2 )); then
+     print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
+     return 1
+  elif (( # > 1 )); then
+    case ${2} in
+      -q) _zquiet=1 ;;
+      *)
+        print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
+        return 1
+        ;;
+    esac
   fi
 
-  local ztool
   case ${1} in
     install)
       ztool="# This runs in a new shell
-DIR=\${1}
-URL=\${2}
-REV=\${4}
-OPT=\${5}
-MODULE=\${DIR:t}
-CLEAR_LINE=\"\033[2K\r\"
+readonly MODULE=\${1}
+readonly DIR=\${2}
+readonly URL=\${3}
+readonly REV=\${5}
+readonly -i QUIET=\${6}
+readonly CLEAR_LINE=$'\E[2K\r'
 if [[ -e \${DIR} ]]; then
   # Already exists
   return 0
 fi
-[[ \${OPT} != -q ]] && print -n \"\${CLEAR_LINE}Installing \${MODULE} …\"
+(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} …\"
 if ERR=\$(command git clone -b \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
-  if [[ \${OPT} != -q ]]; then
-    print -P \"\${CLEAR_LINE}%F{green}✓%f \${MODULE}: Installed\"
+  if (( ! QUIET )); then
+    print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b Installed\"
   fi
 else
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Error%f\n\${ERR}\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git clone%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 "
       ;;
     update)
       ztool="# This runs in a new shell
-DIR=\${1}
-URL=\${2}
-TYPE=\${3}
-REV=\${4}
-OPT=\${5}
-MODULE=\${DIR:t}
-CLEAR_LINE=\"\033[2K\r\"
-[[ \${OPT} != -q ]] && print -n \"\${CLEAR_LINE}Updating \${MODULE} …\"
-if ! cd \${DIR} 2>/dev/null; then
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Not installed%f\"
+readonly MODULE=\${1}
+readonly DIR=\${2}
+readonly URL=\${3}
+readonly TYPE=\${4}
+readonly REV=\${5}
+readonly -i QUIET=\${6}
+readonly CLEAR_LINE=$'\E[2K\r'
+(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} …\"
+if ! builtin cd \${DIR} 2>/dev/null; then
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Not installed%f\"
   return 1
 fi
 if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
@@ -273,32 +356,32 @@ if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
   return 0
 fi
 if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: URL does not match. Expected \${URL}. Will not try to update.%f\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
   return 1
 fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    [[ \${OPT} != -q ]] && print -P \"\${CLEAR_LINE}%F{green}✓%f \${MODULE}: Already up to date\"
+    (( ! QUIET )) && print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b Already up to date\"
     return 0
   fi
 fi
 if ! ERR=\$(command git fetch -pq origin \${REV} 2>&1); then
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Error (1)%f\n\${ERR}\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 if [[ \${TYPE} == branch ]]; then
-  LOG_REV=\"\${REV}@{u}\"
+  LOG_REV=\${REV}@{u}
 else
   LOG_REV=\${REV}
 fi
 LOG=\$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${LOG_REV} 2>/dev/null)
 if ! ERR=\$(command git checkout -q \${REV} -- 2>&1); then
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Error (2)%f\n\${ERR}\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git checkout%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 if [[ \${TYPE} == branch ]]; then
   if ! OUT=\$(command git merge --ff-only --no-progress -n 2>&1); then
-    print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Error (3)%f\n\${OUT}\"
+    print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git merge%f\"$'\n'\${(F):-  \${(f)^OUT}}
     return 1
   fi
   # keep just first line of OUT
@@ -306,17 +389,13 @@ if [[ \${TYPE} == branch ]]; then
 else
   OUT=\"Updating to \${TYPE} \${REV}\"
 fi
-if [[ -n \${LOG} ]]; then
-  LOG_LINES=('  '\${(f)^LOG})
-  OUT=\"\${OUT}
-\${(F)LOG_LINES}\"
-fi
 if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
-  if [[ \${OPT} != -q ]]; then
-    print -R \"\$(print -P \"\${CLEAR_LINE}%F{green}✓%f\") \${MODULE}: \${OUT}\"
+  if (( ! QUIET )); then
+    [[ -n \${LOG} ]] && OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
+    print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b \${OUT}\"
   fi
 else
-  print -P \"\${CLEAR_LINE}%F{red}✗ \${MODULE}: Error (4)%f\n\${ERR}\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git submodule update%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 "
@@ -324,31 +403,32 @@ fi
   esac
 
   case ${1} in
+    build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
     clean)
-      _zimfw_clean_modules ${2} && \
-          _zimfw_clean_compiled ${2} && \
-          _zimfw_clean_dumpfile ${2}
+      _zimfw_source_zimrc && \
+          _zimfw_clean_modules && \
+          _zimfw_clean_compiled && \
+          _zimfw_clean_dumpfile
       ;;
-    clean-modules) _zimfw_clean_modules ${2} ;;
-    clean-compiled) _zimfw_clean_compiled ${2} ;;
-    clean-dumpfile) _zimfw_clean_dumpfile ${2} ;;
-    compile|login-init) _zimfw_compile ${2} ;;
-    info) _zimfw_info ${2} ;;
+    clean-modules) _zimfw_source_zimrc && _zimfw_clean_modules ;;
+    clean-compiled) _zimfw_clean_compiled ;;
+    clean-dumpfile) _zimfw_clean_dumpfile ;;
+    compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
+    info) _zimfw_info ;;
     install|update)
-      # Source .zimrc to refresh zmodules
-      [[ -f ${ZDOTDIR:-${HOME}}/.zimrc ]] && source ${ZDOTDIR:-${HOME}}/.zimrc
-      _zimfw_modules ${2} | xargs -L1 -P10 zsh -c ${ztool} ${1} && \
-          if [[ ${2} != -q ]]; then
-            print -P "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
-          fi
+      _zimfw_source_zimrc || return 1
+      print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
+          if (( ! _zquiet )); then
+            print -PR "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
+          fi && \
+          _zimfw_build && _zimfw_compile ${2}
       ;;
-    upgrade) _zimfw_upgrade ${2} ;;
+    upgrade) _zimfw_upgrade ;;
     *)
-      print -u2 ${zusage}
+      print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1
       ;;
   esac
 }
-# Stage 2 done
 
-fi
+zimfw "${@}"

@@ -1,25 +1,38 @@
-unfunction zimfw
 zimfw() {
-  local zusage="usage: ${0} <action> [-q]
-actions:
-  clean            Clean all (see below).
-  clean-modules    Clean unused modules.
-  clean-compiled   Clean Zsh compiled files.
-  clean-dumpfile   Clean completion dump file.
-  compile          Compile Zsh files.
-  info             Print Zim and system info.
-  install          Install new modules.
-  update           Update current modules.
-  upgrade          Upgrade Zim.
-options:
-  -q               Quiet, only outputs errors."
+  local -r zusage="
+Usage: %B${0}%b <action> [%B-q%b]
 
-  if [[ ${#} -ne 1 && ${2} != -q ]]; then
-    print -u2 ${zusage}
-    return 1
+Actions:
+  %Bbuild%b           Build init script
+  %Bclean%b           Clean all (see below)
+  %Bclean-modules%b   Clean unused modules
+  %Bclean-compiled%b  Clean Zsh compiled files
+  %Bclean-dumpfile%b  Clean completion dump file
+  %Bcompile%b         Compile Zsh files
+  %Binfo%b            Print Zim and system info
+  %Binstall%b         Install new modules
+  %Bupdate%b          Update current modules
+  %Bupgrade%b         Upgrade Zim
+
+Options:
+  %B-q%b              Quiet, only outputs errors
+"
+  local ztool _zmodules_xargs
+  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
+  local -i _zquiet=0
+  if (( # > 2 )); then
+     print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
+     return 1
+  elif (( # > 1 )); then
+    case ${2} in
+      -q) _zquiet=1 ;;
+      *)
+        print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
+        return 1
+        ;;
+    esac
   fi
 
-  local ztool
   case ${1} in
     install)
       ztool="<%= render_escaped("src/tools/install.zsh.erb") %>"
@@ -30,27 +43,29 @@ options:
   esac
 
   case ${1} in
+    build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
     clean)
-      _zimfw_clean_modules ${2} && \
-          _zimfw_clean_compiled ${2} && \
-          _zimfw_clean_dumpfile ${2}
+      _zimfw_source_zimrc && \
+          _zimfw_clean_modules && \
+          _zimfw_clean_compiled && \
+          _zimfw_clean_dumpfile
       ;;
-    clean-modules) _zimfw_clean_modules ${2} ;;
-    clean-compiled) _zimfw_clean_compiled ${2} ;;
-    clean-dumpfile) _zimfw_clean_dumpfile ${2} ;;
-    compile|login-init) _zimfw_compile ${2} ;;
-    info) _zimfw_info ${2} ;;
+    clean-modules) _zimfw_source_zimrc && _zimfw_clean_modules ;;
+    clean-compiled) _zimfw_clean_compiled ;;
+    clean-dumpfile) _zimfw_clean_dumpfile ;;
+    compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
+    info) _zimfw_info ;;
     install|update)
-      # Source .zimrc to refresh zmodules
-      [[ -f <%= home %>/.zimrc ]] && source <%= home %>/.zimrc
-      _zimfw_modules ${2} | xargs -L1 -P10 zsh -c ${ztool} ${1} && \
-          if [[ ${2} != -q ]]; then
-            print -P "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
-          fi
+      _zimfw_source_zimrc || return 1
+      print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
+          if (( ! _zquiet )); then
+            print -PR "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
+          fi && \
+          _zimfw_build && _zimfw_compile ${2}
       ;;
-    upgrade) _zimfw_upgrade ${2} ;;
+    upgrade) _zimfw_upgrade ;;
     *)
-      print -u2 ${zusage}
+      print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1
       ;;
   esac

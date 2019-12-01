@@ -1,20 +1,20 @@
 # This runs in a new shell
-DIR=${1}
-URL=${2}
-REV=${4}
-OPT=${5}
-MODULE=${DIR:t}
-CLEAR_LINE="\033[2K\r"
+readonly MODULE=${1}
+readonly DIR=${2}
+readonly URL=${3}
+readonly REV=${5}
+readonly -i QUIET=${6}
+readonly CLEAR_LINE=$'\E[2K\r'
 if [[ -e ${DIR} ]]; then
   # Already exists
   return 0
 fi
-[[ ${OPT} != -q ]] && print -n "${CLEAR_LINE}Installing ${MODULE} …"
+(( ! QUIET )) && print -Rn ${CLEAR_LINE}"Installing ${MODULE} …"
 if ERR=$(command git clone -b ${REV} -q --recursive ${URL} ${DIR} 2>&1); then
-  if [[ ${OPT} != -q ]]; then
-    print -P "${CLEAR_LINE}%F{green}✓%f ${MODULE}: Installed"
+  if (( ! QUIET )); then
+    print -PR ${CLEAR_LINE}"%F{green}✓%f %B${MODULE}:%b Installed"
   fi
 else
-  print -P "${CLEAR_LINE}%F{red}✗ ${MODULE}: Error%f\n${ERR}"
+  print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Error during git clone%f"$'\n'${(F):-  ${(f)^ERR}}
   return 1
 fi

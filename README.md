@@ -3,7 +3,7 @@ Zsh IMproved FrameWork
 
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
-    <img width=650px src="https://i.eriner.me/zim_banner.png">
+    <img width=650px src="https://zimfw.github.io/images/zim_banner.png">
   </a>
 </div>
 
@@ -53,50 +53,40 @@ read about the [available modules] and tweak your `.zshrc` file.
 If you have a different shell framework installed (like oh-my-zsh or prezto),
 *uninstall those first to prevent conflicts*.
 
-Settings
---------
+Usage
+-----
 
-### Enabled modules
+### zmodule
 
-Use the following zstyle to select the modules you would like enabled:
+Add `zmodule` calls to your `.zimrc` file to define the modules to be loaded.
+The modules are loaded in the same order they are defined. Add:
 
-    zstyle ':zim' modules 'first-module' 'second-module' 'third-module'
+    zmodule <url> [-n|--name <module_name>] [options]
 
-You can provide as many module names as you want. Modules are sourced in the
-order given.
+where &lt;url&gt; is the required repository URL or path. The following formats
+are equivalent: *name*, zimfw/*name*, https://<em></em>github.com/zimfw/<em>name</em>.git
 
-By default, a module is installed from the Zim repository with the same name.
-For example, the `utility` module is installed from
-https://<em></em>github.com/zimfw/utility.git if no additional module configuration is provided.
+By default, the module name is the last component in the &lt;url&gt;. Use the
+`-n`|`--name` &lt;module&lowbar;name&gt; option to set a custom module name.
 
-### Module customization
+#### Repository options
 
-To configure a module, use the following format, where the style name is the
-module name:
+* `-b`&vert;`--branch` &lt;branch&lowbar;name&gt;: Use specified branch when installing and updating the module. Overrides the tag option. Default: `master`
+* `-t`&vert;`--tag` &lt;tag&lowbar;name&gt;: Use specified tag when installing and updating the module. Overrides the branch option.
+* `-z`&vert;`--frozen`: Don't install or update the module
 
-    zstyle ':zim:module' <module> ['frozen' yes] ['url' <url>] ['branch' <branch>|'tag' <tag>]
+#### Startup options
 
-| Key | Description | Default value |
-| --- | ----------- | ------------- |
-| frozen | If set to yes, then module will not be cleaned, installed or updated. It can still be freely enabled or disabled with the modules style. | no |
-| url | Repository URL or path. The following formats are equivalent: *module*, zimfw/*module*, https://<em></em>github.com/zimfw/<em>module</em>.git | *module* |
-| branch | Repository branch. | master |
-| tag | Repository tag. Overrides branch, if one was specified. | |
+* `-f`&vert;`--fpath` &lt;path&gt;: Add specified path to `fpath`. The path is relative to the module root directory. Default: `functions`, if the subdirectory exists
+* `-a`&vert;`--autoload` &lt;function&lowbar;name&gt;: Autoload specified function. Default: all valid names inside all the module specified `fpath` paths
+* `-s`&vert;`--source` &lt;file&lowbar;path&gt;: Source specified file. The file path is relative to the module root directory. Default: the file with largest size matching `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists
+* `-d`&vert;`--disabled`: Don't use or clean the module
 
-Choose the module name wisely. The first file found in the module root directory,
-in the following order, will be sourced:
-init.zsh, *module*.zsh, *module*.plugin.zsh, *module*.zsh.theme, *module*.sh
+### zimfw
 
-For example, [mafredi/zsh-async](https://github.com/mafredri/zsh-async) must be
-configured as a module called `async`:
+To install new defined modules, run:
 
-    zstyle ':zim:module' async 'url' 'mafredri/zsh-async'
-
-because it has an async.zsh initialization file. Then to be enabled, `async` must
-be added to the modules style.
-
-Updating
---------
+    zimfw install
 
 To update your modules, run:
 
@@ -114,8 +104,8 @@ Uninstalling
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshrc` and `~/.zlogin`.
 
-[history-substring-search]: https://i.eriner.me/zim_history-substring-search.gif
-[syntax-highlighting]: https://i.eriner.me/zim_syntax-highlighting.gif
+[history-substring-search]: https://zimfw.github.io/images/zim_history-substring-search.gif
+[syntax-highlighting]: https://zimfw.github.io/images/zim_syntax-highlighting.gif
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [available modules]: https://github.com/zimfw/zimfw/wiki/Modules
 [themes wiki page]: https://github.com/zimfw/zimfw/wiki/Themes
