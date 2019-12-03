@@ -1,4 +1,5 @@
 _zimfw_source_zimrc() {
+  local -ri _zprepare_xargs=${1}
   local -i _zfailed=0
   if ! source <%= home %>/.zimrc || (( _zfailed )); then
     print -u2 -PR "%F{red}✗ Failed to source <%= home %>/.zimrc%f"

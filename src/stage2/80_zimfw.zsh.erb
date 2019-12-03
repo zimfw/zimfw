@@ -56,12 +56,12 @@ Options:
     compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
     info) _zimfw_info ;;
     install|update)
-      _zimfw_source_zimrc || return 1
+      _zimfw_source_zimrc 1 || return 1
       print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
           if (( ! _zquiet )); then
             print -PR "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
           fi && \
-          _zimfw_build && _zimfw_compile ${2}
+          _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
     upgrade) _zimfw_upgrade ;;
     *)

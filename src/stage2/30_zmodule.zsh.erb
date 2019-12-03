@@ -96,24 +96,27 @@ Startup options:
     esac
     shift
   done
-  if (( zdisabled )); then
-    _zdisableds+=(${zmodule})
+  if (( _zprepare_xargs )); then
+    if (( ! zfrozen )); then
+      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+    fi
   else
-    (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
-    if (( ! ${#zfunctions} )); then
-      # _* functions are autoloaded by compinit
-      # prompt_*_setup functions are autoloaded by promptinit
-      zfunctions+=(${^zfpaths}/^(*.*|_*|prompt_*_setup)(N-.:t))
+    if (( zdisabled )); then
+      _zdisableds+=(${zmodule})
+    else
+      (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+      if (( ! ${#zfunctions} )); then
+        # _* functions are autoloaded by compinit
+        # prompt_*_setup functions are autoloaded by promptinit
+        zfunctions+=(${^zfpaths}/^(*.*|_*|prompt_*_setup)(N-.:t))
+      fi
+      if (( ! ${#zscripts} )); then
+        zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      fi
+      _zfpaths+=(${zfpaths})
+      _zfunctions+=(${zfunctions})
+      _zscripts+=(${zscripts})
+      _zmodules+=(${zmodule})
     fi
-    if (( ! ${#zscripts} )); then
-      zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-    fi
-    _zfpaths+=(${zfpaths})
-    _zfunctions+=(${zfunctions})
-    _zscripts+=(${zscripts})
-    _zmodules+=(${zmodule})
-  fi
-  if (( ! zfrozen )); then
-    _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
   fi
 }
