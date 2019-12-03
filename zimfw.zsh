@@ -171,29 +171,33 @@ Startup options:
     esac
     shift
   done
-  if (( zdisabled )); then
-    _zdisableds+=(${zmodule})
+  if (( _zprepare_xargs )); then
+    if (( ! zfrozen )); then
+      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+    fi
   else
-    (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
-    if (( ! ${#zfunctions} )); then
-      # _* functions are autoloaded by compinit
-      # prompt_*_setup functions are autoloaded by promptinit
-      zfunctions+=(${^zfpaths}/^(*.*|_*|prompt_*_setup)(N-.:t))
+    if (( zdisabled )); then
+      _zdisableds+=(${zmodule})
+    else
+      (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+      if (( ! ${#zfunctions} )); then
+        # _* functions are autoloaded by compinit
+        # prompt_*_setup functions are autoloaded by promptinit
+        zfunctions+=(${^zfpaths}/^(*.*|_*|prompt_*_setup)(N-.:t))
+      fi
+      if (( ! ${#zscripts} )); then
+        zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      fi
+      _zfpaths+=(${zfpaths})
+      _zfunctions+=(${zfunctions})
+      _zscripts+=(${zscripts})
+      _zmodules+=(${zmodule})
     fi
-    if (( ! ${#zscripts} )); then
-      zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-    fi
-    _zfpaths+=(${zfpaths})
-    _zfunctions+=(${zfunctions})
-    _zscripts+=(${zscripts})
-    _zmodules+=(${zmodule})
-  fi
-  if (( ! zfrozen )); then
-    _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
   fi
 }
 
 _zimfw_source_zimrc() {
+  local -ri _zprepare_xargs=${1}
   local -i _zfailed=0
   if ! source ${ZDOTDIR:-${HOME}}/.zimrc || (( _zfailed )); then
     print -u2 -PR "%F{red}✗ Failed to source ${ZDOTDIR:-${HOME}}/.zimrc%f"
@@ -416,12 +420,12 @@ fi
     compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
     info) _zimfw_info ;;
     install|update)
-      _zimfw_source_zimrc || return 1
+      _zimfw_source_zimrc 1 || return 1
       print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
           if (( ! _zquiet )); then
             print -PR "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
           fi && \
-          _zimfw_build && _zimfw_compile ${2}
+          _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
     upgrade) _zimfw_upgrade ;;
     *)
