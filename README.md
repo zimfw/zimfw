@@ -53,6 +53,29 @@ read about the [available modules] and tweak your `.zshrc` file.
 If you have a different shell framework installed (like oh-my-zsh or prezto),
 *uninstall those first to prevent conflicts*.
 
+### Manual installation
+
+1. Set Zsh as the default shell:
+
+       chsh -s =zsh
+
+2. Start a Zsh shell
+
+       zsh
+
+3. Copy https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh to
+   `${ZDOTDIR:-${HOME}}/.zim/zimfw.zsh`.
+
+4. Add the lines in the following templates to the respective dot files in the
+   `${ZDOTDIR:-${HOME}}` directory:
+   * [.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
+   * [.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
+   * [.zshrc](https://github.com/zimfw/install/blob/develop/src/templates/zshrc)
+
+5. Install the modules defined in `.zimrc` and build the static `init.zsh` script:
+
+       source ${ZDOTDIR:-${HOME}}/.zim/zimfw.zsh install
+
 Usage
 -----
 
@@ -64,23 +87,29 @@ The modules are loaded in the same order they are defined. Add:
     zmodule <url> [-n|--name <module_name>] [options]
 
 where &lt;url&gt; is the required repository URL or path. The following formats
-are equivalent: *name*, zimfw/*name*, https://<em></em>github.com/zimfw/<em>name</em>.git
+are equivalent: `name`, `zimfw/name`, `https://github.com/zimfw/name.git`.
 
 By default, the module name is the last component in the &lt;url&gt;. Use the
-`-n`|`--name` &lt;module&lowbar;name&gt; option to set a custom module name.
+`-n`|`--name` &lt;module_name&gt; option to set a custom module name.
 
 #### Repository options
 
-* `-b`&vert;`--branch` &lt;branch&lowbar;name&gt;: Use specified branch when installing and updating the module. Overrides the tag option. Default: `master`
-* `-t`&vert;`--tag` &lt;tag&lowbar;name&gt;: Use specified tag when installing and updating the module. Overrides the branch option.
-* `-z`&vert;`--frozen`: Don't install or update the module
+* `-b`|`--branch` &lt;branch_name&gt;: Use specified branch when installing and
+  updating the module. Overrides the tag option. Default: `master`.
+* `-t`|`--tag` &lt;tag_name&gt;: Use specified tag when installing and updating the
+  module. Overrides the branch option.
+* `-z`|`--frozen`: Don't install or update the module.
 
 #### Startup options
 
-* `-f`&vert;`--fpath` &lt;path&gt;: Add specified path to `fpath`. The path is relative to the module root directory. Default: `functions`, if the subdirectory exists
-* `-a`&vert;`--autoload` &lt;function&lowbar;name&gt;: Autoload specified function. Default: all valid names inside all the module specified `fpath` paths
-* `-s`&vert;`--source` &lt;file&lowbar;path&gt;: Source specified file. The file path is relative to the module root directory. Default: the file with largest size matching `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists
-* `-d`&vert;`--disabled`: Don't use or clean the module
+* `-f`|`--fpath` &lt;path&gt;: Add specified path to `fpath`. The path is relative to
+  the module root directory. Default: `functions`, if the subdirectory exists.
+* `-a`|`--autoload` &lt;function_name&gt;: Autoload specified function. Default: all
+  valid names inside all the module specified `fpath` paths.
+* `-s`|`--source` &lt;file_path&gt;: Source specified file. The file path is relative
+  to the module root directory. Default: the file with largest size matching
+  `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists.
+* `-d`|`--disabled`: Don't use or clean the module.
 
 ### zimfw
 
