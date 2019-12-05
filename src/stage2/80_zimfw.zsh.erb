@@ -3,7 +3,7 @@ zimfw() {
 Usage: %B${0}%b <action> [%B-q%b]
 
 Actions:
-  %Bbuild%b           Build init script
+  %Bbuild%b           Build init.zsh
   %Bclean%b           Clean all (see below)
   %Bclean-modules%b   Clean unused modules
   %Bclean-compiled%b  Clean Zsh compiled files
@@ -12,7 +12,7 @@ Actions:
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
   %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade Zim
+  %Bupgrade%b         Upgrade <%= script_filename %>
 
 Options:
   %B-q%b              Quiet, only outputs errors
@@ -63,7 +63,7 @@ Options:
           fi && \
           _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
-    upgrade) _zimfw_upgrade ;;
+    upgrade) _zimfw_upgrade && _zimfw_compile ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1

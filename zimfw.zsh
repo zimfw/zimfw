@@ -250,9 +250,10 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is e81c1d1)'
-  print -R "Zsh version:  ${ZSH_VERSION}"
-  print -R "System info:  $(command uname -a)"
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is bccb1fc)'
+  print -R 'ZIM_HOME:     '${ZIM_HOME}
+  print -R 'Zsh version:  '${ZSH_VERSION}
+  print -R 'System info:  '$(command uname -a)
 }
 
 _zimfw_upgrade() {
@@ -287,7 +288,7 @@ zimfw() {
 Usage: %B${0}%b <action> [%B-q%b]
 
 Actions:
-  %Bbuild%b           Build init script
+  %Bbuild%b           Build init.zsh
   %Bclean%b           Clean all (see below)
   %Bclean-modules%b   Clean unused modules
   %Bclean-compiled%b  Clean Zsh compiled files
@@ -296,7 +297,7 @@ Actions:
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
   %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade Zim
+  %Bupgrade%b         Upgrade zimfw.zsh
 
 Options:
   %B-q%b              Quiet, only outputs errors
@@ -427,7 +428,7 @@ fi
           fi && \
           _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
-    upgrade) _zimfw_upgrade ;;
+    upgrade) _zimfw_upgrade && _zimfw_compile ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1
