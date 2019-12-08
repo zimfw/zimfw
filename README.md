@@ -55,73 +55,76 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 
 ### Manual installation
 
-1. Set Zsh as the default shell:
-
-       chsh -s =zsh
-
-2. Start a Zsh shell
+1. Start a Zsh shell
 
        zsh
 
+2. Set Zsh as the default shell:
+
+       chsh -s =zsh
+
 3. Copy https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh to
-   `${ZDOTDIR:-${HOME}}/.zim/zimfw.zsh`.
+   `~/.zim/zimfw.zsh`.
 
-4. Add the lines in the following templates to the respective dot files in the
-   `${ZDOTDIR:-${HOME}}` directory:
-   * [.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
-   * [.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
-   * [.zshrc](https://github.com/zimfw/install/blob/develop/src/templates/zshrc)
+4. Add the lines in the following templates to the respective dot files:
+   * [~/.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
+   * [~/.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
+   * [~/.zshrc](https://github.com/zimfw/install/blob/develop/src/templates/zshrc)
 
-5. Install the modules defined in `.zimrc` and build the static `init.zsh` script:
+5. Install the modules defined in `~/.zimrc` and build the static initialization script:
 
-       source ${ZDOTDIR:-${HOME}}/.zim/zimfw.zsh install
+       source ~/.zim/zimfw.zsh install
 
 Usage
 -----
 
 ### zmodule
 
-Add `zmodule` calls to your `.zimrc` file to define the modules to be loaded.
-The modules are loaded in the same order they are defined. Add:
+Add `zmodule` calls to your `~/.zimrc` file to define the modules to be initialized.
+The modules are initialized in the same order they are defined. Add:
 
     zmodule <url> [-n|--name <module_name>] [options]
 
-where &lt;url&gt; is the required repository URL or path. The following formats
+where `<url>` is the required repository URL or path. The following formats
 are equivalent: `name`, `zimfw/name`, `https://github.com/zimfw/name.git`.
 
-By default, the module name is the last component in the &lt;url&gt;. Use the
-`-n`|`--name` &lt;module_name&gt; option to set a custom module name.
+By default, the module name is the last component in the `<url>`. Use the
+`-n|--name <module_name>` option to set a custom module name.
 
 #### Repository options
 
-* `-b`|`--branch` &lt;branch_name&gt;: Use specified branch when installing and
+* `-b|--branch <branch_name>`: Use specified branch when installing and
   updating the module. Overrides the tag option. Default: `master`.
-* `-t`|`--tag` &lt;tag_name&gt;: Use specified tag when installing and updating the
+* `-t|--tag <tag_name>`: Use specified tag when installing and updating the
   module. Overrides the branch option.
-* `-z`|`--frozen`: Don't install or update the module.
+* `-z|--frozen`: Don't install or update the module.
 
-#### Startup options
+#### Initialization options
 
-* `-f`|`--fpath` &lt;path&gt;: Add specified path to `fpath`. The path is relative to
+* `-f|--fpath <path>`: Add specified path to `fpath`. The path is relative to
   the module root directory. Default: `functions`, if the subdirectory exists.
-* `-a`|`--autoload` &lt;function_name&gt;: Autoload specified function. Default: all
-  valid names inside all the module specified `fpath` paths.
-* `-s`|`--source` &lt;file_path&gt;: Source specified file. The file path is relative
+* `-a|--autoload <function_name>`: Autoload specified function. Default: all
+  valid names inside the module's specified `fpath` paths.
+* `-s|--source <file_path>`: Source specified file. The file path is relative
   to the module root directory. Default: the file with largest size matching
   `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists.
-* `-d`|`--disabled`: Don't use or clean the module.
+* `-d|--disabled`: Don't use or clean the module.
 
 ### zimfw
 
-To install new defined modules, run:
+Added new modules to `~/.zimrc`? Run:
 
     zimfw install
 
-To update your modules, run:
+Removed modules from `~/.zimrc`? Run:
+
+    zimfw clean-modules
+
+Want to update your modules to their latest revisions? Run:
 
     zimfw update
 
-To upgrade Zim, run:
+Want to upgrade `~/.zim/zimfw.zsh` to the latest version?
 
     zimfw upgrade
 

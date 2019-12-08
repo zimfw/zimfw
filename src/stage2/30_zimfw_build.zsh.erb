@@ -1,7 +1,7 @@
 _zimfw_build() {
   () {
     local -r ztarget=${ZIM_HOME}/init.zsh
-    if command cmp -s ${ztarget} ${1}; then
+    if [[ ${ztarget} -nt <%= home %>/.zimrc ]] && command cmp -s ${ztarget} ${1}; then
       if (( ! _zquiet )); then
         print -PR "%F{green}✓%f %B${ztarget}:%b Already up to date"
       fi

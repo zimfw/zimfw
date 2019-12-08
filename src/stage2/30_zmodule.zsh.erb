@@ -104,6 +104,11 @@ Startup options:
     if (( zdisabled )); then
       _zdisableds+=(${zmodule})
     else
+      if [[ ! -d ${zdir} ]]; then
+        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        _zfailed=1
+        return 1
+      fi
       (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
