@@ -49,7 +49,7 @@ fi
 _zimfw_build() {
   () {
     local -r ztarget=${ZIM_HOME}/init.zsh
-    if command cmp -s ${ztarget} ${1}; then
+    if [[ ${ztarget} -nt ${ZDOTDIR:-${HOME}}/.zimrc ]] && command cmp -s ${ztarget} ${1}; then
       if (( ! _zquiet )); then
         print -PR "%F{green}✓%f %B${ztarget}:%b Already up to date"
       fi
@@ -179,6 +179,11 @@ Startup options:
     if (( zdisabled )); then
       _zdisableds+=(${zmodule})
     else
+      if [[ ! -d ${zdir} ]]; then
+        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        _zfailed=1
+        return 1
+      fi
       (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
@@ -250,7 +255,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is bccb1fc)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is c330f61)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -409,6 +414,7 @@ fi
 
   case ${1} in
     build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
+    init) _zimfw_source_zimrc && _zimfw_build ;;
     clean)
       _zimfw_source_zimrc && \
           _zimfw_clean_modules && \

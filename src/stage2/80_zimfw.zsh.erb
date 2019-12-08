@@ -44,6 +44,7 @@ Options:
 
   case ${1} in
     build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
+    init) _zimfw_source_zimrc && _zimfw_build ;;
     clean)
       _zimfw_source_zimrc && \
           _zimfw_clean_modules && \
