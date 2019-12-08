@@ -2,3 +2,5 @@
 *.zwc
 *.zwc.old
 custom/
+init.zsh
+init.zsh.old
