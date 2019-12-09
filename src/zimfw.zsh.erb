@@ -20,11 +20,16 @@ class Zim
   def render_escaped(filename)
     render(filename).gsub(/(\$[^']|"|`)/, "\\\\\\1")
   end
+
+  def render_commented(filename)
+    render(filename).gsub(/^(?=.)/, "# ").gsub(/^$/, "#")
+  end
 end
 zim = Zim.new
 %># AUTOMATICALLY GENERATED FILE. EDIT ONLY THE SOURCE FILES AND THEN COMPILE.
 # DO NOT DIRECTLY EDIT THIS FILE!
 
+<%= zim.render_commented("LICENSE") %>
 <%= zim.render_all("src/stage1/*.erb") %>
 <%= zim.render_all("src/stage2/*.erb") %>
 zimfw "${@}"
