@@ -234,21 +234,6 @@ _zimfw_source_zimrc() {
   fi
 }
 
-_zimfw_clean_modules() {
-  local zopt zdir zmodule
-  (( ! _zquiet )) && zopt='-v'
-  for zdir in ${ZIM_HOME}/modules/*(N/); do
-    zmodule=${zdir:t}
-    # If _zmodules and _zdisableds do not contain the zmodule
-    if (( ! ${_zmodules[(I)${zmodule}]} && ! ${_zdisableds[(I)${zmodule}]} )); then
-      command rm -rf ${zopt} ${zdir} || return 1
-    fi
-  done
-  if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with clean-modules.'
-  fi
-}
-
 _zimfw_clean_compiled() {
   local zopt_find zopt_rm zdir
   if (( ! _zquiet )); then
@@ -279,10 +264,25 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 74404e6)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 69d609d)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
+}
+
+_zimfw_uninstall() {
+  local zopt zdir zmodule
+  (( ! _zquiet )) && zopt='-v'
+  for zdir in ${ZIM_HOME}/modules/*(N/); do
+    zmodule=${zdir:t}
+    # If _zmodules and _zdisableds do not contain the zmodule
+    if (( ! ${_zmodules[(I)${zmodule}]} && ! ${_zdisableds[(I)${zmodule}]} )); then
+      command rm -rf ${zopt} ${zdir} || return 1
+    fi
+  done
+  if (( ! _zquiet )); then
+    print -P '%F{green}✓%f Done with uninstall.'
+  fi
 }
 
 _zimfw_upgrade() {
@@ -319,12 +319,12 @@ Usage: %B${0}%b <action> [%B-q%b]
 Actions:
   %Bbuild%b           Build init.zsh
   %Bclean%b           Clean all (see below)
-  %Bclean-modules%b   Clean unused modules
   %Bclean-compiled%b  Clean Zsh compiled files
   %Bclean-dumpfile%b  Clean completion dump file
   %Bcompile%b         Compile Zsh files
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
+  %Buninstall%b       Delete unused modules
   %Bupdate%b          Update current modules
   %Bupgrade%b         Upgrade zimfw.zsh
 
@@ -441,11 +441,9 @@ fi
     init) _zimfw_source_zimrc && _zimfw_build ;;
     clean)
       _zimfw_source_zimrc && \
-          _zimfw_clean_modules && \
           _zimfw_clean_compiled && \
           _zimfw_clean_dumpfile
       ;;
-    clean-modules) _zimfw_source_zimrc && _zimfw_clean_modules ;;
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
@@ -458,6 +456,7 @@ fi
           fi && \
           _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
+    uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
     upgrade) _zimfw_upgrade && _zimfw_compile ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
