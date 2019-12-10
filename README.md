@@ -118,13 +118,13 @@ Added new modules to `~/.zimrc`? Run:
 
 Removed modules from `~/.zimrc`? Run:
 
-    zimfw clean-modules
+    zimfw uninstall
 
 Want to update your modules to their latest revisions? Run:
 
     zimfw update
 
-Want to upgrade `~/.zim/zimfw.zsh` to the latest version?
+Want to upgrade `~/.zim/zimfw.zsh` to the latest version? Run:
 
     zimfw upgrade
 
