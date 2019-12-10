@@ -15,8 +15,9 @@ _zimfw_compile() {
   # Compile autoloaded functions
   for zdir in ${fpath}; do
     [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    if [[ -w ${zdir:h} ]]; then
-      zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(*.*)(N-.) || return 1
+    zfile=(${zdir}/^(*.*)(N-.))
+    if [[ -w ${zdir:h} && -n ${zfile} ]]; then
+      zrecompile -p ${1} ${zdir}.zwc ${zfile} || return 1
     fi
   done
 

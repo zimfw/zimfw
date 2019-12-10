@@ -49,8 +49,9 @@ _zimfw_compile() {
   # Compile autoloaded functions
   for zdir in ${fpath}; do
     [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    if [[ -w ${zdir:h} ]]; then
-      zrecompile -p ${1} ${zdir}.zwc ${zdir}/^(*.*)(N-.) || return 1
+    zfile=(${zdir}/^(*.*)(N-.))
+    if [[ -w ${zdir:h} && -n ${zfile} ]]; then
+      zrecompile -p ${1} ${zdir}.zwc ${zfile} || return 1
     fi
   done
 
@@ -278,7 +279,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 106335e)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 74404e6)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
