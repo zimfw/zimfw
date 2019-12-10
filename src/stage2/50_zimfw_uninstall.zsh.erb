@@ -1,4 +1,4 @@
-_zimfw_clean_modules() {
+_zimfw_uninstall() {
   local zopt zdir zmodule
   (( ! _zquiet )) && zopt='-v'
   for zdir in ${ZIM_HOME}/modules/*(N/); do
@@ -9,6 +9,6 @@ _zimfw_clean_modules() {
     fi
   done
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with clean-modules.'
+    print -P '%F{green}✓%f Done with uninstall.'
   fi
 }
