@@ -46,12 +46,13 @@ _zimfw_compile() {
   # Compile .zshrc
   zrecompile -p ${1} ${ZDOTDIR:-${HOME}}/.zshrc || return 1
 
-  # Compile autoloaded functions
+  # Compile autoloaded functions, taken from zrecompile doc in zshcontrib(1)
   for zdir in ${fpath}; do
     [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
     zfile=(${zdir}/^(*.*)(N-.))
     if [[ -w ${zdir:h} && -n ${zfile} ]]; then
-      zrecompile -p ${1} ${zdir}.zwc ${zfile} || return 1
+      zfile=(${${(M)zfile%/*/*}#/})
+      (cd ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
     fi
   done
 
@@ -264,7 +265,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 69d609d)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 660b8cd)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
