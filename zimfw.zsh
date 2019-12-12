@@ -33,7 +33,7 @@ fi
 : ${ZIM_HOME=${0:A:h}}
 
 _zimfw_compile() {
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   autoload -U zrecompile
   local zdumpfile zdir zfile
 
@@ -122,7 +122,7 @@ Startup options:
     _zfailed=1
     return 1
   fi
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zmodule=${1:t} zurl=${1}
   local ztype=branch zrev=master
   local -i zdisabled=0 zfrozen=0
@@ -265,7 +265,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is bd8ae83)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 4a7ce44)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
