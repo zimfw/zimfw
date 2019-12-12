@@ -18,7 +18,7 @@ _zimfw_compile() {
     zfile=(${zdir}/^(*.*)(N-.))
     if [[ -w ${zdir:h} && -n ${zfile} ]]; then
       zfile=(${${(M)zfile%/*/*}#/})
-      (cd ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
+      (builtin cd -q ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
     fi
   done
 

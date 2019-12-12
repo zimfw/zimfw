@@ -52,7 +52,7 @@ _zimfw_compile() {
     zfile=(${zdir}/^(*.*)(N-.))
     if [[ -w ${zdir:h} && -n ${zfile} ]]; then
       zfile=(${${(M)zfile%/*/*}#/})
-      (cd ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
+      (builtin cd -q ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
     fi
   done
 
@@ -265,7 +265,7 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 660b8cd)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is bd8ae83)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -382,7 +382,7 @@ readonly REV=\${5}
 readonly -i QUIET=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 (( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} …\"
-if ! builtin cd \${DIR} 2>/dev/null; then
+if ! builtin cd -q \${DIR} 2>/dev/null; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Not installed%f\"
   return 1
 fi

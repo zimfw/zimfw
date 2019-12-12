@@ -7,7 +7,7 @@ readonly REV=${5}
 readonly -i QUIET=${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 (( ! QUIET )) && print -Rn ${CLEAR_LINE}"Updating ${MODULE} …"
-if ! builtin cd ${DIR} 2>/dev/null; then
+if ! builtin cd -q ${DIR} 2>/dev/null; then
   print -u2 -PR ${CLEAR_LINE}"%F{red}✗ %B${MODULE}:%b Not installed%f"
   return 1
 fi
