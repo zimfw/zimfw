@@ -3,7 +3,7 @@ _zimfw_build() {
     local -r ztarget=${ZIM_HOME}/init.zsh
     if [[ ${ztarget} -nt <%= home %>/.zimrc ]] && command cmp -s ${ztarget} ${1}; then
       if (( ! _zquiet )); then
-        print -PR "%F{green}✓%f %B${ztarget}:%b Already up to date"
+        print -PR "<%= okay %>%B${ztarget}:%b Already up to date"
       fi
     else
       if [[ -e ${ztarget} ]]; then
@@ -11,11 +11,11 @@ _zimfw_build() {
       fi
       command mv -f ${1} ${ztarget} && \
           if (( ! _zquiet )); then
-            print -PR "%F{green}✓%f %B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
+            print -PR "<%= okay %>%B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
           fi
     fi
     if (( ! _zquiet )); then
-      print -P '%F{green}✓%f Done with build.'
+      print -P '<%= done %>Done with build.'
     fi
   } =(
     print -R "zimfw() { source ${ZIM_HOME}/<%= script_filename %> \"\${@}\" }"

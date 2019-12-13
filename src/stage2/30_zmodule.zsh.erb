@@ -18,7 +18,7 @@ Startup options:
     return 1
   fi
   if (( ! # )); then
-    print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}: Missing zmodule url%f"
+    print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}: Missing zmodule url%f"
     _zfailed=1
     return 1
   fi
@@ -40,7 +40,7 @@ Startup options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+      print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
       _zfailed=1
       return 1
     fi
@@ -53,7 +53,7 @@ Startup options:
     case ${1} in
       -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)
         if (( # < 2 )); then
-          print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+          print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
           _zfailed=1
           return 1
         fi
@@ -89,7 +89,7 @@ Startup options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
+        print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
         _zfailed=1
         return 1
         ;;
@@ -105,7 +105,7 @@ Startup options:
       _zdisableds+=(${zmodule})
     else
       if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
         _zfailed=1
         return 1
       fi

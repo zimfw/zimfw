@@ -9,6 +9,6 @@ _zimfw_uninstall() {
     fi
   done
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with uninstall.'
+    print -P '<%= done %>Done with uninstall.'
   fi
 }

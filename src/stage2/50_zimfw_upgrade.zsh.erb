@@ -9,16 +9,16 @@ _zimfw_upgrade() {
     fi
     if command cmp -s ${zscript}{,.new}; then
       if (( ! _zquiet )); then
-        print -P '%F{green}✓%f %B<%= script_filename %>:%b Already up to date'
+        print -P '<%= okay %>%B<%= script_filename %>:%b Already up to date'
       fi
     else
       command mv -f ${zscript}{,.old} && command mv -f ${zscript}{.new,} && \
           if (( ! _zquiet )); then
-            print -P '%F{green}✓%f %B<%= script_filename %>:%b Upgraded. Restart your terminal for changes to take effect.'
+            print -P '<%= okay %>%B<%= script_filename %>:%b Upgraded. Restart your terminal for changes to take effect.'
           fi
     fi
     if (( ! _zquiet )); then
-      print -P '%F{green}✓%f Done with upgrade.'
+      print -P '<%= done %>Done with upgrade.'
     fi
   } always {
     command rm -f ${zscript}.new
