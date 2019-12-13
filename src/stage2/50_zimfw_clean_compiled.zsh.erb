@@ -13,6 +13,6 @@ _zimfw_clean_compiled() {
   command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${zopt_find} || return 1
   command rm -f ${zopt_rm} <%= home %>/.zshrc.zwc{,.old} || return 1
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
+    print -P '<%= done %>Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi
 }

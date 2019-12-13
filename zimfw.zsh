@@ -62,7 +62,7 @@ _zimfw_compile() {
   done
 
   if [[ ${1} != -q ]]; then
-    print -P '%F{green}✓%f Done with compile.'
+    print -P 'Done with compile.'
   fi
 }
 
@@ -76,7 +76,7 @@ _zimfw_build() {
     local -r ztarget=${ZIM_HOME}/init.zsh
     if [[ ${ztarget} -nt ${ZDOTDIR:-${HOME}}/.zimrc ]] && command cmp -s ${ztarget} ${1}; then
       if (( ! _zquiet )); then
-        print -PR "%F{green}✓%f %B${ztarget}:%b Already up to date"
+        print -PR "%F{green})%f %B${ztarget}:%b Already up to date"
       fi
     else
       if [[ -e ${ztarget} ]]; then
@@ -84,11 +84,11 @@ _zimfw_build() {
       fi
       command mv -f ${1} ${ztarget} && \
           if (( ! _zquiet )); then
-            print -PR "%F{green}✓%f %B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
+            print -PR "%F{green})%f %B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
           fi
     fi
     if (( ! _zquiet )); then
-      print -P '%F{green}✓%f Done with build.'
+      print -P 'Done with build.'
     fi
   } =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
@@ -118,7 +118,7 @@ Startup options:
     return 1
   fi
   if (( ! # )); then
-    print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}: Missing zmodule url%f"
+    print -u2 -PR "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f"
     _zfailed=1
     return 1
   fi
@@ -140,7 +140,7 @@ Startup options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+      print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
       _zfailed=1
       return 1
     fi
@@ -153,7 +153,7 @@ Startup options:
     case ${1} in
       -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)
         if (( # < 2 )); then
-          print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+          print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
           _zfailed=1
           return 1
         fi
@@ -189,7 +189,7 @@ Startup options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
+        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
         _zfailed=1
         return 1
         ;;
@@ -205,7 +205,7 @@ Startup options:
       _zdisableds+=(${zmodule})
     else
       if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}✗ ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
         _zfailed=1
         return 1
       fi
@@ -230,7 +230,7 @@ _zimfw_source_zimrc() {
   local -ri _zprepare_xargs=${1}
   local -i _zfailed=0
   if ! source ${ZDOTDIR:-${HOME}}/.zimrc || (( _zfailed )); then
-    print -u2 -PR "%F{red}✗ Failed to source ${ZDOTDIR:-${HOME}}/.zimrc%f"
+    print -u2 -PR "%F{red}Failed to source %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"
     return 1
   fi
 }
@@ -250,7 +250,7 @@ _zimfw_clean_compiled() {
   command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${zopt_find} || return 1
   command rm -f ${zopt_rm} ${ZDOTDIR:-${HOME}}/.zshrc.zwc{,.old} || return 1
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
+    print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi
 }
 
@@ -260,12 +260,12 @@ _zimfw_clean_dumpfile() {
   (( ! _zquiet )) && zopt='-v'
   command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
+    print -P 'Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
   fi
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 4a7ce44)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is f9dc5ea)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -282,7 +282,7 @@ _zimfw_uninstall() {
     fi
   done
   if (( ! _zquiet )); then
-    print -P '%F{green}✓%f Done with uninstall.'
+    print -P 'Done with uninstall.'
   fi
 }
 
@@ -297,16 +297,16 @@ _zimfw_upgrade() {
     fi
     if command cmp -s ${zscript}{,.new}; then
       if (( ! _zquiet )); then
-        print -P '%F{green}✓%f %Bzimfw.zsh:%b Already up to date'
+        print -P '%F{green})%f %Bzimfw.zsh:%b Already up to date'
       fi
     else
       command mv -f ${zscript}{,.old} && command mv -f ${zscript}{.new,} && \
           if (( ! _zquiet )); then
-            print -P '%F{green}✓%f %Bzimfw.zsh:%b Upgraded. Restart your terminal for changes to take effect.'
+            print -P '%F{green})%f %Bzimfw.zsh:%b Upgraded. Restart your terminal for changes to take effect.'
           fi
     fi
     if (( ! _zquiet )); then
-      print -P '%F{green}✓%f Done with upgrade.'
+      print -P 'Done with upgrade.'
     fi
   } always {
     command rm -f ${zscript}.new
@@ -361,13 +361,13 @@ if [[ -e \${DIR} ]]; then
   # Already exists
   return 0
 fi
-(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} …\"
+(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
 if ERR=\$(command git clone -b \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
   if (( ! QUIET )); then
-    print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b Installed\"
+    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Installed\"
   fi
 else
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git clone%f\"$'\n'\${(F):-  \${(f)^ERR}}
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git clone%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 "
@@ -381,9 +381,9 @@ readonly TYPE=\${4}
 readonly REV=\${5}
 readonly -i QUIET=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
-(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} …\"
+(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
 if ! builtin cd -q \${DIR} 2>/dev/null; then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Not installed%f\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Not installed%f\"
   return 1
 fi
 if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
@@ -391,17 +391,17 @@ if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
   return 0
 fi
 if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
   return 1
 fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    (( ! QUIET )) && print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b Already up to date\"
+    (( ! QUIET )) && print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
     return 0
   fi
 fi
 if ! ERR=\$(command git fetch -pq origin \${REV} 2>&1); then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 if [[ \${TYPE} == branch ]]; then
@@ -411,12 +411,12 @@ else
 fi
 LOG=\$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${LOG_REV} 2>/dev/null)
 if ! ERR=\$(command git checkout -q \${REV} -- 2>&1); then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git checkout%f\"$'\n'\${(F):-  \${(f)^ERR}}
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git checkout%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 if [[ \${TYPE} == branch ]]; then
   if ! OUT=\$(command git merge --ff-only --no-progress -n 2>&1); then
-    print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git merge%f\"$'\n'\${(F):-  \${(f)^OUT}}
+    print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git merge%f\"$'\n'\${(F):-  \${(f)^OUT}}
     return 1
   fi
   # keep just first line of OUT
@@ -427,10 +427,10 @@ fi
 if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
   if (( ! QUIET )); then
     [[ -n \${LOG} ]] && OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
-    print -PR \${CLEAR_LINE}\"%F{green}✓%f %B\${MODULE}:%b \${OUT}\"
+    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${OUT}\"
   fi
 else
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}✗ %B\${MODULE}:%b Error during git submodule update%f\"$'\n'\${(F):-  \${(f)^ERR}}
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git submodule update%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
 fi
 "
@@ -453,7 +453,7 @@ fi
       _zimfw_source_zimrc 1 || return 1
       print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
           if (( ! _zquiet )); then
-            print -PR "%F{green}✓%f Done with ${1}. Restart your terminal for any changes to take effect."
+            print -PR "Done with ${1}. Restart your terminal for any changes to take effect."
           fi && \
           _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
