@@ -1,26 +1,17 @@
 _zimfw_upgrade() {
-  local -r zscript=${ZIM_HOME}/<%= script_filename %>
+  local -r ztarget=${ZIM_HOME}/<%= script_filename %>
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/<%= script_filename %>
   {
     if (( ${+commands[wget]} )); then
-      command wget -nv ${1} -O ${zscript}.new ${zurl} || return 1
+      command wget -nv -O ${ztarget}.new ${zurl} || return 1
     else
-      command curl -fsSL -o ${zscript}.new ${zurl} || return 1
+      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
-    if command cmp -s ${zscript}{,.new}; then
-      if (( ! _zquiet )); then
-        print -P '<%= okay %>%B<%= script_filename %>:%b Already up to date'
-      fi
-    else
-      command mv -f ${zscript}{,.old} && command mv -f ${zscript}{.new,} && \
-          if (( ! _zquiet )); then
-            print -P '<%= okay %>%B<%= script_filename %>:%b Upgraded. Restart your terminal for changes to take effect.'
-          fi
-    fi
-    if (( ! _zquiet )); then
-      print -P '<%= done %>Done with upgrade.'
-    fi
+    _zimfw_mv ${ztarget}{.new,} && \
+        if (( ! _zquiet )); then
+          print -P '<%= done %>Done with upgrade.'
+        fi
   } always {
-    command rm -f ${zscript}.new
+    command rm -f ${ztarget}.new
   }
 }

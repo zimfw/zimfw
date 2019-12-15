@@ -1,0 +1,13 @@
+_zimfw_build_init() {
+  local -r ztarget=${ZIM_HOME}/init.zsh
+  # Force update of init.zsh if it's older than .zimrc
+  if [[ ${ztarget} -ot <%= home %>/.zimrc ]]; then
+    command mv -f ${ztarget}{,.old} || return 1
+  fi
+  _zimfw_mv =(
+    print -R "zimfw() { source ${ZIM_HOME}/<%= script_filename %> \"\${@}\" }"
+    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
+    (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
+    print -Rn ${(F):-source ${^_zscripts:P}}
+  ) ${ztarget}
+}

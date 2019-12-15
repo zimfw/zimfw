@@ -32,70 +32,81 @@ fi
 # Define Zim location
 : ${ZIM_HOME=${0:A:h}}
 
-_zimfw_compile() {
+_zimfw_mv() {
+  if command cmp -s ${2} ${1}; then
+    if (( ! _zquiet )); then
+      print -PR "%F{green})%f %B${2}:%b Already up to date"
+    fi
+  else
+    if [[ -e ${2} ]]; then
+      command mv -f ${2}{,.old} || return 1
+    fi
+    command mv -f ${1} ${2} && \
+        if (( ! _zquiet )); then
+          print -PR "%F{green})%f %B${2}:%b Updated. Restart your terminal for changes to take effect."
+        fi
+  fi
+}
+
+_zimfw_build_init() {
+  local -r ztarget=${ZIM_HOME}/init.zsh
+  # Force update of init.zsh if it's older than .zimrc
+  if [[ ${ztarget} -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+    command mv -f ${ztarget}{,.old} || return 1
+  fi
+  _zimfw_mv =(
+    print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
+    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
+    (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
+    print -Rn ${(F):-source ${^_zscripts:P}}
+  ) ${ztarget}
+}
+
+_zimfw_build_login_init() {
+  local -r ztarget=${ZIM_HOME}/login_init.zsh
+  _zimfw_mv =(
+    print -Rn "() {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   autoload -U zrecompile
   local zdumpfile zdir zfile
 
   # Compile the completion cache; significant speedup
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="${ZDOTDIR:-${HOME}}/.zcompdump"
-  if [[ -f ${zdumpfile} ]]; then
-    zrecompile -p ${1} ${zdumpfile} || return 1
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=\${ZDOTDIR:-\${HOME}}/.zcompdump
+  if [[ -f \${zdumpfile} ]]; then
+    zrecompile -p \${1} \${zdumpfile} || return 1
   fi
 
   # Compile .zshrc
-  zrecompile -p ${1} ${ZDOTDIR:-${HOME}}/.zshrc || return 1
+  zrecompile -p \${1} \${ZDOTDIR:-\${HOME}}/.zshrc || return 1
 
   # Compile autoloaded functions, taken from zrecompile doc in zshcontrib(1)
-  for zdir in ${fpath}; do
-    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    zfile=(${zdir}/^(*.*)(N-.))
-    if [[ -w ${zdir:h} && -n ${zfile} ]]; then
-      zfile=(${${(M)zfile%/*/*}#/})
-      (builtin cd -q ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
+  for zdir in \${fpath}; do
+    [[ \${zdir} == (.|..) || \${zdir} == (.|..)/* ]] && continue
+    zfile=(\${zdir}/^(*.*)(N-.))
+    if [[ -w \${zdir:h} && -n \${zfile} ]]; then
+      zfile=(\${\${(M)zfile%/*/*}#/})
+      (builtin cd -q \${zdir:h} && zrecompile -p \${1} \${zdir:t}.zwc \${zfile}) || return 1
     fi
   done
 
   # Compile scripts
-  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
-    zrecompile -p ${1} ${zfile} || return 1
+  for zfile in \${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
+    zrecompile -p \${1} \${zfile} || return 1
   done
 
-  if [[ ${1} != -q ]]; then
+  if [[ \${1} != -q ]]; then
     print -P 'Done with compile.'
   fi
+} \"\${@}\"
+"
+  ) ${ztarget}
 }
 
-if [[ ${1} == (compile|login-init) && ${2} == (|-q) ]]; then
-  _zimfw_compile ${2}
-  return
-fi
-
 _zimfw_build() {
-  () {
-    local -r ztarget=${ZIM_HOME}/init.zsh
-    if [[ ${ztarget} -nt ${ZDOTDIR:-${HOME}}/.zimrc ]] && command cmp -s ${ztarget} ${1}; then
+  _zimfw_build_init && _zimfw_build_login_init && \
       if (( ! _zquiet )); then
-        print -PR "%F{green})%f %B${ztarget}:%b Already up to date"
+        print -P 'Done with build.'
       fi
-    else
-      if [[ -e ${ztarget} ]]; then
-        command mv -f ${ztarget}{,.old} || return 1
-      fi
-      command mv -f ${1} ${ztarget} && \
-          if (( ! _zquiet )); then
-            print -PR "%F{green})%f %B${ztarget}:%b Updated. Restart your terminal for changes to take effect."
-          fi
-    fi
-    if (( ! _zquiet )); then
-      print -P 'Done with build.'
-    fi
-  } =(
-    print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
-    (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
-    print -Rn ${(F):-source ${^_zscripts:P}}
-  )
 }
 
 zmodule() {
@@ -256,7 +267,7 @@ _zimfw_clean_compiled() {
 
 _zimfw_clean_dumpfile() {
   local zdumpfile zopt
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="${ZDOTDIR:-${HOME}}/.zcompdump"
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   (( ! _zquiet )) && zopt='-v'
   command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
   if (( ! _zquiet )); then
@@ -264,8 +275,12 @@ _zimfw_clean_dumpfile() {
   fi
 }
 
+_zimfw_compile() {
+  source ${ZIM_HOME}/login_init.zsh "${@}"
+}
+
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is f9dc5ea)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 86f177a)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -287,29 +302,20 @@ _zimfw_uninstall() {
 }
 
 _zimfw_upgrade() {
-  local -r zscript=${ZIM_HOME}/zimfw.zsh
+  local -r ztarget=${ZIM_HOME}/zimfw.zsh
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh
   {
     if (( ${+commands[wget]} )); then
-      command wget -nv ${1} -O ${zscript}.new ${zurl} || return 1
+      command wget -nv -O ${ztarget}.new ${zurl} || return 1
     else
-      command curl -fsSL -o ${zscript}.new ${zurl} || return 1
+      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
-    if command cmp -s ${zscript}{,.new}; then
-      if (( ! _zquiet )); then
-        print -P '%F{green})%f %Bzimfw.zsh:%b Already up to date'
-      fi
-    else
-      command mv -f ${zscript}{,.old} && command mv -f ${zscript}{.new,} && \
-          if (( ! _zquiet )); then
-            print -P '%F{green})%f %Bzimfw.zsh:%b Upgraded. Restart your terminal for changes to take effect.'
-          fi
-    fi
-    if (( ! _zquiet )); then
-      print -P 'Done with upgrade.'
-    fi
+    _zimfw_mv ${ztarget}{.new,} && \
+        if (( ! _zquiet )); then
+          print -P 'Done with upgrade.'
+        fi
   } always {
-    command rm -f ${zscript}.new
+    command rm -f ${ztarget}.new
   }
 }
 
@@ -440,14 +446,10 @@ fi
   case ${1} in
     build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
     init) _zimfw_source_zimrc && _zimfw_build ;;
-    clean)
-      _zimfw_source_zimrc && \
-          _zimfw_clean_compiled && \
-          _zimfw_clean_dumpfile
-      ;;
+    clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile|login-init) _zimfw_source_zimrc && _zimfw_compile ${2} ;;
+    compile) _zimfw_build_login_init && _zimfw_compile ${2} ;;
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
@@ -458,7 +460,7 @@ fi
           _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
       ;;
     uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
-    upgrade) _zimfw_upgrade && _zimfw_compile ;;
+    upgrade) _zimfw_upgrade && _zimfw_build_login_init && _zimfw_compile ${2} ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1
