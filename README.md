@@ -67,9 +67,10 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
    `~/.zim/zimfw.zsh`.
 
 4. Add the lines in the following templates to the respective dot files:
-   * [~/.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
-   * [~/.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
+   * [~/.zshenv](https://github.com/zimfw/install/blob/develop/src/templates/zshenv)
    * [~/.zshrc](https://github.com/zimfw/install/blob/develop/src/templates/zshrc)
+   * [~/.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
+   * [~/.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
 
 5. Install the modules defined in `~/.zimrc` and build the static initialization script:
 
@@ -108,7 +109,7 @@ By default, the module name is the last component in the `<url>`. Use the
 * `-s|--source <file_path>`: Source specified file. The file path is relative
   to the module root directory. Default: the file with largest size matching
   `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists.
-* `-d|--disabled`: Don't use or clean the module.
+* `-d|--disabled`: Don't use or uninstall the module.
 
 ### zimfw
 
@@ -134,7 +135,7 @@ Uninstalling
 ------------
 
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
-remove the initialization lines from your `~/.zshrc` and `~/.zlogin`.
+remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin`.
 
 [history-substring-search]: https://zimfw.github.io/images/zim_history-substring-search.gif
 [syntax-highlighting]: https://zimfw.github.io/images/zim_syntax-highlighting.gif
