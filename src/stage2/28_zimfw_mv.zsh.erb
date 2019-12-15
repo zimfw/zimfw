@@ -1,0 +1,15 @@
+_zimfw_mv() {
+  if command cmp -s ${2} ${1}; then
+    if (( ! _zquiet )); then
+      print -PR "<%= okay %>%B${2}:%b Already up to date"
+    fi
+  else
+    if [[ -e ${2} ]]; then
+      command mv -f ${2}{,.old} || return 1
+    fi
+    command mv -f ${1} ${2} && \
+        if (( ! _zquiet )); then
+          print -PR "<%= okay %>%B${2}:%b Updated. Restart your terminal for changes to take effect."
+        fi
+  fi
+}

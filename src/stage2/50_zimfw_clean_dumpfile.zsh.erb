@@ -1,6 +1,6 @@
 _zimfw_clean_dumpfile() {
   local zdumpfile zopt
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="<%= home %>/.zcompdump"
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
   (( ! _zquiet )) && zopt='-v'
   command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
   if (( ! _zquiet )); then

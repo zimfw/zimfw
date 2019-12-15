@@ -1,10 +1,10 @@
-_zimfw_compile() {
+() {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   autoload -U zrecompile
   local zdumpfile zdir zfile
 
   # Compile the completion cache; significant speedup
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile="<%= home %>/.zcompdump"
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
   if [[ -f ${zdumpfile} ]]; then
     zrecompile -p ${1} ${zdumpfile} || return 1
   fi
@@ -30,4 +30,4 @@ _zimfw_compile() {
   if [[ ${1} != -q ]]; then
     print -P '<%= done %>Done with compile.'
   fi
-}
+} "${@}"
