@@ -1,6 +1,7 @@
 #
 # zim_update - update the zim repository
 #
+print -u2 -P '%F{yellow}WARNING: This version of Zim will be deprecated in a future update in favor of Zim version 1.0.0. Manually install Zim 1.0.0 to continue receiving updates. See https://github.com/zimfw/zimfw/pull/323%f'
 
 cd ${ZIM_HOME}
 
