@@ -1,7 +1,7 @@
 () {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
-  autoload -U zrecompile
-  local zdumpfile zdir zfile
+  autoload -Uz zrecompile
+  local zdumpfile zfile
 
   # Compile the completion cache; significant speedup
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
@@ -9,21 +9,13 @@
     zrecompile -p ${1} ${zdumpfile} || return 1
   fi
 
-  # Compile .zshrc
-  zrecompile -p ${1} <%= home %>/.zshrc || return 1
-
-  # Compile autoloaded functions, taken from zrecompile doc in zshcontrib(1)
-  for zdir in ${fpath}; do
-    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    zfile=(${zdir}/^(*.*)(N-.))
-    if [[ -w ${zdir:h} && -n ${zfile} ]]; then
-      zfile=(${${(M)zfile%/*/*}#/})
-      (builtin cd -q ${zdir:h} && zrecompile -p ${1} ${zdir:t}.zwc ${zfile}) || return 1
-    fi
+  # Compile Zsh startup files
+  for zfile in ${1} <%= home %>/<%= startup_files_glob %>(N-.); do
+    zrecompile -p ${1} ${zfile} || return 1
   done
 
-  # Compile scripts
-  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
+  # Compile Zim scripts
+  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh(|-theme)(N-.); do
     zrecompile -p ${1} ${zfile} || return 1
   done
 

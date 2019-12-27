@@ -1,11 +1,12 @@
 <%
 class Zim
-  attr_reader :home, :min_zsh_version, :script_filename, :version, :ellipsis, :okay, :error, :done, :failed
+  attr_reader :home, :min_zsh_version, :script_filename, :startup_files_glob, :version, :ellipsis, :okay, :error, :done, :failed
 
   def initialize
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"
     @script_filename = "zimfw.zsh"
+    @startup_files_glob = ".z(shenv|shrc|login|logout)"
     @version = "1.0.0-SNAPSHOT"
     @ellipsis = " ..."
     @okay = "%F{green})%f "
@@ -23,7 +24,7 @@ class Zim
   end
 
   def render_escaped(filename)
-    render(filename).gsub(/(\$[^']|"|`)/, "\\\\\\1")
+    render(filename).gsub(/(?=\$[^']|"|`)/, "\\\\")
   end
 
   def render_commented(filename)
