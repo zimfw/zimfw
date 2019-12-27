@@ -1,17 +1,8 @@
 _zimfw_clean_compiled() {
-  local zopt_find zopt_rm zdir
-  if (( ! _zquiet )); then
-    zopt_find='-print'
-    zopt_rm='-v'
-  fi
-  for zdir in ${fpath}; do
-    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    if [[ -w ${zdir:h} ]]; then
-      command rm -f ${zopt_rm} ${zdir}.zwc{,.old} || return 1
-    fi
-  done
-  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${zopt_find} || return 1
-  command rm -f ${zopt_rm} <%= home %>/.zshrc.zwc{,.old} || return 1
+  local zopt
+  (( ! _zquiet )) && zopt='-v'
+  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
+  command rm -f ${zopt} <%= home %>/<%= startup_files_glob %>.zwc(|.old)(N) || return 1
   if (( ! _zquiet )); then
     print -P '<%= done %>Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi

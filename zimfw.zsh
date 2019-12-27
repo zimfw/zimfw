@@ -67,8 +67,8 @@ _zimfw_build_login_init() {
   _zimfw_mv =(
     print -Rn "() {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
-  autoload -U zrecompile
-  local zdumpfile zdir zfile
+  autoload -Uz zrecompile
+  local zdumpfile zfile
 
   # Compile the completion cache; significant speedup
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=\${ZDOTDIR:-\${HOME}}/.zcompdump
@@ -76,21 +76,13 @@ _zimfw_build_login_init() {
     zrecompile -p \${1} \${zdumpfile} || return 1
   fi
 
-  # Compile .zshrc
-  zrecompile -p \${1} \${ZDOTDIR:-\${HOME}}/.zshrc || return 1
-
-  # Compile autoloaded functions, taken from zrecompile doc in zshcontrib(1)
-  for zdir in \${fpath}; do
-    [[ \${zdir} == (.|..) || \${zdir} == (.|..)/* ]] && continue
-    zfile=(\${zdir}/^(*.*)(N-.))
-    if [[ -w \${zdir:h} && -n \${zfile} ]]; then
-      zfile=(\${\${(M)zfile%/*/*}#/})
-      (builtin cd -q \${zdir:h} && zrecompile -p \${1} \${zdir:t}.zwc \${zfile}) || return 1
-    fi
+  # Compile Zsh startup files
+  for zfile in \${1} \${ZDOTDIR:-\${HOME}}/.z(shenv|shrc|login|logout)(N-.); do
+    zrecompile -p \${1} \${zfile} || return 1
   done
 
-  # Compile scripts
-  for zfile in \${ZIM_HOME}/(^*test*/)#*.zsh{,-theme}(N-.); do
+  # Compile Zim scripts
+  for zfile in \${ZIM_HOME}/(^*test*/)#*.zsh(|-theme)(N-.); do
     zrecompile -p \${1} \${zfile} || return 1
   done
 
@@ -247,19 +239,10 @@ _zimfw_source_zimrc() {
 }
 
 _zimfw_clean_compiled() {
-  local zopt_find zopt_rm zdir
-  if (( ! _zquiet )); then
-    zopt_find='-print'
-    zopt_rm='-v'
-  fi
-  for zdir in ${fpath}; do
-    [[ ${zdir} == (.|..) || ${zdir} == (.|..)/* ]] && continue
-    if [[ -w ${zdir:h} ]]; then
-      command rm -f ${zopt_rm} ${zdir}.zwc{,.old} || return 1
-    fi
-  done
-  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -delete ${zopt_find} || return 1
-  command rm -f ${zopt_rm} ${ZDOTDIR:-${HOME}}/.zshrc.zwc{,.old} || return 1
+  local zopt
+  (( ! _zquiet )) && zopt='-v'
+  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
+  command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|shrc|login|logout).zwc(|.old)(N) || return 1
   if (( ! _zquiet )); then
     print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi
@@ -269,7 +252,7 @@ _zimfw_clean_dumpfile() {
   local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   (( ! _zquiet )) && zopt='-v'
-  command rm -f ${zopt} ${zdumpfile}{,.zwc{,.old}} || return 1
+  command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old)) || return 1
   if (( ! _zquiet )); then
     print -P 'Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
   fi
@@ -280,7 +263,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 86f177a)'
+  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 94526d6)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
