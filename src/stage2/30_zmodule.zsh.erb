@@ -1,0 +1,127 @@
+zmodule() {
+  local -r zusage="
+Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
+
+Repository options:
+  %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module
+  %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module
+  %B-z%b|%B--frozen%b                Don't install or update the module
+
+Startup options:
+  %B-f%b|%B--fpath%b <path>              Add specified path to fpath
+  %B-a%b|%B--autoload%b <function_name>  Autoload specified function
+  %B-s%b|%B--source%b <file_path>        Source specified file
+  %B-d%b|%B--disabled%b                  Don't use or uninstall the module
+"
+  if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
+    print -u2 -PR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f"$'\n'${zusage}
+    return 1
+  fi
+  if (( ! # )); then
+    print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}: Missing zmodule url%f"
+    _zfailed=1
+    return 1
+  fi
+  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
+  local zmodule=${1:t} zurl=${1}
+  local ztype=branch zrev=master
+  local -i zdisabled=0 zfrozen=0
+  local -a zfpaths zfunctions zscripts
+  local zarg
+  if [[ ${zurl} =~ ^[^:/]+: ]]; then
+    zmodule=${zmodule%.git}
+  elif [[ ${zurl} != /* ]]; then
+    # Count number of slashes
+    case ${#zurl//[^\/]/} in
+      0) zurl="https://github.com/zimfw/${zurl}.git" ;;
+      1) zurl="https://github.com/${zurl}.git" ;;
+    esac
+  fi
+  shift
+  if [[ ${1} == (-n|--name) ]]; then
+    if (( # < 2 )); then
+      print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+      _zfailed=1
+      return 1
+    fi
+    shift
+    zmodule=${1}
+    shift
+  fi
+  local -r zdir=${ZIM_HOME}/modules/${zmodule}
+  while (( # > 0 )); do
+    case ${1} in
+      -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)
+        if (( # < 2 )); then
+          print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+          _zfailed=1
+          return 1
+        fi
+        ;;
+    esac
+    case ${1} in
+      -b|--branch)
+        shift
+        ztype=branch
+        zrev=${1}
+        ;;
+      -t|--tag)
+        shift
+        ztype=tag
+        zrev=${1}
+        ;;
+      -z|--frozen) zfrozen=1 ;;
+      -f|--fpath)
+        shift
+        zarg=${1}
+        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        zfpaths+=(${zarg})
+        ;;
+      -a|--autoload)
+        shift
+        zfunctions+=(${1})
+        ;;
+      -s|--source)
+        shift
+        zarg=${1}
+        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        zscripts+=(${zarg})
+        ;;
+      -d|--disabled) zdisabled=1 ;;
+      *)
+        print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
+        _zfailed=1
+        return 1
+        ;;
+    esac
+    shift
+  done
+  if (( _zprepare_xargs )); then
+    if (( ! zfrozen )); then
+      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+    fi
+  else
+    if (( zdisabled )); then
+      _zdisableds+=(${zmodule})
+    else
+      if [[ ! -d ${zdir} ]]; then
+        print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        _zfailed=1
+        return 1
+      fi
+      (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+      if (( ! ${#zfunctions} )); then
+        # _* functions are autoloaded by compinit
+        # prompt_*_setup functions are autoloaded by promptinit
+        zfunctions+=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
+      fi
+      if (( ! ${#zscripts} )); then
+        zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      fi
+      _zfpaths+=(${zfpaths})
+      _zfunctions+=(${zfunctions})
+      _zscripts+=(${zscripts})
+      _zmodules+=(${zmodule})
+    fi
+  fi
+}

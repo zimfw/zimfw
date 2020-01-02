@@ -1,4 +1,0 @@
-# this is an example function
-# running 'example_function' in a zsh session will execute the code below
-
-print "executed example function: ${ZIM_HOME}/modules/custom/functions/example_function!"

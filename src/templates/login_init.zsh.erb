@@ -1,0 +1,25 @@
+() {
+  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
+  autoload -Uz zrecompile
+  local zdumpfile zfile
+
+  # Compile the completion cache; significant speedup
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
+  if [[ -f ${zdumpfile} ]]; then
+    zrecompile -p ${1} ${zdumpfile} || return 1
+  fi
+
+  # Compile Zsh startup files
+  for zfile in ${1} <%= home %>/<%= startup_files_glob %>(N-.); do
+    zrecompile -p ${1} ${zfile} || return 1
+  done
+
+  # Compile Zim scripts
+  for zfile in ${ZIM_HOME}/(^*test*/)#*.zsh(|-theme)(N-.); do
+    zrecompile -p ${1} ${zfile} || return 1
+  done
+
+  if [[ ${1} != -q ]]; then
+    print -P '<%= done %>Done with compile.'
+  fi
+} "${@}"

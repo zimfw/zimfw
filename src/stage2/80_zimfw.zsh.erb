@@ -1,0 +1,68 @@
+zimfw() {
+  local -r zusage="
+Usage: %B${0}%b <action> [%B-q%b]
+
+Actions:
+  %Bbuild%b           Build init.zsh and login_init.zsh
+  %Bclean%b           Clean all (see below)
+  %Bclean-compiled%b  Clean Zsh compiled files
+  %Bclean-dumpfile%b  Clean completion dump file
+  %Bcompile%b         Compile Zsh files
+  %Binfo%b            Print Zim and system info
+  %Binstall%b         Install new modules
+  %Buninstall%b       Delete unused modules
+  %Bupdate%b          Update current modules
+  %Bupgrade%b         Upgrade <%= script_filename %>
+
+Options:
+  %B-q%b              Quiet, only outputs errors
+"
+  local ztool _zmodules_xargs
+  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
+  local -i _zquiet=0
+  if (( # > 2 )); then
+     print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
+     return 1
+  elif (( # > 1 )); then
+    case ${2} in
+      -q) _zquiet=1 ;;
+      *)
+        print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
+        return 1
+        ;;
+    esac
+  fi
+
+  case ${1} in
+    install)
+      ztool="<%= render_escaped("src/tools/install.zsh.erb") %>"
+      ;;
+    update)
+      ztool="<%= render_escaped("src/tools/update.zsh.erb") %>"
+      ;;
+  esac
+
+  case ${1} in
+    build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
+    init) _zimfw_source_zimrc && _zimfw_build ;;
+    clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_clean_compiled ;;
+    clean-dumpfile) _zimfw_clean_dumpfile ;;
+    compile) _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    info) _zimfw_info ;;
+    install|update)
+      _zimfw_source_zimrc 1 || return 1
+      print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
+          if (( ! _zquiet )); then
+            print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect."
+          fi && \
+          _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
+      ;;
+    uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
+    upgrade) _zimfw_upgrade && _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    *)
+      print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
+      return 1
+      ;;
+  esac
+}

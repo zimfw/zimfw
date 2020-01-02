@@ -1,4 +1,0 @@
-# vim:et sts=2 sw=2 ft=zsh
-local git_dir
-git_dir=$(command git rev-parse --git-dir) || return 1
-print ${git_dir:A}

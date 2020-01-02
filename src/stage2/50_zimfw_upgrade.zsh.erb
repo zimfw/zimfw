@@ -1,0 +1,17 @@
+_zimfw_upgrade() {
+  local -r ztarget=${ZIM_HOME}/<%= script_filename %>
+  local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/<%= script_filename %>
+  {
+    if (( ${+commands[wget]} )); then
+      command wget -nv -O ${ztarget}.new ${zurl} || return 1
+    else
+      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
+    fi
+    _zimfw_mv ${ztarget}{.new,} && \
+        if (( ! _zquiet )); then
+          print -P '<%= done %>Done with upgrade.'
+        fi
+  } always {
+    command rm -f ${ztarget}.new
+  }
+}

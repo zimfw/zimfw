@@ -1,4 +1,9 @@
 *.swp
 *.zwc
 *.zwc.old
-custom/
+/modules/
+/init.zsh
+/init.zsh.old
+/login_init.zsh
+/login_init.zsh.old
+/zimfw.zsh.old

@@ -1,0 +1,9 @@
+_zimfw_clean_compiled() {
+  local zopt
+  (( ! _zquiet )) && zopt='-v'
+  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
+  command rm -f ${zopt} <%= home %>/<%= startup_files_glob %>.zwc(|.old)(N) || return 1
+  if (( ! _zquiet )); then
+    print -P '<%= done %>Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
+  fi
+}

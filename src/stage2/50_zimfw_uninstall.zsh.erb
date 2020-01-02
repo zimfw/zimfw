@@ -1,0 +1,14 @@
+_zimfw_uninstall() {
+  local zopt zdir zmodule
+  (( ! _zquiet )) && zopt='-v'
+  for zdir in ${ZIM_HOME}/modules/*(N/); do
+    zmodule=${zdir:t}
+    # If _zmodules and _zdisableds do not contain the zmodule
+    if (( ! ${_zmodules[(I)${zmodule}]} && ! ${_zdisableds[(I)${zmodule}]} )); then
+      command rm -rf ${zopt} ${zdir} || return 1
+    fi
+  done
+  if (( ! _zquiet )); then
+    print -P '<%= done %>Done with uninstall.'
+  fi
+}

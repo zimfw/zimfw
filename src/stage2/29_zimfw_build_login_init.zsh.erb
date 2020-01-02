@@ -1,0 +1,6 @@
+_zimfw_build_login_init() {
+  local -r ztarget=${ZIM_HOME}/login_init.zsh
+  _zimfw_mv =(
+    print -Rn "<%= render_escaped("src/templates/login_init.zsh.erb") %>"
+  ) ${ztarget}
+}

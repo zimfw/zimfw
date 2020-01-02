@@ -1,9 +1,0 @@
-#
-# zim_info - prints zim and system info
-#
-
-cd ${ZIM_HOME}
-
-print "Zim commit ref:   $(command git rev-parse --short HEAD)"
-print "Zsh version:      $(command zsh --version)"
-print "System info:      $(command uname -a)"
