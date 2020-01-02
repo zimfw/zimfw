@@ -114,10 +114,10 @@ Startup options:
   %B-f%b|%B--fpath%b <path>              Add specified path to fpath
   %B-a%b|%B--autoload%b <function_name>  Autoload specified function
   %B-s%b|%B--source%b <file_path>        Source specified file
-  %B-d%b|%B--disabled%b                  Don't use or clean the module
+  %B-d%b|%B--disabled%b                  Don't use or uninstall the module
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PR "%F{red}${0}: Must be called from ${ZDOTDIR:-${HOME}}/.zimrc%f"$'\n'${zusage}
+    print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n'${zusage}
     return 1
   fi
   if (( ! # )); then
@@ -307,7 +307,7 @@ zimfw() {
 Usage: %B${0}%b <action> [%B-q%b]
 
 Actions:
-  %Bbuild%b           Build init.zsh
+  %Bbuild%b           Build init.zsh and login_init.zsh
   %Bclean%b           Clean all (see below)
   %Bclean-compiled%b  Clean Zsh compiled files
   %Bclean-dumpfile%b  Clean completion dump file
