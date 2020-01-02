@@ -72,7 +72,7 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
    * [~/.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
    * [~/.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
 
-5. Install the modules defined in `~/.zimrc` and build the static initialization script:
+5. Install the modules defined in `~/.zimrc` and build the initialization scripts:
 
        source ~/.zim/zimfw.zsh install
 
