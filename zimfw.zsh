@@ -4,7 +4,7 @@
 # MIT License
 #
 # Copyright (c) 2015-2016 Matt Hamilton and contributors
-# Copyright (c) 2016-2019 Eric Nielsen, Matt Hamilton and contributors
+# Copyright (c) 2016-2020 Eric Nielsen, Matt Hamilton and contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -263,7 +263,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0-SNAPSHOT (previous commit is 94526d6)'
+  print 'Zim version:  1.0.0 (previous commit is edee218)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -286,7 +286,7 @@ _zimfw_uninstall() {
 
 _zimfw_upgrade() {
   local -r ztarget=${ZIM_HOME}/zimfw.zsh
-  local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh
+  local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
   {
     if (( ${+commands[wget]} )); then
       command wget -nv -O ${ztarget}.new ${zurl} || return 1

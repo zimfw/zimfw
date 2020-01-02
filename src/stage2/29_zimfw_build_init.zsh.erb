@@ -5,7 +5,7 @@ _zimfw_build_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -R "zimfw() { source ${ZIM_HOME}/<%= script_filename %> \"\${@}\" }"
+    print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
     (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
     print -Rn ${(F):-source ${^_zscripts:P}}

@@ -1,13 +1,12 @@
 <%
 class Zim
-  attr_reader :home, :min_zsh_version, :script_filename, :startup_files_glob, :version, :ellipsis, :okay, :error, :done, :failed
+  attr_reader :home, :min_zsh_version, :startup_files_glob, :version, :ellipsis, :okay, :error, :done, :failed
 
   def initialize
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"
-    @script_filename = "zimfw.zsh"
     @startup_files_glob = ".z(shenv|shrc|login|logout)"
-    @version = "1.0.0-SNAPSHOT"
+    @version = "1.0.0"
     @ellipsis = " ..."
     @okay = "%F{green})%f "
     @error = "x "

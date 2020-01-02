@@ -3,7 +3,7 @@ Zsh IMproved FrameWork
 
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
-    <img width=650px src="https://zimfw.github.io/images/zim_banner.png">
+    <img width="650" src="https://zimfw.github.io/images/zim_banner.png">
   </a>
 </div>
 
@@ -41,11 +41,11 @@ Installing Zim is easy:
 
   * With curl:
 
-        curl -fsSL https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
+        curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
   * With wget:
 
-        wget -nv -O - https://raw.githubusercontent.com/zimfw/install/develop/install.zsh | zsh
+        wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
 Open a new terminal and you're done! Enjoy your Zsh IMproved! Take some time to
 read about the [available modules] and tweak your `.zshrc` file.
@@ -63,14 +63,14 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 
        chsh -s =zsh
 
-3. Copy https://raw.githubusercontent.com/zimfw/zimfw/develop/zimfw.zsh to
+3. Copy https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh to
    `~/.zim/zimfw.zsh`.
 
 4. Add the lines in the following templates to the respective dot files:
-   * [~/.zshenv](https://github.com/zimfw/install/blob/develop/src/templates/zshenv)
-   * [~/.zshrc](https://github.com/zimfw/install/blob/develop/src/templates/zshrc)
-   * [~/.zlogin](https://github.com/zimfw/install/blob/develop/src/templates/zlogin)
-   * [~/.zimrc](https://github.com/zimfw/install/blob/develop/src/templates/zimrc)
+   * [~/.zshenv](https://github.com/zimfw/install/blob/master/src/templates/zshenv)
+   * [~/.zshrc](https://github.com/zimfw/install/blob/master/src/templates/zshrc)
+   * [~/.zlogin](https://github.com/zimfw/install/blob/master/src/templates/zlogin)
+   * [~/.zimrc](https://github.com/zimfw/install/blob/master/src/templates/zimrc)
 
 5. Install the modules defined in `~/.zimrc` and build the initialization scripts:
 
