@@ -20,12 +20,13 @@ shift
 case "${archive_name}" in
   (*.tar.gz|*.tgz) tar -cvzf "${archive_name}" "${@}" ;;
   (*.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar -cvjf "${archive_name}" "${@}" ;;
-  (*.tar.xz|*.txz) tar -J --help &>/dev/null && tar -cvJf "${archive_name}" "${@}" ;;
-  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && tar --lzma -cvf "${archive_name}" "${@}" ;;
+  (*.tar.xz|*.txz) tar -J --help &>/dev/null && env XZ_OPT=-T0 tar -cvJf "${archive_name}" "${@}" ;;
+  (*.tar.lzma|*.tlz) tar --lzma --help &>/dev/null && env XZ_OPT=-T0 tar --lzma -cvf "${archive_name}" "${@}" ;;
   (*.tar) tar -cvf "${archive_name}" "${@}" ;;
   (*.zip) zip -r "${archive_name}" "${@}" ;;
   (*.rar) rar a "${archive_name}" "${@}" ;;
   (*.7z) 7za a "${archive_name}" "${@}" ;;
+  (*.zst) zstd -c -T0 "${@}" -o "${archive_name}" ;;
   (*.gz) print "${0}: .gz is only useful for single files, and does not capture permissions. Use .tar.gz" ;;
   (*.bz|*.bz2) print "${0}: .bzip2 is only useful for single files, and does not capture permissions. Use .tar.bz2" ;;
   (*.xz) print "${0}: .xz is only useful for single files, and does not capture permissions. Use .tar.xz" ;;
