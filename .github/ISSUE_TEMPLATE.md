@@ -2,7 +2,7 @@ Please check the existing issues to make sure you're not duplicating a report.
 
 For bug reports, please provide the following information:
 
-In a terminal, run `zmanage info` and paste the output below:
+In a terminal, run `zimfw info` and paste the output below:
 
 ```
 #Paste the output here
@@ -21,6 +21,5 @@ Steps to reproduce
 
 Images or other information
 ---------------------------
-
 
 
