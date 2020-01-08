@@ -77,7 +77,7 @@ _zimfw_build_login_init() {
   fi
 
   # Compile Zsh startup files
-  for zfile in \${1} \${ZDOTDIR:-\${HOME}}/.z(shenv|shrc|login|logout)(N-.); do
+  for zfile in \${1} \${ZDOTDIR:-\${HOME}}/.z(shenv|profile|shrc|login|logout)(N-.); do
     zrecompile -p \${1} \${zfile} || return 1
   done
 
@@ -242,7 +242,7 @@ _zimfw_clean_compiled() {
   local zopt
   (( ! _zquiet )) && zopt='-v'
   command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
-  command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|shrc|login|logout).zwc(|.old)(N) || return 1
+  command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   if (( ! _zquiet )); then
     print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
   fi
@@ -263,7 +263,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 0213f77)'
+  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 7374770)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)

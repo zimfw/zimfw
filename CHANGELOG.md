@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Zsh 5.2 does not recognize the `:P` modifier. Replace it by `:A`.
+- Also compile and clean .zprofile among the startup files.
 
 ## [1.0.0] - 2020-01-07
 
