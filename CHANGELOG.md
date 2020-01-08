@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes_
+### Fixed
+- Zsh 5.2 does not recognize the `:P` modifier. Replace it by `:A`.
 
 ## [1.0.0] - 2020-01-07
 

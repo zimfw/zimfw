@@ -56,9 +56,9 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:P}' ${fpath})'
+    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:A}' ${fpath})'
     (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
-    print -Rn ${(F):-source ${^_zscripts:P}}
+    print -Rn ${(F):-source ${^_zscripts:A}}
   ) ${ztarget}
 }
 
@@ -263,7 +263,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.0 (previous commit is edee218)'
+  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 0213f77)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
