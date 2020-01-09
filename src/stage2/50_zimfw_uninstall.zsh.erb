@@ -8,7 +8,5 @@ _zimfw_uninstall() {
       command rm -rf ${zopt} ${zdir} || return 1
     fi
   done
-  if (( ! _zquiet )); then
-    print -P '<%= done %>Done with uninstall.'
-  fi
+  _zimfw_print -P '<%= done %>Done with uninstall.'
 }

@@ -1,6 +1,3 @@
 _zimfw_build() {
-  _zimfw_build_init && _zimfw_build_login_init && \
-      if (( ! _zquiet )); then
-        print -P '<%= done %>Done with build.'
-      fi
+  _zimfw_build_init && _zimfw_build_login_init && _zimfw_print -P '<%= done %>Done with build.'
 }

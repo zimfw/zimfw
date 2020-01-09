@@ -7,10 +7,7 @@ _zimfw_upgrade() {
     else
       command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
-    _zimfw_mv ${ztarget}{.new,} && \
-        if (( ! _zquiet )); then
-          print -P '<%= done %>Done with upgrade.'
-        fi
+    _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P '<%= done %>Done with upgrade.'
   } always {
     command rm -f ${ztarget}.new
   }
