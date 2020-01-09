@@ -249,7 +249,7 @@ _zimfw_clean_dumpfile() {
   local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   (( ! _zquiet )) && zopt='-v'
-  command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old)) || return 1
+  command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old))(N) || return 1
   _zimfw_print -P 'Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
 }
 
@@ -258,7 +258,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 2cc69d5)'
+  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 424526e)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
