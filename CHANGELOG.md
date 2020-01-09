@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.0.1] - 2020-01-09
+
 ### Fixed
 - Zsh 5.2 does not recognize the `:P` modifier. Replace it by `:A`.
 - Also compile and clean .zprofile among the startup files.
@@ -74,5 +78,6 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/zimfw/zimfw/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/zimfw/zimfw/compare/5d66578...v1.0.0

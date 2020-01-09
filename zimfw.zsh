@@ -258,7 +258,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.1-SNAPSHOT (previous commit is 424526e)'
+  print 'Zim version:  1.0.1 (previous commit is 28e4345)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
