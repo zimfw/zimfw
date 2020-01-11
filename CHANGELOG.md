@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+- `-v` verbose option. Normal mode output is now cleaner and more focused.
+
+### Changed
+- `curl` is preferred over `wget`.
+- `wget`'s output is only shown in verbose mode.
 
 ## [1.0.1] - 2020-01-09
 
