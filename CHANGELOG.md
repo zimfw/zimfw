@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `-v` verbose option. Normal mode output is now cleaner and more focused.
 
 ### Changed
+- When upgrading, download latest release asset instead of raw file from the
+  master branch.
 - `curl` is preferred over `wget`.
 - `wget`'s output is only shown in verbose mode.
 

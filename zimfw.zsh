@@ -260,7 +260,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is ee99fe8)'
+  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is f6f7815)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -281,18 +281,18 @@ _zimfw_uninstall() {
 
 _zimfw_upgrade() {
   local -r ztarget=${ZIM_HOME}/zimfw.zsh
-  local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
+  local -r zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
   {
+    setopt LOCAL_OPTIONS PIPE_FAIL
     if (( ${+commands[curl]} )); then
-      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
+      command curl -fsSL ${zurl} | command gunzip > ${ztarget}.new || return 1
     else
       local zopt
       (( _zprintlevel <= 1 )) && zopt='-q'
-      if ! command wget -nv ${zopt} -O ${ztarget}.new ${zurl}; then
+      if ! command wget -nv ${zopt} -O - ${zurl} | command gunzip > ${ztarget}.new; then
         (( _zprintlevel <= 1 )) && print -u2 -PR "%F{red}x Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
         return 1
       fi
-    else
     fi
     _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P 'Done with upgrade.'
   } always {

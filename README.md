@@ -63,7 +63,7 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 
        chsh -s =zsh
 
-3. Copy https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh to
+3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
    `~/.zim/zimfw.zsh`.
 
 4. Add the lines in the following templates to the respective dot files:
