@@ -2,7 +2,9 @@ _zimfw_upgrade() {
   local -r ztarget=${ZIM_HOME}/zimfw.zsh
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
   {
-    if (( ${+commands[wget]} )); then
+    if (( ${+commands[curl]} )); then
+      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
+    else
       local zopt
       (( _zprintlevel <= 1 )) && zopt='-q'
       if ! command wget -nv ${zopt} -O ${ztarget}.new ${zurl}; then
@@ -10,7 +12,6 @@ _zimfw_upgrade() {
         return 1
       fi
     else
-      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
     _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P '<%= done %>Done with upgrade.'
   } always {

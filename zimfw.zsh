@@ -260,7 +260,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is b9bca2d)'
+  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is ee99fe8)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -283,7 +283,9 @@ _zimfw_upgrade() {
   local -r ztarget=${ZIM_HOME}/zimfw.zsh
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
   {
-    if (( ${+commands[wget]} )); then
+    if (( ${+commands[curl]} )); then
+      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
+    else
       local zopt
       (( _zprintlevel <= 1 )) && zopt='-q'
       if ! command wget -nv ${zopt} -O ${ztarget}.new ${zurl}; then
@@ -291,7 +293,6 @@ _zimfw_upgrade() {
         return 1
       fi
     else
-      command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
     _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P 'Done with upgrade.'
   } always {
