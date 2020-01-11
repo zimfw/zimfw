@@ -1,6 +1,6 @@
 zimfw() {
   local -r zusage="
-Usage: %B${0}%b <action> [%B-q%b]
+Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build init.zsh and login_init.zsh
@@ -16,16 +16,18 @@ Actions:
 
 Options:
   %B-q%b              Quiet, only outputs errors
+  %B-v%b              Verbose
 "
   local ztool _zmodules_xargs
   local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
-  local -i _zquiet=0
+  local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
      return 1
   elif (( # > 1 )); then
     case ${2} in
-      -q) _zquiet=1 ;;
+      -q) _zprintlevel=0 ;;
+      -v) _zprintlevel=2 ;;
       *)
         print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
         return 1
@@ -43,21 +45,30 @@ Options:
   esac
 
   case ${1} in
-    build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
+    build)
+      _zimfw_source_zimrc && _zimfw_build || return 1
+      (( _zprintlevel-- ))
+      _zimfw_compile
+      ;;
     init) _zimfw_source_zimrc && _zimfw_build ;;
     clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    compile) _zimfw_build_login_init && _zimfw_compile ;;
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
       print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
-          _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." && \
-          _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
+          _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." || return 1
+      (( _zprintlevel-- ))
+      _zimfw_source_zimrc && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
-    upgrade) _zimfw_upgrade && _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    upgrade)
+      _zimfw_upgrade || return 1
+      (( _zprintlevel-- ))
+      _zimfw_build_login_init && _zimfw_compile
+      ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1

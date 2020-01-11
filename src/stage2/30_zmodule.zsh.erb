@@ -98,7 +98,7 @@ Startup options:
   done
   if (( _zprepare_xargs )); then
     if (( ! zfrozen )); then
-      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zprintlevel}$'\0'
     fi
   else
     if (( zdisabled )); then

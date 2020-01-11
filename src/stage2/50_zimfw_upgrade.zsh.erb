@@ -3,7 +3,12 @@ _zimfw_upgrade() {
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
   {
     if (( ${+commands[wget]} )); then
-      command wget -nv -O ${ztarget}.new ${zurl} || return 1
+      local zopt
+      (( _zprintlevel <= 1 )) && zopt='-q'
+      if ! command wget -nv ${zopt} -O ${ztarget}.new ${zurl}; then
+        (( _zprintlevel <= 1 )) && print -u2 -PR "%F{red}<%= error %>Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
+        return 1
+      fi
     else
       command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi

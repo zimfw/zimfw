@@ -1,3 +1,5 @@
 _zimfw_compile() {
-  source ${ZIM_HOME}/login_init.zsh "${@}"
+  local zopt
+  (( _zprintlevel <= 0 )) && zopt='-q'
+  source ${ZIM_HOME}/login_init.zsh ${zopt}
 }

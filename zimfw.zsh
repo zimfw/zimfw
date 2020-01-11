@@ -33,7 +33,7 @@ fi
 : ${ZIM_HOME=${0:A:h}}
 
 _zimfw_print() {
-  if (( ! _zquiet )); then
+  if (( _zprintlevel > 0 )); then
     print "${@}"
   fi
 }
@@ -200,7 +200,7 @@ Startup options:
   done
   if (( _zprepare_xargs )); then
     if (( ! zfrozen )); then
-      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zquiet}$'\0'
+      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zprintlevel}$'\0'
     fi
   else
     if (( zdisabled )); then
@@ -239,7 +239,7 @@ _zimfw_source_zimrc() {
 
 _zimfw_clean_compiled() {
   local zopt
-  (( ! _zquiet )) && zopt='-v'
+  (( _zprintlevel > 0 )) && zopt='-v'
   command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
   command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   _zimfw_print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
@@ -248,17 +248,19 @@ _zimfw_clean_compiled() {
 _zimfw_clean_dumpfile() {
   local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
-  (( ! _zquiet )) && zopt='-v'
+  (( _zprintlevel > 0 )) && zopt='-v'
   command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old))(N) || return 1
   _zimfw_print -P 'Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
 }
 
 _zimfw_compile() {
-  source ${ZIM_HOME}/login_init.zsh "${@}"
+  local zopt
+  (( _zprintlevel <= 0 )) && zopt='-q'
+  source ${ZIM_HOME}/login_init.zsh ${zopt}
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.0.1 (previous commit is 28e4345)'
+  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is b9bca2d)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -266,7 +268,7 @@ _zimfw_info() {
 
 _zimfw_uninstall() {
   local zopt zdir zmodule
-  (( ! _zquiet )) && zopt='-v'
+  (( _zprintlevel > 0 )) && zopt='-v'
   for zdir in ${ZIM_HOME}/modules/*(N/); do
     zmodule=${zdir:t}
     # If _zmodules and _zdisableds do not contain the zmodule
@@ -282,7 +284,12 @@ _zimfw_upgrade() {
   local -r zurl=https://raw.githubusercontent.com/zimfw/zimfw/master/zimfw.zsh
   {
     if (( ${+commands[wget]} )); then
-      command wget -nv -O ${ztarget}.new ${zurl} || return 1
+      local zopt
+      (( _zprintlevel <= 1 )) && zopt='-q'
+      if ! command wget -nv ${zopt} -O ${ztarget}.new ${zurl}; then
+        (( _zprintlevel <= 1 )) && print -u2 -PR "%F{red}x Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
+        return 1
+      fi
     else
       command curl -fsSL -o ${ztarget}.new ${zurl} || return 1
     fi
@@ -294,7 +301,7 @@ _zimfw_upgrade() {
 
 zimfw() {
   local -r zusage="
-Usage: %B${0}%b <action> [%B-q%b]
+Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build init.zsh and login_init.zsh
@@ -310,16 +317,18 @@ Actions:
 
 Options:
   %B-q%b              Quiet, only outputs errors
+  %B-v%b              Verbose
 "
   local ztool _zmodules_xargs
   local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
-  local -i _zquiet=0
+  local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
      return 1
   elif (( # > 1 )); then
     case ${2} in
-      -q) _zquiet=1 ;;
+      -q) _zprintlevel=0 ;;
+      -v) _zprintlevel=2 ;;
       *)
         print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
         return 1
@@ -334,15 +343,15 @@ readonly MODULE=\${1}
 readonly DIR=\${2}
 readonly URL=\${3}
 readonly REV=\${5}
-readonly -i QUIET=\${6}
+readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if [[ -e \${DIR} ]]; then
   # Already exists
   return 0
 fi
-(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
+(( PRINTLEVEL > 0 )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
 if ERR=\$(command git clone -b \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
-  if (( ! QUIET )); then
+  if (( PRINTLEVEL > 0 )); then
     print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Installed\"
   fi
 else
@@ -358,9 +367,9 @@ readonly DIR=\${2}
 readonly URL=\${3}
 readonly TYPE=\${4}
 readonly REV=\${5}
-readonly -i QUIET=\${6}
+readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
-(( ! QUIET )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
+(( PRINTLEVEL > 0 )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
 if ! builtin cd -q \${DIR} 2>/dev/null; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Not installed%f\"
   return 1
@@ -375,7 +384,7 @@ if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
 fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    (( ! QUIET )) && print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
+    (( PRINTLEVEL > 0 )) && print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
     return 0
   fi
 fi
@@ -404,7 +413,7 @@ else
   OUT=\"Updating to \${TYPE} \${REV}\"
 fi
 if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
-  if (( ! QUIET )); then
+  if (( PRINTLEVEL > 0 )); then
     [[ -n \${LOG} ]] && OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
     print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${OUT}\"
   fi
@@ -417,21 +426,30 @@ fi
   esac
 
   case ${1} in
-    build) _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2} ;;
+    build)
+      _zimfw_source_zimrc && _zimfw_build || return 1
+      (( _zprintlevel-- ))
+      _zimfw_compile
+      ;;
     init) _zimfw_source_zimrc && _zimfw_build ;;
     clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    compile) _zimfw_build_login_init && _zimfw_compile ;;
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
       print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
-          _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." && \
-          _zimfw_source_zimrc && _zimfw_build && _zimfw_compile ${2}
+          _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
+      (( _zprintlevel-- ))
+      _zimfw_source_zimrc && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
-    upgrade) _zimfw_upgrade && _zimfw_build_login_init && _zimfw_compile ${2} ;;
+    upgrade)
+      _zimfw_upgrade || return 1
+      (( _zprintlevel-- ))
+      _zimfw_build_login_init && _zimfw_compile
+      ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1
