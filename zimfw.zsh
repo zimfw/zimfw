@@ -260,7 +260,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is f6f7815)'
+  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is 6806bea)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -310,11 +310,13 @@ Actions:
   %Bclean-compiled%b  Clean Zsh compiled files
   %Bclean-dumpfile%b  Clean completion dump file
   %Bcompile%b         Compile Zsh files
+  %Bhelp%b            Print this help
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
   %Buninstall%b       Delete unused modules
   %Bupdate%b          Update current modules
   %Bupgrade%b         Upgrade zimfw.zsh
+  %Bversion%b         Print Zim version
 
 Options:
   %B-q%b              Quiet, only outputs errors
@@ -437,6 +439,7 @@ fi
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_build_login_init && _zimfw_compile ;;
+    help) print -P ${zusage} ;;
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
@@ -451,6 +454,7 @@ fi
       (( _zprintlevel-- ))
       _zimfw_build_login_init && _zimfw_compile
       ;;
+    version) print '1.1.0-SNAPSHOT' ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
       return 1

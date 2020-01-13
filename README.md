@@ -1,11 +1,11 @@
-Zsh IMproved FrameWork
-======================
-
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
     <img width="650" src="https://zimfw.github.io/images/zim_banner.png">
   </a>
 </div>
+
+Zsh IMproved FrameWork
+======================
 
 What is Zim?
 ------------
@@ -129,7 +129,7 @@ Want to upgrade `~/.zim/zimfw.zsh` to the latest version? Run:
 
     zimfw upgrade
 
-For more information about the `zimfw` tool, run `zimfw` with no parameters.
+For more information about the `zimfw` tool, run `zimfw help`.
 
 Uninstalling
 ------------
