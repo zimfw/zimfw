@@ -1,6 +1,5 @@
 zmodule() {
-  local -r zusage="
-Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
+  local -r zusage="Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module
@@ -14,7 +13,7 @@ Startup options:
   %B-d%b|%B--disabled%b                  Don't use or uninstall the module
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f"$'\n'${zusage}
+    print -u2 -PR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f"$'\n\n'${zusage}
     return 1
   fi
   if (( ! # )); then

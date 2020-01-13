@@ -1,5 +1,5 @@
 autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
-  print -u2 -R "${0}: Error starting Zim. You're using Zsh version ${ZSH_VERSION} and versions < <%= min_zsh_version %> are not supported. Update your Zsh."
+  print -u2 -PR "%F{red}${0}: Error starting Zim. You're using Zsh version %B${ZSH_VERSION}%b and versions < %B<%= min_zsh_version %>%b are not supported. Upgrade your Zsh.%f"
   return 1
 fi
 

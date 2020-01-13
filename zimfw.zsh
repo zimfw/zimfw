@@ -25,7 +25,7 @@
 # SOFTWARE.
 
 autoload -Uz is-at-least && if ! is-at-least 5.2; then
-  print -u2 -R "${0}: Error starting Zim. You're using Zsh version ${ZSH_VERSION} and versions < 5.2 are not supported. Update your Zsh."
+  print -u2 -PR "%F{red}${0}: Error starting Zim. You're using Zsh version %B${ZSH_VERSION}%b and versions < %B5.2%b are not supported. Upgrade your Zsh.%f"
   return 1
 fi
 
@@ -101,8 +101,7 @@ _zimfw_build() {
 }
 
 zmodule() {
-  local -r zusage="
-Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
+  local -r zusage="Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [options]
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module
@@ -116,7 +115,7 @@ Startup options:
   %B-d%b|%B--disabled%b                  Don't use or uninstall the module
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n'${zusage}
+    print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
     return 1
   fi
   if (( ! # )); then
@@ -260,7 +259,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print 'Zim version:  1.1.0-SNAPSHOT (previous commit is 6806bea)'
+  print -R 'Zim version:  '${_zversion}' (previous commit is dab4b87)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -301,8 +300,8 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r zusage="
-Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.1.0-SNAPSHOT'
+  local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build init.zsh and login_init.zsh
@@ -326,17 +325,24 @@ Options:
   local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
   local -i _zprintlevel=1
   if (( # > 2 )); then
-     print -u2 -PR "%F{red}${0}: Too many options%f"$'\n'${zusage}
+     print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
      return 1
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
-        print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n'${zusage}
+        print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n\n'${zusage}
         return 1
         ;;
     esac
+  fi
+
+  if (( _zprintlevel > 0 )); then
+    local -r zlatestversion=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | sed 's?^.*/v??' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n1)
+    if [[ ${_zversion} != ${zlatestversion} ]]; then
+      print -PR "%F{yellow}Latest zimfw version is %B${zlatestversion}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+    fi
   fi
 
   case ${1} in
@@ -439,7 +445,7 @@ fi
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_build_login_init && _zimfw_compile ;;
-    help) print -P ${zusage} ;;
+    help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
@@ -454,9 +460,9 @@ fi
       (( _zprintlevel-- ))
       _zimfw_build_login_init && _zimfw_compile
       ;;
-    version) print '1.1.0-SNAPSHOT' ;;
+    version) print -PR ${_zversion} ;;
     *)
-      print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n'${zusage}
+      print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n\n'${zusage}
       return 1
       ;;
   esac

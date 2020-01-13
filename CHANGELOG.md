@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `help` and `version` actions.
 - `-v` verbose option. Normal mode output is now cleaner and more focused.
+- Check the latest version using `git ls-remote`.
 
 ### Changed
 - When upgrading, download latest release asset instead of raw file from the
