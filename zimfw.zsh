@@ -259,7 +259,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'Zim version:  '${_zversion}' (previous commit is dab4b87)'
+  print -R 'Zim version:  '${_zversion}' (previous commit is be2be83)'
   print -R 'ZIM_HOME:     '${ZIM_HOME}
   print -R 'Zsh version:  '${ZSH_VERSION}
   print -R 'System info:  '$(command uname -a)
@@ -458,7 +458,7 @@ fi
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
-      _zimfw_build_login_init && _zimfw_compile
+      _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
     *)

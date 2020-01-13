@@ -77,7 +77,7 @@ Options:
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
-      _zimfw_build_login_init && _zimfw_compile
+      _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
     *)
