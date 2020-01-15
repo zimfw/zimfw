@@ -48,7 +48,7 @@ Installing Zim is easy:
         wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
 Open a new terminal and you're done! Enjoy your Zsh IMproved! Take some time to
-read about the [available modules] and tweak your `.zshrc` file.
+read about the [available modules] and tweak your `~/.zshrc` file.
 
 If you have a different shell framework installed (like oh-my-zsh or prezto),
 *uninstall those first to prevent conflicts*.
@@ -92,7 +92,7 @@ are equivalent: `name`, `zimfw/name`, `https://github.com/zimfw/name.git`.
 By default, the module name is the last component in the `<url>`. Use the
 `-n|--name <module_name>` option to set a custom module name.
 
-#### Repository options
+Repository options:
 
 * `-b|--branch <branch_name>`: Use specified branch when installing and
   updating the module. Overrides the tag option. Default: `master`.
@@ -100,7 +100,7 @@ By default, the module name is the last component in the `<url>`. Use the
   module. Overrides the branch option.
 * `-z|--frozen`: Don't install or update the module.
 
-#### Initialization options
+Initialization options:
 
 * `-f|--fpath <path>`: Add specified path to `fpath`. The path is relative to
   the module root directory. Default: `functions`, if the subdirectory exists.
@@ -109,27 +109,27 @@ By default, the module name is the last component in the `<url>`. Use the
 * `-s|--source <file_path>`: Source specified file. The file path is relative
   to the module root directory. Default: the file with largest size matching
   `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists.
-* `-d|--disabled`: Don't use or uninstall the module.
+* `-d|--disabled`: Don't initialize or uninstall the module.
 
 ### zimfw
 
-Added new modules to `~/.zimrc`? Run:
+Added new modules to `~/.zimrc`? Run `zimfw install`.
 
-    zimfw install
+Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
 
-Removed modules from `~/.zimrc`? Run:
+Want to update your modules to their latest revisions? Run `zimfw update`.
 
-    zimfw uninstall
-
-Want to update your modules to their latest revisions? Run:
-
-    zimfw update
-
-Want to upgrade `~/.zim/zimfw.zsh` to the latest version? Run:
-
-    zimfw upgrade
+Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
 
 For more information about the `zimfw` tool, run `zimfw help`.
+
+Settings
+--------
+
+By default, every 30 days `zimfw` will check if it has a new version available.
+This can be disabled with:
+
+    zstyle ':zim' disable-version-check yes
 
 Uninstalling
 ------------

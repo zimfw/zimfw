@@ -236,6 +236,23 @@ _zimfw_source_zimrc() {
   fi
 }
 
+_zimfw_version_check() {
+  if (( _zprintlevel > 0 )); then
+    setopt LOCAL_OPTIONS EXTENDED_GLOB
+    local -r ztarget=${ZIM_HOME}/.latest_version
+    # If .latest_version does not exist or was not modified in the last 30 days
+    if [[ ! -f ${ztarget}(#qNm-30) ]]; then
+      command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | \
+          command sed 's?^.*/v??' | command sort -n -t. -k1,1 -k2,2 -k3,3 | \
+          command tail -n1 >! ${ztarget} &!
+    fi
+    local -r zlatest_version=$(<${ztarget})
+    if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+      print -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+    fi
+  fi
+}
+
 _zimfw_clean_compiled() {
   local zopt
   (( _zprintlevel > 0 )) && zopt='-v'
@@ -259,10 +276,10 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'Zim version:  '${_zversion}' (previous commit is be2be83)'
-  print -R 'ZIM_HOME:     '${ZIM_HOME}
-  print -R 'Zsh version:  '${ZSH_VERSION}
-  print -R 'System info:  '$(command uname -a)
+  print -R 'zimfw version: '${_zversion}' (previous commit is 7fdf65c)'
+  print -R 'ZIM_HOME:      '${ZIM_HOME}
+  print -R 'Zsh version:   '${ZSH_VERSION}
+  print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_uninstall() {
@@ -338,11 +355,8 @@ Options:
     esac
   fi
 
-  if (( _zprintlevel > 0 )); then
-    local -r zlatestversion=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | sed 's?^.*/v??' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n1)
-    if [[ ${_zversion} != ${zlatestversion} ]]; then
-      print -PR "%F{yellow}Latest zimfw version is %B${zlatestversion}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
-    fi
+  if ! zstyle -t ':zim' disable-version-check; then
+    _zimfw_version_check
   fi
 
   case ${1} in

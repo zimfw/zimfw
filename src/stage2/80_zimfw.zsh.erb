@@ -37,11 +37,8 @@ Options:
     esac
   fi
 
-  if (( _zprintlevel > 0 )); then
-    local -r zlatestversion=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | sed 's?^.*/v??' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n1)
-    if [[ ${_zversion} != ${zlatestversion} ]]; then
-      print -PR "%F{yellow}Latest zimfw version is %B${zlatestversion}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
-    fi
+  if ! zstyle -t ':zim' disable-version-check; then
+    _zimfw_version_check
   fi
 
   case ${1} in
