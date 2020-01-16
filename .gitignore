@@ -2,7 +2,7 @@
 *.zwc
 *.zwc.old
 /modules/
-.latest_version
+/.latest_version
 /init.zsh
 /init.zsh.old
 /login_init.zsh
