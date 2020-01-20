@@ -10,7 +10,7 @@ _zimfw_version_check() {
     fi
     local -r zlatest_version=$(<${ztarget})
     if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-      print -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
     fi
   fi
 }

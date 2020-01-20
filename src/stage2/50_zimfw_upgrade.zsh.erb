@@ -13,7 +13,10 @@ _zimfw_upgrade() {
         return 1
       fi
     fi
-    _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P '<%= done %>Done with upgrade.'
+    # .latest_version can be outdated and will yield a false warning if zimfw is
+    # upgraded before .latest_version is refreshed. Bad thing about having a cache.
+    _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
+        _zimfw_print -P '<%= done %>Done with upgrade.'
   } always {
     command rm -f ${ztarget}.new
   }

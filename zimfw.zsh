@@ -112,7 +112,7 @@ Startup options:
   %B-f%b|%B--fpath%b <path>              Add specified path to fpath
   %B-a%b|%B--autoload%b <function_name>  Autoload specified function
   %B-s%b|%B--source%b <file_path>        Source specified file
-  %B-d%b|%B--disabled%b                  Don't use or uninstall the module
+  %B-d%b|%B--disabled%b                  Don't initialize or uninstall the module
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
@@ -248,7 +248,7 @@ _zimfw_version_check() {
     fi
     local -r zlatest_version=$(<${ztarget})
     if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-      print -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
     fi
   fi
 }
@@ -276,7 +276,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 7fdf65c)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 64f36fe)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -310,14 +310,17 @@ _zimfw_upgrade() {
         return 1
       fi
     fi
-    _zimfw_mv ${ztarget}{.new,} && _zimfw_print -P 'Done with upgrade.'
+    # .latest_version can be outdated and will yield a false warning if zimfw is
+    # upgraded before .latest_version is refreshed. Bad thing about having a cache.
+    _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
+        _zimfw_print -P 'Done with upgrade.'
   } always {
     command rm -f ${ztarget}.new
   }
 }
 
 zimfw() {
-  local -r _zversion='1.1.0-SNAPSHOT'
+  local -r _zversion='1.1.0'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

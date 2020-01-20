@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.1.0] - 2020-01-20
+
 ### Added
 - `help` and `version` actions.
-- `-v` verbose option. Normal mode output is now cleaner and more focused.
+- `-v` verbose option. Normal mode output is now focused on the specified action.
 - Asynchronously check the latest version every 30 days. This can be disabled
   with `zstyle ':zim' disable-version-check yes`.
 
@@ -17,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When upgrading, download latest release asset instead of raw file from the
   master branch.
 - `curl` is preferred over `wget`.
+  (See [#360](https://github.com/zimfw/zimfw/issues/360))
 - `wget`'s output is only shown in verbose mode.
 
 ## [1.0.1] - 2020-01-09
@@ -88,6 +93,7 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/zimfw/zimfw/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/zimfw/zimfw/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/zimfw/zimfw/compare/5d66578...v1.0.0
