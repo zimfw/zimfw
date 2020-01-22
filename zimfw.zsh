@@ -246,9 +246,11 @@ _zimfw_version_check() {
           command sed 's?^.*/v??' | command sort -n -t. -k1,1 -k2,2 -k3,3 | \
           command tail -n1 >! ${ztarget} &!
     fi
-    local -r zlatest_version=$(<${ztarget})
-    if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+    if [[ -f ${ztarget} ]]; then
+      local -r zlatest_version=$(<${ztarget})
+      if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+        print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"$'\n'
+      fi
     fi
   fi
 }
@@ -276,7 +278,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 64f36fe)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is bebbfce)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -320,7 +322,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.1.0'
+  local -r _zversion='1.1.1-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

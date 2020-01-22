@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- "no such file or directory" error before initial check for latest version.
 
 ## [1.1.0] - 2020-01-20
 
