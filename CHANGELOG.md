@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - "no such file or directory" error before initial check for latest version.
+- Show error when no modules defined in .zimrc, instead of allowing xargs to
+  execute the action with no positional parameters.
 
 ## [1.1.0] - 2020-01-20
 

@@ -228,10 +228,15 @@ Startup options:
 }
 
 _zimfw_source_zimrc() {
+  local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc
   local -ri _zprepare_xargs=${1}
   local -i _zfailed=0
-  if ! source ${ZDOTDIR:-${HOME}}/.zimrc || (( _zfailed )); then
-    print -u2 -PR "%F{red}Failed to source %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"
+  if ! source ${ztarget} || (( _zfailed )); then
+    print -u2 -PR "%F{red}Failed to source %B${ztarget}%b%f"
+    return 1
+  fi
+  if (( _zprepare_xargs && ! ${#_zmodules_xargs} )); then
+    print -u2 -PR "%F{red}No modules defined in %B${ztarget}%b%f"
     return 1
   fi
 }
@@ -241,7 +246,7 @@ _zimfw_version_check() {
     setopt LOCAL_OPTIONS EXTENDED_GLOB
     local -r ztarget=${ZIM_HOME}/.latest_version
     # If .latest_version does not exist or was not modified in the last 30 days
-    if [[ ! -f ${ztarget}(#qNm-30) ]]; then
+    if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
       command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | \
           command sed 's?^.*/v??' | command sort -n -t. -k1,1 -k2,2 -k3,3 | \
           command tail -n1 >! ${ztarget} &!
@@ -258,7 +263,7 @@ _zimfw_version_check() {
 _zimfw_clean_compiled() {
   local zopt
   (( _zprintlevel > 0 )) && zopt='-v'
-  command find ${ZIM_HOME} \( -name '*.zwc' -o -name '*.zwc.old' \) -exec rm -f ${zopt} {} \; || return 1
+  command rm -f ${zopt} ${ZIM_HOME}/**/*.zwc(|.old) || return 1
   command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   _zimfw_print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
 }
@@ -278,7 +283,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is bebbfce)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is cbf142a)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
