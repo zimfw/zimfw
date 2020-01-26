@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.1.1] - 2020-01-26
+
 ### Fixed
 - "no such file or directory" error before initial check for latest version.
 - Show error when no modules defined in .zimrc, instead of allowing xargs to
@@ -96,7 +100,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/zimfw/zimfw/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/zimfw/zimfw/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/zimfw/zimfw/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/zimfw/zimfw/compare/5d66578...v1.0.0
