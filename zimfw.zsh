@@ -289,7 +289,7 @@ _zimfw_doctor() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 6129062)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 6f357b5)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
