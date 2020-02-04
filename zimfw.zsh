@@ -33,9 +33,7 @@ fi
 : ${ZIM_HOME=${0:A:h}}
 
 _zimfw_print() {
-  if (( _zprintlevel > 0 )); then
-    print "${@}"
-  fi
+  if (( _zprintlevel > 0 )) print "${@}"
 }
 
 _zimfw_mv() {
@@ -58,8 +56,8 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    (( ${#_zfpaths} )) && print -R 'fpath=('${_zfpaths:A}' ${fpath})'
-    (( ${#_zfunctions} )) && print -R 'autoload -Uz '${_zfunctions}
+    if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths:A}' ${fpath})'
+    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions}
     print -Rn ${(F):-source ${^_zscripts:A}}
   ) ${ztarget}
 }
@@ -175,7 +173,7 @@ Startup options:
       -f|--fpath)
         shift
         zarg=${1}
-        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
         zfpaths+=(${zarg})
         ;;
       -a|--autoload)
@@ -185,7 +183,7 @@ Startup options:
       -s|--source)
         shift
         zarg=${1}
-        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
         zscripts+=(${zarg})
         ;;
       -d|--disabled) zdisabled=1 ;;
@@ -210,7 +208,7 @@ Startup options:
         _zfailed=1
         return 1
       fi
-      (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+      if (( ! ${#zfpaths} )) zfpaths+=(${zdir}/functions(NF))
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
         # prompt_*_setup functions are autoloaded by promptinit
@@ -262,7 +260,7 @@ _zimfw_version_check() {
 
 _zimfw_clean_compiled() {
   local zopt
-  (( _zprintlevel > 0 )) && zopt='-v'
+  if (( _zprintlevel > 0 )) zopt='-v'
   command rm -f ${zopt} ${ZIM_HOME}/**/*.zwc(|.old) || return 1
   command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   _zimfw_print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
@@ -271,19 +269,19 @@ _zimfw_clean_compiled() {
 _zimfw_clean_dumpfile() {
   local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
-  (( _zprintlevel > 0 )) && zopt='-v'
+  if (( _zprintlevel > 0 )) zopt='-v'
   command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old))(N) || return 1
   _zimfw_print -P 'Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
 }
 
 _zimfw_compile() {
   local zopt
-  (( _zprintlevel <= 0 )) && zopt='-q'
+  if (( _zprintlevel <= 0 )) zopt='-q'
   source ${ZIM_HOME}/login_init.zsh ${zopt}
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 6129062)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 13fb1ea)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -291,7 +289,7 @@ _zimfw_info() {
 
 _zimfw_uninstall() {
   local zopt zdir zmodule
-  (( _zprintlevel > 0 )) && zopt='-v'
+  if (( _zprintlevel > 0 )) zopt='-v'
   for zdir in ${ZIM_HOME}/modules/*(N/); do
     zmodule=${zdir:t}
     # If _zmodules and _zdisableds do not contain the zmodule
@@ -311,9 +309,9 @@ _zimfw_upgrade() {
       command curl -fsSL ${zurl} | command gunzip > ${ztarget}.new || return 1
     else
       local zopt
-      (( _zprintlevel <= 1 )) && zopt='-q'
+      if (( _zprintlevel <= 1 )) zopt='-q'
       if ! command wget -nv ${zopt} -O - ${zurl} | command gunzip > ${ztarget}.new; then
-        (( _zprintlevel <= 1 )) && print -u2 -PR "%F{red}x Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
+        if (( _zprintlevel <= 1 )) print -u2 -PR "%F{red}x Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
         return 1
       fi
     fi
@@ -327,7 +325,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.1.1'
+  local -r _zversion='1.2.0-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -382,11 +380,9 @@ if [[ -e \${DIR} ]]; then
   # Already exists
   return 0
 fi
-(( PRINTLEVEL > 0 )) && print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
+if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
 if ERR=\$(command git clone -b \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
-  if (( PRINTLEVEL > 0 )); then
-    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Installed\"
-  fi
+  if (( PRINTLEVEL > 0 )) print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Installed\"
 else
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git clone%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
@@ -402,7 +398,7 @@ readonly TYPE=\${4}
 readonly REV=\${5}
 readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
-(( PRINTLEVEL > 0 )) && print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
+if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
 if ! builtin cd -q \${DIR} 2>/dev/null; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Not installed%f\"
   return 1
@@ -417,7 +413,7 @@ if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
 fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
-    (( PRINTLEVEL > 0 )) && print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
+    if (( PRINTLEVEL > 0 )) print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
     return 0
   fi
 fi
@@ -447,7 +443,7 @@ else
 fi
 if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
   if (( PRINTLEVEL > 0 )); then
-    [[ -n \${LOG} ]] && OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
+    if [[ -n \${LOG} ]] OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
     print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${OUT}\"
   fi
 else

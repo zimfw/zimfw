@@ -73,7 +73,7 @@ Startup options:
       -f|--fpath)
         shift
         zarg=${1}
-        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
         zfpaths+=(${zarg})
         ;;
       -a|--autoload)
@@ -83,7 +83,7 @@ Startup options:
       -s|--source)
         shift
         zarg=${1}
-        [[ ${zarg} != /* ]] && zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
         zscripts+=(${zarg})
         ;;
       -d|--disabled) zdisabled=1 ;;
@@ -108,7 +108,7 @@ Startup options:
         _zfailed=1
         return 1
       fi
-      (( ! ${#zfpaths} )) && zfpaths+=(${zdir}/functions(NF))
+      if (( ! ${#zfpaths} )) zfpaths+=(${zdir}/functions(NF))
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
         # prompt_*_setup functions are autoloaded by promptinit

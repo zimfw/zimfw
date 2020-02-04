@@ -1,5 +1,3 @@
 _zimfw_print() {
-  if (( _zprintlevel > 0 )); then
-    print "${@}"
-  fi
+  if (( _zprintlevel > 0 )) print "${@}"
 }

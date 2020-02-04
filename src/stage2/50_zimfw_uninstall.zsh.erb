@@ -1,6 +1,6 @@
 _zimfw_uninstall() {
   local zopt zdir zmodule
-  (( _zprintlevel > 0 )) && zopt='-v'
+  if (( _zprintlevel > 0 )) zopt='-v'
   for zdir in ${ZIM_HOME}/modules/*(N/); do
     zmodule=${zdir:t}
     # If _zmodules and _zdisableds do not contain the zmodule
