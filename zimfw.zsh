@@ -204,7 +204,7 @@ Startup options:
       _zdisableds+=(${zmodule})
     else
       if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed |try → zimfw install%f"
         _zfailed=1
         return 1
       fi
