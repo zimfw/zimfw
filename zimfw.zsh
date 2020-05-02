@@ -204,7 +204,7 @@ Startup options:
       _zdisableds+=(${zmodule})
     else
       if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed%f"
+        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
         _zfailed=1
         return 1
       fi
@@ -281,7 +281,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 13fb1ea)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 84976b0)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -400,7 +400,7 @@ readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
 if ! builtin cd -q \${DIR} 2>/dev/null; then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Not installed%f\"
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Not installed. Run %Bzimfw install%b to install.%f\"
   return 1
 fi
 if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
