@@ -81,35 +81,33 @@ Usage
 
 ### zmodule
 
-Add `zmodule` calls to your `~/.zimrc` file to define the modules to be initialized.
-The modules are initialized in the same order they are defined. Add:
+<pre>
+Usage: <strong>zmodule</strong> &lt;url&gt; [<strong>-n</strong>|<strong>--name</strong> &lt;module_name&gt;] [options]
 
-    zmodule <url> [-n|--name <module_name>] [options]
+Add <strong>zmodule</strong> calls to your <strong>~/.zimrc</strong> file to define the modules to be initialized. The modules are
+initialized in the same order they are defined.
 
-where `<url>` is the required repository URL or path. The following formats
-are equivalent: `name`, `zimfw/name`, `https://github.com/zimfw/name.git`.
-
-By default, the module name is the last component in the `<url>`. Use the
-`-n|--name <module_name>` option to set a custom module name.
+  &lt;url&gt;                          Required repository URL or path. The following formats are
+                                 equivalent: <strong>name</strong>, <strong>zimfw/name</strong>, <strong>https://github.com/zimfw/name.git</strong>.
+  <strong>-n</strong>|<strong>--name</strong> &lt;module_name&gt;        Set a custom module name. Default: the last component in the &lt;url&gt;.
 
 Repository options:
-
-* `-b|--branch <branch_name>`: Use specified branch when installing and
-  updating the module. Overrides the tag option. Default: `master`.
-* `-t|--tag <tag_name>`: Use specified tag when installing and updating the
-  module. Overrides the branch option.
-* `-z|--frozen`: Don't install or update the module.
+  <strong>-b</strong>|<strong>--branch</strong> &lt;branch_name&gt;      Use specified branch when installing and updating the module.
+                                 Overrides the tag option. Default: <strong>master</strong>.
+  <strong>-t</strong>|<strong>--tag</strong> &lt;tag_name&gt;            Use specified tag when installing and updating the module.
+                                 Overrides the branch option.
+  <strong>-z</strong>|<strong>--frozen</strong>                    Don't install or update the module.
 
 Initialization options:
-
-* `-f|--fpath <path>`: Add specified path to `fpath`. The path is relative to
-  the module root directory. Default: `functions`, if the subdirectory exists.
-* `-a|--autoload <function_name>`: Autoload specified function. Default: all
-  valid names inside the module's specified `fpath` paths.
-* `-s|--source <file_path>`: Source specified file. The file path is relative
-  to the module root directory. Default: the file with largest size matching
-  `{init.zsh|module_name.{zsh|plugin.zsh|zsh-theme|sh}}`, if any exists.
-* `-d|--disabled`: Don't initialize or uninstall the module.
+  <strong>-f</strong>|<strong>--fpath</strong> &lt;path&gt;              Add specified path to fpath. The path is relative to the module
+                                 root directory. Default: <strong>functions</strong>, if the subdirectory exists.
+  <strong>-a</strong>|<strong>--autoload</strong> &lt;function_name&gt;  Autoload specified function. Default: all valid names inside the
+                                 module's specified fpath paths.
+  <strong>-s</strong>|<strong>--source</strong> &lt;file_path&gt;        Source specified file. The file path is relative to the module root
+                                 directory. Default: the file with largest size matching
+                                 <strong>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</strong>, if any exist.
+  <strong>-d</strong>|<strong>--disabled</strong>                  Don't initialize or uninstall the module.
+</pre>
 
 ### zimfw
 
