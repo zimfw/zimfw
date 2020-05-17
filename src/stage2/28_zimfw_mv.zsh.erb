@@ -1,5 +1,6 @@
 _zimfw_mv() {
-  if command cmp -s ${2} ${1}; then
+  local -a cklines=(${(f)"$(command cksum ${@})"})
+  if [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
     _zimfw_print -PR "<%= okay %>%B${2}:%b Already up to date"
   else
     if [[ -e ${2} ]]; then

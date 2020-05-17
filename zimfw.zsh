@@ -37,7 +37,8 @@ _zimfw_print() {
 }
 
 _zimfw_mv() {
-  if command cmp -s ${2} ${1}; then
+  local -a cklines=(${(f)"$(command cksum ${@})"})
+  if [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
     _zimfw_print -PR "%F{green})%f %B${2}:%b Already up to date"
   else
     if [[ -e ${2} ]]; then
@@ -208,9 +209,9 @@ Initialization options:
     esac
     shift
   done
-  if (( _zprepare_xargs )); then
+  if (( _zprepare_zargs )); then
     if (( ! zfrozen )); then
-      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zprintlevel}$'\0'
+      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} ${zrev} ${_zprintlevel})
     fi
   else
     if (( zdisabled )); then
@@ -240,13 +241,13 @@ Initialization options:
 
 _zimfw_source_zimrc() {
   local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc
-  local -ri _zprepare_xargs=${1}
+  local -ri _zprepare_zargs=${1}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
     print -u2 -PR "%F{red}Failed to source %B${ztarget}%b%f"
     return 1
   fi
-  if (( _zprepare_xargs && ! ${#_zmodules_xargs} )); then
+  if (( _zprepare_zargs && ! ${#_zmodules_zargs} )); then
     print -u2 -PR "%F{red}No modules defined in %B${ztarget}%b%f"
     return 1
   fi
@@ -294,7 +295,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is d1103f3)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 7e369ef)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -359,8 +360,8 @@ Options:
   %B-q%b              Quiet, only outputs errors
   %B-v%b              Verbose
 "
-  local ztool _zmodules_xargs
-  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts
+  local ztool
+  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts _zmodules_zargs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
@@ -482,7 +483,8 @@ fi
     info) _zimfw_info ;;
     install|update)
       _zimfw_source_zimrc 1 || return 1
-      print -Rn ${_zmodules_xargs} | xargs -0 -n6 -P10 zsh -c ${ztool} ${1} && \
+      autoload -Uz zargs && \
+        zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
           _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc && _zimfw_build && _zimfw_compile

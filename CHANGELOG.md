@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Changed
+- Use `cksum` instead of `cmp`, and `zargs` instead of `xargs`, so we don't
+  depend on busybox or diffutils and findutils.
+
+### Fixed
+- Error messages and the `zmodule` usage text.
 
 ## [1.1.1] - 2020-01-26
 

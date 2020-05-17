@@ -108,9 +108,9 @@ Initialization options:
     esac
     shift
   done
-  if (( _zprepare_xargs )); then
+  if (( _zprepare_zargs )); then
     if (( ! zfrozen )); then
-      _zmodules_xargs+=${zmodule}$'\0'${zdir}$'\0'${zurl}$'\0'${ztype}$'\0'${zrev}$'\0'${_zprintlevel}$'\0'
+      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} ${zrev} ${_zprintlevel})
     fi
   else
     if (( zdisabled )); then
