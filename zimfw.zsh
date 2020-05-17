@@ -295,7 +295,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 7e369ef)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 8724686)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -339,7 +339,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.2.0-SNAPSHOT'
+  local -r _zversion='1.2.0'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -484,7 +484,7 @@ fi
     install|update)
       _zimfw_source_zimrc 1 || return 1
       autoload -Uz zargs && \
-        zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
+          zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
           _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc && _zimfw_build && _zimfw_compile

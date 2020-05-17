@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.2.0] - 2020-05-17
+
 ### Changed
 - Use `cksum` instead of `cmp`, and `zargs` instead of `xargs`, so we don't
   depend on busybox or diffutils and findutils.
@@ -105,7 +109,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/zimfw/zimfw/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/zimfw/zimfw/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/zimfw/zimfw/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/zimfw/zimfw/compare/v1.0.0...v1.0.1

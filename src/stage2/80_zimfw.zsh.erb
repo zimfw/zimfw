@@ -66,7 +66,7 @@ Options:
     install|update)
       _zimfw_source_zimrc 1 || return 1
       autoload -Uz zargs && \
-        zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
+          zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
           _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc && _zimfw_build && _zimfw_compile
