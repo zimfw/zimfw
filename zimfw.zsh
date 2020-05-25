@@ -132,7 +132,7 @@ Initialization options:
     return 1
   fi
   if (( ! # )); then
-    print -u2 -PR "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f"
+    print -u2 -PR "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f"$'\n\n'${zusage}
     _zfailed=1
     return 1
   fi
@@ -154,7 +154,7 @@ Initialization options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+      print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"$'\n\n'${zusage}
       _zfailed=1
       return 1
     fi
@@ -167,7 +167,7 @@ Initialization options:
     case ${1} in
       -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)
         if (( # < 2 )); then
-          print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"
+          print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"$'\n\n'${zusage}
           _zfailed=1
           return 1
         fi
@@ -203,7 +203,7 @@ Initialization options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"
+        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"$'\n\n'${zusage}
         _zfailed=1
         return 1
         ;;
@@ -231,6 +231,9 @@ Initialization options:
       fi
       if (( ! ${#zscripts} )); then
         zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      fi
+      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zscripts} )); then
+        print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
       _zfpaths+=(${zfpaths})
       _zfunctions+=(${zfunctions})
@@ -296,7 +299,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 853e5a7)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is e73285c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)

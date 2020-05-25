@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - "No such file or directory" displayed when building a new file. This was a
   regression introduced after replacing `cmp` by `cksum`.
+- Show warning message when nothing found to be initialized in a module.
 
 ## [1.2.0] - 2020-05-17
 

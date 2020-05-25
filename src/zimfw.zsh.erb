@@ -1,6 +1,6 @@
 <%
 class Zim
-  attr_reader :home, :min_zsh_version, :startup_files_glob, :version, :ellipsis, :okay, :error, :done, :failed
+  attr_reader :home, :min_zsh_version, :startup_files_glob, :version, :ellipsis, :okay, :warn, :error, :done, :failed
 
   def initialize
     @home = "${ZDOTDIR:-${HOME}}"
@@ -9,6 +9,7 @@ class Zim
     @version = "1.2.1-SNAPSHOT"
     @ellipsis = " ..."
     @okay = "%F{green})%f "
+    @warn = "! "
     @error = "x "
     @done = ""
     @failed = ""
