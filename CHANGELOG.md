@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- "No such file or directory" displayed when building a new file. This was a
+  regression introduced after replacing `cmp` by `cksum`.
 
 ## [1.2.0] - 2020-05-17
 

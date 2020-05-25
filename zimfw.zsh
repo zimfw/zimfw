@@ -37,8 +37,9 @@ _zimfw_print() {
 }
 
 _zimfw_mv() {
-  local -a cklines=(${(f)"$(command cksum ${@})"})
-  if [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
+  local -a cklines
+  if cklines=(${(f)"$(command cksum ${1} ${2} 2>/dev/null)"}) && \
+      [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
     _zimfw_print -PR "%F{green})%f %B${2}:%b Already up to date"
   else
     if [[ -e ${2} ]]; then
@@ -295,7 +296,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 8724686)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 853e5a7)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -339,7 +340,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.2.0'
+  local -r _zversion='1.2.1-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
