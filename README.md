@@ -124,7 +124,7 @@ For more information about the `zimfw` tool, run `zimfw help`.
 Settings
 --------
 
-By default, every 30 days `zimfw` will check if it has a new version available.
+By default, `zimfw` will check if it has a new version available every 30 days.
 This can be disabled with:
 
     zstyle ':zim' disable-version-check yes

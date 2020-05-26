@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.2.1] - 2020-05-26
+
 ### Fixed
-- "No such file or directory" displayed when building a new file. This was a
+- "No such file or directory" error when building a new file. This was a
   regression introduced after replacing `cmp` by `cksum`.
 - Show warning message when nothing found to be initialized in a module.
 
@@ -112,7 +116,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/zimfw/zimfw/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/zimfw/zimfw/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/zimfw/zimfw/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/zimfw/zimfw/compare/v1.0.1...v1.1.0
