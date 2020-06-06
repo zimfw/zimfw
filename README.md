@@ -87,8 +87,8 @@ Usage: <strong>zmodule</strong> &lt;url&gt; [<strong>-n</strong>|<strong>--name<
 Add <strong>zmodule</strong> calls to your <strong>~/.zimrc</strong> file to define the modules to be initialized. The modules are
 initialized in the same order they are defined.
 
-  &lt;url&gt;                          Required repository URL or path. The following formats are
-                                 equivalent: <strong>name</strong>, <strong>zimfw/name</strong>, <strong>https://github.com/zimfw/name.git</strong>.
+  &lt;url&gt;                          Module absolute path or repository URL. The following URL formats
+                                 are equivalent: <strong>name</strong>, <strong>zimfw/name</strong>, <strong>https://github.com/zimfw/name.git</strong>.
   <strong>-n</strong>|<strong>--name</strong> &lt;module_name&gt;        Set a custom module name. Default: the last component in the &lt;url&gt;.
 
 Repository options:

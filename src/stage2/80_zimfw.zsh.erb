@@ -60,7 +60,7 @@ Options:
     clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_build_login_init && _zimfw_compile ;;
+    compile) _zimfw_source_zimrc && _zimfw_build_login_init && _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     install|update)

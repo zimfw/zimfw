@@ -4,8 +4,8 @@ zmodule() {
 Add %Bzmodule%b calls to your %B${ZDOTDIR:-${HOME}}/.zimrc%b file to define the modules to be initialized.
 The modules are initialized in the same order they are defined.
 
-  <url>                          Required repository URL or path. The following formats are
-                                 equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
+  <url>                          Module absolute path or repository URL. The following URL formats
+                                 are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
   %B-n%b|%B--name%b <module_name>        Set a custom module name. Default: the last component in the <url>.
 
 Repository options:
@@ -39,7 +39,7 @@ Initialization options:
   local ztype=branch zrev=master
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zscripts
-  local zarg
+  local zarg zdir
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
   elif [[ ${zurl} != /* ]]; then
@@ -60,7 +60,11 @@ Initialization options:
     zmodule=${1}
     shift
   fi
-  local -r zdir=${ZIM_HOME}/modules/${zmodule}
+  if [[ ${zurl} == /* ]]; then
+    zdir=${zurl}
+  else
+    zdir=${ZIM_HOME}/modules/${zmodule}
+  fi
   while (( # > 0 )); do
     case ${1} in
       -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source)

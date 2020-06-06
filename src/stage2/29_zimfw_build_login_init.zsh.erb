@@ -1,4 +1,6 @@
 _zimfw_build_login_init() {
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zscripts%%${ZIM_HOME}/*}:h})
+  local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)")
   local -r ztarget=${ZIM_HOME}/login_init.zsh
   _zimfw_mv =(
     print -Rn "<%= render_escaped("src/templates/login_init.zsh.erb") %>"

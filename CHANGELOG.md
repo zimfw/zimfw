@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- Allow local modules to be initialized and compiled in their respective
+  directories, instead of forcing them to be "installed" inside `ZIM_HOME`.
 
 ## [1.2.1] - 2020-05-26
 
