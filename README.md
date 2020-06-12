@@ -55,26 +55,22 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 
 ### Manual installation
 
-1. Start a Zsh shell
+1. Set Zsh as the default shell:
 
-       zsh
+       chsh -s $(which zsh)
 
-2. Set Zsh as the default shell:
-
-       chsh -s =zsh
-
-3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
-   `~/.zim/zimfw.zsh`.
-
-4. Add the lines in the following templates to the respective dot files:
+2. Add the lines in the following templates to the respective dot files:
    * [~/.zshenv](https://github.com/zimfw/install/blob/master/src/templates/zshenv)
    * [~/.zshrc](https://github.com/zimfw/install/blob/master/src/templates/zshrc)
    * [~/.zlogin](https://github.com/zimfw/install/blob/master/src/templates/zlogin)
    * [~/.zimrc](https://github.com/zimfw/install/blob/master/src/templates/zimrc)
 
-5. Install the modules defined in `~/.zimrc` and build the initialization scripts:
+3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
+   `~/.zim/zimfw.zsh`.
 
-       source ~/.zim/zimfw.zsh install
+4. Install the modules defined in `~/.zimrc` and build the initialization scripts:
+
+       zsh ~/.zim/zimfw.zsh install
 
 Usage
 -----
