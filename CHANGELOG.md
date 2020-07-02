@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+- `-c|-cmd` option to `zmodule`.
 
 ## [1.2.2] - 2020-06-10
 

@@ -60,12 +60,12 @@ _zimfw_build_init() {
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths:A}' ${fpath})'
     if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions}
-    print -Rn ${(F):-source ${^_zscripts:A}}
+    print -R ${(F)_zcmds}
   ) ${ztarget}
 }
 
 _zimfw_build_login_init() {
-  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zscripts%%${ZIM_HOME}/*}:h})
+  local -Ur zscriptdirs=('${ZIM_HOME}' ${${_zdirs%%${ZIM_HOME}/*}:A})
   local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)")
   local -r ztarget=${ZIM_HOME}/login_init.zsh
   _zimfw_mv =(
@@ -125,6 +125,9 @@ Initialization options:
   %B-s%b|%B--source%b <file_path>        Source specified file. The file path is relative to the module root
                                  directory. Default: the file with largest size matching
                                  %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
+  %B-c%b|%B--cmd%b <command>             Execute specified command. Occurrences of the %B{}%b placeholder in the
+                                 command are subsituted by the module root directory path.
+                                 %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
   %B-d%b|%B--disabled%b                  Don't initialize or uninstall the module.
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
@@ -140,7 +143,7 @@ Initialization options:
   local zmodule=${1:t} zurl=${1}
   local ztype=branch zrev=master
   local -i zdisabled=0 zfrozen=0
-  local -a zfpaths zfunctions zscripts
+  local -a zfpaths zfunctions zcmds
   local zarg zdir
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
@@ -203,7 +206,11 @@ Initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
-        zscripts+=(${zarg})
+        zcmds+=("source ${zarg:A}")
+        ;;
+      -c|--cmd)
+        shift
+        zcmds+=(${1//{}/${zdir:A}})
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
@@ -233,16 +240,18 @@ Initialization options:
         # prompt_*_setup functions are autoloaded by promptinit
         zfunctions+=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
-      if (( ! ${#zscripts} )); then
-        zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      if (( ! ${#zcmds} )); then
+        local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+        zcmds+=("source ${^zscript[@]:A}")
       fi
-      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zscripts} )); then
+      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
+      _zmodules+=(${zmodule})
+      _zdirs+=(${zdir})
       _zfpaths+=(${zfpaths})
       _zfunctions+=(${zfunctions})
-      _zscripts+=(${zscripts})
-      _zmodules+=(${zmodule})
+      _zcmds+=(${zcmds})
     fi
   fi
 }
@@ -303,7 +312,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 99e6b31)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 1fd8961)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -347,7 +356,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.2.2'
+  local -r _zversion='1.3.0-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -369,7 +378,7 @@ Options:
   %B-v%b              Verbose
 "
   local ztool
-  local -a _zdisableds _zmodules _zfpaths _zfunctions _zscripts _zmodules_zargs
+  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}

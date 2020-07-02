@@ -102,6 +102,9 @@ Initialization options:
   <strong>-s</strong>|<strong>--source</strong> &lt;file_path&gt;        Source specified file. The file path is relative to the module root
                                  directory. Default: the file with largest size matching
                                  <strong>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</strong>, if any exist.
+  <strong>-c</strong>|<strong>--cmd</strong> &lt;command&gt;             Execute specified command. Occurrences of the <strong>{}</strong> placeholder in the
+                                 command are subsituted by the module root directory path.
+                                 <strong>-s 'script.zsh'</strong> and <strong>-c 'source {}/script.zsh'</strong> are equivalent.
   <strong>-d</strong>|<strong>--disabled</strong>                  Don't initialize or uninstall the module.
 </pre>
 

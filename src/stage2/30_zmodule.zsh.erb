@@ -23,6 +23,9 @@ Initialization options:
   %B-s%b|%B--source%b <file_path>        Source specified file. The file path is relative to the module root
                                  directory. Default: the file with largest size matching
                                  %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
+  %B-c%b|%B--cmd%b <command>             Execute specified command. Occurrences of the %B{}%b placeholder in the
+                                 command are subsituted by the module root directory path.
+                                 %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
   %B-d%b|%B--disabled%b                  Don't initialize or uninstall the module.
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
@@ -38,7 +41,7 @@ Initialization options:
   local zmodule=${1:t} zurl=${1}
   local ztype=branch zrev=master
   local -i zdisabled=0 zfrozen=0
-  local -a zfpaths zfunctions zscripts
+  local -a zfpaths zfunctions zcmds
   local zarg zdir
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
@@ -101,7 +104,11 @@ Initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
-        zscripts+=(${zarg})
+        zcmds+=("source ${zarg:A}")
+        ;;
+      -c|--cmd)
+        shift
+        zcmds+=(${1//{}/${zdir:A}})
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
@@ -131,16 +138,18 @@ Initialization options:
         # prompt_*_setup functions are autoloaded by promptinit
         zfunctions+=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
-      if (( ! ${#zscripts} )); then
-        zscripts+=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+      if (( ! ${#zcmds} )); then
+        local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+        zcmds+=("source ${^zscript[@]:A}")
       fi
-      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zscripts} )); then
+      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
+      _zmodules+=(${zmodule})
+      _zdirs+=(${zdir})
       _zfpaths+=(${zfpaths})
       _zfunctions+=(${zfunctions})
-      _zscripts+=(${zscripts})
-      _zmodules+=(${zmodule})
+      _zcmds+=(${zcmds})
     fi
   fi
 }
