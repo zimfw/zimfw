@@ -65,7 +65,8 @@ _zimfw_build_init() {
 }
 
 _zimfw_build_login_init() {
-  local -Ur zscriptdirs=('${ZIM_HOME}' ${${_zdirs%%${ZIM_HOME}/*}:A})
+  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
   local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)")
   local -r ztarget=${ZIM_HOME}/login_init.zsh
   _zimfw_mv =(
@@ -312,7 +313,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 1fd8961)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 9b02b41)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
