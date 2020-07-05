@@ -127,7 +127,7 @@ Initialization options:
                                  directory. Default: the file with largest size matching
                                  %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
   %B-c%b|%B--cmd%b <command>             Execute specified command. Occurrences of the %B{}%b placeholder in the
-                                 command are subsituted by the module root directory path.
+                                 command are substituted by the module root directory path.
                                  %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
   %B-d%b|%B--disabled%b                  Don't initialize or uninstall the module.
 "
@@ -313,7 +313,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 9b02b41)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 1e4d1e7)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -357,7 +357,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.3.0-SNAPSHOT'
+  local -r _zversion='1.3.0'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
