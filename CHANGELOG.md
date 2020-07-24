@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- gunzip failing with "unexpected end of file" when trying to upgrade zimfw.
+  (See [#407](https://github.com/zimfw/zimfw/issues/407))
 
 ## [1.3.0] - 2020-07-05
 

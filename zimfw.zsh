@@ -313,7 +313,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 1e4d1e7)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is dc93d13)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -336,23 +336,23 @@ _zimfw_upgrade() {
   local -r ztarget=${ZIM_HOME}/zimfw.zsh
   local -r zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
   {
-    setopt LOCAL_OPTIONS PIPE_FAIL
     if (( ${+commands[curl]} )); then
-      command curl -fsSL ${zurl} | command gunzip > ${ztarget}.new || return 1
+      command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
     else
       local zopt
       if (( _zprintlevel <= 1 )) zopt='-q'
-      if ! command wget -nv ${zopt} -O - ${zurl} | command gunzip > ${ztarget}.new; then
+      if ! command wget -nv ${zopt} -O ${ztarget}.new.gz ${zurl}; then
         if (( _zprintlevel <= 1 )) print -u2 -PR "%F{red}x Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
         return 1
       fi
     fi
+    command gunzip -f ${ztarget}.new.gz || return 1
     # .latest_version can be outdated and will yield a false warning if zimfw is
     # upgraded before .latest_version is refreshed. Bad thing about having a cache.
     _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
         _zimfw_print -P 'Done with upgrade.'
   } always {
-    command rm -f ${ztarget}.new
+    command rm -f ${ztarget}.new{,.gz}
   }
 }
 
