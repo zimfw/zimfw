@@ -315,7 +315,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 5059dd2)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is ccace0c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -359,7 +359,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.3.2-SNAPSHOT'
+  local -r _zversion='1.3.2'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
