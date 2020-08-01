@@ -7,24 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- Compiled files must also be cleaned from modules defined with absolute paths.
 
 ## [1.3.1] - 2020-07-24
 
 ### Fixed
-- gunzip failing with "unexpected end of file" when trying to upgrade zimfw.
+- "gzip: stdin: unexpected end of file" error when trying to upgrade.
   (See [#407](https://github.com/zimfw/zimfw/issues/407))
 
 ## [1.3.0] - 2020-07-05
 
 ### Added
-- `-c|-cmd` option to `zmodule`.
+- `-c|-cmd` option to `zmodule`. This allows for executing any specified command.
 
 ## [1.2.2] - 2020-06-10
 
 ### Fixed
 - Allow local modules to be initialized and compiled in their respective
-  directories, instead of forcing them to be installed inside `ZIM_HOME`.
+  directories, when absolute paths are given, instead of forcing them to be
+  installed inside `ZIM_HOME`.
 
 ## [1.2.1] - 2020-05-26
 

@@ -291,9 +291,11 @@ _zimfw_version_check() {
 }
 
 _zimfw_clean_compiled() {
+  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  command rm -f ${zopt} ${ZIM_HOME}/**/*.zwc(|.old) || return 1
+  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
   command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   _zimfw_print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
 }
@@ -313,7 +315,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 713b7b2)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is 5059dd2)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -357,7 +359,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.3.1'
+  local -r _zversion='1.3.2-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -493,8 +495,8 @@ fi
       _zimfw_compile
       ;;
     init) _zimfw_source_zimrc && _zimfw_build ;;
-    clean) _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
-    clean-compiled) _zimfw_clean_compiled ;;
+    clean) _zimfw_source_zimrc && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_source_zimrc && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_source_zimrc && _zimfw_build_login_init && _zimfw_compile ;;
     help) print -PR ${zusage} ;;

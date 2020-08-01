@@ -1,7 +1,9 @@
 _zimfw_clean_compiled() {
+  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  command rm -f ${zopt} ${ZIM_HOME}/**/*.zwc(|.old) || return 1
+  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
   command rm -f ${zopt} <%= home %>/<%= startup_files_glob %>.zwc(|.old)(N) || return 1
   _zimfw_print -P '<%= done %>Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
 }
