@@ -107,29 +107,29 @@ zmodule() {
 Add %Bzmodule%b calls to your %B${ZDOTDIR:-${HOME}}/.zimrc%b file to define the modules to be initialized.
 The modules are initialized in the same order they are defined.
 
-  <url>                          Module absolute path or repository URL. The following URL formats
-                                 are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
-  %B-n%b|%B--name%b <module_name>        Set a custom module name. Default: the last component in the <url>.
+  <url>                      Module absolute path or repository URL. The following URL formats
+                             are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
+  %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in the <url>.
 
 Repository options:
-  %B-b%b|%B--branch%b <branch_name>      Use specified branch when installing and updating the module.
-                                 Overrides the tag option. Default: %Bmaster%b.
-  %B-t%b|%B--tag%b <tag_name>            Use specified tag when installing and updating the module.
-                                 Overrides the branch option.
-  %B-z%b|%B--frozen%b                    Don't install or update the module.
+  %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
+                             Overrides the tag option. Default: %Bmaster%b.
+  %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
+                             Overrides the branch option.
+  %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
-  %B-f%b|%B--fpath%b <path>              Add specified path to fpath. The path is relative to the module
-                                 root directory. Default: %Bfunctions%b, if the subdirectory exists.
-  %B-a%b|%B--autoload%b <function_name>  Autoload specified function. Default: all valid names inside the
-                                 module's specified fpath paths.
-  %B-s%b|%B--source%b <file_path>        Source specified file. The file path is relative to the module root
-                                 directory. Default: the file with largest size matching
-                                 %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
-  %B-c%b|%B--cmd%b <command>             Execute specified command. Occurrences of the %B{}%b placeholder in the
-                                 command are substituted by the module root directory path.
-                                 %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
-  %B-d%b|%B--disabled%b                  Don't initialize or uninstall the module.
+  %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
+                             root directory. Default: %Bfunctions%b, if the subdirectory exists.
+  %B-a%b|%B--autoload%b <func_name>  Autoload specified function. Default: all valid names inside the
+                             module's specified fpath paths.
+  %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module root
+                             directory. Default: the file with largest size matching
+                             %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
+  %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
+                             command are substituted by the module root directory path.
+                             %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
+  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module.
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
@@ -315,7 +315,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is ccace0c)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is fbf0fe0)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -359,7 +359,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.3.2'
+  local -r _zversion='1.3.3-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
