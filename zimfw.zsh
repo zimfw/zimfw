@@ -315,22 +315,25 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is fbf0fe0)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is ef4fe38)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_uninstall() {
-  local zopt zdir zmodule
+  local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  for zdir in ${ZIM_HOME}/modules/*(N/); do
-    zmodule=${zdir:t}
-    # If _zmodules and _zdisableds do not contain the zmodule
-    if (( ! ${_zmodules[(I)${zmodule}]} && ! ${_zdisableds[(I)${zmodule}]} )); then
-      command rm -rf ${zopt} ${zdir} || return 1
+  local zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
+  # Uninstall all installed modules not in _zmodules and _zdisableds
+  zuninstalls=(${${zuninstalls:|_zmodules}:|_zdisableds})
+  if (( ${#zuninstalls} )); then
+    _zimfw_print -PR %B${(F)zuninstalls}%b
+    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#zuninstalls} module(s) listed above [y/N]? "; then
+      _zimfw_print
+      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^zuninstalls} || return 1
     fi
-  done
+  fi
   _zimfw_print -P 'Done with uninstall.'
 }
 
