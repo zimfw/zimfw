@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Added
 - Prompt before uninstalling modules, unless `-q` is set.
+
+### Fixed
+- Show error when no parameter is provided to `-c|--cmd`.
 
 ## [1.3.2] - 2020-08-01
 
