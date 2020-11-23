@@ -69,6 +69,10 @@ _zimfw_build_login_init() {
   local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
   local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)")
   local -r ztarget=${ZIM_HOME}/login_init.zsh
+  # Force update of login_init.zsh if it's older than .zimrc
+  if [[ ${ztarget} -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+    command mv -f ${ztarget}{,.old} || return 1
+  fi
   _zimfw_mv =(
     print -Rn "() {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
@@ -315,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is 78b4711)'
+  print -R 'zimfw version: '${_zversion}' (previous commit is c6f0720)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
