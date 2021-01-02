@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (previous commit is c6f0720)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-01-02 23:37:59 UTC, previous commit is dfbe535)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)

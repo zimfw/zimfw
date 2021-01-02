@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Prompt before uninstalling modules, unless `-q` is set.
+- Show build date in info.
 
 ### Fixed
 - Show error when no parameter is provided to `-c|--cmd`.
