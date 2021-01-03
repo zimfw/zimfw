@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Show error when no parameter is provided to `-c|--cmd`.
+- Use repository's default branch instead of hardcoding the default to `master`.
 
 ## [1.3.2] - 2020-08-01
 

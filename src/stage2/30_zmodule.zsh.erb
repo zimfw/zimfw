@@ -10,7 +10,7 @@ The modules are initialized in the same order they are defined.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: %Bmaster%b.
+                             Overrides the tag option. Default: the repository's default branch.
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
   %B-z%b|%B--frozen%b                Don't install or update the module.
@@ -39,7 +39,7 @@ Initialization options:
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zmodule=${1:t} zurl=${1}
-  local ztype=branch zrev=master
+  local ztype=branch zrev
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zcmds
   local zarg zdir
@@ -121,7 +121,7 @@ Initialization options:
   done
   if (( _zprepare_zargs )); then
     if (( ! zfrozen )); then
-      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} ${zrev} ${_zprintlevel})
+      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} "${zrev}" ${_zprintlevel})
     fi
   else
     if (( zdisabled )); then

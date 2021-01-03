@@ -117,7 +117,7 @@ The modules are initialized in the same order they are defined.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: %Bmaster%b.
+                             Overrides the tag option. Default: the repository's default branch.
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
   %B-z%b|%B--frozen%b                Don't install or update the module.
@@ -146,7 +146,7 @@ Initialization options:
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zmodule=${1:t} zurl=${1}
-  local ztype=branch zrev=master
+  local ztype=branch zrev
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zcmds
   local zarg zdir
@@ -228,7 +228,7 @@ Initialization options:
   done
   if (( _zprepare_zargs )); then
     if (( ! zfrozen )); then
-      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} ${zrev} ${_zprintlevel})
+      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} "${zrev}" ${_zprintlevel})
     fi
   else
     if (( zdisabled )); then
@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-01-02 23:37:59 UTC, previous commit is dfbe535)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-01-02 23:47:25 UTC, previous commit is 153c547)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -414,7 +414,7 @@ Options:
 readonly MODULE=\${1}
 readonly DIR=\${2}
 readonly URL=\${3}
-readonly REV=\${5}
+readonly BRANCH=\${5:+-b \${5}}
 readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if [[ -e \${DIR} ]]; then
@@ -422,7 +422,7 @@ if [[ -e \${DIR} ]]; then
   return 0
 fi
 if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Installing \${MODULE} ...\"
-if ERR=\$(command git clone -b \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
+if ERR=\$(command git clone \${=BRANCH} -q --recursive \${URL} \${DIR} 2>&1); then
   if (( PRINTLEVEL > 0 )) print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Installed\"
 else
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git clone%f\"$'\n'\${(F):-  \${(f)^ERR}}
@@ -436,7 +436,7 @@ readonly MODULE=\${1}
 readonly DIR=\${2}
 readonly URL=\${3}
 readonly TYPE=\${4}
-readonly REV=\${5}
+readonly REV=\${5:=HEAD}
 readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
@@ -467,7 +467,7 @@ if [[ \${TYPE} == branch ]]; then
 else
   LOG_REV=\${REV}
 fi
-LOG=\$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${LOG_REV} 2>/dev/null)
+LOG=\$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${LOG_REV} -- 2>/dev/null)
 if ! ERR=\$(command git checkout -q \${REV} -- 2>&1); then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git checkout%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
@@ -511,7 +511,7 @@ fi
     install|update)
       _zimfw_source_zimrc 1 || return 1
       autoload -Uz zargs && \
-          zargs -n 9 -P 10 -- ${_zmodules_zargs} -- zsh -c ${ztool} ${1} && \
+          zargs -n 9 -P 10 -- "${_zmodules_zargs[@]}" -- zsh -c ${ztool} ${1} && \
           _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc && _zimfw_build && _zimfw_compile

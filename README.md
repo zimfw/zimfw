@@ -89,7 +89,7 @@ initialized in the same order they are defined.
 
 Repository options:
   <strong>-b</strong>|<strong>--branch</strong> &lt;branch_name&gt;  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: <strong>master</strong>.
+                             Overrides the tag option. Default: the repository's default branch.
   <strong>-t</strong>|<strong>--tag</strong> &lt;tag_name&gt;        Use specified tag when installing and updating the module.
                              Overrides the branch option.
   <strong>-z</strong>|<strong>--frozen</strong>                Don't install or update the module.

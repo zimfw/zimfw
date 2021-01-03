@@ -3,7 +3,7 @@ readonly MODULE=${1}
 readonly DIR=${2}
 readonly URL=${3}
 readonly TYPE=${4}
-readonly REV=${5}
+readonly REV=${5:=HEAD}
 readonly -i PRINTLEVEL=${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if (( PRINTLEVEL > 0 )) print -Rn ${CLEAR_LINE}"Updating ${MODULE}<%= ellipsis %>"
@@ -34,7 +34,7 @@ if [[ ${TYPE} == branch ]]; then
 else
   LOG_REV=${REV}
 fi
-LOG=$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} 2>/dev/null)
+LOG=$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} -- 2>/dev/null)
 if ! ERR=$(command git checkout -q ${REV} -- 2>&1); then
   print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b Error during git checkout%f"$'\n'${(F):-  ${(f)^ERR}}
   return 1
