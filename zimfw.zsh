@@ -4,7 +4,7 @@
 # MIT License
 #
 # Copyright (c) 2015-2016 Matt Hamilton and contributors
-# Copyright (c) 2016-2020 Eric Nielsen, Matt Hamilton and contributors
+# Copyright (c) 2016-2021 Eric Nielsen, Matt Hamilton and contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -146,7 +146,7 @@ Initialization options:
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zmodule=${1:t} zurl=${1}
-  local ztype=branch zrev
+  local ztype zrev
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zcmds
   local zarg zdir
@@ -228,7 +228,7 @@ Initialization options:
   done
   if (( _zprepare_zargs )); then
     if (( ! zfrozen )); then
-      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} ${ztype} "${zrev}" ${_zprintlevel})
+      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} "${ztype}" "${zrev}" ${_zprintlevel})
     fi
   else
     if (( zdisabled )); then
@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-01-02 23:47:25 UTC, previous commit is 153c547)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-01-04 20:46:42 UTC, previous commit is 3567694)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -435,7 +435,7 @@ fi
 readonly MODULE=\${1}
 readonly DIR=\${2}
 readonly URL=\${3}
-readonly TYPE=\${4}
+readonly TYPE=\${4:=branch}
 readonly REV=\${5:=HEAD}
 readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
