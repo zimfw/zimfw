@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-01-04 20:46:42 UTC, previous commit is 3567694)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-01-07 18:39:43 UTC, previous commit is bcae8c0)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -366,7 +366,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.0-SNAPSHOT'
+  local -r _zversion='1.4.0'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -384,7 +384,7 @@ Actions:
   %Bversion%b         Print Zim version
 
 Options:
-  %B-q%b              Quiet, only outputs errors
+  %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose
 "
   local ztool
