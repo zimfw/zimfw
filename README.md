@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
-    <img width="650" src="https://zimfw.github.io/images/zim_banner.png">
+    <img width="600" src="https://zimfw.github.io/images/zimfw-banner@2.jpg">
   </a>
 </div>
 
