@@ -24,7 +24,7 @@ For a speed comparison between Zim and other frameworks, see [this wiki entry][b
 
 ### Themes
 
-To preview some of the available themes, check the [themes wiki page].
+To preview some of the available themes, check the [themes page].
 
 ### Fish-shell history navigation
 ![history-substring-search]
@@ -137,5 +137,5 @@ remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin
 [history-substring-search]: https://zimfw.github.io/images/zim_history-substring-search.gif
 [syntax-highlighting]: https://zimfw.github.io/images/zim_syntax-highlighting.gif
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
-[available modules]: https://github.com/zimfw/zimfw/wiki/Modules
-[themes wiki page]: https://github.com/zimfw/zimfw/wiki/Themes
+[available modules]: https://zimfw.sh/docs/modules/
+[themes page]: https://zimfw.sh/docs/themes/
