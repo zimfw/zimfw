@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- Correctly get the repository's default branch. The related change in version
+  1.4.0 actually broke updating the modules, as new changes stopped being
+  fetched.
 
 ## [1.4.0] - 2021-01-07
 

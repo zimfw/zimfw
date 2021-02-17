@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 20:54:27 UTC, previous commit is e53614e)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 22:48:17 UTC, previous commit is 36aa1b3)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -452,15 +452,18 @@ if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
   return 1
 fi
-if [[ -z \${REV} ]]; then
-  # Get HEAD branch
-  REV=\$(command git symbolic-ref --short HEAD)
-fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
     if (( PRINTLEVEL > 0 )) print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
     return 0
   fi
+elif [[ -z \${REV} ]]; then
+  # Get HEAD remote branch
+  if ! ERR=\$(command git remote set-head origin -a 2>&1); then
+    print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git remote set-head%f\"$'\n'\${(F):-  \${(f)^ERR}}
+    return 1
+  fi
+  REV=\${\$(command git symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
 fi
 if ! ERR=\$(command git fetch -pq origin \${REV} 2>&1); then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
@@ -486,14 +489,13 @@ if [[ \${TYPE} == branch ]]; then
 else
   OUT=\"Updating to \${TYPE} \${REV}\"
 fi
-if ERR=\$(command git submodule update --init --recursive -q 2>&1); then
-  if (( PRINTLEVEL > 0 )); then
-    if [[ -n \${LOG} ]] OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
-    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${OUT}\"
-  fi
-else
+if ! ERR=\$(command git submodule update --init --recursive -q 2>&1); then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git submodule update%f\"$'\n'\${(F):-  \${(f)^ERR}}
   return 1
+fi
+if (( PRINTLEVEL > 0 )); then
+  if [[ -n \${LOG} ]] OUT=\${OUT}$'\n'\${(F):-  \${(f)^LOG}}
+  print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${OUT}\"
 fi
 "
       ;;
