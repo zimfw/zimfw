@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 22:48:17 UTC, previous commit is 36aa1b3)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 23:25:22 UTC, previous commit is 12dab4e)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -366,7 +366,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.1-SNAPSHOT'
+  local -r _zversion='1.4.1'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
