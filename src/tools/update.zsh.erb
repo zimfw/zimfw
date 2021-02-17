@@ -3,7 +3,7 @@ readonly MODULE=${1}
 readonly DIR=${2}
 readonly URL=${3}
 readonly TYPE=${4:=branch}
-readonly REV=${5:=HEAD}
+REV=${5}
 readonly -i PRINTLEVEL=${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if (( PRINTLEVEL > 0 )) print -Rn ${CLEAR_LINE}"Updating ${MODULE}<%= ellipsis %>"
@@ -18,6 +18,10 @@ fi
 if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
   print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b URL does not match. Expected ${URL}. Will not try to update.%f"
   return 1
+fi
+if [[ -z ${REV} ]]; then
+  # Get HEAD branch
+  REV=$(command git symbolic-ref --short HEAD)
 fi
 if [[ ${TYPE} == tag ]]; then
   if [[ ${REV} == $(command git describe --tags --exact-match 2>/dev/null) ]]; then

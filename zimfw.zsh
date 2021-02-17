@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-01-07 18:39:43 UTC, previous commit is bcae8c0)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 20:54:27 UTC, previous commit is e53614e)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -366,7 +366,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.0'
+  local -r _zversion='1.4.1-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -436,7 +436,7 @@ readonly MODULE=\${1}
 readonly DIR=\${2}
 readonly URL=\${3}
 readonly TYPE=\${4:=branch}
-readonly REV=\${5:=HEAD}
+REV=\${5}
 readonly -i PRINTLEVEL=\${6}
 readonly CLEAR_LINE=$'\E[2K\r'
 if (( PRINTLEVEL > 0 )) print -Rn \${CLEAR_LINE}\"Updating \${MODULE} ...\"
@@ -451,6 +451,10 @@ fi
 if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
   return 1
+fi
+if [[ -z \${REV} ]]; then
+  # Get HEAD branch
+  REV=\$(command git symbolic-ref --short HEAD)
 fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
