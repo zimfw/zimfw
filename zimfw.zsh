@@ -319,7 +319,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-02-17 23:25:22 UTC, previous commit is 12dab4e)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-02-19 19:42:09 UTC, previous commit is ddfba96)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -366,7 +366,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.1'
+  local -r _zversion='1.4.2-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
@@ -452,6 +452,10 @@ if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b URL does not match. Expected \${URL}. Will not try to update.%f\"
   return 1
 fi
+if ! ERR=\$(command git fetch -pq origin 2>&1); then
+  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
+  return 1
+fi
 if [[ \${TYPE} == tag ]]; then
   if [[ \${REV} == \$(command git describe --tags --exact-match 2>/dev/null) ]]; then
     if (( PRINTLEVEL > 0 )) print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b Already up to date\"
@@ -464,10 +468,6 @@ elif [[ -z \${REV} ]]; then
     return 1
   fi
   REV=\${\$(command git symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
-fi
-if ! ERR=\$(command git fetch -pq origin \${REV} 2>&1); then
-  print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b Error during git fetch%f\"$'\n'\${(F):-  \${(f)^ERR}}
-  return 1
 fi
 if [[ \${TYPE} == branch ]]; then
   LOG_REV=\${REV}@{u}

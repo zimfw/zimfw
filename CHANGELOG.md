@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- "Not a valid ref: refs/remotes/origin/main" error when the repository's default
+  branch was renamed to main.
 
 ## [1.4.1] - 2021-02-17
 
