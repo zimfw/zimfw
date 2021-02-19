@@ -7,16 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.4.2] - 2021-02-19
+
 ### Fixed
-- "Not a valid ref: refs/remotes/origin/main" error when the repository's default
-  branch was renamed to main.
+- "Not a valid ref: refs/remotes/origin/main" error in `zimfw update`, when the
+  repository's default branch was renamed to main.
 
 ## [1.4.1] - 2021-02-17
 
 ### Fixed
-- Correctly get the repository's default branch. The related change in version
-  1.4.0 actually broke updating the modules, as new changes stopped being
-  fetched.
+- Correctly get the repository's default branch in `zimfw update`. The related
+  change in version 1.4.0 actually broke updating the modules, as new changes
+  stopped being fetched.
 
 ## [1.4.0] - 2021-01-07
 
@@ -26,8 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Show error when no parameter is provided to `-c|--cmd` in `zmodule`.
-- Use repository's default branch instead of hardcoding the default to `master`,
-  when no branch is specified in `zmodule`.
+- Use repository's default branch instead of hardcoding the default to `master`
+  in `zimfw update`, when no branch is specified in `zmodule`.
 
 ## [1.3.2] - 2020-08-01
 
@@ -159,7 +163,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.4.2...HEAD
+[1.4.2]: https://github.com/zimfw/zimfw/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/zimfw/zimfw/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/zimfw/zimfw/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/zimfw/zimfw/compare/v1.3.1...v1.3.2
