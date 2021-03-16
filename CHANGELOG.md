@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- Prefer the prezto module format when using defaults to initialize a module.
+  This is the format we use in our Zim framework modules. It's is not well
+  documented anywhere officially, but in short words a prezto module has:
+  * a `functions` subdirectory that is added to the fpath by the framework,
+  * files inside the `functions` subdirectory that are autoloaded by the
+    framework (except for file names that match `_*` or `prompt_*_setup`),
+  * an `init.zsh` file that is sourced by the framework.
 
 ## [1.4.2] - 2021-02-19
 

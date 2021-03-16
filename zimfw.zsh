@@ -239,15 +239,24 @@ Initialization options:
         _zfailed=1
         return 1
       fi
-      if (( ! ${#zfpaths} )) zfpaths+=(${zdir}/functions(NF))
+      local -ra prezto_fpaths=(${zdir}/functions(NF))
+      local -ra prezto_scripts=(${zdir}/init.zsh(N))
+      if (( ! ${#zfpaths} && ! ${#zcmds} && ${#prezto_fpaths} && ${#prezto_scripts} )); then
+        # this follows the prezto module format, no need to check for other scripts
+        zfpaths=(${prezto_fpaths})
+        zcmds=("source ${^prezto_scripts[@]:A}")
+      else
+        if (( ! ${#zfpaths} )) zfpaths=(${prezto_fpaths})
+        if (( ! ${#zcmds} )); then
+          # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
+          local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+          zcmds=("source ${^zscript[@]:A}")
+        fi
+      fi
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
         # prompt_*_setup functions are autoloaded by promptinit
-        zfunctions+=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
-      fi
-      if (( ! ${#zcmds} )); then
-        local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds+=("source ${^zscript[@]:A}")
+        zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
@@ -319,7 +328,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-02-19 20:25:37 UTC, previous commit is 8afb0b9)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-03-16 22:02:26 UTC, previous commit is 1df02c5)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -366,7 +375,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.2'
+  local -r _zversion='1.4.3-SNAPSHOT'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

@@ -132,15 +132,24 @@ Initialization options:
         _zfailed=1
         return 1
       fi
-      if (( ! ${#zfpaths} )) zfpaths+=(${zdir}/functions(NF))
+      local -ra prezto_fpaths=(${zdir}/functions(NF))
+      local -ra prezto_scripts=(${zdir}/init.zsh(N))
+      if (( ! ${#zfpaths} && ! ${#zcmds} && ${#prezto_fpaths} && ${#prezto_scripts} )); then
+        # this follows the prezto module format, no need to check for other scripts
+        zfpaths=(${prezto_fpaths})
+        zcmds=("source ${^prezto_scripts[@]:A}")
+      else
+        if (( ! ${#zfpaths} )) zfpaths=(${prezto_fpaths})
+        if (( ! ${#zcmds} )); then
+          # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
+          local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+          zcmds=("source ${^zscript[@]:A}")
+        fi
+      fi
       if (( ! ${#zfunctions} )); then
         # _* functions are autoloaded by compinit
         # prompt_*_setup functions are autoloaded by promptinit
-        zfunctions+=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
-      fi
-      if (( ! ${#zcmds} )); then
-        local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds+=("source ${^zscript[@]:A}")
+        zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
