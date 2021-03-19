@@ -25,14 +25,14 @@ Options:
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
-     return 1
+     return 2
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
         print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n\n'${zusage}
-        return 1
+        return 2
         ;;
     esac
   fi
@@ -80,7 +80,7 @@ Options:
     version) print -PR ${_zversion} ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n\n'${zusage}
-      return 1
+      return 2
       ;;
   esac
 }

@@ -137,12 +137,12 @@ Initialization options:
 "
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
-    return 1
+    return 2
   fi
   if (( ! # )); then
     print -u2 -PR "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f"$'\n\n'${zusage}
     _zfailed=1
-    return 1
+    return 2
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zmodule=${1:t} zurl=${1}
@@ -164,7 +164,7 @@ Initialization options:
     if (( # < 2 )); then
       print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"$'\n\n'${zusage}
       _zfailed=1
-      return 1
+      return 2
     fi
     shift
     zmodule=${1}
@@ -181,7 +181,7 @@ Initialization options:
         if (( # < 2 )); then
           print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"$'\n\n'${zusage}
           _zfailed=1
-          return 1
+          return 2
         fi
         ;;
     esac
@@ -221,7 +221,7 @@ Initialization options:
       *)
         print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f"$'\n\n'${zusage}
         _zfailed=1
-        return 1
+        return 2
         ;;
     esac
     shift
@@ -328,7 +328,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-03-16 22:02:26 UTC, previous commit is 1df02c5)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-03-19 22:13:04 UTC, previous commit is f7c0bbe)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -401,14 +401,14 @@ Options:
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
-     return 1
+     return 2
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
         print -u2 -PR "%F{red}${0}: Unknown option ${2}%f"$'\n\n'${zusage}
-        return 1
+        return 2
         ;;
     esac
   fi
@@ -540,7 +540,7 @@ fi
     version) print -PR ${_zversion} ;;
     *)
       print -u2 -PR "%F{red}${0}: Unknown action ${1}%f"$'\n\n'${zusage}
-      return 1
+      return 2
       ;;
   esac
 }
