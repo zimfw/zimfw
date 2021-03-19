@@ -128,7 +128,8 @@ Initialization options:
   %B-a%b|%B--autoload%b <func_name>  Autoload specified function. Default: all valid names inside the
                              module's specified fpath paths.
   %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module root
-                             directory. Default: the file with largest size matching
+                             directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory also
+                             exists, or the file with largest size matching
                              %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
                              command are substituted by the module root directory path.
@@ -328,7 +329,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-03-19 23:11:36 UTC, previous commit is 65783e6)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-03-19 23:42:38 UTC, previous commit is 163d36b)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -375,7 +376,7 @@ _zimfw_upgrade() {
 }
 
 zimfw() {
-  local -r _zversion='1.4.3-SNAPSHOT'
+  local -r _zversion='1.4.3'
   local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

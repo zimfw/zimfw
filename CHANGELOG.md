@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.4.3] - 2021-03-19
+
 ### Fixed
 - Prefer the prezto module format when using defaults to initialize a module.
-  This is the format we use in our Zim framework modules. It's is not well
-  documented anywhere officially, but in short words a prezto module has:
+  This is the format we use in our Zim framework modules. It's not well
+  documented anywhere officially, but in short words a prezto module can have:
   * a `functions` subdirectory that is added to the fpath by the framework,
   * files inside the `functions` subdirectory that are autoloaded by the
-    framework (except for file names that match `_*` or `prompt_*_setup`),
+    framework (except for those with names matching `_*` or `prompt_*_setup`),
   * an `init.zsh` file that is sourced by the framework.
 
 ## [1.4.2] - 2021-02-19
@@ -170,7 +174,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.4.3...HEAD
+[1.4.3]: https://github.com/zimfw/zimfw/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/zimfw/zimfw/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/zimfw/zimfw/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/zimfw/zimfw/compare/v1.3.2...v1.4.0
