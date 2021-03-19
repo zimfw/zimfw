@@ -290,9 +290,9 @@ _zimfw_version_check() {
     local -r ztarget=${ZIM_HOME}/.latest_version
     # If .latest_version does not exist or was not modified in the last 30 days
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
-      command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*' | \
-          command sed 's?^.*/v??' | command sort -n -t. -k1,1 -k2,2 -k3,3 | \
-          command tail -n1 >! ${ztarget} &!
+      # Get latest version (get all `v*` tags from repo, delete `*v` from beginning, sort in descending `O`rder
+      # `n`umerically, and get the `[1]` first)
+      print ${${(On)${(f)"$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*')"}##*v}[1]} >! ${ztarget} &!
     fi
     if [[ -f ${ztarget} ]]; then
       local -r zlatest_version=$(<${ztarget})
@@ -328,7 +328,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-03-19 22:13:04 UTC, previous commit is f7c0bbe)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-03-19 23:11:36 UTC, previous commit is 65783e6)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
