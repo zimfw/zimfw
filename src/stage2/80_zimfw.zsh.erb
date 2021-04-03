@@ -20,7 +20,6 @@ Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose
 "
-  local ztool
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
   local -i _zprintlevel=1
   if (( # > 2 )); then
@@ -42,15 +41,6 @@ Options:
   fi
 
   case ${1} in
-    install)
-      ztool="<%= render_escaped("src/tools/install.zsh.erb") %>"
-      ;;
-    update)
-      ztool="<%= render_escaped("src/tools/update.zsh.erb") %>"
-      ;;
-  esac
-
-  case ${1} in
     build)
       _zimfw_source_zimrc && _zimfw_build || return 1
       (( _zprintlevel-- ))
@@ -64,9 +54,9 @@ Options:
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     install|update)
-      _zimfw_source_zimrc 1 || return 1
+      _zimfw_source_zimrc ${1} || return 1
       autoload -Uz zargs && \
-          zargs -n 9 -P 10 -- "${_zmodules_zargs[@]}" -- zsh -c ${ztool} ${1} && \
+          zargs -n 7 -P 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
           _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc && _zimfw_build && _zimfw_compile

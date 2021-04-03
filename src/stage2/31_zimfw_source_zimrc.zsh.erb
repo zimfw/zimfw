@@ -1,12 +1,12 @@
 _zimfw_source_zimrc() {
   local -r ztarget=<%= home %>/.zimrc
-  local -ri _zprepare_zargs=${1}
+  local -r _zargs_action=${1}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
     print -u2 -PR "%F{red}<%= failed %>Failed to source %B${ztarget}%b%f"
     return 1
   fi
-  if (( _zprepare_zargs && ! ${#_zmodules_zargs} )); then
+  if [[ -n ${_zargs_action} && ${#_zmodules_zargs} -eq 0 ]]; then
     print -u2 -PR "%F{red}<%= failed %>No modules defined in %B${ztarget}%b%f"
     return 1
   fi

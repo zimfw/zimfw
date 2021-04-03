@@ -4,9 +4,10 @@ _zimfw_version_check() {
     local -r ztarget=${ZIM_HOME}/.latest_version
     # If .latest_version does not exist or was not modified in the last 30 days
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
-      # Get latest version (get all `v*` tags from repo, delete `*v` from beginning, sort in descending `O`rder
-      # `n`umerically, and get the `[1]` first)
-      print ${${(On)${(f)"$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*')"}##*v}[1]} >! ${ztarget} &!
+      # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
+      # sort in descending `O`rder `n`umerically, and get the `[1]` first)
+      print ${${(On)${(f)"$(command git ls-remote --tags --refs \
+          https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${ztarget} &!
     fi
     if [[ -f ${ztarget} ]]; then
       local -r zlatest_version=$(<${ztarget})

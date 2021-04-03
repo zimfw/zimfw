@@ -13,7 +13,7 @@ Repository options:
                              Overrides the tag option. Default: the repository's default branch.
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
-  %B-z%b|%B--frozen%b                Don't install or update the module.
+  %B-u%b|%B--use%b <%%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default: %Bgit%b
 
 Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
@@ -39,6 +39,7 @@ Initialization options:
     return 2
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
+  local ztool=git
   local zmodule=${1:t} zurl=${1}
   local ztype zrev
   local -i zdisabled=0 zfrozen=0
@@ -71,7 +72,7 @@ Initialization options:
   fi
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f"$'\n\n'${zusage}
           _zfailed=1
@@ -89,6 +90,10 @@ Initialization options:
         shift
         ztype=tag
         zrev=${1}
+        ;;
+      -u|--use)
+        shift
+        ztool=${1}
         ;;
       -z|--frozen) zfrozen=1 ;;
       -f|--fpath)
@@ -120,9 +125,9 @@ Initialization options:
     esac
     shift
   done
-  if (( _zprepare_zargs )); then
+  if [[ -n ${_zargs_action} ]]; then
     if (( ! zfrozen )); then
-      _zmodules_zargs+=(${zmodule} ${zdir} ${zurl} "${ztype}" "${zrev}" ${_zprintlevel})
+      _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}")
     fi
   else
     if (( zdisabled )); then

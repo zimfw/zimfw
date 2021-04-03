@@ -8,7 +8,9 @@ _zimfw_upgrade() {
       local zopt
       if (( _zprintlevel <= 1 )) zopt='-q'
       if ! command wget -nv ${zopt} -O ${ztarget}.new.gz ${zurl}; then
-        if (( _zprintlevel <= 1 )) print -u2 -PR "%F{red}<%= error %>Error downloading %B${zurl}%b. Use %B-v%b option to see details.%f"
+        if (( _zprintlevel <= 1 )); then
+          print -u2 -PR "%F{red}<%= failed %>Failed to download %B${zurl}%b. Use %B-v%b option to see details.%f"
+        fi
         return 1
       fi
     fi

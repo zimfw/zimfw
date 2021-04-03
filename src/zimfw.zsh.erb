@@ -1,12 +1,18 @@
 <%
 class Zim
-  attr_reader :home, :min_zsh_version, :startup_files_glob, :version, :ellipsis, :okay, :warn, :error, :done, :failed
+  attr_reader :version, :home, :min_zsh_version, :startup_files_glob, :url_regex,
+      :clear_line, :ellipsis, :okay, :warn, :error, :done, :failed
 
   def initialize
+    @version = "1.5.0-SNAPSHOT"
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"
     @startup_files_glob = ".z(shenv|profile|shrc|login|logout)"
-    @version = "1.4.3"
+    # Matches {ssh,http,https,git}://{user@,}host/org/repo and {user@,}host:org/repo
+    # but not file:///path/to/repo or /path/to/repo
+    # ${match[3]} contains host, and ${match[4]} contains org/repo
+    @url_regex = "^([^:@/]+://)?([^@]+@)?([^:/]+)[:/]([^/]+/[^/]+)/?$"
+    @clear_line = "$'\\E[2K\\r'"
     @ellipsis = " ..."
     @okay = "%F{green})%f "
     @warn = "! "
@@ -23,12 +29,18 @@ class Zim
     Dir[pattern].sort.map { |filename| render(filename) }.join("\n")
   end
 
+  def render_commented(filename)
+    render(filename).gsub(/^(?=.)/, "# ").gsub(/^$/, "#")
+  end
+
   def render_escaped(filename)
     render(filename).gsub(/(?=\$[^']|"|`)/, "\\\\").gsub(/#\{/, "$\{")
   end
 
-  def render_commented(filename)
-    render(filename).gsub(/^(?=.)/, "# ").gsub(/^$/, "#")
+  def render_tools(pattern, var)
+    Dir[pattern].sort.map { |filename|
+      "    #{File.basename(filename, ".zsh.erb")}) #{var}=\"#{render_escaped(filename)}\" ;;"
+    }.join("\n")
   end
 end
 zim = Zim.new

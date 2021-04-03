@@ -1,0 +1,87 @@
+# This runs in a new shell
+readonly ACTION=${1}
+readonly MODULE=${2}
+readonly DIR=${3}
+readonly URL=${4}
+readonly TYPE=${5:=branch}
+REV=${6}
+readonly -i PRINTLEVEL=${7}
+readonly CLEAR_LINE=<%= clear_line %>
+
+print_error() {
+  print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}
+}
+
+print_okay() {
+  if (( PRINTLEVEL > 0 )) print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b ${1}"
+}
+
+case ${ACTION} in
+  install)
+    if ERR=$(command git clone ${REV:+-b} ${REV} -q --recursive ${URL} ${DIR} 2>&1); then
+      print_okay Installed
+    else
+      print_error 'Error during git clone' ${ERR}
+      return 1
+    fi
+    ;;
+  update)
+    if ! builtin cd -q ${DIR} 2>/dev/null; then
+      print_error "Error during cd ${DIR}"
+      return 1
+    fi
+    if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
+      print_error "No git repo in ${PWD}. Will not try to update. You can disable this with the zmodule option -z|--frozen."
+      return 1
+    fi
+    if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
+      print_error "URL does not match. Expected ${URL}. Will not try to update."
+      return 1
+    fi
+    if ! ERR=$(command git fetch -pq origin 2>&1); then
+      print_error 'Error during git fetch' ${ERR}
+      return 1
+    fi
+    if [[ ${TYPE} == tag ]]; then
+      if [[ ${REV} == $(command git describe --tags --exact-match 2>/dev/null) ]]; then
+        print_okay 'Already up to date'
+        return 0
+      fi
+    elif [[ -z ${REV} ]]; then
+      # Get HEAD remote branch
+      if ! ERR=$(command git remote set-head origin -a 2>&1); then
+        print_error 'Error during git remote set-head' ${ERR}
+        return 1
+      fi
+      REV=${$(command git symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
+    fi
+    if [[ ${TYPE} == branch ]]; then
+      LOG_REV=${REV}@{u}
+    else
+      LOG_REV=${REV}
+    fi
+    LOG=$(command git log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} -- 2>/dev/null)
+    if ! ERR=$(command git checkout -q ${REV} -- 2>&1); then
+      print_error 'Error during git checkout' ${ERR}
+      return 1
+    fi
+    if [[ ${TYPE} == branch ]]; then
+      if ! OUT=$(command git merge --ff-only --no-progress -n 2>&1); then
+        print_error 'Error during git merge' ${OUT}
+        return 1
+      fi
+      # keep just first line of OUT
+      OUT=${OUT%%($'\n'|$'\r')*}
+    else
+      OUT="Updating to ${TYPE} ${REV}"
+    fi
+    if ! ERR=$(command git submodule update --init --recursive -q 2>&1); then
+      print_error 'Error during git submodule update' ${ERR}
+      return 1
+    fi
+    if (( PRINTLEVEL > 0 )); then
+      if [[ -n ${LOG} ]] OUT=${OUT}$'\n'${(F):-  ${(f)^LOG}}
+      print_okay ${OUT}
+    fi
+    ;;
+esac

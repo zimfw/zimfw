@@ -1,0 +1,37 @@
+_zimfw_run_tool() {
+  local -r ztool=${1}
+  shift
+  local -r zaction=${1}
+  local -r zmodule=${2}
+  local -r zdir=${3}
+  local -r clear_line=<%= clear_line %>
+  case ${zaction} in
+    install)
+      if [[ -e ${zdir} ]]; then
+        # Already installed
+        return 0
+      fi
+      _zimfw_print -Rn ${clear_line}"Installing ${zmodule}<%= ellipsis %>"
+      ;;
+    update)
+      if [[ ! -d ${zdir} ]]; then
+        print -u2 -PR "%F{red}<%= error %>%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
+        return 1
+      fi
+      _zimfw_print -Rn ${clear_line}"Updating ${zmodule}<%= ellipsis %>"
+      ;;
+    *)
+      print -u2 -PR "%F{red}<%= error %>%B${zmodule}:%b Unknown action ${zaction}%f"
+      return 1
+      ;;
+  esac
+  local zcmd
+  case ${ztool} in
+<%= render_tools("src/tools/*", "zcmd") %>
+    *)
+      print -u2 -PR "%F{red}<%= error %>%B${zmodule}:%b Unknown tool ${ztool}%f"
+      return 1
+      ;;
+  esac
+  zsh -c ${zcmd} ${ztool} "${@}" ${_zprintlevel}
+}
