@@ -335,7 +335,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-04-07 22:49:03 UTC, previous commit is 263f8b0)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-04-08 16:37:09 UTC, previous commit is cffd456)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -420,9 +420,9 @@ readonly URL=\${4}
 readonly REV=\${6}
 readonly -i PRINTLEVEL=\${7}
 readonly CLEAR_LINE=$'\E[2K\r'
-readonly PREFIX=.zim_degit
+readonly PREFIX=.zim_degit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${PREFIX}_tarball.tar.gz
-readonly INFO_TARGET=\${DIR}/\${PREFIX}_info
+readonly INFO_TARGET=\${DIR}/.zim_degit_info
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
@@ -440,9 +440,10 @@ print_done() {
 
 download_tarball() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB
+  local host repo
   if [[ \${URL} =~ ^([^:@/]+://)?([^@]+@)?([^:/]+)[:/]([^/]+/[^/]+)/?\$ ]]; then
-    local -r host=\${match[3]}
-    local -r repo=\${match[4]%.git}
+    host=\${match[3]}
+    repo=\${match[4]%.git}
   fi
   if [[ \${host} != github.com || -z \${repo} ]]; then
     print_error \"\${URL} is not a valid github.com URL. Will not try to \${ACTION}.\"
@@ -450,32 +451,34 @@ download_tarball() {
   fi
   local -r headers_target=\${DIR}/\${PREFIX}_headers
   {
-    local -i http_code
-    local -r tarball_url=https://api.github.com/repos/\${repo}/tarball/\${REV}
-    local header etag_in etag_out
+    local info_header
     if [[ -r \${INFO_TARGET} ]]; then
-      local -r info=(\${(f)\"\$(<\${INFO_TARGET})\"})
+      local -r info=(\"\${(@f)\"\$(<\${INFO_TARGET})\"}\")
       if [[ \${URL} != \${info[1]} ]]; then
         print_error \"URL does not match. Expected \${URL}. Will not try to \${ACTION}.\"
         return 1
       fi
-      etag_out=\${info[2]}
+      # Previous REV is in line 2, reserved for future use.
+      info_header=\${info[3]}
     fi
+    local -r tarball_url=https://api.github.com/repos/\${repo}/tarball/\${REV}
     if (( \${+commands[curl]} )); then
-      if ! ERR=\$(command curl -fsSL \${etag_out:+-H} \${etag_out} -o \${TARBALL_TARGET} -D \${headers_target} \${tarball_url} 2>&1); then
+      if ! ERR=\$(command curl -fsSL \${info_header:+-H} \${info_header} -o \${TARBALL_TARGET} -D \${headers_target} \${tarball_url} 2>&1); then
         print_error \"Error downloading \${tarball_url} with curl\" \${ERR}
         return 1
       fi
     else
       # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
-      command wget -q \${etag_out:+--header=\${etag_out}} -O \${TARBALL_TARGET} -S \${tarball_url} 2>\${headers_target}
+      command wget -q \${info_header:+--header=\${info_header}} -O \${TARBALL_TARGET} -S \${tarball_url} 2>\${headers_target}
     fi
+    local header etag
+    local -i http_code
     while IFS= read -r header; do
       header=\${\${header## ##}%%$'\r'##}
       if [[ \${header} == HTTP/* ]]; then
         http_code=\${\${(s: :)header}[2]}
       elif [[ \${\${(L)header%%:*}%% ##} == 'etag' ]]; then
-        etag_in=\${\${header#*:}## ##}
+        etag=\${\${header#*:}## ##}
       fi
     done < \${headers_target}
     if (( http_code == 304 )); then
@@ -486,11 +489,11 @@ download_tarball() {
       print_error \"Error downloading \${tarball_url}, HTTP code \${http_code}\"
       return 1
     fi
-    if [[ -z \${etag_in} ]]; then
+    if [[ -z \${etag} ]]; then
       print_error \"Error downloading \${tarball_url}, no ETag header found in response\"
       return 1
     fi
-    if ! print -R \${URL}$'\n'\"If-None-Match: \${etag_in}\" >! \${INFO_TARGET} 2>/dev/null; then
+    if ! print -R \${URL}$'\n'\${REV}$'\n'\"If-None-Match: \${etag}\" >! \${INFO_TARGET} 2>/dev/null; then
       print_error \"Error creating or updating \${INFO_TARGET}\"
       return 1
     fi
@@ -532,7 +535,7 @@ create_dir() {
         print_error \"Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
         return 1
       fi
-      local -r dir_new=\${DIR}\${PREFIX}_\${RANDOM}
+      local -r dir_new=\${DIR}\${PREFIX}
       {
         download_tarball || return 1
         if [[ ! -e \${TARBALL_TARGET} ]]; then
@@ -540,18 +543,15 @@ create_dir() {
           return 0
         fi
         create_dir \${dir_new} && untar_tarball \${dir_new} || return 1
-        if ! ERR=\$({ command mv -f \${INFO_TARGET} \${dir_new} && command mv -f \${dir_new} \${DIR} } 2>&1); then
+        if ! ERR=\$({ command cp -f \${INFO_TARGET} \${dir_new} && \
+            command rm -rf \${DIR} && command mv -f \${dir_new} \${DIR} } 2>&1); then
           print_error \"Error updating \${DIR}\" \${ERR}
           return 1
         fi
         print_done updated
       } always {
-        (( TRY_BLOCK_ERROR = ? ))
-        if (( TRY_BLOCK_ERROR )); then
-          command rm -f \${TARBALL_TARGET} 2>/dev/null
-          if [[ -f \${dir_new}/\${INFO_TARGET:t} ]] command mv -f \${dir_new}/\${INFO_TARGET:t} \${DIR}
-          command rm -rf \${dir_new} 2>/dev/null
-        fi
+        command rm -f \${TARBALL_TARGET} 2>/dev/null
+        command rm -rf \${dir_new} 2>/dev/null
       }
       ;;
   esac
