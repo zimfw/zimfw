@@ -335,7 +335,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-04-08 16:37:09 UTC, previous commit is cffd456)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-04-22 00:36:56 UTC, previous commit is 2869851)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -420,9 +420,9 @@ readonly URL=\${4}
 readonly REV=\${6}
 readonly -i PRINTLEVEL=\${7}
 readonly CLEAR_LINE=$'\E[2K\r'
-readonly PREFIX=.zim_degit_\${RANDOM}
-readonly TARBALL_TARGET=\${DIR}/\${PREFIX}_tarball.tar.gz
-readonly INFO_TARGET=\${DIR}/.zim_degit_info
+readonly TEMP=.zdegit_\${RANDOM}
+readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz
+readonly INFO_TARGET=\${DIR}/.zdegit
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
@@ -449,7 +449,7 @@ download_tarball() {
     print_error \"\${URL} is not a valid github.com URL. Will not try to \${ACTION}.\"
     return 1
   fi
-  local -r headers_target=\${DIR}/\${PREFIX}_headers
+  local -r headers_target=\${DIR}/\${TEMP}_headers
   {
     local info_header
     if [[ -r \${INFO_TARGET} ]]; then
@@ -522,7 +522,7 @@ create_dir() {
       {
         create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && print_done installed
       } always {
-        # return 1 command does not change \${TRY_BLOCK_ERROR}, but only \${?}
+        # return 1 does not change \${TRY_BLOCK_ERROR}, only changes \${?}
         (( TRY_BLOCK_ERROR = ? ))
         command rm -f \${TARBALL_TARGET} 2>/dev/null
         if (( TRY_BLOCK_ERROR )); then
@@ -531,11 +531,12 @@ create_dir() {
       }
       ;;
     update)
+      if [[ -r \${DIR}/.zim_degit_info ]] command mv -f \${DIR}/.zim_degit_info \${INFO_TARGET}
       if [[ ! -r \${INFO_TARGET} ]]; then
         print_error \"Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
         return 1
       fi
-      local -r dir_new=\${DIR}\${PREFIX}
+      local -r dir_new=\${DIR}\${TEMP}
       {
         download_tarball || return 1
         if [[ ! -e \${TARBALL_TARGET} ]]; then
