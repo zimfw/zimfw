@@ -335,7 +335,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-04-22 00:36:56 UTC, previous commit is 2869851)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-04-24 00:11:24 UTC, previous commit is 89d6f7b)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -429,12 +429,15 @@ print_error() {
 }
 
 print_done() {
-  if (( PRINTLEVEL > 0 )); then
-    if [[ -e \${DIR}/.gitmodules ]]; then
-      print -u2 -PR \"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.\"
+  if [[ -e \${DIR}/.gitmodules ]]; then
+    local -r warn=\${CLEAR_LINE}\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\"
+    if (( PRINTLEVEL > 0 )); then
+      print -PR \${warn}\${2:+$'\n'\${(F):-  \${(f)^2}}}
     else
-      print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${(C)1}\"
+      print -u2 -PR \${warn}
     fi
+  elif (( PRINTLEVEL > 0 )); then
+    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${(C)1}\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
   fi
 }
 
@@ -544,12 +547,16 @@ create_dir() {
           return 0
         fi
         create_dir \${dir_new} && untar_tarball \${dir_new} || return 1
+        if (( \${+commands[diff]} )); then
+          LOG=\$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr \${DIR} \${dir_new} 2>/dev/null)
+          LOG=\${\${LOG//\${dir_new}/new}//\${DIR}/old}
+        fi
         if ! ERR=\$({ command cp -f \${INFO_TARGET} \${dir_new} && \
             command rm -rf \${DIR} && command mv -f \${dir_new} \${DIR} } 2>&1); then
           print_error \"Error updating \${DIR}\" \${ERR}
           return 1
         fi
-        print_done updated
+        print_done updated \${LOG}
       } always {
         command rm -f \${TARBALL_TARGET} 2>/dev/null
         command rm -rf \${dir_new} 2>/dev/null
