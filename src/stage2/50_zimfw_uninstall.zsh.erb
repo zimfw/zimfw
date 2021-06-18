@@ -2,6 +2,18 @@ _zimfw_uninstall() {
   local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
   local zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
+  # Search into subdirectories
+  local -a subdirs
+  local -i i=1
+  while (( i <= ${#zuninstalls} )); do
+    if (( ${_zmodules[(I)${zuninstalls[i]}/*]} || ${_zdisableds[(I)${zuninstalls[i]}/*]} )); then
+      subdirs=(${ZIM_HOME}/modules/${zuninstalls[i]}/*(N/:t))
+      zuninstalls+=(${zuninstalls[i]}/${^subdirs})
+      zuninstalls[i]=()
+    else
+      (( i++ ))
+    fi
+  done
   # Uninstall all installed modules not in _zmodules and _zdisableds
   zuninstalls=(${${zuninstalls:|_zmodules}:|_zdisableds})
   if (( ${#zuninstalls} )); then

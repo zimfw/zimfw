@@ -169,11 +169,11 @@ Initialization options:
       return 2
     fi
     shift
-    zmodule=${1}
+    zmodule=${${1%%/##}##/##}
     shift
   fi
   if [[ ${zurl} == /* ]]; then
-    zdir=${zurl}
+    zdir=${zurl%%/##}
   else
     zdir=${ZIM_HOME}/modules/${zmodule}
   fi
@@ -335,7 +335,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-04-24 00:11:24 UTC, previous commit is 89d6f7b)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-06-11 13:41:21 UTC, previous commit is 7d533fc)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -345,6 +345,18 @@ _zimfw_uninstall() {
   local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
   local zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
+  # Search into subdirectories
+  local -a subdirs
+  local -i i=1
+  while (( i <= ${#zuninstalls} )); do
+    if (( ${_zmodules[(I)${zuninstalls[i]}/*]} || ${_zdisableds[(I)${zuninstalls[i]}/*]} )); then
+      subdirs=(${ZIM_HOME}/modules/${zuninstalls[i]}/*(N/:t))
+      zuninstalls+=(${zuninstalls[i]}/${^subdirs})
+      zuninstalls[i]=()
+    else
+      (( i++ ))
+    fi
+  done
   # Uninstall all installed modules not in _zmodules and _zdisableds
   zuninstalls=(${${zuninstalls:|_zmodules}:|_zdisableds})
   if (( ${#zuninstalls} )); then

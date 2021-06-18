@@ -62,11 +62,11 @@ Initialization options:
       return 2
     fi
     shift
-    zmodule=${1}
+    zmodule=${${1%%/##}##/##}
     shift
   fi
   if [[ ${zurl} == /* ]]; then
-    zdir=${zurl}
+    zdir=${zurl%%/##}
   else
     zdir=${ZIM_HOME}/modules/${zmodule}
   fi
