@@ -114,6 +114,7 @@ The modules are initialized in the same order they are defined.
   <url>                      Module absolute path or repository URL. The following URL formats
                              are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
   %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in the <url>.
+                             Use slashes inside the name to organize the module into subdirectories.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
@@ -121,6 +122,7 @@ Repository options:
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
   %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default: %Bgit%b
+  %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
@@ -134,8 +136,7 @@ Initialization options:
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
                              command are substituted by the module root directory path.
                              %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
-  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module.
-"
+  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
     return 2
@@ -335,7 +336,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-06-11 13:41:21 UTC, previous commit is 7d533fc)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-07-01 22:52:19 UTC, previous commit is 5db2b66)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -610,7 +611,7 @@ case \${ACTION} in
       return 1
     fi
     if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
-      print_error \"No git repo in \${PWD}. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
+      print_error \"Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
       return 1
     fi
     if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
@@ -687,14 +688,15 @@ Actions:
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
   %Buninstall%b       Delete unused modules
+                  (prompts for confirmation)
   %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade %Bzimfw.zsh%b
+  %Bupgrade%b         Upgrade %Bzimfw%b
   %Bversion%b         Print Zim version
 
 Options:
-  %B-q%b              Quiet (yes to prompts, and only outputs errors)
-  %B-v%b              Verbose
-"
+  %B-q%b              Quiet (yes to prompts, and
+                  only outputs errors and warnings)
+  %B-v%b              Verbose"
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
   local -i _zprintlevel=1
   if (( # > 2 )); then

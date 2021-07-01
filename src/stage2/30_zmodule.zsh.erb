@@ -7,6 +7,7 @@ The modules are initialized in the same order they are defined.
   <url>                      Module absolute path or repository URL. The following URL formats
                              are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
   %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in the <url>.
+                             Use slashes inside the name to organize the module into subdirectories.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
@@ -14,6 +15,7 @@ Repository options:
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
   %B-u%b|%B--use%b <%%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default: %Bgit%b
+  %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
@@ -27,8 +29,7 @@ Initialization options:
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
                              command are substituted by the module root directory path.
                              %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
-  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module.
-"
+  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f"$'\n\n'${zusage}
     return 2

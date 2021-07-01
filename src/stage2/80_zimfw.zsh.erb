@@ -12,14 +12,15 @@ Actions:
   %Binfo%b            Print Zim and system info
   %Binstall%b         Install new modules
   %Buninstall%b       Delete unused modules
+                  (prompts for confirmation)
   %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade %Bzimfw.zsh%b
+  %Bupgrade%b         Upgrade %Bzimfw%b
   %Bversion%b         Print Zim version
 
 Options:
-  %B-q%b              Quiet (yes to prompts, and only outputs errors)
-  %B-v%b              Verbose
-"
+  %B-q%b              Quiet (yes to prompts, and
+                  only outputs errors and warnings)
+  %B-v%b              Verbose"
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
   local -i _zprintlevel=1
   if (( # > 2 )); then

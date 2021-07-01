@@ -31,7 +31,7 @@ case ${ACTION} in
       return 1
     fi
     if [[ ${PWD} != $(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
-      print_error "No git repo in ${PWD}. Will not try to update. You can disable this with the zmodule option -z|--frozen."
+      print_error "Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen."
       return 1
     fi
     if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
