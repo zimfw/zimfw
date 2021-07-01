@@ -15,7 +15,7 @@ Zim is very easy to customize, and comes with a rich set of modules and features
 
 What does Zim offer?
 -----------------
-If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules]!
+If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules][modules]!
 
 Below is a brief showcase of Zim's features.
 
@@ -24,7 +24,7 @@ For a speed comparison between Zim and other frameworks, see [this wiki entry][b
 
 ### Themes
 
-To preview some of the available themes, check the [themes page].
+To preview some of the available themes, check the [themes page][themes].
 
 ### Fish-shell history navigation
 ![history-substring-search]
@@ -33,7 +33,7 @@ To preview some of the available themes, check the [themes page].
 ![syntax-highlighting]
 
 ### And much more!
-Zim has many modules! Enable as many or as few as you'd like.
+Zim has many [modules available][modules]. Enable as many or as few as you'd like.
 
 Installation
 ------------
@@ -47,11 +47,12 @@ Installing Zim is easy:
 
         wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
-Open a new terminal and you're done! Enjoy your Zsh IMproved! Take some time to
-read about the [available modules] and tweak your `~/.zshrc` file.
+Open a new terminal and you're done. Enjoy your Zsh IMproved! Take some time to
+tweak your `~/.zshrc` file, and to also check the available [themes] and [modules]
+you can add to your `~/.zimrc`.
 
-If you have a different shell framework installed (like oh-my-zsh or prezto),
-*uninstall those first to prevent conflicts*.
+<details>
+<summary>Prefer to install manually?</summary>
 
 ### Manual installation
 
@@ -59,11 +60,11 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 
        chsh -s $(which zsh)
 
-2. Add the lines in the following templates to the respective dot files:
-   * [~/.zshenv](https://github.com/zimfw/install/blob/master/src/templates/zshenv)
-   * [~/.zshrc](https://github.com/zimfw/install/blob/master/src/templates/zshrc)
-   * [~/.zlogin](https://github.com/zimfw/install/blob/master/src/templates/zlogin)
-   * [~/.zimrc](https://github.com/zimfw/install/blob/master/src/templates/zimrc)
+2. Prepend the lines in the following templates to the respective dot files:
+   * [~/.zshenv](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshenv)
+   * [~/.zshrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshrc)
+   * [~/.zlogin](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zlogin)
+   * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
 
 3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
    `~/.zim/zimfw.zsh`.
@@ -71,6 +72,8 @@ If you have a different shell framework installed (like oh-my-zsh or prezto),
 4. Install the modules defined in `~/.zimrc` and build the initialization scripts:
 
        zsh ~/.zim/zimfw.zsh install
+
+</details>
 
 Usage
 -----
@@ -138,5 +141,5 @@ remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin
 [history-substring-search]: https://zimfw.github.io/images/zim_history-substring-search.gif
 [syntax-highlighting]: https://zimfw.github.io/images/zim_syntax-highlighting.gif
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
-[available modules]: https://zimfw.sh/docs/modules/
-[themes page]: https://zimfw.sh/docs/themes/
+[modules]: https://zimfw.sh/docs/modules/
+[themes]: https://zimfw.sh/docs/themes/
