@@ -1,7 +1,6 @@
 _zimfw_uninstall() {
-  local zopt
+  local zopt zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
   if (( _zprintlevel > 0 )) zopt='-v'
-  local zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
   # Search into subdirectories
   local -a subdirs
   local -i i=1

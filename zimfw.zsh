@@ -67,8 +67,7 @@ _zimfw_build_init() {
 _zimfw_build_login_init() {
   # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
   local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
-  local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)")
-  local -r ztarget=${ZIM_HOME}/login_init.zsh
+  local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)") ztarget=${ZIM_HOME}/login_init.zsh
   # Force update of login_init.zsh if it's older than .zimrc
   if [[ ${ztarget} -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
     command mv -f ${ztarget}{,.old} || return 1
@@ -114,14 +113,17 @@ The modules are initialized in the same order they are defined.
   <url>                      Module absolute path or repository URL. The following URL formats
                              are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
   %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in the <url>.
-                             Use slashes inside the name to organize the module into subdirectories.
+                             Use slashes inside the name to organize the module into subdirecto-
+                             ries.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
                              Overrides the tag option. Default: the repository's default branch.
   %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
                              Overrides the branch option.
-  %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default: %Bgit%b
+  %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default is
+                             defined by %Bzstyle ':zim:zmodule' use '%b<%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b if none
+                             is provided.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -135,7 +137,7 @@ Initialization options:
                              %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
                              command are substituted by the module root directory path.
-                             %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
+                             I.e., %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
   %B-d%b|%B--disabled%b              Don't initialize or uninstall the module."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f"$'\n\n'${zusage}
@@ -147,12 +149,10 @@ Initialization options:
     return 2
   fi
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
-  local ztool=git
-  local zmodule=${1:t} zurl=${1}
-  local ztype zrev
+  local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zcmds
-  local zarg zdir
+  zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
   elif [[ ${zurl} != /* ]]; then
@@ -246,8 +246,7 @@ Initialization options:
         _zfailed=1
         return 1
       fi
-      local -ra prezto_fpaths=(${zdir}/functions(NF))
-      local -ra prezto_scripts=(${zdir}/init.zsh(N))
+      local -ra prezto_fpaths=(${zdir}/functions(NF)) prezto_scripts=(${zdir}/init.zsh(N))
       if (( ! ${#zfpaths} && ! ${#zcmds} && ${#prezto_fpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
         zfpaths=(${prezto_fpaths})
@@ -278,8 +277,7 @@ Initialization options:
 }
 
 _zimfw_source_zimrc() {
-  local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc
-  local -r _zargs_action=${1}
+  local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc _zargs_action=${1}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
     print -u2 -PR "%F{red}Failed to source %B${ztarget}%b%f"
@@ -336,16 +334,15 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-07-01 22:52:19 UTC, previous commit is 5db2b66)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-07-11 20:55:58 UTC, previous commit is 2c8f8e3)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_uninstall() {
-  local zopt
+  local zopt zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
   if (( _zprintlevel > 0 )) zopt='-v'
-  local zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
   # Search into subdirectories
   local -a subdirs
   local -i i=1
@@ -371,8 +368,7 @@ _zimfw_uninstall() {
 }
 
 _zimfw_upgrade() {
-  local -r ztarget=${ZIM_HOME}/zimfw.zsh
-  local -r zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
+  local -r ztarget=${ZIM_HOME}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
   {
     if (( ${+commands[curl]} )); then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
@@ -399,10 +395,7 @@ _zimfw_upgrade() {
 _zimfw_run_tool() {
   local -r ztool=${1}
   shift
-  local -r zaction=${1}
-  local -r zmodule=${2}
-  local -r zdir=${3}
-  local -r clear_line=$'\E[2K\r'
+  local -r zaction=${1} zmodule=${2} zdir=${3} clear_line=$'\E[2K\r'
   case ${zaction} in
     install)
       if [[ -e ${zdir} ]]; then
@@ -426,16 +419,9 @@ _zimfw_run_tool() {
   local zcmd
   case ${ztool} in
     degit) zcmd="# This runs in a new shell
-readonly ACTION=\${1}
-readonly MODULE=\${2}
-readonly DIR=\${3}
-readonly URL=\${4}
-readonly REV=\${6}
+readonly ACTION=\${1} MODULE=\${2} DIR=\${3} URL=\${4} REV=\${6} CLEAR_LINE=$'\E[2K\r'
 readonly -i PRINTLEVEL=\${7}
-readonly CLEAR_LINE=$'\E[2K\r'
-readonly TEMP=.zdegit_\${RANDOM}
-readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz
-readonly INFO_TARGET=\${DIR}/.zdegit
+readonly TEMP=.zdegit_\${RANDOM} TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
@@ -467,7 +453,7 @@ download_tarball() {
   fi
   local -r headers_target=\${DIR}/\${TEMP}_headers
   {
-    local info_header
+    local info_header header etag
     if [[ -r \${INFO_TARGET} ]]; then
       local -r info=(\"\${(@f)\"\$(<\${INFO_TARGET})\"}\")
       if [[ \${URL} != \${info[1]} ]]; then
@@ -487,7 +473,6 @@ download_tarball() {
       # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
       command wget -q \${info_header:+--header=\${info_header}} -O \${TARBALL_TARGET} -S \${tarball_url} 2>\${headers_target}
     fi
-    local header etag
     local -i http_code
     while IFS= read -r header; do
       header=\${\${header## ##}%%$'\r'##}
@@ -579,14 +564,9 @@ create_dir() {
 }
 " ;;
     git) zcmd="# This runs in a new shell
-readonly ACTION=\${1}
-readonly MODULE=\${2}
-readonly DIR=\${3}
-readonly URL=\${4}
-readonly TYPE=\${5:=branch}
+readonly ACTION=\${1} MODULE=\${2} DIR=\${3} URL=\${4} TYPE=\${5:=branch} CLEAR_LINE=$'\E[2K\r'
 REV=\${6}
 readonly -i PRINTLEVEL=\${7}
-readonly CLEAR_LINE=$'\E[2K\r'
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
@@ -667,7 +647,7 @@ case \${ACTION} in
 esac
 " ;;
     *)
-      print -u2 -PR "%F{red}x %B${zmodule}:%b Unknown tool ${ztool}%f"
+      print -u2 -PR "${clear_line}%F{red}x %B${zmodule}:%b Unknown tool ${ztool}%f"
       return 1
       ;;
   esac
@@ -675,8 +655,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.5.0-SNAPSHOT'
-  local -r zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.5.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b

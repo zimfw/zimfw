@@ -1,14 +1,7 @@
 # This runs in a new shell
-readonly ACTION=${1}
-readonly MODULE=${2}
-readonly DIR=${3}
-readonly URL=${4}
-readonly REV=${6}
+readonly ACTION=${1} MODULE=${2} DIR=${3} URL=${4} REV=${6} CLEAR_LINE=<%= clear_line %>
 readonly -i PRINTLEVEL=${7}
-readonly CLEAR_LINE=<%= clear_line %>
-readonly TEMP=.zdegit_${RANDOM}
-readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz
-readonly INFO_TARGET=${DIR}/.zdegit
+readonly TEMP=.zdegit_${RANDOM} TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
   print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}
@@ -40,7 +33,7 @@ download_tarball() {
   fi
   local -r headers_target=${DIR}/${TEMP}_headers
   {
-    local info_header
+    local info_header header etag
     if [[ -r ${INFO_TARGET} ]]; then
       local -r info=("${(@f)"$(<${INFO_TARGET})"}")
       if [[ ${URL} != ${info[1]} ]]; then
@@ -60,7 +53,6 @@ download_tarball() {
       # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
       command wget -q ${info_header:+--header=${info_header}} -O ${TARBALL_TARGET} -S ${tarball_url} 2>${headers_target}
     fi
-    local header etag
     local -i http_code
     while IFS= read -r header; do
       header=${${header## ##}%%$'\r'##}

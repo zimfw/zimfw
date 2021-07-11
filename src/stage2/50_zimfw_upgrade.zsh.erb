@@ -1,6 +1,5 @@
 _zimfw_upgrade() {
-  local -r ztarget=${ZIM_HOME}/zimfw.zsh
-  local -r zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
+  local -r ztarget=${ZIM_HOME}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
   {
     if (( ${+commands[curl]} )); then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1

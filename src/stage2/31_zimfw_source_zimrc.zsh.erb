@@ -1,6 +1,5 @@
 _zimfw_source_zimrc() {
-  local -r ztarget=<%= home %>/.zimrc
-  local -r _zargs_action=${1}
+  local -r ztarget=<%= home %>/.zimrc _zargs_action=${1}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
     print -u2 -PR "%F{red}<%= failed %>Failed to source %B${ztarget}%b%f"
