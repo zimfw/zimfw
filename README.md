@@ -4,36 +4,31 @@
   </a>
 </div>
 
-Zsh IMproved FrameWork
-======================
-
 What is Zim?
 ------------
 Zim is a Zsh configuration framework with [blazing speed] and modular extensions.
 
-Zim is very easy to customize, and comes with a rich set of modules and features without compromising on speed or functionality!
+Zim bundles useful [modules], a wide variety of [themes], and plenty of
+customizability without compromising on speed.
 
 What does Zim offer?
------------------
-If you're here, it means you want to see the cool shit Zim can do. Check out the [available modules][modules]!
-
+--------------------
 Below is a brief showcase of Zim's features.
 
 ### Speed
-For a speed comparison between Zim and other frameworks, see [this wiki entry][blazing speed].
+<a href="https://github.com/zimfw/zimfw/wiki/Speed">
+  <img src="https://zimfw.github.io/images/results.svg">
+</a>
+
+For more details, see [this wiki entry][blazing speed].
+
+### Modules
+
+Zim has many [modules available][modules]. Enable as many or as few as you'd like.
 
 ### Themes
 
 To preview some of the available themes, check the [themes page][themes].
-
-### Fish-shell history navigation
-![history-substring-search]
-
-### Syntax highlighting
-![syntax-highlighting]
-
-### And much more!
-Zim has many [modules available][modules]. Enable as many or as few as you'd like.
 
 Installation
 ------------
@@ -48,7 +43,7 @@ Installing Zim is easy:
         wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
 Open a new terminal and you're done. Enjoy your Zsh IMproved! Take some time to
-tweak your `~/.zshrc` file, and to also check the available [themes] and [modules]
+tweak your `~/.zshrc` file, and to also check the available [modules] and [themes]
 you can add to your `~/.zimrc`.
 
 <details>
@@ -138,8 +133,6 @@ Uninstalling
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin`.
 
-[history-substring-search]: https://zimfw.github.io/images/zim_history-substring-search.gif
-[syntax-highlighting]: https://zimfw.github.io/images/zim_syntax-highlighting.gif
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://zimfw.sh/docs/modules/
 [themes]: https://zimfw.sh/docs/themes/
