@@ -30,6 +30,11 @@ Zim has many [modules available][modules]. Enable as many or as few as you'd lik
 
 To preview some of the available themes, check the [themes page][themes].
 
+### Degit
+
+Install modules without requiring `git` using our degit tool. It's faster and
+lighter. See the [zmodule](#zmodule) usage below.
+
 Installation
 ------------
 Installing Zim is easy:
@@ -75,36 +80,45 @@ Usage
 
 ### zmodule
 
-<pre>
-Usage: <strong>zmodule</strong> &lt;url&gt; [<strong>-n</strong>|<strong>--name</strong> &lt;module_name&gt;] [options]
+<pre>Usage: <b>zmodule</b> &lt;url&gt; [<b>-n</b>|<b>--name</b> &lt;module_name&gt;] [options]
 
-Add <strong>zmodule</strong> calls to your <strong>~/.zimrc</strong> file to define the modules to be initialized. The modules are
+Add <b>zmodule</b> calls to your <b>~/.zimrc</b> file to define the modules to be initialized. The modules are
 initialized in the same order they are defined.
 
   &lt;url&gt;                      Module absolute path or repository URL. The following URL formats
-                             are equivalent: <strong>name</strong>, <strong>zimfw/name</strong>, <strong>https://github.com/zimfw/name.git</strong>.
-  <strong>-n</strong>|<strong>--name</strong> &lt;module_name&gt;    Set a custom module name. Default: the last component in the &lt;url&gt;.
+                             are equivalent: <b>name</b>, <b>zimfw/name</b>, <b>https://github.com/zimfw/name.git</b>.
+  <b>-n</b>|<b>--name</b> &lt;module_name&gt;    Set a custom module name. Default: the last component in the &lt;url&gt;.
+                             Use slashes inside the name to organize the module into subdirecto-
+                             ries.
 
 Repository options:
-  <strong>-b</strong>|<strong>--branch</strong> &lt;branch_name&gt;  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: the repository's default branch.
-  <strong>-t</strong>|<strong>--tag</strong> &lt;tag_name&gt;        Use specified tag when installing and updating the module.
+  <b>-b</b>|<b>--branch</b> &lt;branch_name&gt;  Use specified branch when installing and updating the module.
+                             Overrides the tag option. Default: the repository&apos;s default branch.
+  <b>-t</b>|<b>--tag</b> &lt;tag_name&gt;        Use specified tag when installing and updating the module.
                              Overrides the branch option.
-  <strong>-z</strong>|<strong>--frozen</strong>                Don't install or update the module.
+  <b>-u</b>|<b>--use</b> &lt;<b>git</b>|<b>degit</b>&gt;       Install and update the module using the defined tool. Default is
+                             defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;<b>git</b>|<b>degit</b>&gt;<b>&apos;</b>, or <b>git</b> if none
+                             is provided.
+                             <b>git</b> requires git to be installed. Local changes are preserved during
+                             updates.
+                             <b>degit</b> requires curl or wget, and currently only works with GitHub
+                             URLs. Modules install faster and take less disk space. Local changes
+                             are lost during updates. Git submodules are not supported.
+  <b>-z</b>|<b>--frozen</b>                Don&apos;t install or update the module.
 
 Initialization options:
-  <strong>-f</strong>|<strong>--fpath</strong> &lt;path&gt;          Add specified path to fpath. The path is relative to the module
-                             root directory. Default: <strong>functions</strong>, if the subdirectory exists.
-  <strong>-a</strong>|<strong>--autoload</strong> &lt;func_name&gt;  Autoload specified function. Default: all valid names inside the
-                             module's specified fpath paths.
-  <strong>-s</strong>|<strong>--source</strong> &lt;file_path&gt;    Source specified file. The file path is relative to the module root
-                             directory. Default: <strong>init.zsh</strong>, if the <strong>functions</strong> subdirectory also
+  <b>-f</b>|<b>--fpath</b> &lt;path&gt;          Add specified path to fpath. The path is relative to the module
+                             root directory. Default: <b>functions</b>, if the subdirectory exists.
+  <b>-a</b>|<b>--autoload</b> &lt;func_name&gt;  Autoload specified function. Default: all valid names inside the
+                             module&apos;s specified fpath paths.
+  <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Source specified file. The file path is relative to the module root
+                             directory. Default: <b>init.zsh</b>, if the <b>functions</b> subdirectory also
                              exists, or the file with largest size matching
-                             <strong>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</strong>, if any exist.
-  <strong>-c</strong>|<strong>--cmd</strong> &lt;command&gt;         Execute specified command. Occurrences of the <strong>{}</strong> placeholder in the
+                             <b>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</b>, if any exist.
+  <b>-c</b>|<b>--cmd</b> &lt;command&gt;         Execute specified command. Occurrences of the <b>{}</b> placeholder in the
                              command are substituted by the module root directory path.
-                             <strong>-s 'script.zsh'</strong> and <strong>-c 'source {}/script.zsh'</strong> are equivalent.
-  <strong>-d</strong>|<strong>--disabled</strong>              Don't initialize or uninstall the module.
+                             I.e., <b>-s &apos;script.zsh&apos;</b> and <b>-c &apos;source {}/script.zsh&apos;</b> are equivalent.
+  <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize or uninstall the module.
 </pre>
 
 ### zimfw
@@ -121,6 +135,12 @@ For more information about the `zimfw` tool, run `zimfw help`.
 
 Settings
 --------
+
+Modules are installed using `git` by default. If you don't have `git`
+installed, or if you want to take advantage of our degit tool for faster and
+lighter module installations, you can set degit as the default tool with:
+
+    zstyle ':zim:zmodule' use 'degit'
 
 By default, `zimfw` will check if it has a new version available every 30 days.
 This can be disabled with:
