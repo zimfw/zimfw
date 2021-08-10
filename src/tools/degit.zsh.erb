@@ -1,7 +1,8 @@
 # This runs in a new shell
 readonly ACTION=${1} MODULE=${2} DIR=${3} URL=${4} REV=${6} CLEAR_LINE=<%= clear_line %>
 readonly -i PRINTLEVEL=${7}
-readonly TEMP=.zdegit_${RANDOM} TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
+readonly TEMP=.zdegit_${RANDOM}
+readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
   print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}

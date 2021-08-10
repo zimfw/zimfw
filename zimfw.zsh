@@ -334,7 +334,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 01:21:11 UTC, previous commit is 6700933)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 03:26:13 UTC, previous commit is f6b623f)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -421,7 +421,8 @@ _zimfw_run_tool() {
     degit) zcmd="# This runs in a new shell
 readonly ACTION=\${1} MODULE=\${2} DIR=\${3} URL=\${4} REV=\${6} CLEAR_LINE=$'\E[2K\r'
 readonly -i PRINTLEVEL=\${7}
-readonly TEMP=.zdegit_\${RANDOM} TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
+readonly TEMP=.zdegit_\${RANDOM}
+readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
