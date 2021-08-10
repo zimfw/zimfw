@@ -334,7 +334,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-07-11 20:55:58 UTC, previous commit is 2c8f8e3)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 01:21:11 UTC, previous commit is 6700933)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -427,7 +427,7 @@ print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
 }
 
-print_done() {
+print_okay() {
   if [[ -e \${DIR}/.gitmodules ]]; then
     local -r warn=\${CLEAR_LINE}\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\"
     if (( PRINTLEVEL > 0 )); then
@@ -554,7 +554,7 @@ create_dir() {
           print_error \"Error updating \${DIR}\" \${ERR}
           return 1
         fi
-        print_done updated \${LOG}
+        print_okay updated \${LOG}
       } always {
         command rm -f \${TARBALL_TARGET} 2>/dev/null
         command rm -rf \${dir_new} 2>/dev/null
@@ -578,7 +578,7 @@ print_okay() {
 
 case \${ACTION} in
   install)
-    if ERR=\$(command git clone \${REV:+-b} \${REV} -q --recursive \${URL} \${DIR} 2>&1); then
+    if ERR=\$(command git clone \${REV:+-b} \${REV} -q --config core.autocrlf=false --recursive \${URL} \${DIR} 2>&1); then
       print_okay Installed
     else
       print_error 'Error during git clone' \${ERR}

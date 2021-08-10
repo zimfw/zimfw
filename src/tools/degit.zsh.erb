@@ -7,7 +7,7 @@ print_error() {
   print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}
 }
 
-print_done() {
+print_okay() {
   if [[ -e ${DIR}/.gitmodules ]]; then
     local -r warn=${CLEAR_LINE}"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f"
     if (( PRINTLEVEL > 0 )); then
@@ -134,7 +134,7 @@ create_dir() {
           print_error "Error updating ${DIR}" ${ERR}
           return 1
         fi
-        print_done updated ${LOG}
+        print_okay updated ${LOG}
       } always {
         command rm -f ${TARBALL_TARGET} 2>/dev/null
         command rm -rf ${dir_new} 2>/dev/null

@@ -13,7 +13,7 @@ print_okay() {
 
 case ${ACTION} in
   install)
-    if ERR=$(command git clone ${REV:+-b} ${REV} -q --recursive ${URL} ${DIR} 2>&1); then
+    if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false --recursive ${URL} ${DIR} 2>&1); then
       print_okay Installed
     else
       print_error 'Error during git clone' ${ERR}
