@@ -29,7 +29,7 @@ download_tarball() {
     repo=${match[4]%.git}
   fi
   if [[ ${host} != github.com || -z ${repo} ]]; then
-    print_error "${URL} is not a valid github.com URL. Will not try to ${ACTION}."
+    print_error "${URL} is not a valid GitHub URL. Will not try to ${ACTION}."
     return 1
   fi
   local -r headers_target=${DIR}/${TEMP}_headers
@@ -102,7 +102,7 @@ create_dir() {
   case ${ACTION} in
     install)
       {
-        create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && print_done installed
+        create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && print_okay installed
       } always {
         # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
         (( TRY_BLOCK_ERROR = ? ))

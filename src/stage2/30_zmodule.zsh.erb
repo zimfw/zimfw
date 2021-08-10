@@ -18,6 +18,11 @@ Repository options:
   %B-u%b|%B--use%b <%%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default is
                              defined by %Bzstyle ':zim:zmodule' use '%b<%%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b if none
                              is provided.
+                             %Bgit%b requires git to be installed. Local changes are preserved during
+                             updates.
+                             %Bdegit%b requires curl or wget, and currently only works with GitHub
+                             URLs. Modules install faster and take less disk space. Local changes
+                             are lost during updates. Git submodules are not supported.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -149,8 +154,8 @@ Initialization options:
         if (( ! ${#zfpaths} )) zfpaths=(${prezto_fpaths})
         if (( ! ${#zcmds} )); then
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-          local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-          zcmds=("source ${^zscript[@]:A}")
+          local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+          zcmds=("source ${^zscripts[@]:A}")
         fi
       fi
       if (( ! ${#zfunctions} )); then

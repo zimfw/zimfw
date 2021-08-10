@@ -5,5 +5,5 @@ _zimfw_clean_compiled() {
   if (( _zprintlevel > 0 )) zopt='-v'
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
   command rm -f ${zopt} <%= home %>/<%= startup_files_glob %>.zwc(|.old)(N) || return 1
-  _zimfw_print -P '<%= done %>Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
+  _zimfw_print -P '<%= done %>Done with clean-compiled. Restart your terminal or run %Bzimfw compile%b to re-compile.'
 }

@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.5.0] - 2021-08-09
+
+### Added
+- Option to use the new `degit` tool in `zmodule`, that is able to install and update modules
+  from GitHub without requiring `git`. Modules are installed faster and take less disk space when
+  using this tool. It can be set as the default with `zstyle ':zim:zmodule' use 'degit'`.
+
+### Fixed
+- Force `core.autocrlf=false` when doing `git clone`.
+  (See [#404](https://github.com/zimfw/zimfw/issues/404))
+- Allow uninstalling modules with custom names that have a slash.
+
+
 ## [1.4.3] - 2021-03-19
 
 ### Fixed
@@ -174,7 +187,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.4.3...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/zimfw/zimfw/compare/v1.4.3...v1.5.0
 [1.4.3]: https://github.com/zimfw/zimfw/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/zimfw/zimfw/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/zimfw/zimfw/compare/v1.4.0...v1.4.1

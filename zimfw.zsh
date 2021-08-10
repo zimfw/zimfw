@@ -124,6 +124,11 @@ Repository options:
   %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default is
                              defined by %Bzstyle ':zim:zmodule' use '%b<%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b if none
                              is provided.
+                             %Bgit%b requires git to be installed. Local changes are preserved during
+                             updates.
+                             %Bdegit%b requires curl or wget, and currently only works with GitHub
+                             URLs. Modules install faster and take less disk space. Local changes
+                             are lost during updates. Git submodules are not supported.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -255,8 +260,8 @@ Initialization options:
         if (( ! ${#zfpaths} )) zfpaths=(${prezto_fpaths})
         if (( ! ${#zcmds} )); then
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-          local -r zscript=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-          zcmds=("source ${^zscript[@]:A}")
+          local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+          zcmds=("source ${^zscripts[@]:A}")
         fi
       fi
       if (( ! ${#zfunctions} )); then
@@ -316,7 +321,7 @@ _zimfw_clean_compiled() {
   if (( _zprintlevel > 0 )) zopt='-v'
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
   command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
-  _zimfw_print -P 'Done with clean-compiled. Run %Bzimfw compile%b to re-compile.'
+  _zimfw_print -P 'Done with clean-compiled. Restart your terminal or run %Bzimfw compile%b to re-compile.'
 }
 
 _zimfw_clean_dumpfile() {
@@ -334,7 +339,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 03:26:13 UTC, previous commit is f6b623f)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 14:52:54 UTC, previous commit is 35cd6f5)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -449,7 +454,7 @@ download_tarball() {
     repo=\${match[4]%.git}
   fi
   if [[ \${host} != github.com || -z \${repo} ]]; then
-    print_error \"\${URL} is not a valid github.com URL. Will not try to \${ACTION}.\"
+    print_error \"\${URL} is not a valid GitHub URL. Will not try to \${ACTION}.\"
     return 1
   fi
   local -r headers_target=\${DIR}/\${TEMP}_headers
@@ -522,7 +527,7 @@ create_dir() {
   case \${ACTION} in
     install)
       {
-        create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && print_done installed
+        create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && print_okay installed
       } always {
         # return 1 does not change \${TRY_BLOCK_ERROR}, only changes \${?}
         (( TRY_BLOCK_ERROR = ? ))
@@ -656,7 +661,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.5.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.5.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b
@@ -670,8 +675,8 @@ Actions:
   %Buninstall%b       Delete unused modules
                   (prompts for confirmation)
   %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade %Bzimfw%b
-  %Bversion%b         Print Zim version
+  %Bupgrade%b         Upgrade zimfw
+  %Bversion%b         Print zimfw version
 
 Options:
   %B-q%b              Quiet (yes to prompts, and
