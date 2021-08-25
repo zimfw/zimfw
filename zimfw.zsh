@@ -124,8 +124,7 @@ Repository options:
   %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default is
                              defined by %Bzstyle ':zim:zmodule' use '%b<%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b if none
                              is provided.
-                             %Bgit%b requires git to be installed. Local changes are preserved during
-                             updates.
+                             %Bgit%b requires git itself. Local changes are preserved during updates.
                              %Bdegit%b requires curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local changes
                              are lost during updates. Git submodules are not supported.
@@ -339,7 +338,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-08-10 14:52:54 UTC, previous commit is 35cd6f5)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-08-25 21:04:22 UTC, previous commit is e89793c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)

@@ -99,8 +99,7 @@ Repository options:
   <b>-u</b>|<b>--use</b> &lt;<b>git</b>|<b>degit</b>&gt;       Install and update the module using the defined tool. Default is
                              defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;<b>git</b>|<b>degit</b>&gt;<b>&apos;</b>, or <b>git</b> if none
                              is provided.
-                             <b>git</b> requires git to be installed. Local changes are preserved during
-                             updates.
+                             <b>git</b> requires git itself. Local changes are preserved during updates.
                              <b>degit</b> requires curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local changes
                              are lost during updates. Git submodules are not supported.
