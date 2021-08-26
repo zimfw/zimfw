@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- Error in `zimfw update` with the `git` tool when module directory is under an
+  unresolved symlink.
 
 ## [1.5.0] - 2021-08-10
 
 ### Added
-- Option to use the new `degit` tool in `zmodule`, that is able to install and update modules
-  from GitHub without requiring `git`. Modules are installed faster and take less disk space when
-  using this tool. It can be set as the default with `zstyle ':zim:zmodule' use 'degit'`.
+- Option to use the new `degit` tool in `zmodule`, that is able to install and
+  update modules from GitHub without requiring `git`. Modules are installed
+  faster and take less disk space when using this tool. It can be set as the
+  default with `zstyle ':zim:zmodule' use 'degit'`.
 
 ### Fixed
 - Force `core.autocrlf=false` when doing `git clone`.

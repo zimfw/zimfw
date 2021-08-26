@@ -595,7 +595,7 @@ case \${ACTION} in
       print_error \"Error during cd \${DIR}\"
       return 1
     fi
-    if [[ \${PWD} != \$(command git rev-parse --show-toplevel 2>/dev/null) ]]; then
+    if [[ \${PWD:A} != \${\$(command git rev-parse --show-toplevel 2>/dev/null):A} ]]; then
       print_error \"Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
       return 1
     fi
@@ -660,7 +660,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.5.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.5.1-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b
