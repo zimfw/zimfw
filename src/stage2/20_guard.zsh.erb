@@ -4,4 +4,4 @@ autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
 fi
 
 # Define Zim location
-: ${ZIM_HOME=${0:A:h}}
+if (( ! ${+ZIM_HOME} )) typeset -g ZIM_HOME=${0:A:h}

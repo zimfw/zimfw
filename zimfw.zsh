@@ -30,7 +30,7 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
 fi
 
 # Define Zim location
-: ${ZIM_HOME=${0:A:h}}
+if (( ! ${+ZIM_HOME} )) typeset -g ZIM_HOME=${0:A:h}
 
 _zimfw_print() {
   if (( _zprintlevel > 0 )) print "${@}"
@@ -338,7 +338,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-08-25 21:04:22 UTC, previous commit is e89793c)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-08-31 23:40:27 UTC, previous commit is e56048f)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
