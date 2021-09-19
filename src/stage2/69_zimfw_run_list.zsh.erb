@@ -1,0 +1,25 @@
+_zimfw_run_list() {
+  local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
+  local -ri zfrozen=${8} zdisabled=${9}
+  print -PRn "%B${zmodule}:%b ${zdir}"
+  if [[ -z ${zurl} ]] print -Pn ' %F{blue}%B(external)%b'
+  if (( ${zfrozen} )) print -Pn ' %F{cyan}(frozen)'
+  if (( ${zdisabled} )) print -Pn ' %F{magenta}(disabled)'
+  print -P '%f'
+  if (( _zprintlevel > 1 )); then
+    if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
+      print -Rn "  From: ${zurl}, "
+      if [[ -z ${zrev} ]]; then
+        print -n 'default branch'
+      else
+        print -Rn "${ztype} ${zrev}"
+      fi
+      print -R ", using ${ztool}"
+    fi
+    local -r zpre=${zmodule}$'\0'
+    local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
+    if (( ${#zfpaths} )) print -R "  fpath: ${zfpaths[@]}"
+    if (( ${#zfunctions} )) print -R "  autoload: ${zfunctions[@]}"
+    if (( ${#zcmds} )) print -R "  cmd: ${(j:; :)zcmds[@]}"
+  fi
+}

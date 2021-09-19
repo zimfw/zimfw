@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `list` action. Using it with `-v` shows all current details for the existing
+  modules.
+
 ### Fixed
-- Error in `zimfw update` with the `git` tool when module directory is under an
-  unresolved symlink.
+- Error in `zimfw update` with the `git` tool when module directory is under a
+  symlinked directory.
+- Warning when `WARN_CREATE_GLOBAL` is set and `ZIM_HOME` is not.
+- Don't try to install or update external modules.
 
 ## [1.5.0] - 2021-08-10
 
@@ -133,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This is a major change, where modules are not git submodules in the Zim repo
 anymore, but customized and installed separately as individual repositories.
 External modules can more easily be installed, updated and uninstalled. This
-makes Zim the first project for Zsh that is both a set of community-maintained
+makes Zim a project for Zsh that is both a set of community-maintained
 modules with a default installation (like on-my-zsh and prezto) and a plugin
 manager (like antigen and zplug).
 

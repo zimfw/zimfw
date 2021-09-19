@@ -73,6 +73,7 @@ Initialization options:
   fi
   if [[ ${zurl} == /* ]]; then
     zdir=${zurl%%/##}
+    zurl=''
   else
     zdir=${ZIM_HOME}/modules/${zmodule}
   fi
@@ -84,6 +85,11 @@ Initialization options:
           _zfailed=1
           return 2
         fi
+        ;;
+    esac
+    case ${1} in
+      -b|--branch|-t|--tag|-u|--use)
+        if [[ -z ${zurl} ]] print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
         ;;
     esac
     case ${1} in
@@ -131,11 +137,10 @@ Initialization options:
     esac
     shift
   done
-  if [[ -n ${_zargs_action} ]]; then
-    if (( ! zfrozen )); then
-      _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}")
-    fi
-  else
+  if (( _zflags & 1 )); then
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zfrozen}" "${zdisabled}")
+  fi
+  if (( _zflags & 2 )); then
     if (( zdisabled )); then
       _zdisableds+=(${zmodule})
     else
@@ -167,9 +172,10 @@ Initialization options:
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
-      _zfpaths+=(${zfpaths})
-      _zfunctions+=(${zfunctions})
-      _zcmds+=(${zcmds})
+      # ${zmodule}$'\0' prefix is added to all zfpaths, zfunctions and zcmds to distinguish the originating modules
+      _zfpaths+=(${zmodule}$'\0'${^zfpaths})
+      _zfunctions+=(${zmodule}$'\0'${^zfunctions})
+      _zcmds+=(${zmodule}$'\0'${^zcmds})
     fi
   fi
 }

@@ -1,0 +1,20 @@
+_zimfw_list_unuseds() {
+  local -i i=1
+  local -a zinstalled=(${ZIM_HOME}/modules/*(N/:t)) subdirs
+  # Search into subdirectories
+  while (( i <= ${#zinstalled} )); do
+    if (( ${_zmodules[(I)${zinstalled[i]}/*]} || ${_zdisableds[(I)${zinstalled[i]}/*]} )); then
+      subdirs=(${ZIM_HOME}/modules/${zinstalled[i]}/*(N/:t))
+      zinstalled+=(${zinstalled[i]}/${^subdirs})
+      zinstalled[i]=()
+    else
+      (( i++ ))
+    fi
+  done
+  # Unused = all installed modules not in _zmodules and _zdisableds
+  _zunuseds=(${${zinstalled:|_zmodules}:|_zdisableds})
+  local zunused
+  for zunused in ${_zunuseds}; do
+    _zimfw_print -PR "%B${zunused}:%b ${ZIM_HOME}/modules/${zunused}${1}"
+  done
+}

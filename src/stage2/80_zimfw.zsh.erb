@@ -9,6 +9,7 @@ Actions:
   %Bcompile%b         Compile Zsh files
   %Bhelp%b            Print this help
   %Binfo%b            Print Zim and system info
+  %Blist%b            List all modules
   %Binstall%b         Install new modules
   %Buninstall%b       Delete unused modules
                   (prompts for confirmation)
@@ -20,7 +21,7 @@ Options:
   %B-q%b              Quiet (yes to prompts, and
                   only outputs errors and warnings)
   %B-v%b              Verbose"
-  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
+  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
@@ -42,26 +43,29 @@ Options:
 
   case ${1} in
     build)
-      _zimfw_source_zimrc && _zimfw_build || return 1
+      _zimfw_source_zimrc 2 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_source_zimrc && _zimfw_build ;;
-    clean) _zimfw_source_zimrc && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
-    clean-compiled) _zimfw_source_zimrc && _zimfw_clean_compiled ;;
+    init) _zimfw_source_zimrc 2 && _zimfw_build ;;
+    clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc && _zimfw_build_login_init && _zimfw_compile ;;
+    compile) _zimfw_source_zimrc 2 && _zimfw_build_login_init && _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
+    list)
+      _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+          _zimfw_list_unuseds ' %F{red}(unused)%f'
+      ;;
     install|update)
-      _zimfw_source_zimrc ${1} || return 1
-      autoload -Uz zargs && \
-          zargs -n 7 -P 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
+      _zimfw_source_zimrc 1 ${1} && \
+          zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
           _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))

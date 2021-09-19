@@ -1,25 +1,10 @@
 _zimfw_uninstall() {
-  local zopt zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
+  local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  # Search into subdirectories
-  local -a subdirs
-  local -i i=1
-  while (( i <= ${#zuninstalls} )); do
-    if (( ${_zmodules[(I)${zuninstalls[i]}/*]} || ${_zdisableds[(I)${zuninstalls[i]}/*]} )); then
-      subdirs=(${ZIM_HOME}/modules/${zuninstalls[i]}/*(N/:t))
-      zuninstalls+=(${zuninstalls[i]}/${^subdirs})
-      zuninstalls[i]=()
-    else
-      (( i++ ))
-    fi
-  done
-  # Uninstall all installed modules not in _zmodules and _zdisableds
-  zuninstalls=(${${zuninstalls:|_zmodules}:|_zdisableds})
-  if (( ${#zuninstalls} )); then
-    _zimfw_print -PR %B${(F)zuninstalls}%b
-    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#zuninstalls} module(s) listed above [y/N]? "; then
+  if (( ${#_zunuseds} )); then
+    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunuseds} module(s) listed above [y/N]? "; then
       _zimfw_print
-      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^zuninstalls} || return 1
+      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^_zunuseds} || return 1
     fi
   fi
   _zimfw_print -P '<%= done %>Done with uninstall.'

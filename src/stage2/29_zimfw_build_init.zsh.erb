@@ -6,8 +6,9 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths:A}' ${fpath})'
-    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions}
-    print -R ${(F)_zcmds}
+    local -r zpre=$'*\0'
+    if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
+    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions#${~zpre}}
+    print -R ${(F)_zcmds#${~zpre}}
   ) ${ztarget}
 }

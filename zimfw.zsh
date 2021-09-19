@@ -28,6 +28,7 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
   print -u2 -PR "%F{red}${0}: Error starting Zim. You're using Zsh version %B${ZSH_VERSION}%b and versions < %B5.2%b are not supported. Upgrade your Zsh.%f"
   return 1
 fi
+autoload -Uz zargs
 
 # Define Zim location
 if (( ! ${+ZIM_HOME} )) typeset -g ZIM_HOME=${0:A:h}
@@ -58,9 +59,10 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths:A}' ${fpath})'
-    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions}
-    print -R ${(F)_zcmds}
+    local -r zpre=$'*\0'
+    if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
+    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions#${~zpre}}
+    print -R ${(F)_zcmds#${~zpre}}
   ) ${ztarget}
 }
 
@@ -179,6 +181,7 @@ Initialization options:
   fi
   if [[ ${zurl} == /* ]]; then
     zdir=${zurl%%/##}
+    zurl=''
   else
     zdir=${ZIM_HOME}/modules/${zmodule}
   fi
@@ -190,6 +193,11 @@ Initialization options:
           _zfailed=1
           return 2
         fi
+        ;;
+    esac
+    case ${1} in
+      -b|--branch|-t|--tag|-u|--use)
+        if [[ -z ${zurl} ]] print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
         ;;
     esac
     case ${1} in
@@ -237,11 +245,10 @@ Initialization options:
     esac
     shift
   done
-  if [[ -n ${_zargs_action} ]]; then
-    if (( ! zfrozen )); then
-      _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}")
-    fi
-  else
+  if (( _zflags & 1 )); then
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zfrozen}" "${zdisabled}")
+  fi
+  if (( _zflags & 2 )); then
     if (( zdisabled )); then
       _zdisableds+=(${zmodule})
     else
@@ -273,24 +280,46 @@ Initialization options:
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
-      _zfpaths+=(${zfpaths})
-      _zfunctions+=(${zfunctions})
-      _zcmds+=(${zcmds})
+      # ${zmodule}$'\0' prefix is added to all zfpaths, zfunctions and zcmds to distinguish the originating modules
+      _zfpaths+=(${zmodule}$'\0'${^zfpaths})
+      _zfunctions+=(${zmodule}$'\0'${^zfunctions})
+      _zcmds+=(${zmodule}$'\0'${^zcmds})
     fi
   fi
 }
 
 _zimfw_source_zimrc() {
-  local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc _zargs_action=${1}
+  local -r ztarget=${ZDOTDIR:-${HOME}}/.zimrc _zflags=${1} _zargs_action=${2}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
     print -u2 -PR "%F{red}Failed to source %B${ztarget}%b%f"
     return 1
   fi
-  if [[ -n ${_zargs_action} && ${#_zmodules_zargs} -eq 0 ]]; then
+  if (( _zflags & 1 && ${#_zmodules_zargs} == 0 )); then
     print -u2 -PR "%F{red}No modules defined in %B${ztarget}%b%f"
     return 1
   fi
+}
+
+_zimfw_list_unuseds() {
+  local -i i=1
+  local -a zinstalled=(${ZIM_HOME}/modules/*(N/:t)) subdirs
+  # Search into subdirectories
+  while (( i <= ${#zinstalled} )); do
+    if (( ${_zmodules[(I)${zinstalled[i]}/*]} || ${_zdisableds[(I)${zinstalled[i]}/*]} )); then
+      subdirs=(${ZIM_HOME}/modules/${zinstalled[i]}/*(N/:t))
+      zinstalled+=(${zinstalled[i]}/${^subdirs})
+      zinstalled[i]=()
+    else
+      (( i++ ))
+    fi
+  done
+  # Unused = all installed modules not in _zmodules and _zdisableds
+  _zunuseds=(${${zinstalled:|_zmodules}:|_zdisableds})
+  local zunused
+  for zunused in ${_zunuseds}; do
+    _zimfw_print -PR "%B${zunused}:%b ${ZIM_HOME}/modules/${zunused}${1}"
+  done
 }
 
 _zimfw_version_check() {
@@ -338,34 +367,19 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-08-31 23:40:27 UTC, previous commit is e56048f)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-19 18:30:02 UTC, previous commit is 3e1a89a)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_uninstall() {
-  local zopt zuninstalls=(${ZIM_HOME}/modules/*(N/:t))
+  local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  # Search into subdirectories
-  local -a subdirs
-  local -i i=1
-  while (( i <= ${#zuninstalls} )); do
-    if (( ${_zmodules[(I)${zuninstalls[i]}/*]} || ${_zdisableds[(I)${zuninstalls[i]}/*]} )); then
-      subdirs=(${ZIM_HOME}/modules/${zuninstalls[i]}/*(N/:t))
-      zuninstalls+=(${zuninstalls[i]}/${^subdirs})
-      zuninstalls[i]=()
-    else
-      (( i++ ))
-    fi
-  done
-  # Uninstall all installed modules not in _zmodules and _zdisableds
-  zuninstalls=(${${zuninstalls:|_zmodules}:|_zdisableds})
-  if (( ${#zuninstalls} )); then
-    _zimfw_print -PR %B${(F)zuninstalls}%b
-    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#zuninstalls} module(s) listed above [y/N]? "; then
+  if (( ${#_zunuseds} )); then
+    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunuseds} module(s) listed above [y/N]? "; then
       _zimfw_print
-      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^zuninstalls} || return 1
+      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^_zunuseds} || return 1
     fi
   fi
   _zimfw_print -P 'Done with uninstall.'
@@ -396,10 +410,37 @@ _zimfw_upgrade() {
   }
 }
 
+_zimfw_run_list() {
+  local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
+  local -ri zfrozen=${8} zdisabled=${9}
+  print -PRn "%B${zmodule}:%b ${zdir}"
+  if [[ -z ${zurl} ]] print -Pn ' %F{blue}%B(external)%b'
+  if (( ${zfrozen} )) print -Pn ' %F{cyan}(frozen)'
+  if (( ${zdisabled} )) print -Pn ' %F{magenta}(disabled)'
+  print -P '%f'
+  if (( _zprintlevel > 1 )); then
+    if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
+      print -Rn "  From: ${zurl}, "
+      if [[ -z ${zrev} ]]; then
+        print -n 'default branch'
+      else
+        print -Rn "${ztype} ${zrev}"
+      fi
+      print -R ", using ${ztool}"
+    fi
+    local -r zpre=${zmodule}$'\0'
+    local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
+    if (( ${#zfpaths} )) print -R "  fpath: ${zfpaths[@]}"
+    if (( ${#zfunctions} )) print -R "  autoload: ${zfunctions[@]}"
+    if (( ${#zcmds} )) print -R "  cmd: ${(j:; :)zcmds[@]}"
+  fi
+}
+
 _zimfw_run_tool() {
-  local -r ztool=${1}
-  shift
-  local -r zaction=${1} zmodule=${2} zdir=${3} clear_line=$'\E[2K\r'
+  local -ri zfrozen=${8}
+  if (( zfrozen )) return 0
+  local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5} clear_line=$'\E[2K\r'
+  if [[ -z ${zurl} ]] return 0
   case ${zaction} in
     install)
       if [[ -e ${zdir} ]]; then
@@ -423,8 +464,8 @@ _zimfw_run_tool() {
   local zcmd
   case ${ztool} in
     degit) zcmd="# This runs in a new shell
-readonly ACTION=\${1} MODULE=\${2} DIR=\${3} URL=\${4} REV=\${6} CLEAR_LINE=$'\E[2K\r'
-readonly -i PRINTLEVEL=\${7}
+readonly -i PRINTLEVEL=\${1}
+readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} CLEAR_LINE=$'\E[2K\r'
 readonly TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
@@ -569,9 +610,9 @@ create_dir() {
 }
 " ;;
     git) zcmd="# This runs in a new shell
-readonly ACTION=\${1} MODULE=\${2} DIR=\${3} URL=\${4} TYPE=\${5:=branch} CLEAR_LINE=$'\E[2K\r'
-REV=\${6}
-readonly -i PRINTLEVEL=\${7}
+readonly -i PRINTLEVEL=\${1}
+readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch} CLEAR_LINE=$'\E[2K\r'
+REV=\${7}
 
 print_error() {
   print -u2 -PR \${CLEAR_LINE}\"%F{red}x %B\${MODULE}:%b \${1}%f\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
@@ -656,11 +697,11 @@ esac
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} "${@}" ${_zprintlevel}
+  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,7]}"
 }
 
 zimfw() {
-  local -r _zversion='1.5.1-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.6.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b
@@ -670,6 +711,7 @@ Actions:
   %Bcompile%b         Compile Zsh files
   %Bhelp%b            Print this help
   %Binfo%b            Print Zim and system info
+  %Blist%b            List all modules
   %Binstall%b         Install new modules
   %Buninstall%b       Delete unused modules
                   (prompts for confirmation)
@@ -681,7 +723,7 @@ Options:
   %B-q%b              Quiet (yes to prompts, and
                   only outputs errors and warnings)
   %B-v%b              Verbose"
-  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs
+  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
@@ -703,26 +745,29 @@ Options:
 
   case ${1} in
     build)
-      _zimfw_source_zimrc && _zimfw_build || return 1
+      _zimfw_source_zimrc 2 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_source_zimrc && _zimfw_build ;;
-    clean) _zimfw_source_zimrc && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
-    clean-compiled) _zimfw_source_zimrc && _zimfw_clean_compiled ;;
+    init) _zimfw_source_zimrc 2 && _zimfw_build ;;
+    clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc && _zimfw_build_login_init && _zimfw_compile ;;
+    compile) _zimfw_source_zimrc 2 && _zimfw_build_login_init && _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
+    list)
+      _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+          _zimfw_list_unuseds ' %F{red}(unused)%f'
+      ;;
     install|update)
-      _zimfw_source_zimrc ${1} || return 1
-      autoload -Uz zargs && \
-          zargs -n 7 -P 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
+      _zimfw_source_zimrc 1 ${1} && \
+          zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
           _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))

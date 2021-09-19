@@ -1,7 +1,8 @@
 _zimfw_run_tool() {
-  local -r ztool=${1}
-  shift
-  local -r zaction=${1} zmodule=${2} zdir=${3} clear_line=<%= clear_line %>
+  local -ri zfrozen=${8}
+  if (( zfrozen )) return 0
+  local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5} clear_line=<%= clear_line %>
+  if [[ -z ${zurl} ]] return 0
   case ${zaction} in
     install)
       if [[ -e ${zdir} ]]; then
@@ -30,5 +31,5 @@ _zimfw_run_tool() {
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} "${@}" ${_zprintlevel}
+  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,7]}"
 }
