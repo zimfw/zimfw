@@ -49,4 +49,8 @@ zim = Zim.new
 
 <%= zim.render_commented("LICENSE") %>
 <%= zim.render_all("src/stage2/*.erb") %>
-zimfw "${@}"
+if [[ ${functrace[1]} == zmodule:* ]]; then
+  zmodule "${@}"
+else
+  zimfw "${@}"
+fi

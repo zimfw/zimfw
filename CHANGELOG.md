@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error in `zimfw update` with the `git` tool when module directory is under a
   symlinked directory.
 - Warning when `WARN_CREATE_GLOBAL` is set and `ZIM_HOME` is not.
+- "zsh: command not found: zmodule" when trying to run `zmodule` from the shell.
+  Show a more informative error instead.
 - Don't try to install or update external modules.
 
 ## [1.5.0] - 2021-08-10

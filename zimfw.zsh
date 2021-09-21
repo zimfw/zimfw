@@ -59,6 +59,7 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
+    print -R "zmodule() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     local -r zpre=$'*\0'
     if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
     if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions#${~zpre}}
@@ -367,7 +368,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-19 18:30:02 UTC, previous commit is 3e1a89a)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 01:00:09 UTC, previous commit is b3b282f)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -781,4 +782,8 @@ Options:
   esac
 }
 
-zimfw "${@}"
+if [[ ${functrace[1]} == zmodule:* ]]; then
+  zmodule "${@}"
+else
+  zimfw "${@}"
+fi
