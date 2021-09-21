@@ -89,7 +89,7 @@ Initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use)
-        if [[ -z ${zurl} ]] print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
+        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
         ;;
     esac
     case ${1} in
@@ -168,7 +168,7 @@ Initialization options:
         zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
+        _zimfw_print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})

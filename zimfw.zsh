@@ -199,7 +199,7 @@ Initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use)
-        if [[ -z ${zurl} ]] print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
+        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
         ;;
     esac
     case ${1} in
@@ -278,7 +278,7 @@ Initialization options:
         zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
+        _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
@@ -370,7 +370,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 13:25:55 UTC, previous commit is 7deda9c)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 21:19:43 UTC, previous commit is 9a67adf)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -478,15 +478,13 @@ print_error() {
 }
 
 print_okay() {
-  if [[ -e \${DIR}/.gitmodules ]]; then
-    local -r warn=\${CLEAR_LINE}\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\"
-    if (( PRINTLEVEL > 0 )); then
-      print -PR \${warn}\${2:+$'\n'\${(F):-  \${(f)^2}}}
+  if (( PRINTLEVEL > 0 )); then
+    local -r log=\${2:+$'\n'\${(F):-  \${(f)^2}}}
+    if [[ -e \${DIR}/.gitmodules ]]; then
+      print -u2 -PR \${CLEAR_LINE}\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\"\${log}
     else
-      print -u2 -PR \${warn}
+      print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${(C)1}\"\${log}
     fi
-  elif (( PRINTLEVEL > 0 )); then
-    print -PR \${CLEAR_LINE}\"%F{green})%f %B\${MODULE}:%b \${(C)1}\"\${2:+$'\n'\${(F):-  \${(f)^2}}}
   fi
 }
 
@@ -724,7 +722,7 @@ Actions:
   %Bversion%b         Print zimfw version.
 
 Options:
-  %B-q%b              Quiet (yes to prompts, and only outputs errors and warnings)
+  %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
   local -i _zprintlevel=1

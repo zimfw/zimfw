@@ -9,15 +9,13 @@ print_error() {
 }
 
 print_okay() {
-  if [[ -e ${DIR}/.gitmodules ]]; then
-    local -r warn=${CLEAR_LINE}"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f"
-    if (( PRINTLEVEL > 0 )); then
-      print -PR ${warn}${2:+$'\n'${(F):-  ${(f)^2}}}
+  if (( PRINTLEVEL > 0 )); then
+    local -r log=${2:+$'\n'${(F):-  ${(f)^2}}}
+    if [[ -e ${DIR}/.gitmodules ]]; then
+      print -u2 -PR ${CLEAR_LINE}"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f"${log}
     else
-      print -u2 -PR ${warn}
+      print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b ${(C)1}"${log}
     fi
-  elif (( PRINTLEVEL > 0 )); then
-    print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b ${(C)1}"${2:+$'\n'${(F):-  ${(f)^2}}}
   fi
 }
 

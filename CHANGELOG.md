@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `list` action. Using it with `-v` also shows the current details for all
   modules.
 
+### Changed
+- Be quieter and don't output warnings when `-q` is provided.
+
 ### Fixed
 - Error in `zimfw update` with the `git` tool when module directory is under a
   symlinked directory.
