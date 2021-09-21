@@ -2,25 +2,24 @@ zimfw() {
   local -r _zversion='<%= version %>' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
-  %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b
-  %Bclean%b           Clean all (see below)
-  %Bclean-compiled%b  Clean Zsh compiled files
-  %Bclean-dumpfile%b  Clean completion dump file
-  %Bcompile%b         Compile Zsh files
-  %Bhelp%b            Print this help
-  %Binfo%b            Print Zim and system info
-  %Blist%b            List all modules
-  %Binstall%b         Install new modules
-  %Buninstall%b       Delete unused modules
-                  (prompts for confirmation)
-  %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade zimfw
-  %Bversion%b         Print zimfw version
+  %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
+                  Also does %Bcompile%b. Use %B-v%b to also see its output.
+  %Bclean%b           Clean all. Does both %Bclean-compiled%b and %Bclean-dumpfile%b.
+  %Bclean-compiled%b  Clean Zsh compiled files.
+  %Bclean-dumpfile%b  Clean completion dump file.
+  %Bcompile%b         Compile Zsh files.
+  %Bhelp%b            Print this help.
+  %Binfo%b            Print Zim and system info.
+  %Blist%b            List all modules. Use %B-v%b to also see the current details for all modules.
+  %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their output.
+  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b to uninstall quietly.
+  %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to see their output.
+  %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
+  %Bversion%b         Print zimfw version.
 
 Options:
-  %B-q%b              Quiet (yes to prompts, and
-                  only outputs errors and warnings)
-  %B-v%b              Verbose"
+  %B-q%b              Quiet (yes to prompts, and only outputs errors and warnings)
+  %B-v%b              Verbose (outputs more details)"
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
   local -i _zprintlevel=1
   if (( # > 2 )); then

@@ -60,6 +60,7 @@ _zimfw_build_init() {
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     print -R "zmodule() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
+    # Remove all prefixes from _zfpaths, _zfunctions and _zcmds
     local -r zpre=$'*\0'
     if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
     if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions#${~zpre}}
@@ -281,10 +282,11 @@ Initialization options:
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
-      # ${zmodule}$'\0' prefix is added to all zfpaths, zfunctions and zcmds to distinguish the originating modules
-      _zfpaths+=(${zmodule}$'\0'${^zfpaths})
-      _zfunctions+=(${zmodule}$'\0'${^zfunctions})
-      _zcmds+=(${zmodule}$'\0'${^zcmds})
+      # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules
+      local -r zpre=${zmodule}$'\0'
+      _zfpaths+=(${zpre}${^zfpaths})
+      _zfunctions+=(${zpre}${^zfunctions})
+      _zcmds+=(${zpre}${^zcmds})
     fi
   fi
 }
@@ -368,7 +370,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 01:00:09 UTC, previous commit is b3b282f)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 13:25:55 UTC, previous commit is 7deda9c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -429,6 +431,7 @@ _zimfw_run_list() {
       fi
       print -R ", using ${ztool}"
     fi
+    # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
     if (( ${#zfpaths} )) print -R "  fpath: ${zfpaths[@]}"
@@ -705,25 +708,24 @@ zimfw() {
   local -r _zversion='1.6.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
-  %Bbuild%b           Build %Binit.zsh%b and %Blogin_init.zsh%b
-  %Bclean%b           Clean all (see below)
-  %Bclean-compiled%b  Clean Zsh compiled files
-  %Bclean-dumpfile%b  Clean completion dump file
-  %Bcompile%b         Compile Zsh files
-  %Bhelp%b            Print this help
-  %Binfo%b            Print Zim and system info
-  %Blist%b            List all modules
-  %Binstall%b         Install new modules
-  %Buninstall%b       Delete unused modules
-                  (prompts for confirmation)
-  %Bupdate%b          Update current modules
-  %Bupgrade%b         Upgrade zimfw
-  %Bversion%b         Print zimfw version
+  %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
+                  Also does %Bcompile%b. Use %B-v%b to also see its output.
+  %Bclean%b           Clean all. Does both %Bclean-compiled%b and %Bclean-dumpfile%b.
+  %Bclean-compiled%b  Clean Zsh compiled files.
+  %Bclean-dumpfile%b  Clean completion dump file.
+  %Bcompile%b         Compile Zsh files.
+  %Bhelp%b            Print this help.
+  %Binfo%b            Print Zim and system info.
+  %Blist%b            List all modules. Use %B-v%b to also see the current details for all modules.
+  %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their output.
+  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b to uninstall quietly.
+  %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to see their output.
+  %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
+  %Bversion%b         Print zimfw version.
 
 Options:
-  %B-q%b              Quiet (yes to prompts, and
-                  only outputs errors and warnings)
-  %B-v%b              Verbose"
+  %B-q%b              Quiet (yes to prompts, and only outputs errors and warnings)
+  %B-v%b              Verbose (outputs more details)"
   local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
   local -i _zprintlevel=1
   if (( # > 2 )); then

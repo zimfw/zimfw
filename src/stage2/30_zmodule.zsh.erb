@@ -172,10 +172,11 @@ Initialization options:
       fi
       _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
-      # ${zmodule}$'\0' prefix is added to all zfpaths, zfunctions and zcmds to distinguish the originating modules
-      _zfpaths+=(${zmodule}$'\0'${^zfpaths})
-      _zfunctions+=(${zmodule}$'\0'${^zfunctions})
-      _zcmds+=(${zmodule}$'\0'${^zcmds})
+      # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules
+      local -r zpre=${zmodule}$'\0'
+      _zfpaths+=(${zpre}${^zfpaths})
+      _zfunctions+=(${zpre}${^zfunctions})
+      _zcmds+=(${zpre}${^zcmds})
     fi
   fi
 }

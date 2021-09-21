@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- `list` action. Using it with `-v` shows all current details for the existing
+- `list` action. Using it with `-v` also shows the current details for all
   modules.
 
 ### Fixed

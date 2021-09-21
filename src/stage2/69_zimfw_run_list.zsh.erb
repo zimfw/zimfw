@@ -16,6 +16,7 @@ _zimfw_run_list() {
       fi
       print -R ", using ${ztool}"
     fi
+    # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
     if (( ${#zfpaths} )) print -R "  fpath: ${zfpaths[@]}"
