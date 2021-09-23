@@ -252,21 +252,24 @@ Initialization options:
   fi
   if (( _zflags & 2 )); then
     if (( zdisabled )); then
-      _zdisableds+=(${zmodule})
+      _zdisabled_dirs+=(${zdir})
     else
-      if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
+      if [[ ! -e ${zdir} ]]; then
+        if [[ -z ${zurl} ]]; then
+          print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}: ${zdir}%b not found%f"
+        else
+          print -u2 -PR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
+        fi
         _zfailed=1
         return 1
       fi
-      local -ra prezto_fpaths=(${zdir}/functions(NF)) prezto_scripts=(${zdir}/init.zsh(N))
-      if (( ! ${#zfpaths} && ! ${#zcmds} && ${#prezto_fpaths} && ${#prezto_scripts} )); then
-        # this follows the prezto module format, no need to check for other scripts
-        zfpaths=(${prezto_fpaths})
-        zcmds=("source ${^prezto_scripts[@]:A}")
-      else
-        if (( ! ${#zfpaths} )) zfpaths=(${prezto_fpaths})
-        if (( ! ${#zcmds} )); then
+      if (( ! ${#zfpaths} && ! ${#zcmds} )); then
+        zfpaths=(${zdir}/functions(NF))
+        local -ra prezto_scripts=(${zdir}/init.zsh(N))
+        if (( ${#zfpaths} && ${#prezto_scripts} )); then
+          # this follows the prezto module format, no need to check for other scripts
+          zcmds=("source ${^prezto_scripts[@]:A}")
+        else
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
           local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
           zcmds=("source ${^zscripts[@]:A}")
@@ -280,7 +283,6 @@ Initialization options:
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f"$'\n\n'${zusage}
       fi
-      _zmodules+=(${zmodule})
       _zdirs+=(${zdir})
       # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules
       local -r zpre=${zmodule}$'\0'
@@ -306,22 +308,21 @@ _zimfw_source_zimrc() {
 
 _zimfw_list_unuseds() {
   local -i i=1
-  local -a zinstalled=(${ZIM_HOME}/modules/*(N/:t)) subdirs
+  local -a zinstalled=(${ZIM_HOME}/modules/*(N/))
   # Search into subdirectories
   while (( i <= ${#zinstalled} )); do
-    if (( ${_zmodules[(I)${zinstalled[i]}/*]} || ${_zdisableds[(I)${zinstalled[i]}/*]} )); then
-      subdirs=(${ZIM_HOME}/modules/${zinstalled[i]}/*(N/:t))
-      zinstalled+=(${zinstalled[i]}/${^subdirs})
+    if (( ${_zdirs[(I)${zinstalled[i]}/*]} || ${_zdisabled_dirs[(I)${zinstalled[i]}/*]} )); then
+      zinstalled+=(${zinstalled[i]}/*(N/))
       zinstalled[i]=()
     else
       (( i++ ))
     fi
   done
-  # Unused = all installed modules not in _zmodules and _zdisableds
-  _zunuseds=(${${zinstalled:|_zmodules}:|_zdisableds})
+  # Unused = all installed dirs not in _zdirs and _zdisabled_dirs
+  _zunused_dirs=(${${zinstalled:|_zdirs}:|_zdisabled_dirs})
   local zunused
-  for zunused in ${_zunuseds}; do
-    _zimfw_print -PR "%B${zunused}:%b ${ZIM_HOME}/modules/${zunused}${1}"
+  for zunused in ${_zunused_dirs}; do
+    _zimfw_print -PR "%B${zunused:t}:%b ${zunused}${1}"
   done
 }
 
@@ -370,7 +371,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-21 21:19:43 UTC, previous commit is 9a67adf)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-23 16:35:30 UTC, previous commit is 92e6d6b)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -379,10 +380,10 @@ _zimfw_info() {
 _zimfw_uninstall() {
   local zopt
   if (( _zprintlevel > 0 )) zopt='-v'
-  if (( ${#_zunuseds} )); then
-    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunuseds} module(s) listed above [y/N]? "; then
+  if (( ${#_zunused_dirs} )); then
+    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunused_dirs} module(s) listed above [y/N]? "; then
       _zimfw_print
-      command rm -rf ${zopt} ${ZIM_HOME}/modules/${^_zunuseds} || return 1
+      command rm -rf ${zopt} ${_zunused_dirs} || return 1
     fi
   fi
   _zimfw_print -P 'Done with uninstall.'
@@ -724,7 +725,7 @@ Actions:
 Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
-  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
+  local -a _zdisabled_dirs _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}

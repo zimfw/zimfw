@@ -20,7 +20,7 @@ Actions:
 Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
-  local -a _zdisableds _zmodules _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunuseds
+  local -a _zdisabled_dirs _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PR "%F{red}${0}: Too many options%f"$'\n\n'${zusage}
