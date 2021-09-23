@@ -5,7 +5,7 @@ _zimfw_upgrade() {
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
     else
       local zopt
-      if (( _zprintlevel <= 1 )) zopt='-q'
+      if (( _zprintlevel <= 1 )) zopt=-q
       if ! command wget -nv ${zopt} -O ${ztarget}.new.gz ${zurl}; then
         if (( _zprintlevel <= 1 )); then
           print -u2 -PR "%F{red}<%= failed %>Failed to download %B${zurl}%b. Use %B-v%b option to see details.%f"

@@ -1,14 +1,14 @@
 # This runs in a new shell
 readonly -i PRINTLEVEL=${1}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch} CLEAR_LINE=<%= clear_line %>
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch}
 REV=${7}
 
 print_error() {
-  print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}
+  print -u2 -PRl <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
 }
 
 print_okay() {
-  if (( PRINTLEVEL > 0 )) print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b ${1}"
+  if (( PRINTLEVEL > 0 )) print -PR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${1}" ${2:+${(F):-  ${(f)^2}}}
 }
 
 case ${ACTION} in
@@ -74,9 +74,6 @@ case ${ACTION} in
       print_error 'Error during git submodule update' ${ERR}
       return 1
     fi
-    if (( PRINTLEVEL > 0 )); then
-      if [[ -n ${LOG} ]] OUT=${OUT}$'\n'${(F):-  ${(f)^LOG}}
-      print_okay ${OUT}
-    fi
+    print_okay ${OUT} ${LOG}
     ;;
 esac

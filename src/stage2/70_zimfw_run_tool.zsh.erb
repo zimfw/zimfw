@@ -1,7 +1,7 @@
 _zimfw_run_tool() {
   local -ri zfrozen=${8}
   if (( zfrozen )) return 0
-  local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5} clear_line=<%= clear_line %>
+  local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5}
   if [[ -z ${zurl} ]] return 0
   case ${zaction} in
     install)
@@ -9,17 +9,17 @@ _zimfw_run_tool() {
         # Already installed
         return 0
       fi
-      _zimfw_print -Rn ${clear_line}"Installing ${zmodule}<%= ellipsis %>"
+      _zimfw_print -Rn <%= clear_line %>"Installing ${zmodule}<%= ellipsis %>"
       ;;
     update)
       if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR "%F{red}<%= error %>%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
+        print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -Rn ${clear_line}"Updating ${zmodule}<%= ellipsis %>"
+      _zimfw_print -Rn <%= clear_line %>"Updating ${zmodule}<%= ellipsis %>"
       ;;
     *)
-      print -u2 -PR "%F{red}<%= error %>%B${zmodule}:%b Unknown action ${zaction}%f"
+      print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Unknown action ${zaction}%f"
       return 1
       ;;
   esac
@@ -27,7 +27,7 @@ _zimfw_run_tool() {
   case ${ztool} in
 <%= render_tools("src/tools/*", "zcmd") %>
     *)
-      print -u2 -PR "${clear_line}%F{red}<%= error %>%B${zmodule}:%b Unknown tool ${ztool}%f"
+      print -u2 -PR "<%= clear_line %>%F{red}<%= error %>%B${zmodule}:%b Unknown tool ${ztool}%f"
       return 1
       ;;
   esac

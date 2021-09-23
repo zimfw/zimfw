@@ -1,20 +1,20 @@
 # This runs in a new shell
 readonly -i PRINTLEVEL=${1}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} CLEAR_LINE=<%= clear_line %>
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7}
 readonly TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
-  print -u2 -PR ${CLEAR_LINE}"%F{red}<%= error %>%B${MODULE}:%b ${1}%f"${2:+$'\n'${(F):-  ${(f)^2}}}
+  print -u2 -PRl <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
 }
 
 print_okay() {
   if (( PRINTLEVEL > 0 )); then
-    local -r log=${2:+$'\n'${(F):-  ${(f)^2}}}
+    local -r log=${2:+${(F):-  ${(f)^2}}}
     if [[ -e ${DIR}/.gitmodules ]]; then
-      print -u2 -PR ${CLEAR_LINE}"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f"${log}
+      print -u2 -PRl <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f" ${log}
     else
-      print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b ${(C)1}"${log}
+      print -PRl <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${(C)1}" ${log}
     fi
   fi
 }
@@ -57,7 +57,7 @@ download_tarball() {
       header=${${header## ##}%%$'\r'##}
       if [[ ${header} == HTTP/* ]]; then
         http_code=${${(s: :)header}[2]}
-      elif [[ ${${(L)header%%:*}%% ##} == 'etag' ]]; then
+      elif [[ ${${(L)header%%:*}%% ##} == etag ]]; then
         etag=${${header#*:}## ##}
       fi
     done < ${headers_target}
@@ -73,7 +73,7 @@ download_tarball() {
       print_error "Error downloading ${tarball_url}, no ETag header found in response"
       return 1
     fi
-    if ! print -R ${URL}$'\n'${REV}$'\n'"If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
+    if ! print -Rl "${URL}" "${REV}" "If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
       print_error "Error creating or updating ${INFO_TARGET}"
       return 1
     fi
@@ -96,48 +96,46 @@ create_dir() {
   fi
 }
 
-() {
-  case ${ACTION} in
-    install)
-      {
-        create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && print_okay installed
-      } always {
-        # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
-        (( TRY_BLOCK_ERROR = ? ))
-        command rm -f ${TARBALL_TARGET} 2>/dev/null
-        if (( TRY_BLOCK_ERROR )); then
-          command rm -rf ${DIR} 2>/dev/null
-        fi
-      }
-      ;;
-    update)
-      if [[ -r ${DIR}/.zim_degit_info ]] command mv -f ${DIR}/.zim_degit_info ${INFO_TARGET}
-      if [[ ! -r ${INFO_TARGET} ]]; then
-        print_error "Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen."
+case ${ACTION} in
+  install)
+    {
+      create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && print_okay installed
+    } always {
+      # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
+      (( TRY_BLOCK_ERROR = ? ))
+      command rm -f ${TARBALL_TARGET} 2>/dev/null
+      if (( TRY_BLOCK_ERROR )); then
+        command rm -rf ${DIR} 2>/dev/null
+      fi
+    }
+    ;;
+  update)
+    if [[ -r ${DIR}/.zim_degit_info ]] command mv -f ${DIR}/.zim_degit_info ${INFO_TARGET}
+    if [[ ! -r ${INFO_TARGET} ]]; then
+      print_error "Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen."
+      return 1
+    fi
+    readonly DIR_NEW=${DIR}${TEMP}
+    {
+      download_tarball || return 1
+      if [[ ! -e ${TARBALL_TARGET} ]]; then
+        if (( PRINTLEVEL > 0 )) print -PR <%= clear_line %>"<%= okay %>%B${MODULE}:%b Already up to date"
+        return 0
+      fi
+      create_dir ${DIR_NEW} && untar_tarball ${DIR_NEW} || return 1
+      if (( ${+commands[diff]} )); then
+        LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
+        LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
+      fi
+      if ! ERR=$({ command cp -f ${INFO_TARGET} ${DIR_NEW} && \
+          command rm -rf ${DIR} && command mv -f ${DIR_NEW} ${DIR} } 2>&1); then
+        print_error "Error updating ${DIR}" ${ERR}
         return 1
       fi
-      local -r dir_new=${DIR}${TEMP}
-      {
-        download_tarball || return 1
-        if [[ ! -e ${TARBALL_TARGET} ]]; then
-          if (( PRINTLEVEL > 0 )) print -PR ${CLEAR_LINE}"<%= okay %>%B${MODULE}:%b Already up to date"
-          return 0
-        fi
-        create_dir ${dir_new} && untar_tarball ${dir_new} || return 1
-        if (( ${+commands[diff]} )); then
-          LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${dir_new} 2>/dev/null)
-          LOG=${${LOG//${dir_new}/new}//${DIR}/old}
-        fi
-        if ! ERR=$({ command cp -f ${INFO_TARGET} ${dir_new} && \
-            command rm -rf ${DIR} && command mv -f ${dir_new} ${DIR} } 2>&1); then
-          print_error "Error updating ${DIR}" ${ERR}
-          return 1
-        fi
-        print_okay updated ${LOG}
-      } always {
-        command rm -f ${TARBALL_TARGET} 2>/dev/null
-        command rm -rf ${dir_new} 2>/dev/null
-      }
-      ;;
-  esac
-}
+      print_okay updated ${LOG}
+    } always {
+      command rm -f ${TARBALL_TARGET} 2>/dev/null
+      command rm -rf ${DIR_NEW} 2>/dev/null
+    }
+    ;;
+esac

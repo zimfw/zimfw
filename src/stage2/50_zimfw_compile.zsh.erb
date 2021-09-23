@@ -1,5 +1,5 @@
 _zimfw_compile() {
   local zopt
-  if (( _zprintlevel <= 0 )) zopt='-q'
+  if (( _zprintlevel <= 0 )) zopt=-q
   source ${ZIM_HOME}/login_init.zsh ${zopt}
 }
