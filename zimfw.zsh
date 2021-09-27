@@ -146,7 +146,11 @@ Initialization options:
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
                              command are substituted by the module root directory path.
                              I.e., %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
-  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module."
+  %B-d%b|%B--disabled%b              Don't initialize or uninstall the module.
+
+  Setting any initialization option above will disable all the default values from the other ini-
+  tialization options, so only your provided values are used. I.e. these values are either all
+  automatic, or all manual."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PRl "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f" '' ${zusage}
     return 2
@@ -263,8 +267,11 @@ Initialization options:
         _zfailed=1
         return 1
       fi
-      if (( ! ${#zfpaths} && ! ${#zcmds} )); then
+      if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         zfpaths=(${zdir}/functions(NF))
+        # _* functions are autoloaded by compinit
+        # prompt_*_setup functions are autoloaded by promptinit
+        zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
         local -ra prezto_scripts=(${zdir}/init.zsh(N))
         if (( ${#zfpaths} && ${#prezto_scripts} )); then
           # this follows the prezto module format, no need to check for other scripts
@@ -274,11 +281,6 @@ Initialization options:
           local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
           zcmds=("source ${^zscripts[@]:A}")
         fi
-      fi
-      if (( ! ${#zfunctions} )); then
-        # _* functions are autoloaded by compinit
-        # prompt_*_setup functions are autoloaded by promptinit
-        zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
         _zimfw_print -u2 -PRl "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
@@ -371,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-23 19:29:01 UTC, previous commit is 6ca4690)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-27 00:46:27 UTC, previous commit is b1edcf3)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)

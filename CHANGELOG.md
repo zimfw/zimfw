@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Be quieter and don't output warnings when `-q` is provided.
+- Manually setting any `zmodule` initialization option will disable all the
+  default values from the other initialization options, so only user-provided
+  values are used in this case. I.e. it's either all automatic, or all manual.
 
 ### Fixed
 - Error in `zimfw update` with the `git` tool when module directory is under a
