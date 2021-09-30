@@ -55,7 +55,7 @@ Options:
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
-          _zimfw_list_unuseds ' %F{red}(unused)%f'
+          _zimfw_list_unuseds ' (unused)'
       ;;
     install|update)
       _zimfw_source_zimrc 1 ${1} && \

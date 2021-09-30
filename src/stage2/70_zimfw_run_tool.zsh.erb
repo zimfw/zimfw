@@ -1,8 +1,14 @@
 _zimfw_run_tool() {
-  local -ri zfrozen=${8}
-  if (( zfrozen )) return 0
   local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5}
-  if [[ -z ${zurl} ]] return 0
+  if [[ -z ${zurl} ]]; then
+    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping external module"
+    return 0
+  fi
+  local -ri zfrozen=${8}
+  if (( zfrozen )); then
+    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping frozen module"
+    return 0
+  fi
   case ${zaction} in
     install)
       if [[ -e ${zdir} ]]; then

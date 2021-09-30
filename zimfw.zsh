@@ -63,7 +63,7 @@ _zimfw_build_init() {
     # Remove all prefixes from _zfpaths, _zfunctions and _zcmds
     local -r zpre=$'*\0'
     if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
-    if (( ${#_zfunctions} )) print -R 'autoload -Uz '${_zfunctions#${~zpre}}
+    if (( ${#_zfunctions} )) print -R 'autoload -Uz -- '${_zfunctions#${~zpre}}
     print -R ${(F)_zcmds#${~zpre}}
   ) ${ztarget}
 }
@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-27 00:46:27 UTC, previous commit is b1edcf3)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-09-29 22:29:57 UTC, previous commit is 1d5c0c1)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -420,10 +420,10 @@ _zimfw_run_list() {
   local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
   local -ri zfrozen=${8} zdisabled=${9}
   print -PRn "%B${zmodule}:%b ${zdir}"
-  if [[ -z ${zurl} ]] print -Pn ' %F{blue}%B(external)%b'
-  if (( ${zfrozen} )) print -Pn ' %F{cyan}(frozen)'
-  if (( ${zdisabled} )) print -Pn ' %F{magenta}(disabled)'
-  print -P '%f'
+  if [[ -z ${zurl} ]] print -Pn ' (external)'
+  if (( ${zfrozen} )) print -Pn ' (frozen)'
+  if (( ${zdisabled} )) print -Pn ' (disabled)'
+  print
   if (( _zprintlevel > 1 )); then
     if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
       print -Rn "  From: ${zurl}, "
@@ -444,10 +444,16 @@ _zimfw_run_list() {
 }
 
 _zimfw_run_tool() {
-  local -ri zfrozen=${8}
-  if (( zfrozen )) return 0
   local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5}
-  if [[ -z ${zurl} ]] return 0
+  if [[ -z ${zurl} ]]; then
+    if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping external module"
+    return 0
+  fi
+  local -ri zfrozen=${8}
+  if (( zfrozen )); then
+    if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping frozen module"
+    return 0
+  fi
   case ${zaction} in
     install)
       if [[ -e ${zdir} ]]; then
@@ -639,7 +645,7 @@ case \${ACTION} in
       print_error \"Error during cd \${DIR}\"
       return 1
     fi
-    if [[ \${PWD:A} != \${\$(command git rev-parse --show-toplevel 2>/dev/null):A} ]]; then
+    if [[ \${PWD:A} != \${\"\$(command git rev-parse --show-toplevel 2>/dev/null)\":A} ]]; then
       print_error \"Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
       return 1
     fi
@@ -757,7 +763,7 @@ Options:
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
-          _zimfw_list_unuseds ' %F{red}(unused)%f'
+          _zimfw_list_unuseds ' (unused)'
       ;;
     install|update)
       _zimfw_source_zimrc 1 ${1} && \

@@ -25,7 +25,7 @@ case ${ACTION} in
       print_error "Error during cd ${DIR}"
       return 1
     fi
-    if [[ ${PWD:A} != ${$(command git rev-parse --show-toplevel 2>/dev/null):A} ]]; then
+    if [[ ${PWD:A} != ${"$(command git rev-parse --show-toplevel 2>/dev/null)":A} ]]; then
       print_error "Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen."
       return 1
     fi
