@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-09-29 22:29:57 UTC, previous commit is 1d5c0c1)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-10-19 13:32:17 UTC, previous commit is de7d2b1)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -590,8 +590,10 @@ case \${ACTION} in
   update)
     if [[ -r \${DIR}/.zim_degit_info ]] command mv -f \${DIR}/.zim_degit_info \${INFO_TARGET}
     if [[ ! -r \${INFO_TARGET} ]]; then
-      print_error \"Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
-      return 1
+      if (( PRINTLEVEL > 0 )); then
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f\"
+      fi
+      return 0
     fi
     readonly DIR_NEW=\${DIR}\${TEMP}
     {
@@ -646,8 +648,10 @@ case \${ACTION} in
       return 1
     fi
     if [[ \${PWD:A} != \${\"\$(command git rev-parse --show-toplevel 2>/dev/null)\":A} ]]; then
-      print_error \"Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.\"
-      return 1
+      if (( PRINTLEVEL > 0 )); then
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f\"
+      fi
+      return 0
     fi
     if [[ \${URL} != \$(command git config --get remote.origin.url) ]]; then
       print_error \"URL does not match. Expected \${URL}. Will not try to update.\"

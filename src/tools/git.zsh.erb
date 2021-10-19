@@ -26,8 +26,10 @@ case ${ACTION} in
       return 1
     fi
     if [[ ${PWD:A} != ${"$(command git rev-parse --show-toplevel 2>/dev/null)":A} ]]; then
-      print_error "Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen."
-      return 1
+      if (( PRINTLEVEL > 0 )); then
+        print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f"
+      fi
+      return 0
     fi
     if [[ ${URL} != $(command git config --get remote.origin.url) ]]; then
       print_error "URL does not match. Expected ${URL}. Will not try to update."
