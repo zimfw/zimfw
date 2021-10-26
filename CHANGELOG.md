@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manually setting any `zmodule` initialization option will disable all the
   default values from the other initialization options, so only user-provided
   values are used in this case. I.e. it's either all automatic, or all manual.
+- Also install new modules when starting a new shell (via `zimfw init`, that
+  is sourced in .zshrc).
 
 ### Fixed
 - Error in `zimfw update` with the `git` tool when module directory is under a

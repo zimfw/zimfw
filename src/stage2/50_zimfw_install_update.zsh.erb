@@ -1,0 +1,5 @@
+_zimfw_install_update() {
+  _zimfw_source_zimrc 1 ${1} && \
+      zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
+      _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect."
+}

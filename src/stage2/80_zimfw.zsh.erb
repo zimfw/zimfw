@@ -46,7 +46,7 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_source_zimrc 2 && _zimfw_build ;;
+    init) _zimfw_install_update install && _zimfw_source_zimrc 2 && _zimfw_build ;;
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
@@ -58,9 +58,7 @@ Options:
           _zimfw_list_unuseds ' (unused)'
       ;;
     install|update)
-      _zimfw_source_zimrc 1 ${1} && \
-          zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
-          _zimfw_print -PR "<%= done %>Done with ${1}. Restart your terminal for any changes to take effect." || return 1
+      _zimfw_install_update ${1} || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;

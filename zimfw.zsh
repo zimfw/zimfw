@@ -373,10 +373,16 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-10-19 13:32:17 UTC, previous commit is de7d2b1)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-10-26 15:35:30 UTC, previous commit is a86f69a)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
+}
+
+_zimfw_install_update() {
+  _zimfw_source_zimrc 1 ${1} && \
+      zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
+      _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect."
 }
 
 _zimfw_uninstall() {
@@ -758,7 +764,7 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_source_zimrc 2 && _zimfw_build ;;
+    init) _zimfw_install_update install && _zimfw_source_zimrc 2 && _zimfw_build ;;
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
@@ -770,9 +776,7 @@ Options:
           _zimfw_list_unuseds ' (unused)'
       ;;
     install|update)
-      _zimfw_source_zimrc 1 ${1} && \
-          zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
-          _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect." || return 1
+      _zimfw_install_update ${1} || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
