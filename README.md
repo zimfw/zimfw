@@ -73,6 +73,17 @@ you can add to your `~/.zimrc`.
 
        zsh ~/.zim/zimfw.zsh install
 
+ As an alternative to the last two steps, add additionally the following lines to `~/.zshenv` to
+ automatically install zimfw whenenver it is missing:
+  
+  ```zsh
+export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+if ! [ -s "$ZIM_HOME/zimfw.zsh" ]; then
+  curl --fail --show-error --silent --location --output "$ZIM_HOME/zimfw.zsh" https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh &&
+	  chmod 0755 "$ZIM_HOME/zimfw.zsh" &&
+    zsh "$ZIM_HOME/zimfw.zsh" install
+fi
+```
 </details>
 
 Usage
