@@ -66,24 +66,9 @@ you can add to your `~/.zimrc`.
    * [~/.zlogin](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zlogin)
    * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
 
-3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
-   `~/.zim/zimfw.zsh`.
+3. Restart your terminal to automatically install the modules defined in `~/.zimrc`
+   and build the initialization scripts.
 
-4. Install the modules defined in `~/.zimrc` and build the initialization scripts:
-
-       zsh ~/.zim/zimfw.zsh install
-
- As an alternative to the last two steps, add additionally the following lines to `~/.zshenv` to
- automatically install zimfw whenenver it is missing:
-  
-  ```zsh
-export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
-if ! [ -s "$ZIM_HOME/zimfw.zsh" ]; then
-  curl --fail --show-error --silent --location --output "$ZIM_HOME/zimfw.zsh" https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh &&
-	  chmod 0755 "$ZIM_HOME/zimfw.zsh" &&
-    zsh "$ZIM_HOME/zimfw.zsh" install
-fi
-```
 </details>
 
 Usage
