@@ -110,7 +110,6 @@ case ${ACTION} in
     }
     ;;
   update)
-    if [[ -r ${DIR}/.zim_degit_info ]] command mv -f ${DIR}/.zim_degit_info ${INFO_TARGET}
     if [[ ! -r ${INFO_TARGET} ]]; then
       if (( PRINTLEVEL > 0 )); then
         print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f"

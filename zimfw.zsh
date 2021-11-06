@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-10-26 15:35:30 UTC, previous commit is a86f69a)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-06 21:22:50 UTC, previous commit is 4259e64)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -594,7 +594,6 @@ case \${ACTION} in
     }
     ;;
   update)
-    if [[ -r \${DIR}/.zim_degit_info ]] command mv -f \${DIR}/.zim_degit_info \${INFO_TARGET}
     if [[ ! -r \${INFO_TARGET} ]]; then
       if (( PRINTLEVEL > 0 )); then
         print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f\"
@@ -717,7 +716,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.6.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.6.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -729,9 +728,11 @@ Actions:
   %Bhelp%b            Print this help.
   %Binfo%b            Print Zim and system info.
   %Blist%b            List all modules. Use %B-v%b to also see the current details for all modules.
-  %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their output.
+  %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
+                  output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b to uninstall quietly.
-  %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to see their output.
+  %Bupdate%b          Update current modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to see their
+                  output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
 

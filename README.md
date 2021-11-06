@@ -33,7 +33,7 @@ To preview some of the available themes, check the [themes page][themes].
 ### Degit
 
 Install modules without requiring `git` using our degit tool. It's faster and
-lighter. See the [zmodule](#zmodule) usage below.
+lighter than `git`. See the [zmodule](#zmodule-usage) usage below.
 
 Installation
 ------------
@@ -78,7 +78,40 @@ you can add to your `~/.zimrc`.
 Usage
 -----
 
+Add `zmodule` calls to your `~/.zimrc` file to define the modules to be
+initialized, then run `zimfw install` to install them.
+
 ### zmodule
+
+Below are some usage examples.
+
+A module from the [zimfw] organization: `zmodule archive`
+
+A module from another GitHub organization: `zmodule StackExchange/blackbox`
+
+A module not from GitHub: `zmodule https://gitlab.com/Spriithy/basher.git`
+
+A module at an absolute path, that is already installed:
+`zmodule /usr/local/share/zsh-autosuggestions`
+
+A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
+
+A module with a custom initialization file name:
+`zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh` or
+`zmodule spaceship-prompt/spaceship-prompt --name spaceship`
+
+A module with two custom initialization files:
+`zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
+
+A module with custom initialization commands:
+`zmodule skywind3000/z.lua --cmd 'export _ZL_HYPHEN=1' --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
+
+A module with a big git repository: `zmodule romkatv/powerlevel10k --use degit`
+<!-- As of 2021-11-06, the complete repo had 83M and took 1m59s to be cloned,
+and the degit'ed module had 2.9M and took 3s to be installed. -->
+
+<details id="zmodule-usage">
+<summary>Want help with the complete <code>zmodule</code> usage?</summary>
 
 <pre>Usage: <b>zmodule</b> &lt;url&gt; [<b>-n</b>|<b>--name</b> &lt;module_name&gt;] [options]
 
@@ -118,7 +151,13 @@ Initialization options:
                              command are substituted by the module root directory path.
                              I.e., <b>-s &apos;script.zsh&apos;</b> and <b>-c &apos;source {}/script.zsh&apos;</b> are equivalent.
   <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize or uninstall the module.
+
+  Setting any initialization option above will disable all the default values from the other ini-
+  tialization options, so only your provided values are used. I.e. these values are either all
+  automatic, or all manual.
 </pre>
+
+</details>
 
 ### zimfw
 
@@ -155,3 +194,4 @@ remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://zimfw.sh/docs/modules/
 [themes]: https://zimfw.sh/docs/themes/
+[zimfw]: https://github.com/zimfw

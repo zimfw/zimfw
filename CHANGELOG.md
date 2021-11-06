@@ -7,12 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.6.0] - 2021-11-06
+
 ### Added
 - `list` action. Using it with `-v` also shows the current details for all
   modules.
 
 ### Changed
 - Be quieter and don't output warnings when `-q` is provided.
+- Be more verbose when `-v` is provided: show skipped external and frozen
+  modules with the install and update actions.
+- Show warning instead of error when module was not installed with the tool
+  currently in use.
 - Manually setting any `zmodule` initialization option will disable all the
   default values from the other initialization options, so only user-provided
   values are used in this case. I.e. it's either all automatic, or all manual.
@@ -206,7 +214,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/zimfw/zimfw/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/zimfw/zimfw/compare/v1.4.3...v1.5.0
 [1.4.3]: https://github.com/zimfw/zimfw/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/zimfw/zimfw/compare/v1.4.1...v1.4.2
