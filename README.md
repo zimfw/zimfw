@@ -66,12 +66,8 @@ you can add to your `~/.zimrc`.
    * [~/.zlogin](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zlogin)
    * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
 
-3. Copy https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh to
-   `~/.zim/zimfw.zsh`.
-
-4. Install the modules defined in `~/.zimrc` and build the initialization scripts:
-
-       zsh ~/.zim/zimfw.zsh install
+3. Restart your terminal to automatically install the modules defined in `~/.zimrc`
+   and build the initialization scripts.
 
 </details>
 
