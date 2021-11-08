@@ -5,16 +5,16 @@ readonly TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
-  print -u2 -PRl <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
+  print -u2 -PlR <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
 }
 
 print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=${2:+${(F):-  ${(f)^2}}}
     if [[ -e ${DIR}/.gitmodules ]]; then
-      print -u2 -PRl <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f" ${log}
+      print -u2 -PlR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f" ${log}
     else
-      print -PRl <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${(C)1}" ${log}
+      print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${(C)1}" ${log}
     fi
   fi
 }
@@ -73,7 +73,7 @@ download_tarball() {
       print_error "Error downloading ${tarball_url}, no ETag header found in response"
       return 1
     fi
-    if ! print -Rl "${URL}" "${REV}" "If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
+    if ! print -lR "${URL}" "${REV}" "If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
       print_error "Error creating or updating ${INFO_TARGET}"
       return 1
     fi

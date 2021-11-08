@@ -42,11 +42,11 @@ Initialization options:
   tialization options, so only your provided values are used. I.e. these values are either all
   automatic, or all manual."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PRl "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f" '' ${zusage}
+    print -u2 -PlR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f" '' ${zusage}
     return 2
   fi
   if (( ! # )); then
-    print -u2 -PRl "%F{red}<%= error %>${funcfiletrace[1]}: Missing zmodule url%f" '' ${zusage}
+    print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}: Missing zmodule url%f" '' ${zusage}
     _zfailed=1
     return 2
   fi
@@ -67,7 +67,7 @@ Initialization options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PRl "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+      print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
       _zfailed=1
       return 2
     fi
@@ -85,7 +85,7 @@ Initialization options:
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
-          print -u2 -PRl "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+          print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
           _zfailed=1
           return 2
         fi
@@ -134,7 +134,7 @@ Initialization options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PRl "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f" '' ${zusage}
+        print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f" '' ${zusage}
         _zfailed=1
         return 2
         ;;
@@ -173,7 +173,7 @@ Initialization options:
         fi
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        _zimfw_print -u2 -PRl "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
+        _zimfw_print -u2 -PlR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
       fi
       _zdirs+=(${zdir})
       # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules

@@ -7,6 +7,6 @@ _zimfw_build_login_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -Rn "<%= render_escaped("src/templates/login_init.zsh.erb") %>"
+    print -nR "<%= render_escaped("src/templates/login_init.zsh.erb") %>"
   ) ${ztarget}
 }

@@ -15,14 +15,14 @@ _zimfw_run_tool() {
         # Already installed
         return 0
       fi
-      _zimfw_print -Rn <%= clear_line %>"Installing ${zmodule}<%= ellipsis %>"
+      _zimfw_print -nR <%= clear_line %>"Installing ${zmodule}<%= ellipsis %>"
       ;;
     update)
       if [[ ! -d ${zdir} ]]; then
         print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -Rn <%= clear_line %>"Updating ${zmodule}<%= ellipsis %>"
+      _zimfw_print -nR <%= clear_line %>"Updating ${zmodule}<%= ellipsis %>"
       ;;
     *)
       print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Unknown action ${zaction}%f"

@@ -1,18 +1,18 @@
 _zimfw_run_list() {
   local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
   local -ri zfrozen=${8} zdisabled=${9}
-  print -PRn "%B${zmodule}:%b ${zdir}"
+  print -PnR "%B${zmodule}:%b ${zdir}"
   if [[ -z ${zurl} ]] print -Pn ' (external)'
   if (( ${zfrozen} )) print -Pn ' (frozen)'
   if (( ${zdisabled} )) print -Pn ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
-      print -Rn "  From: ${zurl}, "
+      print -nR "  From: ${zurl}, "
       if [[ -z ${zrev} ]]; then
         print -n 'default branch'
       else
-        print -Rn "${ztype} ${zrev}"
+        print -nR "${ztype} ${zrev}"
       fi
       print -R ", using ${ztool}"
     fi

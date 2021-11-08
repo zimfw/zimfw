@@ -4,11 +4,11 @@ readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch}
 REV=${7}
 
 print_error() {
-  print -u2 -PRl <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
+  print -u2 -PlR <%= clear_line %>"%F{red}<%= error %>%B${MODULE}:%b ${1}%f" ${2:+${(F):-  ${(f)^2}}}
 }
 
 print_okay() {
-  if (( PRINTLEVEL > 0 )) print -PR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${1}" ${2:+${(F):-  ${(f)^2}}}
+  if (( PRINTLEVEL > 0 )) print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${1}" ${2:+${(F):-  ${(f)^2}}}
 }
 
 case ${ACTION} in

@@ -77,7 +77,7 @@ _zimfw_build_login_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -Rn "() {
+    print -nR "() {
   setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   autoload -Uz zrecompile
   local zdumpfile zfile
@@ -152,11 +152,11 @@ Initialization options:
   tialization options, so only your provided values are used. I.e. these values are either all
   automatic, or all manual."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PRl "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f" '' ${zusage}
+    print -u2 -PlR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f" '' ${zusage}
     return 2
   fi
   if (( ! # )); then
-    print -u2 -PRl "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f" '' ${zusage}
+    print -u2 -PlR "%F{red}x ${funcfiletrace[1]}: Missing zmodule url%f" '' ${zusage}
     _zfailed=1
     return 2
   fi
@@ -177,7 +177,7 @@ Initialization options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PRl "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+      print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
       _zfailed=1
       return 2
     fi
@@ -195,7 +195,7 @@ Initialization options:
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
-          print -u2 -PRl "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+          print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
           _zfailed=1
           return 2
         fi
@@ -244,7 +244,7 @@ Initialization options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PRl "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f" '' ${zusage}
+        print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f" '' ${zusage}
         _zfailed=1
         return 2
         ;;
@@ -283,7 +283,7 @@ Initialization options:
         fi
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        _zimfw_print -u2 -PRl "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
+        _zimfw_print -u2 -PlR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
       fi
       _zdirs+=(${zdir})
       # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules
@@ -342,7 +342,7 @@ _zimfw_version_check() {
     if [[ -f ${ztarget} ]]; then
       local -r zlatest_version=$(<${ztarget})
       if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-        print -u2 -PRl "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f" ''
+        print -u2 -PlR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f" ''
       fi
     fi
   fi
@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-06 21:22:50 UTC, previous commit is 4259e64)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-08 16:37:09 UTC, previous commit is a292ca4)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -425,18 +425,18 @@ _zimfw_upgrade() {
 _zimfw_run_list() {
   local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
   local -ri zfrozen=${8} zdisabled=${9}
-  print -PRn "%B${zmodule}:%b ${zdir}"
+  print -PnR "%B${zmodule}:%b ${zdir}"
   if [[ -z ${zurl} ]] print -Pn ' (external)'
   if (( ${zfrozen} )) print -Pn ' (frozen)'
   if (( ${zdisabled} )) print -Pn ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
-      print -Rn "  From: ${zurl}, "
+      print -nR "  From: ${zurl}, "
       if [[ -z ${zrev} ]]; then
         print -n 'default branch'
       else
-        print -Rn "${ztype} ${zrev}"
+        print -nR "${ztype} ${zrev}"
       fi
       print -R ", using ${ztool}"
     fi
@@ -466,14 +466,14 @@ _zimfw_run_tool() {
         # Already installed
         return 0
       fi
-      _zimfw_print -Rn $'\E[2K\r'"Installing ${zmodule} ..."
+      _zimfw_print -nR $'\E[2K\r'"Installing ${zmodule} ..."
       ;;
     update)
       if [[ ! -d ${zdir} ]]; then
         print -u2 -PR $'\E[2K\r'"%F{red}x %B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -Rn $'\E[2K\r'"Updating ${zmodule} ..."
+      _zimfw_print -nR $'\E[2K\r'"Updating ${zmodule} ..."
       ;;
     *)
       print -u2 -PR $'\E[2K\r'"%F{red}x %B${zmodule}:%b Unknown action ${zaction}%f"
@@ -489,16 +489,16 @@ readonly TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
 print_error() {
-  print -u2 -PRl $'\E[2K\r'\"%F{red}x %B\${MODULE}:%b \${1}%f\" \${2:+\${(F):-  \${(f)^2}}}
+  print -u2 -PlR $'\E[2K\r'\"%F{red}x %B\${MODULE}:%b \${1}%f\" \${2:+\${(F):-  \${(f)^2}}}
 }
 
 print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=\${2:+\${(F):-  \${(f)^2}}}
     if [[ -e \${DIR}/.gitmodules ]]; then
-      print -u2 -PRl $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\" \${log}
+      print -u2 -PlR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\" \${log}
     else
-      print -PRl $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${(C)1}\" \${log}
+      print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${(C)1}\" \${log}
     fi
   fi
 }
@@ -557,7 +557,7 @@ download_tarball() {
       print_error \"Error downloading \${tarball_url}, no ETag header found in response\"
       return 1
     fi
-    if ! print -Rl \"\${URL}\" \"\${REV}\" \"If-None-Match: \${etag}\" >! \${INFO_TARGET} 2>/dev/null; then
+    if ! print -lR \"\${URL}\" \"\${REV}\" \"If-None-Match: \${etag}\" >! \${INFO_TARGET} 2>/dev/null; then
       print_error \"Error creating or updating \${INFO_TARGET}\"
       return 1
     fi
@@ -631,11 +631,11 @@ readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch}
 REV=\${7}
 
 print_error() {
-  print -u2 -PRl $'\E[2K\r'\"%F{red}x %B\${MODULE}:%b \${1}%f\" \${2:+\${(F):-  \${(f)^2}}}
+  print -u2 -PlR $'\E[2K\r'\"%F{red}x %B\${MODULE}:%b \${1}%f\" \${2:+\${(F):-  \${(f)^2}}}
 }
 
 print_okay() {
-  if (( PRINTLEVEL > 0 )) print -PR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${1}\" \${2:+\${(F):-  \${(f)^2}}}
+  if (( PRINTLEVEL > 0 )) print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${1}\" \${2:+\${(F):-  \${(f)^2}}}
 }
 
 case \${ACTION} in
@@ -716,7 +716,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.6.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.6.1-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -742,14 +742,14 @@ Options:
   local -a _zdisabled_dirs _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
-     print -u2 -PRl "%F{red}${0}: Too many options%f" '' ${zusage}
+     print -u2 -PlR "%F{red}${0}: Too many options%f" '' ${zusage}
      return 2
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
-        print -u2 -PRl "%F{red}${0}: Unknown option ${2}%f" '' ${zusage}
+        print -u2 -PlR "%F{red}${0}: Unknown option ${2}%f" '' ${zusage}
         return 2
         ;;
     esac
@@ -789,7 +789,7 @@ Options:
       ;;
     version) print -PR ${_zversion} ;;
     *)
-      print -u2 -PRl "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
+      print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
       return 2
       ;;
   esac
