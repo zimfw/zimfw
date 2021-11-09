@@ -115,23 +115,23 @@ Add %Bzmodule%b calls to your %B${ZDOTDIR:-${HOME}}/.zimrc%b file to define the 
 The modules are initialized in the same order they are defined.
 
   <url>                      Module absolute path or repository URL. The following URL formats
-                             are equivalent: %Bname%b, %Bzimfw/name%b, %Bhttps://github.com/zimfw/name.git%b.
-  %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in the <url>.
-                             Use slashes inside the name to organize the module into subdirecto-
-                             ries.
+                             are equivalent: %Bfoo%b, %Bzimfw/foo%b, %Bhttps://github.com/zimfw/foo.git%b.
+  %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in <url>.
+                             Use slashes inside the name to organize the module into subdirec-
+                             tories.
 
 Repository options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: the repository's default branch.
-  %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module.
-                             Overrides the branch option.
+                             Overrides the tag option. Default: the repository default branch.
+  %B-t%b|%B--tag%b <tag_name>        Use specified tag when installing and updating the module. Over-
+                             rides the branch option.
   %B-u%b|%B--use%b <%Bgit%b|%Bdegit%b>       Install and update the module using the defined tool. Default is
-                             defined by %Bzstyle ':zim:zmodule' use '%b<%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b if none
-                             is provided.
-                             %Bgit%b requires git itself. Local changes are preserved during updates.
+                             either defined by %Bzstyle ':zim:zmodule' use '%b<%Bgit%b|%Bdegit%b>%B'%b, or %Bgit%b
+                             if none is provided.
+                             %Bgit%b requires git itself. Local changes are preserved on updates.
                              %Bdegit%b requires curl or wget, and currently only works with GitHub
-                             URLs. Modules install faster and take less disk space. Local changes
-                             are lost during updates. Git submodules are not supported.
+                             URLs. Modules install faster and take less disk space. Local
+                             changes are lost on updates. Git submodules are not supported.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -139,18 +139,18 @@ Initialization options:
                              root directory. Default: %Bfunctions%b, if the subdirectory exists.
   %B-a%b|%B--autoload%b <func_name>  Autoload specified function. Default: all valid names inside the
                              module's specified fpath paths.
-  %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module root
-                             directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory also
-                             exists, or the file with largest size matching
-                             %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any exist.
-  %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in the
-                             command are substituted by the module root directory path.
-                             I.e., %B-s 'script.zsh'%b and %B-c 'source {}/script.zsh'%b are equivalent.
+  %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module
+                             root directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory
+                             also exists, or the file with largest size and with name matching
+                             %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any.
+  %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in
+                             the command are substituted by the module root directory path.
+                             I.e., %B-s 'foo.zsh'%b and %B-c 'source {}/foo.zsh'%b are equivalent.
   %B-d%b|%B--disabled%b              Don't initialize or uninstall the module.
 
-  Setting any initialization option above will disable all the default values from the other ini-
-  tialization options, so only your provided values are used. I.e. these values are either all
-  automatic, or all manual."
+  Setting any initialization option above will disable all the default values from the other
+  initialization options, so only your provided values are used. I.e. these values are either
+  all automatic, or all manual."
   if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
     print -u2 -PlR "%F{red}${0}: Must be called from %B${ZDOTDIR:-${HOME}}/.zimrc%b%f" '' ${zusage}
     return 2
@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-08 17:02:56 UTC, previous commit is 811616c)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-09 01:04:00 UTC, previous commit is 503f2da)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -716,7 +716,7 @@ esac
 }
 
 zimfw() {
-  local -r _zversion='1.6.1' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.6.2-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -727,10 +727,12 @@ Actions:
   %Bcompile%b         Compile Zsh files.
   %Bhelp%b            Print this help.
   %Binfo%b            Print Zim and system info.
-  %Blist%b            List all modules. Use %B-v%b to also see the current details for all modules.
+  %Blist%b            List all modules currently defined in %B${ZDOTDIR:-${HOME}}/.zimrc%b.
+                  Use %B-v%b to also see the modules details.
   %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
                   output, and see skipped modules.
-  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b to uninstall quietly.
+  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use option %B-q%b to uninstall
+                  quietly.
   %Bupdate%b          Update current modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to see their
                   output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.

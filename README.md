@@ -85,7 +85,7 @@ A module from the [zimfw] organization: `zmodule archive`
 
 A module from another GitHub organization: `zmodule StackExchange/blackbox`
 
-A module not from GitHub: `zmodule https://gitlab.com/Spriithy/basher.git`
+A module with a custom URL: `zmodule https://gitlab.com/Spriithy/basher.git`
 
 A module at an absolute path, that is already installed:
 `zmodule /usr/local/share/zsh-autosuggestions`
@@ -111,27 +111,27 @@ and the degit'ed module had 2.9M and took 3s to be installed. -->
 
 <pre>Usage: <b>zmodule</b> &lt;url&gt; [<b>-n</b>|<b>--name</b> &lt;module_name&gt;] [options]
 
-Add <b>zmodule</b> calls to your <b>~/.zimrc</b> file to define the modules to be initialized. The modules are
-initialized in the same order they are defined.
+Add <b>zmodule</b> calls to your <b>~/.zimrc</b> file to define the modules to be initialized. The modules
+are initialized in the same order they are defined.
 
   &lt;url&gt;                      Module absolute path or repository URL. The following URL formats
-                             are equivalent: <b>name</b>, <b>zimfw/name</b>, <b>https://github.com/zimfw/name.git</b>.
-  <b>-n</b>|<b>--name</b> &lt;module_name&gt;    Set a custom module name. Default: the last component in the &lt;url&gt;.
-                             Use slashes inside the name to organize the module into subdirecto-
-                             ries.
+                             are equivalent: <b>foo</b>, <b>zimfw/foo</b>, <b>https://github.com/zimfw/foo.git</b>.
+  <b>-n</b>|<b>--name</b> &lt;module_name&gt;    Set a custom module name. Default: the last component in &lt;url&gt;.
+                             Use slashes inside the name to organize the module into subdirec-
+                             tories.
 
 Repository options:
   <b>-b</b>|<b>--branch</b> &lt;branch_name&gt;  Use specified branch when installing and updating the module.
-                             Overrides the tag option. Default: the repository&apos;s default branch.
-  <b>-t</b>|<b>--tag</b> &lt;tag_name&gt;        Use specified tag when installing and updating the module.
-                             Overrides the branch option.
+                             Overrides the tag option. Default: the repository default branch.
+  <b>-t</b>|<b>--tag</b> &lt;tag_name&gt;        Use specified tag when installing and updating the module. Over-
+                             rides the branch option.
   <b>-u</b>|<b>--use</b> &lt;<b>git</b>|<b>degit</b>&gt;       Install and update the module using the defined tool. Default is
-                             defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;<b>git</b>|<b>degit</b>&gt;<b>&apos;</b>, or <b>git</b> if none
-                             is provided.
-                             <b>git</b> requires git itself. Local changes are preserved during updates.
+                             either defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;<b>git</b>|<b>degit</b>&gt;<b>&apos;</b>, or <b>git</b>
+                             if none is provided.
+                             <b>git</b> requires git itself. Local changes are preserved on updates.
                              <b>degit</b> requires curl or wget, and currently only works with GitHub
-                             URLs. Modules install faster and take less disk space. Local changes
-                             are lost during updates. Git submodules are not supported.
+                             URLs. Modules install faster and take less disk space. Local
+                             changes are lost on updates. Git submodules are not supported.
   <b>-z</b>|<b>--frozen</b>                Don&apos;t install or update the module.
 
 Initialization options:
@@ -139,18 +139,18 @@ Initialization options:
                              root directory. Default: <b>functions</b>, if the subdirectory exists.
   <b>-a</b>|<b>--autoload</b> &lt;func_name&gt;  Autoload specified function. Default: all valid names inside the
                              module&apos;s specified fpath paths.
-  <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Source specified file. The file path is relative to the module root
-                             directory. Default: <b>init.zsh</b>, if the <b>functions</b> subdirectory also
-                             exists, or the file with largest size matching
-                             <b>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</b>, if any exist.
-  <b>-c</b>|<b>--cmd</b> &lt;command&gt;         Execute specified command. Occurrences of the <b>{}</b> placeholder in the
-                             command are substituted by the module root directory path.
-                             I.e., <b>-s &apos;script.zsh&apos;</b> and <b>-c &apos;source {}/script.zsh&apos;</b> are equivalent.
+  <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Source specified file. The file path is relative to the module
+                             root directory. Default: <b>init.zsh</b>, if the <b>functions</b> subdirectory
+                             also exists, or the file with largest size and with name matching
+                             <b>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</b>, if any.
+  <b>-c</b>|<b>--cmd</b> &lt;command&gt;         Execute specified command. Occurrences of the <b>{}</b> placeholder in
+                             the command are substituted by the module root directory path.
+                             I.e., <b>-s &apos;foo.zsh&apos;</b> and <b>-c &apos;source {}/foo.zsh&apos;</b> are equivalent.
   <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize or uninstall the module.
 
-  Setting any initialization option above will disable all the default values from the other ini-
-  tialization options, so only your provided values are used. I.e. these values are either all
-  automatic, or all manual.
+  Setting any initialization option above will disable all the default values from the other
+  initialization options, so only your provided values are used. I.e. these values are either
+  all automatic, or all manual.
 </pre>
 
 </details>
