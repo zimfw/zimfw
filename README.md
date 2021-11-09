@@ -79,32 +79,22 @@ initialized, then run `zimfw install` to install them.
 
 ### zmodule
 
-Below are some usage examples.
+Below are some usage examples:
 
-A module from the [zimfw] organization: `zmodule archive`
-
-A module from another GitHub organization: `zmodule StackExchange/blackbox`
-
-A module with a custom URL: `zmodule https://gitlab.com/Spriithy/basher.git`
-
-A module at an absolute path, that is already installed:
-`zmodule /usr/local/share/zsh-autosuggestions`
-
-A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
-
-A module with a custom initialization file name:
-`zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh` or
-`zmodule spaceship-prompt/spaceship-prompt --name spaceship`
-
-A module with two custom initialization files:
-`zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
-
-A module with custom initialization commands:
-`zmodule skywind3000/z.lua --cmd 'export _ZL_HYPHEN=1' --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
-
-A module with a big git repository: `zmodule romkatv/powerlevel10k --use degit`
-<!-- As of 2021-11-06, the complete repo had 83M and took 1m59s to be cloned,
-and the degit'ed module had 2.9M and took 3s to be installed. -->
+  * A module from the [zimfw] organization: `zmodule archive`
+  * A module from another GitHub organization: `zmodule StackExchange/blackbox`
+  * A module with a custom URL: `zmodule https://gitlab.com/Spriithy/basher.git`
+  * A module at an absolute path, that is already installed:
+    `zmodule /usr/local/share/zsh-autosuggestions`
+  * A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
+  * A module with a custom initialization file name:
+    `zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh` or
+    `zmodule spaceship-prompt/spaceship-prompt --name spaceship`
+  * A module with two custom initialization files:
+    `zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
+  * A module with custom initialization commands:
+    `zmodule skywind3000/z.lua --cmd 'export _ZL_HYPHEN=1' --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
+  * A module with a big git repository: `zmodule romkatv/powerlevel10k --use degit`
 
 <details id="zmodule-usage">
 <summary>Want help with the complete <code>zmodule</code> usage?</summary>
@@ -157,15 +147,13 @@ Initialization options:
 
 ### zimfw
 
-Added new modules to `~/.zimrc`? Run `zimfw install`.
+The command line utility for Zim:
 
-Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
-
-Want to update your modules to their latest revisions? Run `zimfw update`.
-
-Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
-
-For more information about the `zimfw` tool, run `zimfw help`.
+  * Added new modules to `~/.zimrc`? Run `zimfw install`.
+  * Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
+  * Want to update your modules to their latest revisions? Run `zimfw update`.
+  * Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
+  * For more information about the `zimfw` utility, run `zimfw help`.
 
 Settings
 --------
