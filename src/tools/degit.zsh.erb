@@ -1,7 +1,6 @@
 # This runs in a new shell
 readonly -i PRINTLEVEL=${1}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7}
-readonly TEMP=.zdegit_${RANDOM}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
