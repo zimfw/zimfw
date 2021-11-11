@@ -21,46 +21,45 @@ case ${ACTION} in
     fi
     ;;
   update)
-    readonly GIT_DIR=${DIR}/.git
-    if [[ ! -d ${GIT_DIR} ]]; then
+    if [[ ! -r ${DIR}/.git ]]; then
       if (( PRINTLEVEL > 0 )); then
         print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f"
       fi
       return 0
     fi
-    if [[ ${URL} != $(command git -C ${DIR} --git-dir=${GIT_DIR} config --get remote.origin.url) ]]; then
+    if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
       print_error "URL does not match. Expected ${URL}. Will not try to update."
       return 1
     fi
-    if ! ERR=$(command git -C ${DIR} --git-dir=${GIT_DIR} fetch -pq origin 2>&1); then
+    if ! ERR=$(command git -C ${DIR} fetch -pq origin 2>&1); then
       print_error 'Error during git fetch' ${ERR}
       return 1
     fi
     if [[ ${TYPE} == tag ]]; then
-      if [[ ${REV} == $(command git -C ${DIR} --git-dir=${GIT_DIR} describe --tags --exact-match 2>/dev/null) ]]; then
+      if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
         print_okay 'Already up to date'
         return 0
       fi
     elif [[ -z ${REV} ]]; then
       # Get HEAD remote branch
-      if ! ERR=$(command git -C ${DIR} --git-dir=${GIT_DIR} remote set-head origin -a 2>&1); then
+      if ! ERR=$(command git -C ${DIR} remote set-head origin -a 2>&1); then
         print_error 'Error during git remote set-head' ${ERR}
         return 1
       fi
-      REV=${$(command git -C ${DIR} --git-dir=${GIT_DIR} symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
+      REV=${$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
     fi
     if [[ ${TYPE} == branch ]]; then
       LOG_REV=${REV}@{u}
     else
       LOG_REV=${REV}
     fi
-    LOG=$(command git -C ${DIR} --git-dir=${GIT_DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} -- 2>/dev/null)
-    if ! ERR=$(command git -C ${DIR} --git-dir=${GIT_DIR} checkout -q ${REV} -- 2>&1); then
+    LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${LOG_REV} -- 2>/dev/null)
+    if ! ERR=$(command git -C ${DIR} checkout -q ${REV} -- 2>&1); then
       print_error 'Error during git checkout' ${ERR}
       return 1
     fi
     if [[ ${TYPE} == branch ]]; then
-      if ! OUT=$(command git -C ${DIR} --git-dir=${GIT_DIR} merge --ff-only --no-progress -n 2>&1); then
+      if ! OUT=$(command git -C ${DIR} merge --ff-only --no-progress -n 2>&1); then
         print_error 'Error during git merge' ${OUT}
         return 1
       fi
@@ -70,7 +69,7 @@ case ${ACTION} in
       OUT="Updating to ${TYPE} ${REV}"
     fi
     if [[ -n ${SUBMODULES} ]]; then
-      if ! ERR=$(command git -C ${DIR} --git-dir=${GIT_DIR} submodule update --init --recursive -q -- 2>&1); then
+      if ! ERR=$(command git -C ${DIR} submodule update --init --recursive -q -- 2>&1); then
         print_error 'Error during git submodule update' ${ERR}
         return 1
       fi
