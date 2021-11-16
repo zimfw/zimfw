@@ -39,13 +39,13 @@ Installation
 ------------
 Installing Zim is easy:
 
-  * With curl:
+* With curl:
 
-        curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+      curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
-  * With wget:
+* With wget:
 
-        wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+      wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
 Open a new terminal and you're done. Enjoy your Zsh IMproved! Take some time to
 tweak your `~/.zshrc` file, and to also check the available [modules] and [themes]
@@ -61,14 +61,14 @@ you can add to your `~/.zimrc`.
        chsh -s $(which zsh)
 
 2. Prepend the lines in the following templates to the respective dot files:
+
    * [~/.zshenv](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshenv)
    * [~/.zshrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshrc)
    * [~/.zlogin](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zlogin)
    * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
 
-3. Restart your terminal to automatically install the modules defined in `~/.zimrc`
-   and build the initialization scripts.
-
+3. Restart your terminal to automatically install the `zimfw` command line utility,
+   install the modules defined in `~/.zimrc`, and build the initialization scripts.
 </details>
 
 Usage
@@ -128,7 +128,7 @@ Initialization options:
   <b>-f</b>|<b>--fpath</b> &lt;path&gt;          Add specified path to fpath. The path is relative to the module
                              root directory. Default: <b>functions</b>, if the subdirectory exists.
   <b>-a</b>|<b>--autoload</b> &lt;func_name&gt;  Autoload specified function. Default: all valid names inside the
-                             module&apos;s specified fpath paths.
+                             <b>functions</b> subdirectory, if any.
   <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Source specified file. The file path is relative to the module
                              root directory. Default: <b>init.zsh</b>, if the <b>functions</b> subdirectory
                              also exists, or the file with largest size and with name matching

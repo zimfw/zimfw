@@ -138,7 +138,7 @@ Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
                              root directory. Default: %Bfunctions%b, if the subdirectory exists.
   %B-a%b|%B--autoload%b <func_name>  Autoload specified function. Default: all valid names inside the
-                             module's specified fpath paths.
+                             %Bfunctions%b subdirectory, if any.
   %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module
                              root directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory
                              also exists, or the file with largest size and with name matching
@@ -177,7 +177,7 @@ Initialization options:
   shift
   if [[ ${1} == (-n|--name) ]]; then
     if (( # < 2 )); then
-      print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+      print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
       _zfailed=1
       return 2
     fi
@@ -195,7 +195,7 @@ Initialization options:
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
-          print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option ${1}%f" '' ${zusage}
+          print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
           _zfailed=1
           return 2
         fi
@@ -203,7 +203,7 @@ Initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use)
-        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option ${1} has no effect for external modules%f"
+        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option %B${1}%b has no effect for external modules%f"
         ;;
     esac
     case ${1} in
@@ -244,7 +244,7 @@ Initialization options:
         ;;
       -d|--disabled) zdisabled=1 ;;
       *)
-        print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option ${1}%f" '' ${zusage}
+        print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option %B${1}%b%f" '' ${zusage}
         _zfailed=1
         return 2
         ;;
@@ -373,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-11 18:43:25 UTC, previous commit is cd71c8d)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-15 16:43:17 UTC, previous commit is e060934)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -595,7 +595,7 @@ case \${ACTION} in
   update)
     if [[ ! -r \${INFO_TARGET} ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f\"
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
       fi
       return 0
     fi
@@ -649,7 +649,7 @@ case \${ACTION} in
   update)
     if [[ ! -r \${DIR}/.git ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f\"
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using git. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
       fi
       return 0
     fi
@@ -672,7 +672,12 @@ case \${ACTION} in
         print_error 'Error during git remote set-head' \${ERR}
         return 1
       fi
-      REV=\${\$(command git -C \${DIR} symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
+      if REV=\$(command git -C \${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+        REV=\${REV#origin/}
+      else
+        print_error 'Error during git symbolic-ref' \${REV}
+        return 1
+      fi
     fi
     if [[ \${TYPE} == branch ]]; then
       LOG_REV=\${REV}@{u}
@@ -728,10 +733,9 @@ Actions:
                   Use %B-v%b to also see the modules details.
   %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
                   output, and see skipped modules.
-  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use option %B-q%b to uninstall
-                  quietly.
-  %Bupdate%b          Update current modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to see their
-                  output, and see skipped modules.
+  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
+  %Bupdate%b          Update current modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see
+                  their output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
 

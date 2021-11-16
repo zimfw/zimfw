@@ -23,7 +23,7 @@ case ${ACTION} in
   update)
     if [[ ! -r ${DIR}/.git ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using git. Will not try to update. You can disable this with the zmodule option -z|--frozen.%f"
+        print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using git. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
       fi
       return 0
     fi
@@ -46,7 +46,12 @@ case ${ACTION} in
         print_error 'Error during git remote set-head' ${ERR}
         return 1
       fi
-      REV=${$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD)#origin/} || return 1
+      if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+        REV=${REV#origin/}
+      else
+        print_error 'Error during git symbolic-ref' ${REV}
+        return 1
+      fi
     fi
     if [[ ${TYPE} == branch ]]; then
       LOG_REV=${REV}@{u}
