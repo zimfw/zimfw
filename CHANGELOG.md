@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.6.2] - 2021-11-21
+
+### Fixed
+- Force local zsh emulation options, so the code is not broken by unexpected
+  option changes by the user.
+
 ## [1.6.1] - 2021-11-08
 
 ### Fixed
@@ -219,7 +225,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/zimfw/zimfw/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/zimfw/zimfw/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/zimfw/zimfw/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/zimfw/zimfw/compare/v1.4.3...v1.5.0

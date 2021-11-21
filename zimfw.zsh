@@ -372,7 +372,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-21 19:26:56 UTC, previous commit is de685e8)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-21 19:40:05 UTC, previous commit is a5fb148)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -721,7 +721,7 @@ esac
 zimfw() {
   builtin emulate -L zsh
   setopt EXTENDED_GLOB
-  local -r _zversion='1.6.2-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.6.2' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
