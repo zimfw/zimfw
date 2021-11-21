@@ -1,4 +1,5 @@
 # This runs in a new shell
+builtin emulate -L zsh
 readonly -i PRINTLEVEL=${1}
 readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch} SUBMODULES=1
 REV=${7}

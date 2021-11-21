@@ -1,6 +1,5 @@
 _zimfw_version_check() {
   if (( _zprintlevel > 0 )); then
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
     local -r ztarget=${ZIM_HOME}/.latest_version
     # If .latest_version does not exist or was not modified in the last 30 days
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then

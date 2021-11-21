@@ -78,7 +78,8 @@ _zimfw_build_login_init() {
   fi
   _zimfw_mv =(
     print -nR "() {
-  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
+  builtin emulate -L zsh
+  setopt EXTENDED_GLOB
   autoload -Uz zrecompile
   local zdumpfile zfile
 
@@ -160,7 +161,6 @@ Initialization options:
     _zfailed=1
     return 2
   fi
-  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
   local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
   local -i zdisabled=0 zfrozen=0
   local -a zfpaths zfunctions zcmds
@@ -330,7 +330,6 @@ _zimfw_list_unuseds() {
 
 _zimfw_version_check() {
   if (( _zprintlevel > 0 )); then
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
     local -r ztarget=${ZIM_HOME}/.latest_version
     # If .latest_version does not exist or was not modified in the last 30 days
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
@@ -373,7 +372,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-15 16:43:17 UTC, previous commit is e060934)'
+  print -R 'zimfw version: '${_zversion}' (built at 2021-11-21 19:26:56 UTC, previous commit is de685e8)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -483,6 +482,8 @@ _zimfw_run_tool() {
   local zcmd
   case ${ztool} in
     degit) zcmd="# This runs in a new shell
+builtin emulate -L zsh
+setopt EXTENDED_GLOB
 readonly -i PRINTLEVEL=\${1}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
@@ -503,7 +504,6 @@ print_okay() {
 }
 
 download_tarball() {
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
   local host repo
   if [[ \${URL} =~ ^([^:@/]+://)?([^@]+@)?([^:/]+)[:/]([^/]+/[^/]+)/?\$ ]]; then
     host=\${match[3]}
@@ -625,6 +625,7 @@ case \${ACTION} in
 esac
 " ;;
     git) zcmd="# This runs in a new shell
+builtin emulate -L zsh
 readonly -i PRINTLEVEL=\${1}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch} SUBMODULES=1
 REV=\${7}
@@ -718,6 +719,8 @@ esac
 }
 
 zimfw() {
+  builtin emulate -L zsh
+  setopt EXTENDED_GLOB
   local -r _zversion='1.6.2-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

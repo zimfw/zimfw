@@ -1,4 +1,6 @@
 # This runs in a new shell
+builtin emulate -L zsh
+setopt EXTENDED_GLOB
 readonly -i PRINTLEVEL=${1}
 readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
@@ -19,7 +21,6 @@ print_okay() {
 }
 
 download_tarball() {
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
   local host repo
   if [[ ${URL} =~ <%= url_regex %> ]]; then
     host=${match[3]}

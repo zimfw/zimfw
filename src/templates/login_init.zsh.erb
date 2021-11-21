@@ -1,5 +1,6 @@
 () {
-  setopt LOCAL_OPTIONS CASE_GLOB EXTENDED_GLOB
+  builtin emulate -L zsh
+  setopt EXTENDED_GLOB
   autoload -Uz zrecompile
   local zdumpfile zfile
 
