@@ -46,8 +46,7 @@ _zimfw_mv() {
     if [[ -e ${2} ]]; then
       command mv -f ${2}{,.old} || return 1
     fi
-    command mv -f ${1} ${2} && \
-        _zimfw_print -PR "%F{green})%f %B${2}:%b Updated. Restart your terminal for changes to take effect."
+    command mv -f ${1} ${2} && _zimfw_print -PR "%F{green})%f %B${2}:%b Updated.${_zrestartmsg}"
   fi
 }
 
@@ -77,30 +76,7 @@ _zimfw_build_login_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -nR "() {
-  builtin emulate -L zsh
-  setopt EXTENDED_GLOB
-  autoload -Uz zrecompile
-  local zdumpfile zfile
-
-  # Compile the completion cache; significant speedup
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=\${ZDOTDIR:-\${HOME}}/.zcompdump
-  if [[ -f \${zdumpfile} ]]; then
-    zrecompile -p \${1} \${zdumpfile} || return 1
-  fi
-
-  # Compile Zsh startup files
-  for zfile in \${ZDOTDIR:-\${HOME}}/.z(shenv|profile|shrc|login|logout)(N-.); do
-    zrecompile -p \${1} \${zfile} || return 1
-  done
-
-  # Compile Zim scripts
-  for zfile in ${zscriptglob}; do
-    zrecompile -p \${1} \${zfile} || return 1
-  done
-
-  if [[ \${1} != -q ]] print -P 'Done with compile.'
-} \"\${@}\"
+    print -nR "# Do nothing. This file is deprecated.
 "
   ) ${ztarget}
 }
@@ -353,7 +329,6 @@ _zimfw_clean_compiled() {
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
-  command rm -f ${zopt} ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout).zwc(|.old)(N) || return 1
   _zimfw_print -P 'Done with clean-compiled. Restart your terminal or run %Bzimfw compile%b to re-compile.'
 }
 
@@ -366,22 +341,28 @@ _zimfw_clean_dumpfile() {
 }
 
 _zimfw_compile() {
-  local zopt
-  if (( _zprintlevel <= 0 )) zopt=-q
-  source ${ZIM_HOME}/login_init.zsh ${zopt}
+  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
+  # Compile Zim scripts
+  local zfile
+  for zfile in ${^zscriptdirs}/(^*test*/)#*.zsh(|-theme)(N-.); do
+    if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
+      zcompile -R ${zfile} && \
+          if (( _zprintlevel > 0 )) print -PR "%F{green})%f %B${zfile}.zwc:%b Compiled"
+    fi
+  done
+  if (( _zprintlevel > 0 )) print -P 'Done with compile.'
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2021-11-21 19:40:05 UTC, previous commit is a5fb148)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-07 21:17:47 UTC, previous commit is 90de91a)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_install_update() {
-  _zimfw_source_zimrc 1 ${1} && \
-      zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool && \
-      _zimfw_print -PR "Done with ${1}. Restart your terminal for any changes to take effect."
+  _zimfw_source_zimrc 1 ${1} && zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
 }
 
 _zimfw_uninstall() {
@@ -721,7 +702,7 @@ esac
 zimfw() {
   builtin emulate -L zsh
   setopt EXTENDED_GLOB
-  local -r _zversion='1.6.2' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.7.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -734,6 +715,7 @@ Actions:
   %Binfo%b            Print Zim and system info.
   %Blist%b            List all modules currently defined in %B${ZDOTDIR:-${HOME}}/.zimrc%b.
                   Use %B-v%b to also see the modules details.
+  %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
   %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
                   output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
@@ -765,25 +747,33 @@ Options:
     _zimfw_version_check
   fi
 
+  local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
       _zimfw_source_zimrc 2 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_install_update install && _zimfw_source_zimrc 2 && _zimfw_build ;;
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc 2 && _zimfw_build_login_init && _zimfw_compile ;;
+    compile) _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
+    init)
+      _zrestartmsg=
+      _zimfw_install_update install || return 1
+      (( _zprintlevel-- ))
+      _zimfw_print -PR "Done with install.${_zrestartmsg}" # Only printed in verbose mode
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      ;;
     install|update)
       _zimfw_install_update ${1} || return 1
+      _zimfw_print -PR "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;

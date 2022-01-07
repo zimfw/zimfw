@@ -7,7 +7,6 @@ _zimfw_mv() {
     if [[ -e ${2} ]]; then
       command mv -f ${2}{,.old} || return 1
     fi
-    command mv -f ${1} ${2} && \
-        _zimfw_print -PR "<%= okay %>%B${2}:%b Updated. Restart your terminal for changes to take effect."
+    command mv -f ${1} ${2} && _zimfw_print -PR "<%= okay %>%B${2}:%b Updated.${_zrestartmsg}"
   fi
 }

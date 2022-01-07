@@ -14,6 +14,7 @@ Actions:
   %Binfo%b            Print Zim and system info.
   %Blist%b            List all modules currently defined in %B<%= home %>/.zimrc%b.
                   Use %B-v%b to also see the modules details.
+  %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
   %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
                   output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
@@ -45,25 +46,33 @@ Options:
     _zimfw_version_check
   fi
 
+  local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
       _zimfw_source_zimrc 2 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    init) _zimfw_install_update install && _zimfw_source_zimrc 2 && _zimfw_build ;;
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc 2 && _zimfw_build_login_init && _zimfw_compile ;;
+    compile) _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
+    init)
+      _zrestartmsg=
+      _zimfw_install_update install || return 1
+      (( _zprintlevel-- ))
+      _zimfw_print -PR "<%= done %>Done with install.${_zrestartmsg}" # Only printed in verbose mode
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      ;;
     install|update)
       _zimfw_install_update ${1} || return 1
+      _zimfw_print -PR "<%= done %>Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;

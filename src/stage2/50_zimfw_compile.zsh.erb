@@ -1,5 +1,13 @@
 _zimfw_compile() {
-  local zopt
-  if (( _zprintlevel <= 0 )) zopt=-q
-  source ${ZIM_HOME}/login_init.zsh ${zopt}
+  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
+  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
+  # Compile Zim scripts
+  local zfile
+  for zfile in ${^zscriptdirs}/(^*test*/)#*.zsh(|-theme)(N-.); do
+    if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
+      zcompile -R ${zfile} && \
+          if (( _zprintlevel > 0 )) print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
+    fi
+  done
+  if (( _zprintlevel > 0 )) print -P '<%= done %>Done with compile.'
 }
