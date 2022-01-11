@@ -249,11 +249,11 @@ Initialization options:
         local -ra prezto_scripts=(${zdir}/init.zsh(N))
         if (( ${#zfpaths} && ${#prezto_scripts} )); then
           # this follows the prezto module format, no need to check for other scripts
-          zcmds=("source ${^prezto_scripts[@]:A}")
+          zcmds=('source '${^prezto_scripts:A})
         else
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
           local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-          zcmds=("source ${^zscripts[@]:A}")
+          zcmds=('source '${^zscripts:A})
         fi
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
@@ -352,7 +352,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-10 16:15:12 UTC, previous commit is cfc955c)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-11 16:25:04 UTC, previous commit is 2491856)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -420,9 +420,9 @@ _zimfw_run_list() {
     # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
-    if (( ${#zfpaths} )) print -R "  fpath: ${zfpaths[@]}"
-    if (( ${#zfunctions} )) print -R "  autoload: ${zfunctions[@]}"
-    if (( ${#zcmds} )) print -R "  cmd: ${(j:; :)zcmds[@]}"
+    if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
+    if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
+    if (( ${#zcmds} )) print -R '  cmd: '${(j:; :)zcmds}
   fi
 }
 

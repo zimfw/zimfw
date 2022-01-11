@@ -164,11 +164,11 @@ Initialization options:
         local -ra prezto_scripts=(${zdir}/init.zsh(N))
         if (( ${#zfpaths} && ${#prezto_scripts} )); then
           # this follows the prezto module format, no need to check for other scripts
-          zcmds=("source ${^prezto_scripts[@]:A}")
+          zcmds=('source '${^prezto_scripts:A})
         else
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
           local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-          zcmds=("source ${^zscripts[@]:A}")
+          zcmds=('source '${^zscripts:A})
         fi
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
