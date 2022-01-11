@@ -1,7 +1,5 @@
 _zimfw_build_login_init() {
-  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
-  local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)") ztarget=${ZIM_HOME}/login_init.zsh
+  local -r ztarget=${ZIM_HOME}/login_init.zsh
   # Force update of login_init.zsh if it's older than .zimrc
   if [[ ${ztarget} -ot <%= home %>/.zimrc ]]; then
     command mv -f ${ztarget}{,.old} || return 1

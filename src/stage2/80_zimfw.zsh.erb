@@ -1,6 +1,5 @@
 zimfw() {
-  builtin emulate -L zsh
-  setopt EXTENDED_GLOB
+  builtin emulate -L zsh -o EXTENDED_GLOB
   local -r _zversion='<%= version %>' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

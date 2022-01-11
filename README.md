@@ -81,19 +81,19 @@ initialized, then run `zimfw install` to install them.
 
 Below are some usage examples:
 
-  * A module from the [zimfw] organization: `zmodule archive`
+  * A module from the [@zimfw] organization: `zmodule archive`
   * A module from another GitHub organization: `zmodule StackExchange/blackbox`
   * A module with a custom URL: `zmodule https://gitlab.com/Spriithy/basher.git`
   * A module at an absolute path, that is already installed:
     `zmodule /usr/local/share/zsh-autosuggestions`
   * A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
-  * A module with a custom initialization file name:
+  * A module with a custom initialization file:
     `zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh` or
     `zmodule spaceship-prompt/spaceship-prompt --name spaceship`
   * A module with two custom initialization files:
     `zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
-  * A module with custom initialization commands:
-    `zmodule skywind3000/z.lua --cmd 'export _ZL_HYPHEN=1' --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
+  * A module with a custom initialization command:
+    `zmodule skywind3000/z.lua --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
   * A module with a big git repository: `zmodule romkatv/powerlevel10k --use degit`
 
 <details id="zmodule-usage">
@@ -178,4 +178,4 @@ remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin
 [blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://zimfw.sh/docs/modules/
 [themes]: https://zimfw.sh/docs/themes/
-[zimfw]: https://github.com/zimfw
+[@zimfw]: https://github.com/zimfw

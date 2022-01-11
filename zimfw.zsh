@@ -68,9 +68,7 @@ _zimfw_build_init() {
 }
 
 _zimfw_build_login_init() {
-  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
-  local -r zscriptglob=("${^zscriptdirs[@]}/(^*test*/)#*.zsh(|-theme)(N-.)") ztarget=${ZIM_HOME}/login_init.zsh
+  local -r ztarget=${ZIM_HOME}/login_init.zsh
   # Force update of login_init.zsh if it's older than .zimrc
   if [[ ${ztarget} -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
     command mv -f ${ztarget}{,.old} || return 1
@@ -347,15 +345,14 @@ _zimfw_compile() {
   local zfile
   for zfile in ${^zscriptdirs}/(^*test*/)#*.zsh(|-theme)(N-.); do
     if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
-      zcompile -R ${zfile} && \
-          if (( _zprintlevel > 0 )) print -PR "%F{green})%f %B${zfile}.zwc:%b Compiled"
+      zcompile -R ${zfile} && _zimfw_print -PR "%F{green})%f %B${zfile}.zwc:%b Compiled"
     fi
   done
-  if (( _zprintlevel > 0 )) print -P 'Done with compile.'
+  _zimfw_print -P 'Done with compile.'
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-07 21:17:47 UTC, previous commit is 90de91a)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-10 16:15:12 UTC, previous commit is cfc955c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -463,8 +460,7 @@ _zimfw_run_tool() {
   local zcmd
   case ${ztool} in
     degit) zcmd="# This runs in a new shell
-builtin emulate -L zsh
-setopt EXTENDED_GLOB
+builtin emulate -L zsh -o EXTENDED_GLOB
 readonly -i PRINTLEVEL=\${1}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
@@ -700,8 +696,7 @@ esac
 }
 
 zimfw() {
-  builtin emulate -L zsh
-  setopt EXTENDED_GLOB
+  builtin emulate -L zsh -o EXTENDED_GLOB
   local -r _zversion='1.7.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:

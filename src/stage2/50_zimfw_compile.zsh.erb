@@ -5,9 +5,8 @@ _zimfw_compile() {
   local zfile
   for zfile in ${^zscriptdirs}/(^*test*/)#*.zsh(|-theme)(N-.); do
     if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
-      zcompile -R ${zfile} && \
-          if (( _zprintlevel > 0 )) print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
+      zcompile -R ${zfile} && _zimfw_print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
     fi
   done
-  if (( _zprintlevel > 0 )) print -P '<%= done %>Done with compile.'
+  _zimfw_print -P '<%= done %>Done with compile.'
 }
