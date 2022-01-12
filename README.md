@@ -62,9 +62,7 @@ you can add to your `~/.zimrc`.
 
 2. Prepend the lines in the following templates to the respective dot files:
 
-   * [~/.zshenv](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshenv)
    * [~/.zshrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshrc)
-   * [~/.zlogin](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zlogin)
    * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
 
 3. Restart your terminal to automatically install the `zimfw` command line utility,
