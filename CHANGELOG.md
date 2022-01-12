@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.7.0] - 2022-01-12
+
+### Changed
+
+- The output of `zimfw init` to be friendlier to the terminal startup screen
+  when called without `-q`.
+- Only compile scripts via the `zimfw` tool after actions where scripts can
+  change (build, install, update, upgrade).
+- Move compilation of the completion dumpfile to the completion module,
+  [here](https://github.com/zimfw/completion/blob/9386a76eac3f55b1c04d57d26238f725b4b3ba25/init.zsh#L10-L11).
+- Don't compile user Zsh startup scripts anymore
+  (See [#450](https://github.com/zimfw/zimfw/pull/450)). This means you can:
+  - either manually delete the compiled files, as they won't be updated by Zim
+    anymore (recommended):
+    ```
+    for zfile in ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout); do
+      rm -f ${zfile}.zwc(|.old)(N)
+    done
+    ```
+  - or add the following to your .zlogin so Zsh startup scripts continue to be
+    compiled:
+    ```diff
+    +for zfile in ${ZDOTDIR:-${HOME}}/.z(shenv|profile|shrc|login|logout); do
+    +  if [[ ! ${zfile}.zwc -nt ${zfile} ]] zcompile -R ${zfile}
+    +done
+    +unset zfile
+    ```
+
+### Deprecated
+- The login_init.zsh script, which is now empty. This means you can safely
+  remove the following line from your .zlogin:
+  ```diff
+  -source ${ZIM_HOME}/login_init.zsh -q &!
+  ```
+
 ## [1.6.2] - 2021-11-21
 
 ### Fixed
@@ -225,7 +260,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.6.2...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/zimfw/zimfw/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/zimfw/zimfw/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/zimfw/zimfw/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/zimfw/zimfw/compare/v1.5.0...v1.6.0
