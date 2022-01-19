@@ -323,17 +323,14 @@ _zimfw_version_check() {
 }
 
 _zimfw_check_dumpfile() {
-  local -r ztarget=${ZIM_HOME}/.latest_comp zpre=$'*\0'
-  local zdumpfile zline ckline=
-  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
-  if [[ -r ${ztarget} ]] ckline=$(command cksum < ${ztarget} 2>/dev/null)
+  local zdumpfile zline
+  local -r zpre=$'*\0'
   local -r zfpath=(${${_zfpaths#${~zpre}}:A} ${fpath:|_zim_fpath})
-  local -r zcomp=(${^zfpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
-  print -R ${(o)zcomp} >! ${ztarget} || return 1
+  local -r zcomps=(${^zfpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+  zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   if [[ -e ${zdumpfile} ]]; then
     IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
-    if [[ ${zline[2]} -eq ${#zcomp} && ${zline[4]} == ${ZSH_VERSION} && \
-        $(command cksum < ${ztarget} 2>/dev/null) == ${ckline} ]]; then
+    if [[ ${zline[2]} -eq ${#zcomps} && ${zline[4]} == ${ZSH_VERSION} ]]; then
       _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b Already up to date"
     else
       _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b New completion configuration needs to be dumped. Will do %Bclean-dumpfile%b."
@@ -376,7 +373,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-18 19:51:41 UTC, previous commit is bd765df)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-19 01:49:13 UTC, previous commit is 35e1d2e)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)

@@ -10,10 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `check-dumpfile` action. It runs in the build, install and update actions, and checks if a
-  new completion configuration needs to be dumped. It's more powerful than `compinit`, which
-  just checks if the number of completion functions and the Zsh version changed. The
-  `check-dumpfile` action also checks if the actual list of completion functions changed. It's
-  intended to be used with `compinit -C`, so no checks are done during the shell startup.
+  new completion configuration needs to be dumped. It's intended to be used with `compinit -C`,
+  so no checks are done during the shell startup.
 
 ## [1.7.0] - 2022-01-12
 
