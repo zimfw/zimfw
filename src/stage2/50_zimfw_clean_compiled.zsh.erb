@@ -3,6 +3,6 @@ _zimfw_clean_compiled() {
   local -Ur zscriptdirs=(${ZIM_HOME} ${${_zdirs##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
-  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) || return 1
-  _zimfw_print -P '<%= done %>Done with clean-compiled. Restart your terminal or run %Bzimfw compile%b to re-compile.'
+  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \
+      _zimfw_print -P '<%= done %>Done with clean-compiled. Restart your terminal or run %Bzimfw compile%b to re-compile.'
 }

@@ -4,21 +4,22 @@ zimfw() {
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
-                  Also does %Bcompile%b. Use %B-v%b to also see its output.
+                  Also does %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b to also see their output.
+  %Bcheck-dumpfile%b  Does %Bclean-dumpfile%b if new completion configuration needs to be dumped.
   %Bclean%b           Clean all. Does both %Bclean-compiled%b and %Bclean-dumpfile%b.
   %Bclean-compiled%b  Clean Zsh compiled files.
-  %Bclean-dumpfile%b  Clean completion dump file.
+  %Bclean-dumpfile%b  Clean completion dumpfile.
   %Bcompile%b         Compile Zsh files.
   %Bhelp%b            Print this help.
   %Binfo%b            Print Zim and system info.
   %Blist%b            List all modules currently defined in %B<%= home %>/.zimrc%b.
                   Use %B-v%b to also see the modules details.
   %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
-  %Binstall%b         Install new modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see their
-                  output, and see skipped modules.
+  %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b to
+                  also see their output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
-  %Bupdate%b          Update current modules. Also does %Bbuild%b and %Bcompile%b. Use %B-v%b to also see
-                  their output, and see skipped modules.
+  %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b
+                  to also see their output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
 
@@ -50,8 +51,9 @@ Options:
     build)
       _zimfw_source_zimrc 2 && _zimfw_build || return 1
       (( _zprintlevel-- ))
-      _zimfw_compile
+      _zimfw_check_dumpfile && _zimfw_compile
       ;;
+    check-dumpfile) _zimfw_source_zimrc 2 && _zimfw_check_dumpfile ;;
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
@@ -67,13 +69,13 @@ Options:
       _zimfw_install_update install || return 1
       (( _zprintlevel-- ))
       _zimfw_print -PR "<%= done %>Done with install.${_zrestartmsg}" # Only printed in verbose mode
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_check_dumpfile && _zimfw_compile
       ;;
     install|update)
       _zimfw_install_update ${1} || return 1
       _zimfw_print -PR "<%= done %>Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_check_dumpfile && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     upgrade)

@@ -2,6 +2,6 @@ _zimfw_clean_dumpfile() {
   local zdumpfile zopt
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
   if (( _zprintlevel > 0 )) zopt=-v
-  command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old))(N) || return 1
-  _zimfw_print -P '<%= done %>Done with clean-dumpfile. Restart your terminal to dump an updated configuration.'
+  command rm -f ${zopt} ${zdumpfile}(|.zwc(|.old))(N) && \
+      _zimfw_print -P "<%= done %>Done with clean-dumpfile.${_zrestartmsg}"
 }

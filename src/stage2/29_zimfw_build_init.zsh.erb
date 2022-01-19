@@ -9,7 +9,8 @@ _zimfw_build_init() {
     print -R "zmodule() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     # Remove all prefixes from _zfpaths, _zfunctions and _zcmds
     local -r zpre=$'*\0'
-    if (( ${#_zfpaths} )) print -R 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
+    print -R 'typeset -g _zim_fpath=('${${_zfpaths#${~zpre}}:A}')'
+    if (( ${#_zfpaths} )) print 'fpath=(${_zim_fpath} ${fpath})'
     if (( ${#_zfunctions} )) print -R 'autoload -Uz -- '${_zfunctions#${~zpre}}
     print -R ${(F)_zcmds#${~zpre}}
   ) ${ztarget}
