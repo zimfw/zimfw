@@ -323,12 +323,16 @@ _zimfw_version_check() {
 }
 
 _zimfw_check_dumpfile() {
-  local zdumpfile zline
-  local -r zpre=$'*\0'
-  local -r zfpath=(${${_zfpaths#${~zpre}}:A} ${fpath:|_zim_fpath})
-  local -r zcomps=(${^zfpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+  local zdumpfile zfpath zline
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   if [[ -e ${zdumpfile} ]]; then
+    if (( ${+_zim_fpath} )); then
+      local -r zpre=$'*\0'
+      zfpath=(${${_zfpaths#${~zpre}}:A} ${fpath:|_zim_fpath})
+    else
+      zfpath=(${fpath})
+    fi
+    local -r zcomps=(${^zfpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
     IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
     if [[ ${zline[2]} -eq ${#zcomps} && ${zline[4]} == ${ZSH_VERSION} ]]; then
       _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b Already up to date"
@@ -373,7 +377,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-19 01:49:13 UTC, previous commit is 35e1d2e)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-24 23:57:51 UTC, previous commit is ac2843d)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
