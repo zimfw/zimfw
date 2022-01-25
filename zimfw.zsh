@@ -108,6 +108,7 @@ Repository options:
                              %Bdegit%b requires curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
+  %B--no-submodules%b            Don't install or update git submodules.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -117,7 +118,7 @@ Initialization options:
                              %Bfunctions%b subdirectory, if any.
   %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module
                              root directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory
-                             also exists, or the file with largest size and with name matching
+                             also exists, or the largest of the files with name matching
                              %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any.
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in
                              the command are substituted by the module root directory path.
@@ -137,7 +138,7 @@ Initialization options:
     return 2
   fi
   local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
-  local -i zdisabled=0 zfrozen=0
+  local -i zsubmodules=1 zfrozen=0 zdisabled=0
   local -a zfpaths zfunctions zcmds
   zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
@@ -177,7 +178,7 @@ Initialization options:
         ;;
     esac
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use)
+      -b|--branch|-t|--tag|-u|--use|--no-submodules)
         if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}! ${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option %B${1}%b has no effect for external modules%f"
         ;;
     esac
@@ -196,6 +197,7 @@ Initialization options:
         shift
         ztool=${1}
         ;;
+      --no-submodules) zsubmodules=0 ;;
       -z|--frozen) zfrozen=1 ;;
       -f|--fpath)
         shift
@@ -227,7 +229,7 @@ Initialization options:
     shift
   done
   if (( _zflags & 1 )); then
-    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zfrozen}" "${zdisabled}")
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${zfrozen}" "${zdisabled}")
   fi
   if (( _zflags & 2 )); then
     if (( zdisabled )); then
@@ -377,14 +379,14 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-24 23:57:51 UTC, previous commit is ac2843d)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-01-25 14:32:40 UTC, previous commit is 016e498)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_install_update() {
-  _zimfw_source_zimrc 1 ${1} && zargs -n 9 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
+  _zimfw_source_zimrc 1 ${1} && zargs -n 10 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
 }
 
 _zimfw_uninstall() {
@@ -426,7 +428,7 @@ _zimfw_upgrade() {
 
 _zimfw_run_list() {
   local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
-  local -ri zfrozen=${8} zdisabled=${9}
+  local -ri zsubmodules=${8} zfrozen=${9} zdisabled=${10}
   print -PnR "%B${zmodule}:%b ${zdir}"
   if [[ -z ${zurl} ]] print -Pn ' (external)'
   if (( ${zfrozen} )) print -Pn ' (frozen)'
@@ -440,7 +442,9 @@ _zimfw_run_list() {
       else
         print -nR "${ztype} ${zrev}"
       fi
-      print -R ", using ${ztool}"
+      print -nR ", using ${ztool}"
+      if (( ! zsubmodules )) print -nR ', no git submodules'
+      print
     fi
     # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'
@@ -457,7 +461,7 @@ _zimfw_run_tool() {
     if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping external module"
     return 0
   fi
-  local -ri zfrozen=${8}
+  local -ri zfrozen=${9}
   if (( zfrozen )); then
     if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping frozen module"
     return 0
@@ -486,7 +490,7 @@ _zimfw_run_tool() {
   case ${ztool} in
     degit) zcmd="# This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
-readonly -i PRINTLEVEL=\${1}
+readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
@@ -497,8 +501,8 @@ print_error() {
 print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=\${2:+\${(F):-  \${(f)^2}}}
-    if [[ -e \${DIR}/.gitmodules ]]; then
-      print -u2 -PlR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}.%f\" \${log}
+    if [[ \${SUBMODULES} -ne 0 && -e \${DIR}/.gitmodules ]]; then
+      print -u2 -PlR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}. Use zmodule option %B--no-submodules%b to disable this warning.%f\" \${log}
     else
       print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${(C)1}\" \${log}
     fi
@@ -589,9 +593,7 @@ case \${ACTION} in
       # return 1 does not change \${TRY_BLOCK_ERROR}, only changes \${?}
       (( TRY_BLOCK_ERROR = ? ))
       command rm -f \${TARBALL_TARGET} 2>/dev/null
-      if (( TRY_BLOCK_ERROR )); then
-        command rm -rf \${DIR} 2>/dev/null
-      fi
+      if (( TRY_BLOCK_ERROR )) command rm -rf \${DIR} 2>/dev/null
     }
     ;;
   update)
@@ -628,8 +630,8 @@ esac
 " ;;
     git) zcmd="# This runs in a new shell
 builtin emulate -L zsh
-readonly -i PRINTLEVEL=\${1}
-readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch} SUBMODULES=1
+readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
+readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch}
 REV=\${7}
 
 print_error() {
@@ -642,7 +644,7 @@ print_okay() {
 
 case \${ACTION} in
   install)
-    if ERR=\$(command git clone \${REV:+-b} \${REV} -q --config core.autocrlf=false \${SUBMODULES:+--recursive} -- \${URL} \${DIR} 2>&1); then
+    if ERR=\$(command git clone \${REV:+-b} \${REV} -q --config core.autocrlf=false \${\${SUBMODULES:#0}:+--recursive} -- \${URL} \${DIR} 2>&1); then
       print_okay Installed
     else
       print_error 'Error during git clone' \${ERR}
@@ -702,7 +704,7 @@ case \${ACTION} in
     else
       OUT=\"Updating to \${TYPE} \${REV}\"
     fi
-    if [[ -n \${SUBMODULES} ]]; then
+    if (( SUBMODULES )); then
       if ! ERR=\$(command git -C \${DIR} submodule update --init --recursive -q -- 2>&1); then
         print_error 'Error during git submodule update' \${ERR}
         return 1
@@ -717,7 +719,7 @@ esac
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,7]}"
+  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,8]}"
 }
 
 zimfw() {
@@ -783,7 +785,7 @@ Options:
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 9 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 3 && zargs -n 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     init)

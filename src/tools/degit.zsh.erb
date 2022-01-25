@@ -1,6 +1,6 @@
 # This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
-readonly -i PRINTLEVEL=${1}
+readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
 readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
@@ -11,8 +11,8 @@ print_error() {
 print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=${2:+${(F):-  ${(f)^2}}}
-    if [[ -e ${DIR}/.gitmodules ]]; then
-      print -u2 -PlR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}.%f" ${log}
+    if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
+      print -u2 -PlR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}. Use zmodule option %B--no-submodules%b to disable this warning.%f" ${log}
     else
       print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${(C)1}" ${log}
     fi
@@ -103,9 +103,7 @@ case ${ACTION} in
       # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
       (( TRY_BLOCK_ERROR = ? ))
       command rm -f ${TARBALL_TARGET} 2>/dev/null
-      if (( TRY_BLOCK_ERROR )); then
-        command rm -rf ${DIR} 2>/dev/null
-      fi
+      if (( TRY_BLOCK_ERROR )) command rm -rf ${DIR} 2>/dev/null
     }
     ;;
   update)

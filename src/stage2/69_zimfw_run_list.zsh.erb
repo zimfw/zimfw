@@ -1,6 +1,6 @@
 _zimfw_run_list() {
   local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
-  local -ri zfrozen=${8} zdisabled=${9}
+  local -ri zsubmodules=${8} zfrozen=${9} zdisabled=${10}
   print -PnR "%B${zmodule}:%b ${zdir}"
   if [[ -z ${zurl} ]] print -Pn ' (external)'
   if (( ${zfrozen} )) print -Pn ' (frozen)'
@@ -14,7 +14,9 @@ _zimfw_run_list() {
       else
         print -nR "${ztype} ${zrev}"
       fi
-      print -R ", using ${ztool}"
+      print -nR ", using ${ztool}"
+      if (( ! zsubmodules )) print -nR ', no git submodules'
+      print
     fi
     # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `check-dumpfile` action. It runs in the build, install and update actions, and checks if a
   new completion configuration needs to be dumped. It's intended to be used with `compinit -C`,
   so no checks are done during the shell startup.
+- `--no-submodules` option to `zmodule`, which disables installing or updating git submodules.
 
 ## [1.7.0] - 2022-01-12
 

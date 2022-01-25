@@ -1,7 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh
-readonly -i PRINTLEVEL=${1}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch} SUBMODULES=1
+readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch}
 REV=${7}
 
 print_error() {
@@ -14,7 +14,7 @@ print_okay() {
 
 case ${ACTION} in
   install)
-    if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${SUBMODULES:+--recursive} -- ${URL} ${DIR} 2>&1); then
+    if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
       print_okay Installed
     else
       print_error 'Error during git clone' ${ERR}
@@ -74,7 +74,7 @@ case ${ACTION} in
     else
       OUT="Updating to ${TYPE} ${REV}"
     fi
-    if [[ -n ${SUBMODULES} ]]; then
+    if (( SUBMODULES )); then
       if ! ERR=$(command git -C ${DIR} submodule update --init --recursive -q -- 2>&1); then
         print_error 'Error during git submodule update' ${ERR}
         return 1

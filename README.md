@@ -85,9 +85,9 @@ Below are some usage examples:
   * A module at an absolute path, that is already installed:
     `zmodule /usr/local/share/zsh-autosuggestions`
   * A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
-  * A module with a custom initialization file:
-    `zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh` or
-    `zmodule spaceship-prompt/spaceship-prompt --name spaceship`
+  * A module with a custom initialization file, and with git submodules disabled:
+    `zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh --no-submodules` or
+    `zmodule spaceship-prompt/spaceship-prompt --name spaceship --no-submodules`
   * A module with two custom initialization files:
     `zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
   * A module with a custom initialization command:
@@ -120,6 +120,7 @@ Repository options:
                              <b>degit</b> requires curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
+  <b>--no-submodules</b>            Don&apos;t install or update git submodules.
   <b>-z</b>|<b>--frozen</b>                Don&apos;t install or update the module.
 
 Initialization options:
@@ -129,7 +130,7 @@ Initialization options:
                              <b>functions</b> subdirectory, if any.
   <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Source specified file. The file path is relative to the module
                              root directory. Default: <b>init.zsh</b>, if the <b>functions</b> subdirectory
-                             also exists, or the file with largest size and with name matching
+                             also exists, or the largest of the files with name matching
                              <b>{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}</b>, if any.
   <b>-c</b>|<b>--cmd</b> &lt;command&gt;         Execute specified command. Occurrences of the <b>{}</b> placeholder in
                              the command are substituted by the module root directory path.

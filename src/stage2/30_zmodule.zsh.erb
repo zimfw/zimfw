@@ -22,6 +22,7 @@ Repository options:
                              %Bdegit%b requires curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
+  %B--no-submodules%b            Don't install or update git submodules.
   %B-z%b|%B--frozen%b                Don't install or update the module.
 
 Initialization options:
@@ -31,7 +32,7 @@ Initialization options:
                              %Bfunctions%b subdirectory, if any.
   %B-s%b|%B--source%b <file_path>    Source specified file. The file path is relative to the module
                              root directory. Default: %Binit.zsh%b, if the %Bfunctions%b subdirectory
-                             also exists, or the file with largest size and with name matching
+                             also exists, or the largest of the files with name matching
                              %B{init.zsh,module_name.{zsh,plugin.zsh,zsh-theme,sh}}%b, if any.
   %B-c%b|%B--cmd%b <command>         Execute specified command. Occurrences of the %B{}%b placeholder in
                              the command are substituted by the module root directory path.
@@ -51,7 +52,7 @@ Initialization options:
     return 2
   fi
   local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
-  local -i zdisabled=0 zfrozen=0
+  local -i zsubmodules=1 zfrozen=0 zdisabled=0
   local -a zfpaths zfunctions zcmds
   zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
@@ -91,7 +92,7 @@ Initialization options:
         ;;
     esac
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use)
+      -b|--branch|-t|--tag|-u|--use|--no-submodules)
         if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option %B${1}%b has no effect for external modules%f"
         ;;
     esac
@@ -110,6 +111,7 @@ Initialization options:
         shift
         ztool=${1}
         ;;
+      --no-submodules) zsubmodules=0 ;;
       -z|--frozen) zfrozen=1 ;;
       -f|--fpath)
         shift
@@ -141,7 +143,7 @@ Initialization options:
     shift
   done
   if (( _zflags & 1 )); then
-    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zfrozen}" "${zdisabled}")
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${zfrozen}" "${zdisabled}")
   fi
   if (( _zflags & 2 )); then
     if (( zdisabled )); then
