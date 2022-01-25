@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.8.0] - 2022-01-25
+
 ### Added
 
 - `check-dumpfile` action. It runs in the build, install and update actions, and checks if a
@@ -265,7 +269,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/zimfw/zimfw/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/zimfw/zimfw/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/zimfw/zimfw/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/zimfw/zimfw/compare/v1.6.0...v1.6.1
