@@ -4,6 +4,17 @@
   </a>
 </div>
 
+<p align="center">
+<a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/v/release/zimfw/zimfw"></a>
+<a href="https://github.com/zimfw/zimfw/issues"><img src="https://img.shields.io/github/issues/zimfw/zimfw.svg"></a>
+<a href="https://img.shields.io/github/forks/zimfw/zimfw.svg"><img src="https://img.shields.io/github/forks/zimfw/zimfw.svg"></a>
+<a href="https://github.com/zimfw/zimfw/stargazers"><img src="https://img.shields.io/github/stars/zimfw/zimfw.svg"></a>
+<a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/downloads/zimfw/zimfw/total.svg"></a>
+<a href="https://github.com/zimfw/zimfw/discussions"><img src="https://img.shields.io/badge/forum-online-green.svg"></a>
+<a href="https://repology.org/metapackage/rofi/versions"><img src="https://repology.org/badge/tiny-repos/rofi.svg"></a>
+<a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
+</p>
+
 What is Zim?
 ------------
 Zim is a Zsh configuration framework with [blazing speed] and modular extensions.
@@ -22,6 +33,30 @@ Below is a brief showcase of Zim's features.
 
 For more details, see [this wiki entry][blazing speed].
 
+## Table of Contents
+
+- [Features](#features)
+  + [Modules](#modules)
+  + [Themes](#themes)
+  + [Degit](#degit)
+- [Installation](#installation)
+  + [Automatic installation](#automatic-installation)
+  + [Manual installation](#manual-installation)
+- [Usage](#usage)
+  + [Example Configuration](#example-configuration)
+- [Settings](#settings)
+  + [`zmodule`](#zmodule)
+  + [`zimfw`](#zimfw)
+- [Uninstalling](#uninstalling)
+- [FAQ](#faq)
+  + [How can I change default `zimrc` file location?](#how-can-i-change-default-zimrc-file-location)
+  + [How can I speed up module installation?](#how-can-i-speed-up-module-installation)
+  + [How to disabel automatic updates?](#how-to-disabel-automatic-updates)
+  + [When should I call `compinit` in my `zshrc` ?](#when-should-i-call-compinit-in-my-zshrc)
+
+Features
+--------
+
 ### Modules
 
 Zim has many [modules available][modules]. Enable as many or as few as you'd like.
@@ -37,7 +72,9 @@ lighter than `git`. See the [zmodule](#zmodule-usage) usage below.
 
 Installation
 ------------
-Installing Zim is easy:
+Installing Zim is easy. You can choose either of the two methods below:
+
+### Automatic installation
 
 * With curl:
 
@@ -72,8 +109,26 @@ you can add to your `~/.zimrc`.
 Usage
 -----
 
-Add `zmodule` calls to your `~/.zimrc` file to define the modules to be
+By default, zim looks for the configuration file in `${ZIM_HOME}/.zimrc`. The `ZIM_HOME` environment variable is set to `$ZDOTDIR/zim` by default or set to `$HOME` if `$ZDOTDIR` is not found.
+
+Add `zmodule` calls to your `${ZIM_HOME}/.zimrc` or `~/.zimrc` file to define the modules to be
 initialized, then run `zimfw install` to install them.
+
+### Example configuration
+
+Example configuration file with [zsh-completions](https://github.com/zsh-users/zsh-completions), [autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [syntax highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) plugins installation:
+```zsh
+zmodule completions
+zmodule zsh-users/zsh-completions
+zmodule zsh-users/zsh-autosuggestions
+zmodule zsh-users/zsh-syntax-highlighting
+```
+The first line is to install module named _completions_ as can be seen from the [modules] section in [Docs](https://zimfw.sh/docs/). This provides more convenience when using plugins with completions.
+
+Settings
+--------
+
+Below are brief description about some of the zim components
 
 ### zmodule
 
@@ -154,8 +209,16 @@ The command line utility for Zim:
   * Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
   * For more information about the `zimfw` utility, run `zimfw help`.
 
-Settings
---------
+FAQ
+----
+
+### 1. How can I change default `zimrc` file location?
+
+The location of `.zimrc` file is controlled by `ZIM_HOME` environment variable. Change it to the desired path.
+Eg: Set this in your `zshrc` to change path of `zimrc` to `~/.config/zsh/zim`:
+`export ZIM_HOME="${HOME}/.config/zsh/zim"`
+
+### 2. How can I speed up module installation?
 
 Modules are installed using `git` by default. If you don't have `git`
 installed, or if you want to take advantage of our degit tool for faster and
@@ -163,10 +226,27 @@ lighter module installations, you can set degit as the default tool with:
 
     zstyle ':zim:zmodule' use 'degit'
 
+### 3. How to disabel automatic updates?
+
 By default, `zimfw` will check if it has a new version available every 30 days.
 This can be disabled with:
 
     zstyle ':zim' disable-version-check yes
+    
+### 4. When should I call `compinit` in my `zshrc` ?
+
+`compinit` is called by _completions_ module as shown in the [Example configuration](https://github.com/zimfw/zimfw#example-configuration). So, if you are using that module then remove any call to `compinit` in your `.zshrc` like:
+```sh
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+```
+which maybe present after fresh install of zsh or anywhere in your system-wide zsh files like `/etc/zsh/zshrc` which comes with some installations using distro package manager. Otherwise, add:
+```sh
+autoload -Uz compinit
+compinit
+```
+before `zmodule ...` calls in your `.zshrc`
 
 Uninstalling
 ------------
