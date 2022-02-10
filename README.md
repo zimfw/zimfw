@@ -11,7 +11,6 @@
 <a href="https://github.com/zimfw/zimfw/stargazers"><img src="https://img.shields.io/github/stars/zimfw/zimfw.svg"></a>
 <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/downloads/zimfw/zimfw/total.svg"></a>
 <a href="https://github.com/zimfw/zimfw/discussions"><img src="https://img.shields.io/badge/forum-online-green.svg"></a>
-<a href="https://repology.org/metapackage/rofi/versions"><img src="https://repology.org/badge/tiny-repos/rofi.svg"></a>
 <a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
 </p>
 
@@ -109,9 +108,9 @@ you can add to your `~/.zimrc`.
 Usage
 -----
 
-By default, zim looks for the configuration file in `${ZIM_HOME}/.zimrc`. The `ZIM_HOME` environment variable is set to `$ZDOTDIR/zim` by default or set to `$HOME` if `$ZDOTDIR` is not found.
+By default, Zim looks for the configuration file in `{ZDOTDIR:-${HOME}}/.zimrc`. If using the automatic installer, the `ZIM_HOME` environment variable is set to `${ZDOTDIR:-${HOME}}/.zim`.
 
-Add `zmodule` calls to your `${ZIM_HOME}/.zimrc` or `~/.zimrc` file to define the modules to be
+Add `zmodule` calls to your `{ZDOTDIR:-${HOME}}/.zimrc` file to define the modules to be
 initialized, then run `zimfw install` to install them.
 
 ### Example configuration
@@ -128,7 +127,7 @@ The first line is to install module named _completions_ as can be seen from the 
 Settings
 --------
 
-Below are brief description about some of the zim components
+Below are brief description about some of the Zim components
 
 ### zmodule
 
@@ -214,9 +213,9 @@ FAQ
 
 ### 1. How can I change default `zimrc` file location?
 
-The location of `.zimrc` file is controlled by `ZIM_HOME` environment variable. Change it to the desired path.
-Eg: Set this in your `zshrc` to change path of `zimrc` to `~/.config/zsh/zim`:
-`export ZIM_HOME="${HOME}/.config/zsh/zim"`
+You cannot change the default .zimrc location, it must be in ${ZDOTDIR:-${HOME}}/.zimrc. You can change the `ZDOTDIR` location. Change it to the desired path.
+Eg: Set this in your `~/.zshenv` to change path of `zimrc` to `~/.config/zsh/.zimrc`:
+`export ZDOTDIR="${HOME}/.config/zsh"`
 
 ### 2. How can I speed up module installation?
 
