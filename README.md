@@ -1,11 +1,11 @@
 <p align="center">
-<a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/v/release/zimfw/zimfw"></a>
-<a href="https://github.com/zimfw/zimfw/issues"><img src="https://img.shields.io/github/issues/zimfw/zimfw.svg"></a>
-<a href="https://img.shields.io/github/forks/zimfw/zimfw.svg"><img src="https://img.shields.io/github/forks/zimfw/zimfw.svg"></a>
-<a href="https://github.com/zimfw/zimfw/stargazers"><img src="https://img.shields.io/github/stars/zimfw/zimfw.svg"></a>
-<a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/downloads/zimfw/zimfw/total.svg"></a>
-<a href="https://github.com/zimfw/zimfw/discussions"><img src="https://img.shields.io/badge/forum-online-green.svg"></a>
-<a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
+  <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/v/release/zimfw/zimfw"></a>
+  <a href="https://github.com/zimfw/zimfw/issues"><img src="https://img.shields.io/github/issues/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/network/members"><img src="https://img.shields.io/github/forks/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/stargazers"><img src="https://img.shields.io/github/stars/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/downloads/zimfw/zimfw/total.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/discussions"><img src="https://img.shields.io/badge/forum-online-green.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
 </p>
 
 <div align="center">
@@ -30,12 +30,12 @@ Table of Contents
 * [Installation](#installation)
   * [Automatic installation](#automatic-installation)
   * [Manual installation](#manual-installation)
+    * [Set up `~/.zshrc`](#set-up-zshrc)
+    * [Create `~/.zimrc`](#create-zimrc)
 * [Usage](#usage)
-  * [Set up `~/.zshrc`](#set-up-zshrc)
-  * [Create `~/.zimrc`](#create-zimrc)
-  * [Example `~/.zimrc`](#example-zimrc)
   * [`zmodule`](#zmodule)
   * [`zimfw`](#zimfw)
+* [Settings](#settings)
 * [Uninstalling](#uninstalling)
 
 Installation
@@ -65,20 +65,13 @@ to tweak your [`~/.zshrc`](#set-up-zshrc) file, and to also check the available
     chsh -s $(which zsh)
     ````
 
-2. [Set up your `~/.zshrc`](##set-up-zshrc)
+2. [Set up your `~/.zshrc` file](#set-up-zshrc)
 
-3. [Create your `~/.zimrc`](#create-zimrc)
+3. [Create your `~/.zimrc` file](#create-zimrc)
 
 4. Restart your terminal and you're done. Enjoy your Zsh IMproved!
 
-Usage
------
-The `zimfw` plugin manager builds an initialization script, at `${ZIM_HOME}/init.zsh`,
-that initializes the modules you defined in your `~/.zimrc` file. To get started
-using the `zimfw` plugin manager, you must set up your `~/.zshrc` file, and
-create your `~/.zimrc` file containing the modules you want to use.
-
-### Set up `~/.zshrc`
+#### Set up `~/.zshrc`
 
 Add the lines below to your `~/.zshrc` file, in the following order:
 
@@ -127,7 +120,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    ```
    This step is optional, but highly recommended. If you choose to not include
    it, you must remember to manually run `zimfw install` every time after you
-   update your `~/.zimrc` file.
+   update your [`~/.zimrc`](#create-zimrc) file.
 
 5. To source the initialization script, that initializes your modules:
    ```zsh
@@ -135,19 +128,11 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    source ${ZIM_HOME}/init.zsh
    ```
 
-### Create `~/.zimrc`
+#### Create `~/.zimrc`
 
 You must create your `.zimrc` file at `~/.zimrc`, if the `ZDOTDIR` environment
-variable is not defined. Otherwise, it must be at `${ZDOTDIR}/.zimrc`. We'll
-refer to it as `~/.zimrc` in the documentation for the sake of simplicity.
-
-The `~/.zimrc` file must contain a `zmodule` call for each module you want to
-use. The modules will be initialized in the order they are defined.
-
-The `~/.zimrc` file is not sourced during the Zsh startup, and it's only used to
-configure the `zimfw` plugin manager.
-
-### Example `~/.zimrc`
+variable is not defined. Otherwise, it must be at `${ZDOTDIR}/.zimrc`. It's
+referred to as `~/.zimrc` in the documentation for the sake of simplicity.
 
 You can start with just:
 ```zsh
@@ -161,11 +146,27 @@ zmodule completion
 zmodule zsh-users/zsh-syntax-highlighting
 zmodule zsh-users/zsh-autosuggestions
 ```
-The [completion] module calls `compinit` for you. So you can remove any
-`compinit` call from your `~/.zshrc` when you use this module. The modules will
+The [completion] module calls `compinit` for you. You should remove any
+`compinit` calls from your `~/.zshrc` when you use this module. The modules will
 be initialized in the order they are defined, and [completion] must be
 initialized after all modules that add completion definitions, so it comes after
 [zsh-users/zsh-completions].
+
+See the [`zmodule` usage](#zmodule) below for more examples on how to use it to
+define the modules you want to use.
+
+Usage
+-----
+The `zimfw` plugin manager builds an initialization script, at `${ZIM_HOME}/init.zsh`,
+that initializes the modules you defined in your `~/.zimrc` file.
+
+The `~/.zimrc` file must contain a `zmodule` call for each module you want to
+use. The modules will be initialized in the order they are defined.
+
+The `~/.zimrc` file is not sourced during Zsh startup, and it's only used to
+configure the `zimfw` plugin manager.
+
+The [examples of `~/.zimrc` files](#create-zimrc) above.
 
 ### zmodule
 
