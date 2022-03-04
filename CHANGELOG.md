@@ -13,10 +13,12 @@ _No unreleased changes._
 
 ### Added
 
-- `check-dumpfile` action. It runs in the build, install and update actions, and checks if a
-  new completion configuration needs to be dumped. It's intended to be used with `compinit -C`,
-  so no checks are done during the shell startup.
-- `--no-submodules` option to `zmodule`, which disables installing or updating git submodules.
+- `check-dumpfile` action. It runs in the build, install and update actions, and
+  checks if a new completion configuration needs to be dumped. It's intended to
+  be used with `compinit -C`, so no checks are done during the shell startup.
+  (See [zimfw/completion#8](https://github.com/zimfw/completion/pull/8))
+- `--no-submodules` option to `zmodule`, which disables installing or updating
+  git submodules.
 
 ## [1.7.0] - 2022-01-12
 
