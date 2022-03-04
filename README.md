@@ -1,3 +1,13 @@
+<p align="center">
+  <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/v/release/zimfw/zimfw"></a>
+  <a href="https://github.com/zimfw/zimfw/issues"><img src="https://img.shields.io/github/issues/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/network/members"><img src="https://img.shields.io/github/forks/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/stargazers"><img src="https://img.shields.io/github/stars/zimfw/zimfw.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/downloads/zimfw/zimfw/total.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/discussions"><img src="https://img.shields.io/badge/forum-online-green.svg"></a>
+  <a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
+</p>
+
 <div align="center">
   <a href="https://github.com/zimfw/zimfw">
     <img width="600" src="https://zimfw.github.io/images/zimfw-banner@2.jpg">
@@ -6,74 +16,157 @@
 
 What is Zim?
 ------------
-Zim is a Zsh configuration framework with [blazing speed] and modular extensions.
+Zim is a Zsh configuration framework that bundles a [plugin manager](#usage),
+useful [modules], and a wide variety of [themes], without compromising on [speed].
 
-Zim bundles useful [modules], a wide variety of [themes], and plenty of
-customizability without compromising on speed.
+Check how Zim compares to other frameworks and plugin managers:
 
-What does Zim offer?
---------------------
-Below is a brief showcase of Zim's features.
-
-### Speed
 <a href="https://github.com/zimfw/zimfw/wiki/Speed">
   <img src="https://zimfw.github.io/images/results.svg">
 </a>
 
-For more details, see [this wiki entry][blazing speed].
-
-### Modules
-
-Zim has many [modules available][modules]. Enable as many or as few as you'd like.
-
-### Themes
-
-To preview some of the available themes, check the [themes page][themes].
-
-### Degit
-
-Install modules without requiring `git` using our degit tool. It's faster and
-lighter than `git`. See the [zmodule](#zmodule-usage) usage below.
+Table of Contents
+-----------------
+* [Installation](#installation)
+  * [Automatic installation](#automatic-installation)
+  * [Manual installation](#manual-installation)
+    * [Set up `~/.zshrc`](#set-up-zshrc)
+    * [Create `~/.zimrc`](#create-zimrc)
+* [Usage](#usage)
+  * [`zmodule`](#zmodule)
+  * [`zimfw`](#zimfw)
+* [Settings](#settings)
+* [Uninstalling](#uninstalling)
 
 Installation
 ------------
-Installing Zim is easy:
+Installing Zim is easy. You can choose either the automatic or manual method below:
 
-* With curl:
+### Automatic installation
+
+This will install a predefined set of modules and a theme for you.
+
+* With `curl`:
 
       curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
-* With wget:
+* With `wget`:
 
       wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
-Open a new terminal and you're done. Enjoy your Zsh IMproved! Take some time to
-tweak your `~/.zshrc` file, and to also check the available [modules] and [themes]
-you can add to your `~/.zimrc`.
-
-<details>
-<summary>Prefer to install manually?</summary>
+Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
+to tweak your [`~/.zshrc`](#set-up-zshrc) file, and to also check the available
+[modules] and [themes] you can add to your [`~/.zimrc`](#create-zimrc).
 
 ### Manual installation
 
-1. Set Zsh as the default shell:
+1. Set Zsh as the default shell, if you haven't done so already:
+    ```zsh
+    chsh -s $(which zsh)
+    ````
 
-       chsh -s $(which zsh)
+2. [Set up your `~/.zshrc` file](#set-up-zshrc)
 
-2. Prepend the lines in the following templates to the respective dot files:
+3. [Create your `~/.zimrc` file](#create-zimrc)
 
-   * [~/.zshrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zshrc)
-   * [~/.zimrc](https://raw.githubusercontent.com/zimfw/install/master/src/templates/zimrc)
+4. Restart your terminal and you're done. Enjoy your Zsh IMproved!
 
-3. Restart your terminal to automatically install the `zimfw` command line utility,
-   install the modules defined in `~/.zimrc`, and build the initialization scripts.
-</details>
+#### Set up `~/.zshrc`
+
+Add the lines below to your `~/.zshrc` file, in the following order:
+
+1. To use our `degit` tool by default to install modules:
+   ```zsh
+   zstyle ':zim:zmodule' use 'degit'
+   ````
+   This is optional, and only required if you don't have `git` installed (yes,
+   Zim works even without `git`!)
+
+2. To set where the directory used by Zim will be located:
+   ```zsh
+   ZIM_HOME=~/.zim
+   ```
+   The value of `ZIM_HOME` can be any directory your user has write access to.
+   You can even set it to a cache directory like `${XDG_CACHE_HOME}/zim` or
+   `~/.cache/zim` if you also include the step below, that automatically
+   downloads the `zimfw` plugin manager.
+
+3. To automatically download the `zimfw` plugin manager if missing:
+   ```zsh
+   # Download zimfw plugin manager if missing.
+   if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+     curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+         https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+   fi
+   ```
+   Or if you use `wget` instead of `curl`:
+   ```zsh
+   # Download zimfw plugin manager if missing.
+   if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+     mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh \
+         https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+   fi
+   ```
+   This is optional. If you choose to not include this step, you should manually
+   download the `zimfw.zsh` script once and keep it at `${ZIM_HOME}`.
+
+4. To automatically install missing modules and update the initialization script
+   if missing or outdated:
+   ```zsh
+   # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
+   if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+     source ${ZIM_HOME}/zimfw.zsh init -q
+   fi
+   ```
+   This step is optional, but highly recommended. If you choose to not include
+   it, you must remember to manually run `zimfw install` every time after you
+   update your [`~/.zimrc`](#create-zimrc) file.
+
+5. To source the initialization script, that initializes your modules:
+   ```zsh
+   # Initialize modules.
+   source ${ZIM_HOME}/init.zsh
+   ```
+
+#### Create `~/.zimrc`
+
+You must create your `.zimrc` file at `~/.zimrc`, if the `ZDOTDIR` environment
+variable is not defined. Otherwise, it must be at `${ZDOTDIR}/.zimrc`. It's
+referred to as `~/.zimrc` in the documentation for the sake of simplicity.
+
+You can start with just:
+```zsh
+zmodule zsh-users/zsh-syntax-highlighting
+zmodule zsh-users/zsh-autosuggestions
+```
+Or, if you also want to use completions:
+```zsh
+zmodule zsh-users/zsh-completions --fpath src
+zmodule completion
+zmodule zsh-users/zsh-syntax-highlighting
+zmodule zsh-users/zsh-autosuggestions
+```
+The [completion] module calls `compinit` for you. You should remove any
+`compinit` calls from your `~/.zshrc` when you use this module. The modules will
+be initialized in the order they are defined, and [completion] must be
+initialized after all modules that add completion definitions, so it comes after
+[zsh-users/zsh-completions].
+
+See the [`zmodule` usage](#zmodule) below for more examples on how to use it to
+define the modules you want to use.
 
 Usage
 -----
+The `zimfw` plugin manager builds an initialization script, at `${ZIM_HOME}/init.zsh`,
+that initializes the modules you defined in your `~/.zimrc` file.
 
-Add `zmodule` calls to your `~/.zimrc` file to define the modules to be
-initialized, then run `zimfw install` to install them.
+The `~/.zimrc` file must contain a `zmodule` call for each module you want to
+use. The modules will be initialized in the order they are defined.
+
+The `~/.zimrc` file is not sourced during Zsh startup, and it's only used to
+configure the `zimfw` plugin manager.
+
+The [examples of `~/.zimrc` files](#create-zimrc) above.
 
 ### zmodule
 
@@ -146,17 +239,16 @@ Initialization options:
 
 ### zimfw
 
-The command line utility for Zim:
+The Zim plugin manager:
 
   * Added new modules to `~/.zimrc`? Run `zimfw install`.
   * Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
   * Want to update your modules to their latest revisions? Run `zimfw update`.
   * Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
-  * For more information about the `zimfw` utility, run `zimfw help`.
+  * For more information about the `zimfw` plugin manager, run `zimfw help`.
 
 Settings
 --------
-
 Modules are installed using `git` by default. If you don't have `git`
 installed, or if you want to take advantage of our degit tool for faster and
 lighter module installations, you can set degit as the default tool with:
@@ -170,11 +262,12 @@ This can be disabled with:
 
 Uninstalling
 ------------
-
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin`.
 
-[blazing speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [modules]: https://zimfw.sh/docs/modules/
 [themes]: https://zimfw.sh/docs/themes/
+[speed]: https://github.com/zimfw/zimfw/wiki/Speed
 [@zimfw]: https://github.com/zimfw
+[completion]: https://github.com/zimfw/completion
+[zsh-users/zsh-completions]: https://github.com/zsh-users/zsh-completions
