@@ -149,10 +149,10 @@ zmodule zsh-users/zsh-autosuggestions
 The [completion] module calls `compinit` for you. You should remove any
 `compinit` calls from your `~/.zshrc` when you use this module. The modules will
 be initialized in the order they are defined, and [completion] must be
-initialized after all modules that add completion definitions, so it comes after
-[zsh-users/zsh-completions].
+initialized *after* all modules that add completion definitions, so it must come
+after [zsh-users/zsh-completions].
 
-See the [`zmodule` usage](#zmodule) below for more examples on how to use it to
+Check the [`zmodule` usage](#zmodule) below for more examples on how to use it to
 define the modules you want to use.
 
 Usage
@@ -166,7 +166,7 @@ use. The modules will be initialized in the order they are defined.
 The `~/.zimrc` file is not sourced during Zsh startup, and it's only used to
 configure the `zimfw` plugin manager.
 
-The [examples of `~/.zimrc` files](#create-zimrc) above.
+Check [examples of `~/.zimrc` files](#create-zimrc) above.
 
 ### zmodule
 
