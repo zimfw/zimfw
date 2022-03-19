@@ -139,8 +139,17 @@ You can start with just:
 zmodule zsh-users/zsh-syntax-highlighting
 zmodule zsh-users/zsh-autosuggestions
 ```
-Or, if you also want to use completions:
+
+If you also want one of our prompt [themes]:
+```
+zmodule asciiship
+zmodule zsh-users/zsh-syntax-highlighting
+zmodule zsh-users/zsh-autosuggestions
+```
+
+If you want to use our [completion] module too, instead of using `compinit` directly:
 ```zsh
+zmodule asciiship
 zmodule zsh-users/zsh-completions --fpath src
 zmodule completion
 zmodule zsh-users/zsh-syntax-highlighting
