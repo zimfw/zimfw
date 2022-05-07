@@ -194,6 +194,8 @@ Below are some usage examples:
     `zmodule sindresorhus/pure --source async.zsh --source pure.zsh`
   * A module with a custom initialization command:
     `zmodule skywind3000/z.lua --cmd 'eval "$(lua {}/z.lua --init zsh enhanced once)"'`
+  * A module with an on-pull command. It can be used to create a cached initialization script:
+    `zmodule skywind3000/z.lua --on-pull 'lua z.lua --init zsh enhanced once >! init.zsh'`
   * A module with a big git repository: `zmodule romkatv/powerlevel10k --use degit`
 
 <details id="zmodule-usage">
@@ -224,6 +226,8 @@ Repository options:
                              changes are lost on updates. Git submodules are not supported.
   <b>--no-submodules</b>            Don&apos;t install or update git submodules.
   <b>-z</b>|<b>--frozen</b>                Don&apos;t install or update the module.
+  <b>--on-pull</b> &lt;command&gt;        Execute command after installing or updating the module. The com-
+                             mand is executed in the module root directory.
 
 Initialization options:
   <b>-f</b>|<b>--fpath</b> &lt;path&gt;          Add specified path to fpath. The path is relative to the module

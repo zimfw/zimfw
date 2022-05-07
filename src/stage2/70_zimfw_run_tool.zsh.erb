@@ -4,7 +4,7 @@ _zimfw_run_tool() {
     if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping external module"
     return 0
   fi
-  local -ri zfrozen=${9}
+  local -ri zfrozen=${10}
   if (( zfrozen )); then
     if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping frozen module"
     return 0
@@ -37,5 +37,5 @@ _zimfw_run_tool() {
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,8]}"
+  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,9]}"
 }

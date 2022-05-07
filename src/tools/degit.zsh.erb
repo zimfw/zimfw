@@ -1,7 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
 readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} TEMP=.zdegit_${RANDOM}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} ONPULL=${9} TEMP=.zdegit_${RANDOM}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {
@@ -12,11 +12,23 @@ print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=${2:+${(F):-  ${(f)^2}}}
     if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-      print -u2 -PlR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not ${1}. Use zmodule option %B--no-submodules%b to disable this warning.%f" ${log}
+      print -u2 -PlR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b ${1}. Module contains git submodules, which are not supported by Zim's degit. Use zmodule option %B--no-submodules%b to disable this warning.%f" ${log}
     else
-      print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${(C)1}" ${log}
+      print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${1}" ${log}
     fi
   fi
+}
+
+handle() {
+  if [[ -n ${ONPULL} ]]; then
+    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && eval ${ONPULL} 2>&1); then
+      print_error 'Error during on-pull' ${ERR}
+      return 1
+    elif [[ ${PRINTLEVEL} -gt 1 && -n ${ERR} ]]; then
+      set ${1} ${2:+${2}$'\n'}"On-pull output:"$'\n'${ERR}
+    fi
+  fi
+  print_okay "${@}"
 }
 
 download_tarball() {
@@ -98,7 +110,7 @@ create_dir() {
 case ${ACTION} in
   install)
     {
-      create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && print_okay installed
+      create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && handle Installed
     } always {
       # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
       (( TRY_BLOCK_ERROR = ? ))
@@ -117,8 +129,8 @@ case ${ACTION} in
     {
       download_tarball || return 1
       if [[ ! -e ${TARBALL_TARGET} ]]; then
-        if (( PRINTLEVEL > 0 )) print -PR <%= clear_line %>"<%= okay %>%B${MODULE}:%b Already up to date"
-        return 0
+        handle 'Already up to date'
+        return ${?}
       fi
       create_dir ${DIR_NEW} && untar_tarball ${DIR_NEW} || return 1
       if (( ${+commands[diff]} )); then
@@ -130,7 +142,7 @@ case ${ACTION} in
         print_error "Error updating ${DIR}" ${ERR}
         return 1
       fi
-      print_okay updated ${LOG}
+      handle Updated ${LOG}
     } always {
       command rm -f ${TARBALL_TARGET} 2>/dev/null
       command rm -rf ${DIR_NEW} 2>/dev/null

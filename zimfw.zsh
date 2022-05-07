@@ -110,7 +110,8 @@ Repository options:
                              changes are lost on updates. Git submodules are not supported.
   %B--no-submodules%b            Don't install or update git submodules.
   %B-z%b|%B--frozen%b                Don't install or update the module.
-
+  %B--on-pull%b <command>        Execute command after installing or updating the module. The com-
+                             mand is executed in the module root directory.
 Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
                              root directory. Default: %Bfunctions%b, if the subdirectory exists.
@@ -139,7 +140,7 @@ Initialization options:
   fi
   local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
   local -i zsubmodules=1 zfrozen=0 zdisabled=0
-  local -a zfpaths zfunctions zcmds
+  local -a zonpulls zfpaths zfunctions zcmds
   zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
@@ -169,7 +170,7 @@ Initialization options:
   fi
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
           _zfailed=1
@@ -199,6 +200,10 @@ Initialization options:
         ;;
       --no-submodules) zsubmodules=0 ;;
       -z|--frozen) zfrozen=1 ;;
+      --on-pull)
+        shift
+        zonpulls+=(${1})
+        ;;
       -f|--fpath)
         shift
         zarg=${1}
@@ -229,7 +234,7 @@ Initialization options:
     shift
   done
   if (( _zflags & 1 )); then
-    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${zfrozen}" "${zdisabled}")
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${(j:; :)zonpulls}" "${zfrozen}" "${zdisabled}")
   fi
   if (( _zflags & 2 )); then
     if (( zdisabled )); then
@@ -379,14 +384,14 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-01-25 22:16:46 UTC, previous commit is 72fe20c)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-05-07 21:29:52 UTC, previous commit is e0fe8ef)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
 }
 
 _zimfw_install_update() {
-  _zimfw_source_zimrc 1 ${1} && zargs -n 10 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
+  _zimfw_source_zimrc 1 ${1} && zargs -n 11 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
 }
 
 _zimfw_uninstall() {
@@ -427,8 +432,8 @@ _zimfw_upgrade() {
 }
 
 _zimfw_run_list() {
-  local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7}
-  local -ri zsubmodules=${8} zfrozen=${9} zdisabled=${10}
+  local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7} zonpull=${9}
+  local -ri zsubmodules=${8} zfrozen=${10} zdisabled=${11}
   print -PnR "%B${zmodule}:%b ${zdir}"
   if [[ -z ${zurl} ]] print -Pn ' (external)'
   if (( ${zfrozen} )) print -Pn ' (frozen)'
@@ -445,6 +450,7 @@ _zimfw_run_list() {
       print -nR ", using ${ztool}"
       if (( ! zsubmodules )) print -nR ', no git submodules'
       print
+      if [[ -n ${zonpull} ]] print -R "  On-pull: ${zonpull}"
     fi
     # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre=${zmodule}$'\0'
@@ -461,7 +467,7 @@ _zimfw_run_tool() {
     if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping external module"
     return 0
   fi
-  local -ri zfrozen=${9}
+  local -ri zfrozen=${10}
   if (( zfrozen )); then
     if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zmodule}:%b Skipping frozen module"
     return 0
@@ -491,7 +497,7 @@ _zimfw_run_tool() {
     degit) zcmd="# This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
 readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
-readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} TEMP=.zdegit_\${RANDOM}
+readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} ONPULL=\${9} TEMP=.zdegit_\${RANDOM}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
 print_error() {
@@ -502,11 +508,23 @@ print_okay() {
   if (( PRINTLEVEL > 0 )); then
     local -r log=\${2:+\${(F):-  \${(f)^2}}}
     if [[ \${SUBMODULES} -ne 0 && -e \${DIR}/.gitmodules ]]; then
-      print -u2 -PlR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${(C)1}. Module contains git submodules, which are not supported by Zim's degit and were not \${1}. Use zmodule option %B--no-submodules%b to disable this warning.%f\" \${log}
+      print -u2 -PlR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b \${1}. Module contains git submodules, which are not supported by Zim's degit. Use zmodule option %B--no-submodules%b to disable this warning.%f\" \${log}
     else
-      print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${(C)1}\" \${log}
+      print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${1}\" \${log}
     fi
   fi
+}
+
+handle() {
+  if [[ -n \${ONPULL} ]]; then
+    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && eval \${ONPULL} 2>&1); then
+      print_error 'Error during on-pull' \${ERR}
+      return 1
+    elif [[ \${PRINTLEVEL} -gt 1 && -n \${ERR} ]]; then
+      set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
+    fi
+  fi
+  print_okay \"\${@}\"
 }
 
 download_tarball() {
@@ -588,7 +606,7 @@ create_dir() {
 case \${ACTION} in
   install)
     {
-      create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && print_okay installed
+      create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && handle Installed
     } always {
       # return 1 does not change \${TRY_BLOCK_ERROR}, only changes \${?}
       (( TRY_BLOCK_ERROR = ? ))
@@ -607,8 +625,8 @@ case \${ACTION} in
     {
       download_tarball || return 1
       if [[ ! -e \${TARBALL_TARGET} ]]; then
-        if (( PRINTLEVEL > 0 )) print -PR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b Already up to date\"
-        return 0
+        handle 'Already up to date'
+        return \${?}
       fi
       create_dir \${DIR_NEW} && untar_tarball \${DIR_NEW} || return 1
       if (( \${+commands[diff]} )); then
@@ -620,7 +638,7 @@ case \${ACTION} in
         print_error \"Error updating \${DIR}\" \${ERR}
         return 1
       fi
-      print_okay updated \${LOG}
+      handle Updated \${LOG}
     } always {
       command rm -f \${TARBALL_TARGET} 2>/dev/null
       command rm -rf \${DIR_NEW} 2>/dev/null
@@ -631,7 +649,7 @@ esac
     git) zcmd="# This runs in a new shell
 builtin emulate -L zsh
 readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
-readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch}
+readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6:=branch} ONPULL=\${9}
 REV=\${7}
 
 print_error() {
@@ -642,10 +660,22 @@ print_okay() {
   if (( PRINTLEVEL > 0 )) print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${1}\" \${2:+\${(F):-  \${(f)^2}}}
 }
 
+handle() {
+  if [[ -n \${ONPULL} ]]; then
+    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && eval \${ONPULL} 2>&1); then
+      print_error 'Error during on-pull' \${ERR}
+      return 1
+    elif [[ \${PRINTLEVEL} -gt 1 && -n \${ERR} ]]; then
+      set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
+    fi
+  fi
+  print_okay \"\${@}\"
+}
+
 case \${ACTION} in
   install)
     if ERR=\$(command git clone \${REV:+-b} \${REV} -q --config core.autocrlf=false \${\${SUBMODULES:#0}:+--recursive} -- \${URL} \${DIR} 2>&1); then
-      print_okay Installed
+      handle Installed
     else
       print_error 'Error during git clone' \${ERR}
       return 1
@@ -668,8 +698,8 @@ case \${ACTION} in
     fi
     if [[ \${TYPE} == tag ]]; then
       if [[ \${REV} == \$(command git -C \${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
-        print_okay 'Already up to date'
-        return 0
+        handle 'Already up to date'
+        return \${?}
       fi
     elif [[ -z \${REV} ]]; then
       # Get HEAD remote branch
@@ -710,7 +740,7 @@ case \${ACTION} in
         return 1
       fi
     fi
-    print_okay \${OUT} \${LOG}
+    handle \${OUT} \${LOG}
     ;;
 esac
 " ;;
@@ -719,12 +749,12 @@ esac
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,8]}"
+  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,9]}"
 }
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.8.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.9.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -740,10 +770,10 @@ Actions:
                   Use %B-v%b to also see the modules details.
   %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
   %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b to
-                  also see their output, and see skipped modules.
+                  also see their output, any on-pull output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
   %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b
-                  to also see their output, and see skipped modules.
+                  to also see their output, any on-pull output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
 
@@ -785,7 +815,7 @@ Options:
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 3 && zargs -n 11 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     init)

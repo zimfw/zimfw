@@ -24,7 +24,8 @@ Repository options:
                              changes are lost on updates. Git submodules are not supported.
   %B--no-submodules%b            Don't install or update git submodules.
   %B-z%b|%B--frozen%b                Don't install or update the module.
-
+  %B--on-pull%b <command>        Execute command after installing or updating the module. The com-
+                             mand is executed in the module root directory.
 Initialization options:
   %B-f%b|%B--fpath%b <path>          Add specified path to fpath. The path is relative to the module
                              root directory. Default: %Bfunctions%b, if the subdirectory exists.
@@ -53,7 +54,7 @@ Initialization options:
   fi
   local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
   local -i zsubmodules=1 zfrozen=0 zdisabled=0
-  local -a zfpaths zfunctions zcmds
+  local -a zonpulls zfpaths zfunctions zcmds
   zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zmodule=${zmodule%.git}
@@ -83,7 +84,7 @@ Initialization options:
   fi
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
           _zfailed=1
@@ -113,6 +114,10 @@ Initialization options:
         ;;
       --no-submodules) zsubmodules=0 ;;
       -z|--frozen) zfrozen=1 ;;
+      --on-pull)
+        shift
+        zonpulls+=(${1})
+        ;;
       -f|--fpath)
         shift
         zarg=${1}
@@ -143,7 +148,7 @@ Initialization options:
     shift
   done
   if (( _zflags & 1 )); then
-    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${zfrozen}" "${zdisabled}")
+    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${(j:; :)zonpulls}" "${zfrozen}" "${zdisabled}")
   fi
   if (( _zflags & 2 )); then
     if (( zdisabled )); then

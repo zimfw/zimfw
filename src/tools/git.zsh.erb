@@ -1,7 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh
 readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch} ONPULL=${9}
 REV=${7}
 
 print_error() {
@@ -12,10 +12,22 @@ print_okay() {
   if (( PRINTLEVEL > 0 )) print -PlR <%= clear_line %>"<%= okay %>%B${MODULE}:%b ${1}" ${2:+${(F):-  ${(f)^2}}}
 }
 
+handle() {
+  if [[ -n ${ONPULL} ]]; then
+    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && eval ${ONPULL} 2>&1); then
+      print_error 'Error during on-pull' ${ERR}
+      return 1
+    elif [[ ${PRINTLEVEL} -gt 1 && -n ${ERR} ]]; then
+      set ${1} ${2:+${2}$'\n'}"On-pull output:"$'\n'${ERR}
+    fi
+  fi
+  print_okay "${@}"
+}
+
 case ${ACTION} in
   install)
     if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
-      print_okay Installed
+      handle Installed
     else
       print_error 'Error during git clone' ${ERR}
       return 1
@@ -38,8 +50,8 @@ case ${ACTION} in
     fi
     if [[ ${TYPE} == tag ]]; then
       if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
-        print_okay 'Already up to date'
-        return 0
+        handle 'Already up to date'
+        return ${?}
       fi
     elif [[ -z ${REV} ]]; then
       # Get HEAD remote branch
@@ -80,6 +92,6 @@ case ${ACTION} in
         return 1
       fi
     fi
-    print_okay ${OUT} ${LOG}
+    handle ${OUT} ${LOG}
     ;;
 esac

@@ -16,10 +16,10 @@ Actions:
                   Use %B-v%b to also see the modules details.
   %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
   %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b to
-                  also see their output, and see skipped modules.
+                  also see their output, any on-pull output, and see skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
   %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b
-                  to also see their output, and see skipped modules.
+                  to also see their output, any on-pull output, and see skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
 
@@ -61,7 +61,7 @@ Options:
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 10 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 3 && zargs -n 11 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     init)

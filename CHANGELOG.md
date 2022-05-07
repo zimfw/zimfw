@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- `--on-pull` option to `zmodule`, which allows setting a command that is always triggered
+  after the module is installed or updated.
 
 ## [1.8.0] - 2022-01-25
 
