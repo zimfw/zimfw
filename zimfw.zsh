@@ -384,7 +384,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-05-07 21:29:52 UTC, previous commit is e0fe8ef)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-05-09 23:35:03 UTC, previous commit is 741bb78)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -517,11 +517,11 @@ print_okay() {
 
 handle() {
   if [[ -n \${ONPULL} ]]; then
-    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && eval \${ONPULL} 2>&1); then
+    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && builtin eval \${ONPULL} 2>&1); then
       print_error 'Error during on-pull' \${ERR}
       return 1
     elif [[ \${PRINTLEVEL} -gt 1 && -n \${ERR} ]]; then
-      set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
+      builtin set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
     fi
   fi
   print_okay \"\${@}\"
@@ -662,11 +662,11 @@ print_okay() {
 
 handle() {
   if [[ -n \${ONPULL} ]]; then
-    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && eval \${ONPULL} 2>&1); then
+    if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && builtin eval \${ONPULL} 2>&1); then
       print_error 'Error during on-pull' \${ERR}
       return 1
     elif [[ \${PRINTLEVEL} -gt 1 && -n \${ERR} ]]; then
-      set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
+      builtin set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
     fi
   fi
   print_okay \"\${@}\"
@@ -754,7 +754,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.9.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.9.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.

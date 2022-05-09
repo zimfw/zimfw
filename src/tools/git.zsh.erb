@@ -14,11 +14,11 @@ print_okay() {
 
 handle() {
   if [[ -n ${ONPULL} ]]; then
-    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && eval ${ONPULL} 2>&1); then
+    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && builtin eval ${ONPULL} 2>&1); then
       print_error 'Error during on-pull' ${ERR}
       return 1
     elif [[ ${PRINTLEVEL} -gt 1 && -n ${ERR} ]]; then
-      set ${1} ${2:+${2}$'\n'}"On-pull output:"$'\n'${ERR}
+      builtin set ${1} ${2:+${2}$'\n'}"On-pull output:"$'\n'${ERR}
     fi
   fi
   print_okay "${@}"
