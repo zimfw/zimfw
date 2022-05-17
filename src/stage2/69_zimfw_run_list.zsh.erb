@@ -1,26 +1,25 @@
 _zimfw_run_list() {
-  local -r ztool=${1} zmodule=${3} zdir=${4} zurl=${5} ztype=${6} zrev=${7} zonpull=${9}
-  local -ri zsubmodules=${8} zfrozen=${10} zdisabled=${11}
-  print -PnR "%B${zmodule}:%b ${zdir}"
-  if [[ -z ${zurl} ]] print -Pn ' (external)'
-  if (( ${zfrozen} )) print -Pn ' (frozen)'
-  if (( ${zdisabled} )) print -Pn ' (disabled)'
+  local -r zname=${1}
+  print -PnR "%B${zname}:%b ${_zdirs[${zname}]}"
+  if [[ -z ${_zurls[${zname}]} ]] print -Pn ' (external)'
+  if (( ${_zfrozens[${zname}]} )) print -Pn ' (frozen)'
+  if (( ${_zdisableds[${zname}]} )) print -Pn ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
-    if [[ ${zfrozen} -eq 0 && -n ${zurl} ]]; then
-      print -nR "  From: ${zurl}, "
-      if [[ -z ${zrev} ]]; then
+    if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
+      print -nR "  From: ${_zurls[${zname}]}, "
+      if [[ -z ${_zrevs[${zname}]} ]]; then
         print -n 'default branch'
       else
-        print -nR "${ztype} ${zrev}"
+        print -nR "${_ztypes[${zname}]} ${_zrevs[${zname}]}"
       fi
-      print -nR ", using ${ztool}"
-      if (( ! zsubmodules )) print -nR ', no git submodules'
+      print -nR ", using ${_ztools[${zname}]}"
+      if (( ! _zsubmodules[${zname}] )) print -nR ', no git submodules'
       print
-      if [[ -n ${zonpull} ]] print -R "  On-pull: ${zonpull}"
+      if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
     # Match and remove the current module prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre=${zmodule}$'\0'
+    local -r zpre=${zname}$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}}) zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}}) zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
     if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
     if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}

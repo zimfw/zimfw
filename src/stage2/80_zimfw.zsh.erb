@@ -26,7 +26,9 @@ Actions:
 Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
-  local -a _zdisabled_dirs _zdirs _zfpaths _zfunctions _zcmds _zmodules_zargs _zunused_dirs
+  local -Ua _znames _zdisabled_dirs
+  local -A _zfrozens _zdisableds _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls
+  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -PlR "%F{red}${0}: Too many options%f" '' ${zusage}
@@ -57,11 +59,11 @@ Options:
     clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_compile ;;
+    compile) _zimfw_source_zimrc 2 && _zimfw_compile ;;
     help) print -PR ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 11 -- "${_zmodules_zargs[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     init)
@@ -81,7 +83,7 @@ Options:
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
-      _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
     *)

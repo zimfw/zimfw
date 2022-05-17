@@ -1,3 +1,6 @@
 _zimfw_install_update() {
-  _zimfw_source_zimrc 1 ${1} && zargs -n 11 -P 0 -- "${_zmodules_zargs[@]}" -- _zimfw_run_tool
+  local -r _zargs_action=${1}
+  _zimfw_source_zimrc 1 && zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  # Ignore return from zargs with -P
+  return 0
 }

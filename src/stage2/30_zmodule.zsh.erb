@@ -52,12 +52,10 @@ Initialization options:
     _zfailed=1
     return 2
   fi
-  local zurl=${1} zmodule=${1:t} ztool zdir ztype zrev zarg
-  local -i zsubmodules=1 zfrozen=0 zdisabled=0
-  local -a zonpulls zfpaths zfunctions zcmds
-  zstyle -s ':zim:zmodule' use 'ztool' || ztool=git
+  local zurl=${1} zname=${1:t} zarg
+  local -a zfpaths zfunctions zcmds
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
-    zmodule=${zmodule%.git}
+    zname=${zname%.git}
   elif [[ ${zurl} != /* ]]; then
     # Count number of slashes
     case ${#zurl//[^\/]/} in
@@ -66,27 +64,35 @@ Initialization options:
     esac
   fi
   shift
-  if [[ ${1} == (-n|--name) ]]; then
+  while [[ ${1} == (-n|--name) ]]; do
     if (( # < 2 )); then
-      print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
+      print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zname}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
       _zfailed=1
       return 2
     fi
     shift
-    zmodule=${${1%%/##}##/##}
+    zname=${${1%%/##}##/##}
     shift
-  fi
+  done
   if [[ ${zurl} == /* ]]; then
-    zdir=${zurl%%/##}
+    _zdirs[${zname}]=${zurl%%/##}
     zurl=
   else
-    zdir=${ZIM_HOME}/modules/${zmodule}
+    _zdirs[${zname}]=${ZIM_HOME}/modules/${zname}
   fi
+  _zurls[${zname}]=${zurl}
+  # Set default values
+  if (( ! ${+_ztools[${zname}]} )); then
+    zstyle -s ':zim:zmodule' use "_ztools[${zname}]" || _ztools[${zname}]=git
+  fi
+  if (( ! ${+_ztypes[${zname}]} )) _ztypes[${zname}]=branch
+  if (( ! ${+_zsubmodules[${zname}]} )) _zsubmodules[${zname}]=1
+  # Set values from options
   while (( # > 0 )); do
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|--on-pull|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
-          print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
+          print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zname}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
           _zfailed=1
           return 2
         fi
@@ -94,34 +100,34 @@ Initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|--no-submodules)
-        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b The zmodule option %B${1}%b has no effect for external modules%f"
+        if [[ -z ${zurl} ]] _zimfw_print -u2 -PR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zname}:%b The zmodule option %B${1}%b has no effect for external modules%f"
         ;;
     esac
     case ${1} in
       -b|--branch)
         shift
-        ztype=branch
-        zrev=${1}
+        _ztypes[${zname}]=branch
+        _zrevs[${zname}]=${1}
         ;;
       -t|--tag)
         shift
-        ztype=tag
-        zrev=${1}
+        _ztypes[${zname}]=tag
+        _zrevs[${zname}]=${1}
         ;;
       -u|--use)
         shift
-        ztool=${1}
+        _ztools[${zname}]=${1}
         ;;
-      --no-submodules) zsubmodules=0 ;;
-      -z|--frozen) zfrozen=1 ;;
+      --no-submodules) _zsubmodules[${zname}]=0 ;;
+      -z|--frozen) _zfrozens[${zname}]=1 ;;
       --on-pull)
         shift
-        zonpulls+=(${1})
+        _zonpulls[${zname}]="${_zonpulls[${zname}]+${_zonpulls[${zname}]}; }${1}"
         ;;
       -f|--fpath)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${_zdirs[${zname}]}/${zarg}
         zfpaths+=(${zarg})
         ;;
       -a|--autoload)
@@ -131,16 +137,16 @@ Initialization options:
       -s|--source)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zdir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${_zdirs[${zname}]}/${zarg}
         zcmds+=("source ${zarg:A}")
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${zdir:A}})
+        zcmds+=(${1//{}/${_zdirs[${zname}]:A}})
         ;;
-      -d|--disabled) zdisabled=1 ;;
+      -d|--disabled) _zdisableds[${zname}]=1 ;;
       *)
-        print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Unknown zmodule option %B${1}%b%f" '' ${zusage}
+        print -u2 -PlR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zname}:%b Unknown zmodule option %B${1}%b%f" '' ${zusage}
         _zfailed=1
         return 2
         ;;
@@ -148,42 +154,37 @@ Initialization options:
     shift
   done
   if (( _zflags & 1 )); then
-    _zmodules_zargs+=("${ztool}" "${_zargs_action}" "${zmodule}" "${zdir}" "${zurl}" "${ztype}" "${zrev}" "${zsubmodules}" "${(j:; :)zonpulls}" "${zfrozen}" "${zdisabled}")
+    _znames+=(${zname})
   fi
   if (( _zflags & 2 )); then
-    if (( zdisabled )); then
-      _zdisabled_dirs+=(${zdir})
+    if (( _zdisableds[${zname}] )); then
+      _zdisabled_dirs+=(${_zdirs[${zname}]})
     else
-      if [[ ! -e ${zdir} ]]; then
-        if [[ -z ${zurl} ]]; then
-          print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}: ${zdir}%b not found%f"
-        else
-          print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
-        fi
+      if [[ ! -e ${_zdirs[${zname}]} ]]; then
+        print -u2 -PR "%F{red}<%= error %>${funcfiletrace[1]}:%B${zname}: ${_zdirs[${zname}]}%b not found%f"
         _zfailed=1
         return 1
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        zfpaths=(${zdir}/functions(NF))
+        zfpaths=(${_zdirs[${zname}]}/functions(NF))
         # _* functions are autoloaded by compinit
         # prompt_*_setup functions are autoloaded by promptinit
         zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
-        local -ra prezto_scripts=(${zdir}/init.zsh(N))
+        local -ra prezto_scripts=(${_zdirs[${zname}]}/init.zsh(N))
         if (( ${#zfpaths} && ${#prezto_scripts} )); then
           # this follows the prezto module format, no need to check for other scripts
           zcmds=('source '${^prezto_scripts:A})
         else
           # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-          local -ra zscripts=(${zdir}/(init.zsh|${zmodule:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+          local -ra zscripts=(${_zdirs[${zname}]}/(init.zsh|${zname:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
           zcmds=('source '${^zscripts:A})
         fi
       fi
       if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-        _zimfw_print -u2 -PlR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zmodule}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
+        _zimfw_print -u2 -PlR "%F{yellow}<%= warn %>${funcfiletrace[1]}:%B${zname}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
       fi
-      _zdirs+=(${zdir})
-      # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating modules
-      local -r zpre=${zmodule}$'\0'
+      # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating names
+      local -r zpre=${zname}$'\0'
       _zfpaths+=(${zpre}${^zfpaths})
       _zfunctions+=(${zpre}${^zfunctions})
       _zcmds+=(${zpre}${^zcmds})

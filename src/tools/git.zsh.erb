@@ -1,7 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh
 readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6:=branch} ONPULL=${9}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} TYPE=${6} ONPULL=${9}
 REV=${7}
 
 print_error() {

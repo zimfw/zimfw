@@ -1,41 +1,40 @@
 _zimfw_run_tool() {
-  local -r ztool=${1} zaction=${2} zmodule=${3} zdir=${4} zurl=${5}
-  if [[ -z ${zurl} ]]; then
-    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping external module"
+  local -r zname=${1}
+  if [[ -z ${_zurls[${zname}]} ]]; then
+    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping external module"
     return 0
   fi
-  local -ri zfrozen=${10}
-  if (( zfrozen )); then
-    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zmodule}:%b Skipping frozen module"
+  if (( _zfrozens[${zname}] )); then
+    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping frozen module"
     return 0
   fi
-  case ${zaction} in
+  case ${_zargs_action} in
     install)
-      if [[ -e ${zdir} ]]; then
-        # Already installed
+      if [[ -e ${_zdirs[${zname}]} ]]; then
+        if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping already installed module"
         return 0
       fi
-      _zimfw_print -nR <%= clear_line %>"Installing ${zmodule}<%= ellipsis %>"
+      _zimfw_print -nR <%= clear_line %>"Installing ${zname}<%= ellipsis %>"
       ;;
     update)
-      if [[ ! -d ${zdir} ]]; then
-        print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Not installed. Run %Bzimfw install%b to install.%f"
+      if [[ ! -d ${_zdirs[${zname}]} ]]; then
+        print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zname}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -nR <%= clear_line %>"Updating ${zmodule}<%= ellipsis %>"
+      _zimfw_print -nR <%= clear_line %>"Updating ${zname}<%= ellipsis %>"
       ;;
     *)
-      print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zmodule}:%b Unknown action ${zaction}%f"
+      print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zname}:%b Unknown action ${_zargs_action}%f"
       return 1
       ;;
   esac
   local zcmd
-  case ${ztool} in
+  case ${_ztools[${zname}]} in
 <%= render_tools("src/tools/*", "zcmd") %>
     *)
-      print -u2 -PR "<%= clear_line %>%F{red}<%= error %>%B${zmodule}:%b Unknown tool ${ztool}%f"
+      print -u2 -PR "<%= clear_line %>%F{red}<%= error %>%B${zname}:%b Unknown tool ${_ztools[${zname}]}%f"
       return 1
       ;;
   esac
-  zsh -c ${zcmd} ${ztool} ${_zprintlevel} "${@[2,9]}"
+  zsh -c ${zcmd} ${_ztools[${zname}]} "${_zprintlevel}" "${_zargs_action}" "${zname}" "${_zdirs[${zname}]}" "${_zurls[${zname}]}" "${_ztypes[${zname}]}" "${_zrevs[${zname}]}" "${_zsubmodules[${zname}]}" "${_zonpulls[${zname}]}"
 }
