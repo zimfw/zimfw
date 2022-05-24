@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.9.1] - 2022-05-24
+
 ### Fixed
 
-- Calling `zmodule` more than once will override the repository options along
-  the calls for the same module name.
-- Also show skipping already installed modules with the install action and `-v`.
-- Also consider external module directory paths when calling the compile action
-  directly.
-- Ignore return value from `zargs` with `-P`.
+- Override repository options along multiple `zmodule` calls with the same
+  module name.
+- Show already installed modules skipped with install action and `-v`.
+- Consider external module directory paths when calling compile action directly.
+- Ignore return value from `zargs` with `-P`
+  (See https://www.zsh.org/mla/workers/2022/msg00611.html)
 
 ## [1.9.0] - 2022-05-09
 

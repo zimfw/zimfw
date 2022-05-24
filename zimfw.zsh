@@ -384,7 +384,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-05-17 23:38:19 UTC, previous commit is d6b4aa6)'
+  print -R 'zimfw version: '${_zversion}' (built at 2022-05-24 21:25:10 UTC, previous commit is 5bcfb8c)'
   print -R 'ZIM_HOME:      '${ZIM_HOME}
   print -R 'Zsh version:   '${ZSH_VERSION}
   print -R 'System info:   '$(command uname -a)
@@ -393,7 +393,8 @@ _zimfw_info() {
 _zimfw_install_update() {
   local -r _zargs_action=${1}
   _zimfw_source_zimrc 1 && zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
-  # Ignore return from zargs with -P
+  # Ignore return from zargs with -P. Was missing values before zsh 5.9, and
+  # it's intermittently failing in zsh 5.9 and macOS. See https://www.zsh.org/mla/workers/2022/msg00611.html
   return 0
 }
 
@@ -755,7 +756,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.9.1-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.9.1' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
