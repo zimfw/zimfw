@@ -17,7 +17,7 @@ _No unreleased changes._
   module name.
 - Show already installed modules skipped with install action and `-v`.
 - Consider external module directory paths when calling compile action directly.
-- Ignore return value from `zargs` with `-P`
+- Ignore return value from `zargs` with `-P`.
   (See https://www.zsh.org/mla/workers/2022/msg00611.html)
 
 ## [1.9.0] - 2022-05-09
@@ -289,7 +289,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.9.1...HEAD
+[1.9.1]: https://github.com/zimfw/zimfw/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/zimfw/zimfw/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/zimfw/zimfw/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/zimfw/zimfw/compare/v1.6.2...v1.7.0
