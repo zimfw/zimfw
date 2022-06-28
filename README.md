@@ -58,6 +58,14 @@ Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
 to tweak your [`~/.zshrc`](#set-up-zshrc) file, and to also check the available
 [modules] and [themes] you can add to your [`~/.zimrc`](#create-zimrc).
 
+### Fig
+
+[Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
+
+Install `zimfw` in just one click.
+
+<a href="https://fig.io/plugins/other/zimfw_zimfw" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+
 ### Manual installation
 
 1. Set Zsh as the default shell, if you haven't done so already:
