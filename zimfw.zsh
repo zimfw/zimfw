@@ -317,7 +317,7 @@ _zimfw_version_check() {
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
       # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
       # sort in descending `O`rder `n`umerically, and get the `[1]` first)
-      print ${${(On)${(f)"$(command git ls-remote --tags --refs \
+      print -R ${${(On)${(f)"$(command git ls-remote --tags --refs \
           https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${ztarget} &!
     fi
     if [[ -f ${ztarget} ]]; then
@@ -384,10 +384,13 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version: '${_zversion}' (built at 2022-05-24 21:25:10 UTC, previous commit is 5bcfb8c)'
-  print -R 'ZIM_HOME:      '${ZIM_HOME}
-  print -R 'Zsh version:   '${ZSH_VERSION}
-  print -R 'System info:   '$(command uname -a)
+  print -R 'zimfw version:        '${_zversion}' (built at 2022-08-02 17:46:34 UTC, previous commit is b5703f9)'
+  print -R 'OSTYPE:               '${OSTYPE}
+  print -R 'TERM:                 '${TERM}
+  print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
+  print -R 'TERM_PROGRAM_VERSION: '${TERM_PROGRAM_VERSION}
+  print -R 'ZIM_HOME:             '${ZIM_HOME}
+  print -R 'ZSH_VERSION:          '${ZSH_VERSION}
 }
 
 _zimfw_install_update() {
@@ -467,17 +470,17 @@ _zimfw_run_list() {
 _zimfw_run_tool() {
   local -r zname=${1}
   if [[ -z ${_zurls[${zname}]} ]]; then
-    if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping external module"
+    if (( _zprintlevel > 1 )) print -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping external module"
     return 0
   fi
   if (( _zfrozens[${zname}] )); then
-    if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping frozen module"
+    if (( _zprintlevel > 1 )) print -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping frozen module"
     return 0
   fi
   case ${_zargs_action} in
     install)
       if [[ -e ${_zdirs[${zname}]} ]]; then
-        if (( _zprintlevel > 1 )) print -u2 -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping already installed module"
+        if (( _zprintlevel > 1 )) print -PR $'\E[2K\r'"%F{green})%f %B${zname}:%b Skipping already installed module"
         return 0
       fi
       _zimfw_print -nR $'\E[2K\r'"Installing ${zname} ..."
@@ -756,7 +759,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.9.1' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.10.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.

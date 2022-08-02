@@ -5,7 +5,7 @@ _zimfw_version_check() {
     if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
       # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
       # sort in descending `O`rder `n`umerically, and get the `[1]` first)
-      print ${${(On)${(f)"$(command git ls-remote --tags --refs \
+      print -R ${${(On)${(f)"$(command git ls-remote --tags --refs \
           https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${ztarget} &!
     fi
     if [[ -f ${ztarget} ]]; then

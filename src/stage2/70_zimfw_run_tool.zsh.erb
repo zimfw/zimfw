@@ -1,17 +1,17 @@
 _zimfw_run_tool() {
   local -r zname=${1}
   if [[ -z ${_zurls[${zname}]} ]]; then
-    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping external module"
+    if (( _zprintlevel > 1 )) print -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping external module"
     return 0
   fi
   if (( _zfrozens[${zname}] )); then
-    if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping frozen module"
+    if (( _zprintlevel > 1 )) print -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping frozen module"
     return 0
   fi
   case ${_zargs_action} in
     install)
       if [[ -e ${_zdirs[${zname}]} ]]; then
-        if (( _zprintlevel > 1 )) print -u2 -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping already installed module"
+        if (( _zprintlevel > 1 )) print -PR <%= clear_line %>"<%= okay %>%B${zname}:%b Skipping already installed module"
         return 0
       fi
       _zimfw_print -nR <%= clear_line %>"Installing ${zname}<%= ellipsis %>"

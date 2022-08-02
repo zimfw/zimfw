@@ -110,8 +110,8 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    This is optional. If you choose to not include this step, you should manually
    download the `zimfw.zsh` script once and keep it at `${ZIM_HOME}`.
 
-4. To automatically install missing modules and update the initialization script
-   if missing or outdated:
+4. To automatically install missing modules and update the static initialization
+   script if missing or outdated:
    ```zsh
    # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
    if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
@@ -122,7 +122,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    it, you must remember to manually run `zimfw install` every time after you
    update your [`~/.zimrc`](#create-zimrc) file.
 
-5. To source the initialization script, that initializes your modules:
+5. To source the static script, that will initialize your modules:
    ```zsh
    # Initialize modules.
    source ${ZIM_HOME}/init.zsh
@@ -166,8 +166,9 @@ define the modules you want to use.
 
 Usage
 -----
-The `zimfw` plugin manager builds an initialization script, at `${ZIM_HOME}/init.zsh`,
-that initializes the modules you defined in your `~/.zimrc` file.
+The `zimfw` plugin manager installs your modules at `${ZIM_HOME}/modules`, and
+builds a static script at `${ZIM_HOME}/init.zsh` that will initialize them. Your
+modules are defined in your `~/.zimrc` file.
 
 The `~/.zimrc` file must contain a `zmodule` call for each module you want to
 use. The modules will be initialized in the order they are defined.
