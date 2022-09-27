@@ -98,7 +98,7 @@ The initialization will be done in the same order it's defined.
                              the module into subdirectories. The module will be installed at
                              %B${ZIM_HOME}/%b<module_name>.
                              Default: the last component in <url>.
-  %B-r%b|%B--root%b <path>           Relative path to the module root. Default: none.
+  %B-r%b|%B--root%b <path>           Relative path to the module root.
 
 Per-module options:
   %B-b%b|%B--branch%b <branch_name>  Use specified branch when installing and updating the module.
@@ -420,7 +420,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2022-09-27 01:07:23 UTC, previous commit is 887bfd6)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2022-09-27 22:44:10 UTC, previous commit is 05b8e0c)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -807,7 +807,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.10.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.10.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.

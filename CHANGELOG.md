@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.10.0] - 2022-0x-xx
+
+### Added
+
+- `--root` option to `zmodule`. Combined with the ability to call `zmodule`
+  multiple times for the same module, this allows initializing from multiple
+  roots in repositories like prezto or ohmyzsh. Also, `--on-pull` and `--disable`
+  now work on a per-module-root basis.
+
+### Changed
+
+- Show `OSTYPE`, `TERM`, `TERM_PROGRAM` and `TERM_PROGRAM_VERSION` environment
+  variables instead of calling the `uname -a` command to show system info in the
+  `zimfw info` action.
+
 ## [1.9.1] - 2022-05-24
 
 ### Fixed
@@ -289,7 +304,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/zimfw/zimfw/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/zimfw/zimfw/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/zimfw/zimfw/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/zimfw/zimfw/compare/v1.7.0...v1.8.0
