@@ -9,4 +9,12 @@ _zimfw_source_zimrc() {
     print -u2 -PR "%F{red}<%= failed %>No modules defined in %B${ztarget}%b%f"
     return 1
   fi
+  # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes
+  local zroot_dir zpre
+  for zroot_dir in ${_zdisabled_root_dirs}; do
+    zpre=${zroot_dir}$'\0'
+    _zfpaths=(${_zfpaths:#${zpre}*})
+    _zfunctions=(${_zfunctions:#${zpre}*})
+    _zcmds=(${_zcmds:#${zpre}*})
+  done
 }

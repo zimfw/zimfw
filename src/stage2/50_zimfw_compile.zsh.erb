@@ -1,12 +1,12 @@
 _zimfw_compile() {
-  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME} ${${(v)_zdirs##${ZIM_HOME}/*}:A})
   # Compile Zim scripts
-  local zfile
-  for zfile in ${^zscriptdirs}/(^*test*/)#*.zsh(|-theme)(N-.); do
-    if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
-      zcompile -R ${zfile} && _zimfw_print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
-    fi
+  local zroot_dir zfile
+  for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
+    for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
+      if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
+        zcompile -UR ${zfile} && _zimfw_print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
+      fi
+    done
   done
   _zimfw_print -P '<%= done %>Done with compile.'
 }

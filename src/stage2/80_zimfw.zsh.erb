@@ -26,8 +26,8 @@ Actions:
 Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
-  local -Ua _znames _zdisabled_dirs
-  local -A _zfrozens _zdisableds _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls
+  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
+  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
