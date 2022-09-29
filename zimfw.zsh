@@ -420,7 +420,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2022-09-27 22:44:10 UTC, previous commit is 05b8e0c)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2022-09-29 00:40:29 UTC, previous commit is 3351dc6)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -507,7 +507,7 @@ _zimfw_run_list() {
       done
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${zdir}(|/*)"$'\0'
+    local -r zpre="${(q)zdir}(|/*)"$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
     if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
     if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
@@ -807,7 +807,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.10.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.11.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.

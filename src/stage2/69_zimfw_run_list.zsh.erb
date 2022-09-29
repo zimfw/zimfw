@@ -31,7 +31,7 @@ _zimfw_run_list() {
       done
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${zdir}(|/*)"$'\0'
+    local -r zpre="${(q)zdir}(|/*)"$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
     if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
     if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
