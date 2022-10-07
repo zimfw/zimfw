@@ -59,12 +59,40 @@ _zimfw_build_init() {
   _zimfw_mv =(
     print -R "zimfw() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     print -R "zmodule() { source ${ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    # Remove all prefixes from _zfpaths, _zfunctions and _zcmds
-    local -r zpre=$'*\0'
-    print -R 'typeset -g _zim_fpath=('${${_zfpaths#${~zpre}}:A}')'
+    local zroot_dir zpre
+    local -a zif_functions zif_cmds zroot_functions zroot_cmds
+    local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
+    # Keep fpath constant regardless of "if" root dirs, to avoid confusing compinit.
+    # Move all from zfunctions and zcmds with "if" root dirs prefixes.
+    for zroot_dir in ${_zroot_dirs}; do
+      if (( ${+_zifs[${zroot_dir}]} )); then
+        zpre=${zroot_dir}$'\0'
+        zif_functions+=(${(M)zfunctions:#${zpre}*})
+        zif_cmds+=(${(M)zcmds:#${zpre}*})
+        zfunctions=(${zfunctions:#${zpre}*})
+        zcmds=(${zcmds:#${zpre}*})
+      fi
+    done
+    zpre=$'*\0'
+    print -R 'typeset -gr _zim_fpath=('${${_zfpaths#${~zpre}}:A}')'
     if (( ${#_zfpaths} )) print 'fpath=(${_zim_fpath} ${fpath})'
-    if (( ${#_zfunctions} )) print -R 'autoload -Uz -- '${_zfunctions#${~zpre}}
-    print -R ${(F)_zcmds#${~zpre}}
+    if (( ${#zfunctions} )) print -R 'autoload -Uz -- '${zfunctions#${~zpre}}
+    for zroot_dir in ${_zroot_dirs}; do
+      zpre=${zroot_dir}$'\0'
+      if (( ${+_zifs[${zroot_dir}]} )); then
+        zroot_functions=(${${(M)zif_functions:#${zpre}*}#${zpre}})
+        zroot_cmds=(${${(M)zif_cmds:#${zpre}*}#${zpre}})
+        if (( ${#zroot_functions} || ${#zroot_cmds} )); then
+          print -R 'if '${_zifs[${zroot_dir}]}'; then'
+          if (( ${#zroot_functions} )) print -R '  autoload -Uz -- '${zroot_functions}
+          if (( ${#zroot_cmds} )) print -R ${(F):-  ${^zroot_cmds}}
+          print fi
+        fi
+      else
+        zroot_cmds=(${${(M)zcmds:#${zpre}*}#${zpre}})
+        if (( ${#zroot_cmds} )) print -R ${(F)zroot_cmds}
+      fi
+    done
   ) ${ztarget}
 }
 
@@ -94,10 +122,10 @@ The initialization will be done in the same order it's defined.
                              are equivalent: %Bfoo%b, %Bzimfw/foo%b, %Bhttps://github.com/zimfw/foo.git%b.
                              If an absolute path is given, the module is considered externally
                              installed, and won't be installed or updated by zimfw.
-  %B-n%b|%B--name%b <module_name>    Set a custom module name. Use slashes inside the name to organize
-                             the module into subdirectories. The module will be installed at
+  %B-n%b|%B--name%b <module_name>    Set a custom module name. Default: the last component in <url>.
+                             Slashes can be used inside the name to organize the module into
+                             subdirectories. The module will be installed at
                              %B${ZIM_HOME}/%b<module_name>.
-                             Default: the last component in <url>.
   %B-r%b|%B--root%b <path>           Relative path to the module root.
 
 Per-module options:
@@ -135,7 +163,9 @@ Per-call initialization options:
   %B-s%b|%B--source%b <file_path>    Will source specified file. The path is relative to the module
                              root directory. Default: %Binit.zsh%b, if a non-empty %Bfunctions%b sub-
                              directory exists, else the largest of the files matching the glob
-                             %B(init.zsh|%b<root_tail>%B.(zsh|plugin.zsh|zsh-theme|sh))%b, if any.
+                             %B(init.zsh|%b<name>%B.(zsh|plugin.zsh|zsh-theme|sh))%b, if any.
+                             <name> in the glob is resolved to the last component of the mod-
+                             ule name, or the last component of the path to the module root.
   %B-c%b|%B--cmd%b <command>         Will execute specified command. Occurrences of the %B{}%b placeholder
                              in the command are substituted by the module root directory path.
                              I.e., %B-s 'foo.zsh'%b and %B-c 'source {}/foo.zsh'%b are equivalent.
@@ -206,7 +236,7 @@ Per-call initialization options:
   # Set values from options
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|--on-pull|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -PlR "%F{red}x ${funcfiletrace[1]}:%B${zname}:%b Missing argument for zmodule option %B${1}%b%f" '' ${zusage}
           _zfailed=1
@@ -241,6 +271,10 @@ Per-call initialization options:
         zarg=${1}
         if [[ -n ${zroot} ]] zarg="(builtin cd -q ${zroot}; ${zarg})"
         _zonpulls[${zname}]="${_zonpulls[${zname}]+${_zonpulls[${zname}]}; }${zarg}"
+        ;;
+      --if)
+        shift
+        _zifs[${zroot_dir}]=${1}
         ;;
       -f|--fpath)
         shift
@@ -291,12 +325,12 @@ Per-call initialization options:
         zcmds=('source '${^prezto_scripts:A})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-        local -ra zscripts=(${zroot_dir}/(init.zsh|${zroot_dir:t}.(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+        local -ra zscripts=(${zroot_dir}/(init.zsh|(${zname:t}|${zroot_dir:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
         zcmds=('source '${^zscripts:A})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      _zimfw_print -u2 -PlR "%F{yellow}! ${funcfiletrace[1]}:%B${zname}:%b Nothing found to be initialized. Customize the module name or initialization with %Bzmodule%b options.%f" '' ${zusage}
+      _zimfw_print -u2 -PlR "%F{yellow}! ${funcfiletrace[1]}:%B${zname}:%b Nothing found to be initialized. Customize the module name, root or initialization with %Bzmodule%b options.%f" '' ${zusage}
     fi
     # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root dir
     local -r zpre=${zroot_dir}$'\0'
@@ -420,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2022-09-29 00:40:29 UTC, previous commit is 3351dc6)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2022-10-07 00:49:27 UTC, previous commit is 8a9d63c)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -834,7 +868,7 @@ Options:
   %B-q%b              Quiet (yes to prompts, and only outputs errors)
   %B-v%b              Verbose (outputs more details)"
   local -Ua _znames _zroot_dirs _zdisabled_root_dirs
-  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls
+  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
