@@ -12,7 +12,7 @@ Actions:
   %Bcompile%b         Compile Zsh files.
   %Bhelp%b            Print this help.
   %Binfo%b            Print Zim and system info.
-  %Blist%b            List all modules currently defined in %B<%= home %>/.zimrc%b.
+  %Blist%b            List all modules currently defined in %B${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}%b.
                   Use %B-v%b to also see the modules details.
   %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
   %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcheck-dumpfile%b and %Bcompile%b. Use %B-v%b to

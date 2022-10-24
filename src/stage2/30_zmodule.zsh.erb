@@ -1,7 +1,8 @@
 zmodule() {
+  local -r ztarget=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}
   local -r zusage="Usage: %B${0}%b <url> [%B-n%b|%B--name%b <module_name>] [%B-r%b|%B--root%b <path>] [options]
 
-Add %Bzmodule%b calls to your %B${ZDOTDIR:-${HOME}}/.zimrc%b file to define the modules to be initialized.
+Add %Bzmodule%b calls to your %B${ztarget}%b file to define the modules to be initialized.
 The initialization will be done in the same order it's defined.
 
   <url>                      Module absolute path or repository URL. The following URL formats
@@ -60,8 +61,8 @@ Per-call initialization options:
   other per-call initialization options, so only your provided values will be used. I.e. these
   values are either all automatic, or all manual in each zmodule call. To use default values
   and also provided values, use separate zmodule calls."
-  if [[ ${${funcfiletrace[1]%:*}:t} != .zimrc ]]; then
-    print -u2 -PlR "%F{red}${0}: Must be called from %B<%= home %>/.zimrc%b%f" '' ${zusage}
+  if [[ ${${funcfiletrace[1]%:*}:A} != ${ztarget:A} ]]; then
+    print -u2 -PlR "%F{red}${0}: Must be called from %B${ztarget}%b%f" '' ${zusage}
     return 2
   fi
   if (( ! # )); then
