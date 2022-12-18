@@ -148,6 +148,8 @@ Per-module options:
   Modules are uniquely identified by their name.
 
 Per-module-root options:
+  %B--if%b <test>                Will only initialize module root if specified test returns a zero
+                             exit status. The test is evaluated at every new terminal startup.
   %B--on-pull%b <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   %B-d%b|%B--disabled%b              Don't initialize the module root or uninstall the module.
@@ -455,7 +457,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2022-10-24 00:21:20 UTC, previous commit is 3959a7f)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2022-12-18 21:05:25 UTC, previous commit is e54958b)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -842,7 +844,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.11.0-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.11.0' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.

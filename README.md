@@ -222,15 +222,16 @@ Below are some usage examples:
 <pre>Usage: <b>zmodule</b> &lt;url&gt; [<b>-n</b>|<b>--name</b> &lt;module_name&gt;] [<b>-r</b>|<b>--root</b> &lt;path&gt;] [options]
 
 Add <b>zmodule</b> calls to your <b>~/.zimrc</b> file to define the modules to be initialized. The initiali-
-zation will be done in the same order it's defined.
+zation will be done in the same order it&apos;s defined.
 
   &lt;url&gt;                      Module absolute path or repository URL. The following URL formats
                              are equivalent: <b>foo</b>, <b>zimfw/foo</b>, <b>https://github.com/zimfw/foo.git</b>.
                              If an absolute path is given, the module is considered externally
                              installed, and won&apos;t be installed or updated by zimfw.
-  <b>-n</b>|<b>--name</b> &lt;module_name&gt;    Set a custom module name. Use slashes inside the name to organize
-                             the module into subdirectories. The module will be installed at
-                             <b>${ZIM_HOME}/</b>&lt;module_name&gt;. Default: the last component in &lt;url&gt;.
+  <b>-n</b>|<b>--name</b> &lt;module_name&gt;    Set a custom module name. Default: the last component in &lt;url&gt;.
+                             Slashes can be used inside the name to organize the module into
+                             subdirectories. The module will be installed at
+                             <b>${ZIM_HOME}/</b>&lt;module_name&gt;.
   <b>-r</b>|<b>--root</b> &lt;path&gt;           Relative path to the module root.
 
 Per-module options:
@@ -252,6 +253,8 @@ Per-module options:
   Modules are uniquely identified by their name.
 
 Per-module-root options:
+  <b>--if</b> &lt;test&gt;                Will only initialize module root if specified test returns a zero
+                             exit status. The test is evaluated at every new terminal startup.
   <b>--on-pull</b> &lt;command&gt;        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize the module root or uninstall the module.
@@ -268,7 +271,9 @@ Per-call initialization options:
   <b>-s</b>|<b>--source</b> &lt;file_path&gt;    Will source specified file. The path is relative to the module
                              root directory. Default: <b>init.zsh</b>, if a non-empty <b>functions</b> sub-
                              directory exists, else the largest of the files matching the glob
-                             <b>(init.zsh|</b>&lt;root_tail&gt;<b>.(zsh|plugin.zsh|zsh-theme|sh))</b>, if any.
+                             <b>(init.zsh|</b>&lt;name&gt;<b>.(zsh|plugin.zsh|zsh-theme|sh))</b>, if any.
+                             &lt;name&gt; in the glob is resolved to the last component of the mod-
+                             ule name, or the last component of the path to the module root.
   <b>-c</b>|<b>--cmd</b> &lt;command&gt;         Will execute specified command. Occurrences of the <b>{}</b> placeholder
                              in the command are substituted by the module root directory path.
                              I.e., <b>-s &apos;foo.zsh&apos;</b> and <b>-c &apos;source {}/foo.zsh&apos;</b> are equivalent.
@@ -293,6 +298,18 @@ The Zim plugin manager:
 
 Settings
 --------
+Customize path of the directory used by Zim with the `ZIM_HOME` environment
+variable:
+
+    ZIM_HOME=~/.zim
+
+By default, the `zimfw` plugin manager configuration file must be at `~/.zimrc`,
+if the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
+`${ZDOTDIR}/.zimrc`. You can customize its full path and name with the
+`ZIM_CONFIG_FILE` environment variable:
+
+    ZIM_CONFIG_FILE=~/.config/zsh/zimrc
+
 Modules are installed using `git` by default. If you don't have `git`
 installed, or if you want to take advantage of our degit tool for faster and
 lighter module installations, you can set degit as the default tool with:

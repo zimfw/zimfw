@@ -34,6 +34,8 @@ Per-module options:
   Modules are uniquely identified by their name.
 
 Per-module-root options:
+  %B--if%b <test>                Will only initialize module root if specified test returns a zero
+                             exit status. The test is evaluated at every new terminal startup.
   %B--on-pull%b <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   %B-d%b|%B--disabled%b              Don't initialize the module root or uninstall the module.

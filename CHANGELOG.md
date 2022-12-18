@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.11.0] - 2022-12-18
+
+### Added
+
+- `--if` option to `zmodule` that will only initialize the module root if the
+  specified test returns a zero exit status. The test is evaluated at every new
+  terminal startup.
+- Ability to customize the .zimrc file name and path with the `ZIM_CONFIG_FILE`
+  environment variable.
+
 ## [1.10.0] - 2022-09-27
 
 ### Added
