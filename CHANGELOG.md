@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+
+- Use `_zim_dumpfile_fpath` defined by the completion module
+  [here](https://github.com/zimfw/completion/blob/33737e8c15fa8dba9af47bef8408b1af2599c21b/init.zsh#L11),
+  right before `compinit` is run, to more accurately do `zimfw check-dumpfile`.
 
 ## [1.11.0] - 2022-12-18
 

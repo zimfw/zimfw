@@ -2,19 +2,17 @@ _zimfw_check_dumpfile() {
   local zdumpfile zfpath zline
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=<%= home %>/.zcompdump
   if [[ -e ${zdumpfile} ]]; then
-    if (( ${+_zim_fpath} )); then
-      local -r zpre=$'*\0'
-      zfpath=(${${_zfpaths#${~zpre}}:A} ${fpath:|_zim_fpath})
+    if (( ${+_zim_dumpfile_fpath} )); then
+      local -r zcomps=(${^_zim_dumpfile_fpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+      IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
+      if [[ ${zline[2]} -eq ${#zcomps} && ${zline[4]} == ${ZSH_VERSION} ]]; then
+        _zimfw_print -PR "<%= okay %>%B${zdumpfile}:%b Already up to date"
+      else
+        _zimfw_print -PR "<%= okay %>%B${zdumpfile}:%b New completion configuration needs to be dumped. Will do %Bclean-dumpfile%b."
+        _zimfw_clean_dumpfile
+      fi
     else
-      zfpath=(${fpath})
-    fi
-    local -r zcomps=(${^zfpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
-    IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
-    if [[ ${zline[2]} -eq ${#zcomps} && ${zline[4]} == ${ZSH_VERSION} ]]; then
-      _zimfw_print -PR "<%= okay %>%B${zdumpfile}:%b Already up to date"
-    else
-      _zimfw_print -PR "<%= okay %>%B${zdumpfile}:%b New completion configuration needs to be dumped. Will do %Bclean-dumpfile%b."
-      _zimfw_clean_dumpfile
+      _zimfw_print -u2 -PR "%F{yellow}<%= warn %>%B${zdumpfile}:%b Unable to check. This only works when the completion module is initialized."
     fi
   else
     _zimfw_print -PR "<%= okay %>%B${zdumpfile}:%b Not found"
