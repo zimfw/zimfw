@@ -74,7 +74,8 @@ _zimfw_build_init() {
       fi
     done
     zpre=$'*\0'
-    if (( ${#_zfpaths} )) print 'fpath=('${${_zfpaths#${~zpre}}:A}' ${fpath})'
+    print -R 'typeset -gr _zim_fpath=('${${_zfpaths#${~zpre}}:A}')'
+    if (( ${#_zfpaths} )) print 'fpath=(${_zim_fpath} ${fpath})'
     if (( ${#zfunctions} )) print -R 'autoload -Uz -- '${zfunctions#${~zpre}}
     for zroot_dir in ${_zroot_dirs}; do
       zpre=${zroot_dir}$'\0'
@@ -402,21 +403,36 @@ _zimfw_version_check() {
 }
 
 _zimfw_check_dumpfile() {
-  local zdumpfile zfpath zline
+  local zdumpfile
   zstyle -s ':zim:completion' dumpfile 'zdumpfile' || zdumpfile=${ZDOTDIR:-${HOME}}/.zcompdump
   if [[ -e ${zdumpfile} ]]; then
-    if (( ${+_zim_dumpfile_fpath} )); then
-      local -r zcomps=(${^_zim_dumpfile_fpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
-      IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
-      if [[ ${zline[2]} -eq ${#zcomps} && ${zline[4]} == ${ZSH_VERSION} ]]; then
-        _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b Already up to date"
+    local -i zup_to_date=-1
+    local zline
+    IFS=$' \t' read -rA zline < ${zdumpfile} || return 1
+    if [[ ${zline[4]} != ${ZSH_VERSION} ]] zup_to_date=0
+    if (( zup_to_date != 0 && ${+_zim_fpath} )); then
+      local -r zold_zim_comps=(${^_zim_fpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+      local -r zpre=$'*\0'
+      local -r znew_zim_fpath=(${${_zfpaths#${~zpre}}:A})
+      local -r znew_zim_comps=(${^znew_zim_fpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+      if (( ${#zold_zim_comps} != ${#znew_zim_comps} )) zup_to_date=0
+    fi
+    if (( zup_to_date != 0 && ${+_zim_dumpfile_fpath} )); then
+      local -r znew_dumpfile_comps=(${^_zim_dumpfile_fpath}/^([^_]*|*~|*.zwc(|.old))(N:t))
+      if (( ${zline[2]} == ${#znew_dumpfile_comps} )); then
+        zup_to_date=1
       else
+        zup_to_date=0
+      fi
+    fi
+    case ${zup_to_date} in
+      -1) _zimfw_print -u2 -PR "%F{yellow}! %B${zdumpfile}:%b Unable to check. Initialize the completion module first." ;;
+      1) _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b Already up to date" ;;
+      0)
         _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b New completion configuration needs to be dumped. Will do %Bclean-dumpfile%b."
         _zimfw_clean_dumpfile
-      fi
-    else
-      _zimfw_print -u2 -PR "%F{yellow}! %B${zdumpfile}:%b Unable to check. This only works when the completion module is initialized."
-    fi
+        ;;
+    esac
   else
     _zimfw_print -PR "%F{green})%f %B${zdumpfile}:%b Not found"
   fi
@@ -454,7 +470,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-02-04 14:46:47 UTC, previous commit is 7778e97)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-02-07 00:18:49 UTC, previous commit is 0516435)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -841,7 +857,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.11.1' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.11.2-SNAPSHOT' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
