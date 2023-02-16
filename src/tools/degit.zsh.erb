@@ -1,7 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
 readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
-readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} ONPULL=${9} TEMP=.zdegit_${RANDOM}
+readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} ONPULL=${9} TEMP=.zdegit_${sysparams[pid]}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
 print_error() {

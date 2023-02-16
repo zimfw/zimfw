@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+
+- Quote path names in init.zsh to properly handle path names with spaces.
 
 ## [1.11.1] - 2023-02-04
 
