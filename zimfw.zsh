@@ -454,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-02-16 12:44:26 UTC, previous commit is fae0a7e)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-02-16 12:53:12 UTC, previous commit is f71bff5)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -841,7 +841,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.11.1' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.11.2' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
