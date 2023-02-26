@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Deprecated
+
+- The `zmodule check-dumpfile` action. The [completion] module alone will handle checking the
+  dumpfile.
 
 ## [1.11.2] - 2023-02-16
 
@@ -321,6 +324,7 @@ Take your time to review the updated [README.md] and the changes listed below.
 - `ZIM_HOME` is set in .zshenv instead of .zshrc. The issue was that the
   variable was not available in .zlogin in non-interactive login shells.
 
+[completion]: https://github.com/zimfw/completion
 [README.md]: https://github.com/zimfw/zimfw/blob/master/README.md
 [environment]: https://github.com/zimfw/environment
 [input]: https://github.com/zimfw/input
