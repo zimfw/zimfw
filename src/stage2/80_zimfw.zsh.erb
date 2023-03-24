@@ -1,6 +1,6 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='<%= version %>' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='<%= version %>' _zversion_target=${ZIM_HOME}/.latest_version zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -21,6 +21,7 @@ Actions:
                   output, any on-pull output and skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
+  %Bversion-check%b   Check if a new version of zimfw is available.
 
 Options:
   %B-q%b              Quiet (yes to prompts and only outputs errors)
@@ -43,8 +44,11 @@ Options:
     esac
   fi
 
-  if ! zstyle -t ':zim' disable-version-check; then
-    _zimfw_version_check
+  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != version-check ]]; then
+    # If .latest_version does not exist or was not modified in the last 30 days
+    [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
+    _zimfw_version_check ${zversion_check_force}
+    print
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
@@ -85,6 +89,7 @@ Options:
       _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
+    version-check) _zimfw_version_check 1 ;;
     *)
       print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
       return 2

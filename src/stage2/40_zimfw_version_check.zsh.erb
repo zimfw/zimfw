@@ -1,18 +1,16 @@
 _zimfw_version_check() {
-  if (( _zprintlevel > 0 )); then
-    local -r ztarget=${ZIM_HOME}/.latest_version
-    # If .latest_version does not exist or was not modified in the last 30 days
-    if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
-      # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
-      # sort in descending `O`rder `n`umerically, and get the `[1]` first)
-      print -R ${${(On)${(f)"$(command git ls-remote --tags --refs \
-          https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${ztarget} &!
+  if [[ ${1} -ne 0 || ! -f ${_zversion_target} ]]; then
+    # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
+    # sort in descending `O`rder `n`umerically, and get the `[1]` first)
+    local tags
+    tags=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*') || return 1
+    >! ${_zversion_target} <<<${${(On)${(f)tags}##*v}[1]} || return 1
+  fi
+  local -r zlatest_version=$(<${_zversion_target})
+  if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+    if (( _zprintlevel > 0 )); then
+      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
     fi
-    if [[ -f ${ztarget} ]]; then
-      local -r zlatest_version=$(<${ztarget})
-      if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-        print -u2 -PlR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f" ''
-      fi
-    fi
+    return 1
   fi
 }

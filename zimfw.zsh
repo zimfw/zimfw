@@ -383,21 +383,19 @@ _zimfw_list_unuseds() {
 }
 
 _zimfw_version_check() {
-  if (( _zprintlevel > 0 )); then
-    local -r ztarget=${ZIM_HOME}/.latest_version
-    # If .latest_version does not exist or was not modified in the last 30 days
-    if [[ -w ${ztarget:h} && ! -f ${ztarget}(#qNm-30) ]]; then
-      # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
-      # sort in descending `O`rder `n`umerically, and get the `[1]` first)
-      print -R ${${(On)${(f)"$(command git ls-remote --tags --refs \
-          https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${ztarget} &!
+  if [[ ${1} -ne 0 || ! -f ${_zversion_target} ]]; then
+    # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
+    # sort in descending `O`rder `n`umerically, and get the `[1]` first)
+    local tags
+    tags=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*') || return 1
+    >! ${_zversion_target} <<<${${(On)${(f)tags}##*v}[1]} || return 1
+  fi
+  local -r zlatest_version=$(<${_zversion_target})
+  if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+    if (( _zprintlevel > 0 )); then
+      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
     fi
-    if [[ -f ${ztarget} ]]; then
-      local -r zlatest_version=$(<${ztarget})
-      if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-        print -u2 -PlR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f" ''
-      fi
-    fi
+    return 1
   fi
 }
 
@@ -436,7 +434,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-02-26 00:43:41 UTC, previous commit is 6a24459)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-23 22:29:09 UTC, previous commit is 222c971)'
   print -R 'OSTYPE:               '${OSTYPE}
   print -R 'TERM:                 '${TERM}
   print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
@@ -823,7 +821,7 @@ esac
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.11.3' zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='1.12.0-SNAPSHOT' _zversion_target=${ZIM_HOME}/.latest_version zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
 
 Actions:
   %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
@@ -844,6 +842,7 @@ Actions:
                   output, any on-pull output and skipped modules.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
+  %Bversion-check%b   Check if a new version of zimfw is available.
 
 Options:
   %B-q%b              Quiet (yes to prompts and only outputs errors)
@@ -866,8 +865,11 @@ Options:
     esac
   fi
 
-  if ! zstyle -t ':zim' disable-version-check; then
-    _zimfw_version_check
+  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != version-check ]]; then
+    # If .latest_version does not exist or was not modified in the last 30 days
+    [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
+    _zimfw_version_check ${zversion_check_force}
+    print
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
@@ -908,6 +910,7 @@ Options:
       _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
+    version-check) _zimfw_version_check 1 ;;
     *)
       print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
       return 2
