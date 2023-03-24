@@ -434,13 +434,11 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-23 22:29:09 UTC, previous commit is 222c971)'
-  print -R 'OSTYPE:               '${OSTYPE}
-  print -R 'TERM:                 '${TERM}
-  print -R 'TERM_PROGRAM:         '${TERM_PROGRAM}
-  print -R 'TERM_PROGRAM_VERSION: '${TERM_PROGRAM_VERSION}
-  print -R 'ZIM_HOME:             '${ZIM_HOME}
-  print -R 'ZSH_VERSION:          '${ZSH_VERSION}
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-24 14:45:38 UTC, previous commit is a34b8da)'
+  local zparam
+  for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
+    print -R ${(r.22....:.)zparam}${(P)zparam}
+  done
 }
 
 _zimfw_install_update() {
