@@ -17,11 +17,13 @@ Actions:
   %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
                   output, any on-pull output and skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
+  %Bcheck%b           Check if updates for current modules are available. Use %B-v%b to also see
+                  skipped and up to date modules.
   %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
                   output, any on-pull output and skipped modules.
+  %Bcheck-version%b   Check if a new version of zimfw is available.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
-  %Bversion-check%b   Check if a new version of zimfw is available.
 
 Options:
   %B-q%b              Quiet (yes to prompts and only outputs errors)
@@ -44,11 +46,10 @@ Options:
     esac
   fi
 
-  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != version-check ]]; then
+  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != check-version ]]; then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
-    _zimfw_version_check ${zversion_check_force}
-    print
+    _zimfw_check_version ${zversion_check_force}
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
@@ -69,27 +70,33 @@ Options:
       _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
+    check)
+      _zrestartmsg=
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
+      (( _zprintlevel-- ))
+      _zimfw_print -PR "<%= done %>Done with ${1}." # Only printed in verbose mode
+      ;;
     init)
       _zrestartmsg=
-      _zimfw_install_update install || return 1
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -PR "<%= done %>Done with install.${_zrestartmsg}" # Only printed in verbose mode
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_print -PR "<%= done %>Done with install." # Only printed in verbose mode
+      _zimfw_build && _zimfw_compile
       ;;
     install|update)
-      _zimfw_install_update ${1} || return 1
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -PR "<%= done %>Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    check-version) _zimfw_check_version 1 ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
-    version-check) _zimfw_version_check 1 ;;
     *)
       print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
       return 2

@@ -16,12 +16,16 @@ _zimfw_run_tool() {
       fi
       _zimfw_print -nR <%= clear_line %>"Installing ${zname}<%= ellipsis %>"
       ;;
-    update)
+    check|update)
       if [[ ! -d ${_zdirs[${zname}]} ]]; then
         print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zname}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -nR <%= clear_line %>"Updating ${zname}<%= ellipsis %>"
+      if [[ ${_zargs_action} == check ]]; then
+        if (( _zprintlevel > 1 )) print -nR <%= clear_line %>"Checking ${zname}<%= ellipsis %>"
+      else
+        _zimfw_print -nR <%= clear_line %>"Updating ${zname}<%= ellipsis %>"
+      fi
       ;;
     *)
       print -u2 -PR <%= clear_line %>"%F{red}<%= error %>%B${zname}:%b Unknown action ${_zargs_action}%f"

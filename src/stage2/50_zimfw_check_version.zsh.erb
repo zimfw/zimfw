@@ -1,5 +1,5 @@
-_zimfw_version_check() {
-  if [[ ${1} -ne 0 || ! -f ${_zversion_target} ]]; then
+_zimfw_check_version() {
+  if [[ ${1} -ne 0 ]]; then
     # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
     # sort in descending `O`rder `n`umerically, and get the `[1]` first)
     local tags
@@ -11,6 +11,6 @@ _zimfw_version_check() {
     if (( _zprintlevel > 0 )); then
       print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
     fi
-    return 1
+    return 4
   fi
 }

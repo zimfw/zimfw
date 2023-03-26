@@ -1,6 +1,6 @@
-_zimfw_install_update() {
+_zimfw_run_tool_action() {
   local -r _zargs_action=${1}
-  _zimfw_source_zimrc 1 && zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
   # Ignore return from zargs with -P. Was missing values before zsh 5.9, and
   # it's intermittently failing in zsh 5.9 and macOS. See https://www.zsh.org/mla/workers/2022/msg00611.html
   return 0

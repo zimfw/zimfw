@@ -1,6 +1,7 @@
 # This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
-readonly -i PRINTLEVEL=${1} SUBMODULES=${8}
+integer PRINTLEVEL=${1}
+readonly -i SUBMODULES=${8}
 readonly ACTION=${2} MODULE=${3} DIR=${4} URL=${5} REV=${7} ONPULL=${9} TEMP=.zdegit_${sysparams[pid]}
 readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
 
@@ -19,7 +20,7 @@ print_okay() {
   fi
 }
 
-handle() {
+on_pull() {
   if [[ -n ${ONPULL} ]]; then
     if ! ERR=$(builtin cd -q ${DIR} 2>&1 && builtin eval ${ONPULL} 2>&1); then
       print_error 'Error during on-pull' ${ERR}
@@ -28,7 +29,6 @@ handle() {
       builtin set ${1} ${2:+${2}$'\n'}"On-pull output:"$'\n'${ERR}
     fi
   fi
-  print_okay "${@}"
 }
 
 download_tarball() {
@@ -54,14 +54,23 @@ download_tarball() {
       info_header=${info[3]}
     fi
     local -r tarball_url=https://api.github.com/repos/${repo}/tarball/${REV}
-    if (( ${+commands[curl]} )); then
-      if ! ERR=$(command curl -fsSL ${info_header:+-H} ${info_header} -o ${TARBALL_TARGET} -D ${headers_target} ${tarball_url} 2>&1); then
-        print_error "Error downloading ${tarball_url} with curl" ${ERR}
-        return 1
+    if [[ ${ACTION} == check ]]; then
+      if [[ -z ${info_header} ]] return 0
+      if (( ${+commands[curl]} )); then
+        command curl -IfsL -H ${info_header} ${tarball_url} >${headers_target}
+      else
+        command wget --spider -qS --header=${info_header} ${tarball_url} 2>${headers_target}
       fi
     else
-      # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
-      command wget -q ${info_header:+--header=${info_header}} -O ${TARBALL_TARGET} -S ${tarball_url} 2>${headers_target}
+      if (( ${+commands[curl]} )); then
+        if ! ERR=$(command curl -fsSL ${info_header:+-H} ${info_header} -o ${TARBALL_TARGET} -D ${headers_target} ${tarball_url} 2>&1); then
+          print_error "Error downloading ${tarball_url} with curl" ${ERR}
+          return 1
+        fi
+      else
+        # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
+        command wget -qS ${info_header:+--header=${info_header}} -O ${TARBALL_TARGET} ${tarball_url} 2>${headers_target}
+      fi
     fi
     local -i http_code
     while IFS= read -r header; do
@@ -84,9 +93,13 @@ download_tarball() {
       print_error "Error downloading ${tarball_url}, no ETag header found in response"
       return 1
     fi
-    if ! print -lR "${URL}" "${REV}" "If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
-      print_error "Error creating or updating ${INFO_TARGET}"
-      return 1
+    if [[ ${ACTION} == check ]]; then
+      command touch ${TARBALL_TARGET} # Update available
+    else
+      if ! print -lR "${URL}" "${REV}" "If-None-Match: ${etag}" >! ${INFO_TARGET} 2>/dev/null; then
+        print_error "Error creating or updating ${INFO_TARGET}"
+        return 1
+      fi
     fi
   } always {
     command rm -f ${headers_target} 2>/dev/null
@@ -110,7 +123,7 @@ create_dir() {
 case ${ACTION} in
   install)
     {
-      create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && handle Installed
+      create_dir ${DIR} && download_tarball && untar_tarball ${DIR} && on_pull && print_okay Installed
     } always {
       # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
       (( TRY_BLOCK_ERROR = ? ))
@@ -118,31 +131,40 @@ case ${ACTION} in
       if (( TRY_BLOCK_ERROR )) command rm -rf ${DIR} 2>/dev/null
     }
     ;;
-  update)
+  check|update)
     if [[ ! -r ${INFO_TARGET} ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
+        print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${MODULE}:%b Module was not installed using Zim's degit. Will not try to ${ACTION}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
       fi
       return 0
     fi
     readonly DIR_NEW=${DIR}${TEMP}
     {
       download_tarball || return 1
-      if [[ ! -e ${TARBALL_TARGET} ]]; then
-        handle 'Already up to date'
-        return ${?}
+      if [[ ${ACTION} == check ]]; then
+        if [[ -e ${TARBALL_TARGET} ]]; then
+          print_okay 'Update available'
+        else
+          (( PRINTLEVEL-- ))
+          print_okay 'Already up to date'
+        fi
+      else
+        if [[ ! -e ${TARBALL_TARGET} ]]; then
+          on_pull && print_okay 'Already up to date'
+          return ${?}
+        fi
+        create_dir ${DIR_NEW} && untar_tarball ${DIR_NEW} || return 1
+        if (( ${+commands[diff]} )); then
+          LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
+          LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
+        fi
+        if ! ERR=$({ command cp -f ${INFO_TARGET} ${DIR_NEW} && \
+            command rm -rf ${DIR} && command mv -f ${DIR_NEW} ${DIR} } 2>&1); then
+          print_error "Error updating ${DIR}" ${ERR}
+          return 1
+        fi
+        on_pull && print_okay Updated ${LOG}
       fi
-      create_dir ${DIR_NEW} && untar_tarball ${DIR_NEW} || return 1
-      if (( ${+commands[diff]} )); then
-        LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
-        LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
-      fi
-      if ! ERR=$({ command cp -f ${INFO_TARGET} ${DIR_NEW} && \
-          command rm -rf ${DIR} && command mv -f ${DIR_NEW} ${DIR} } 2>&1); then
-        print_error "Error updating ${DIR}" ${ERR}
-        return 1
-      fi
-      handle Updated ${LOG}
     } always {
       command rm -f ${TARBALL_TARGET} 2>/dev/null
       command rm -rf ${DIR_NEW} 2>/dev/null

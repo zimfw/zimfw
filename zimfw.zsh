@@ -382,8 +382,12 @@ _zimfw_list_unuseds() {
   for zunused (${_zunused_dirs}) _zimfw_print -PR "%B${zunused:t}:%b ${zunused}${1}"
 }
 
-_zimfw_version_check() {
-  if [[ ${1} -ne 0 || ! -f ${_zversion_target} ]]; then
+_zimfw_check_dumpfile() {
+  _zimfw_print -u2 -PR '%F{yellow}! Deprecated action. This is now handled by the completion module alone.'
+}
+
+_zimfw_check_version() {
+  if [[ ${1} -ne 0 ]]; then
     # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
     # sort in descending `O`rder `n`umerically, and get the `[1]` first)
     local tags
@@ -395,12 +399,8 @@ _zimfw_version_check() {
     if (( _zprintlevel > 0 )); then
       print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
     fi
-    return 1
+    return 4
   fi
-}
-
-_zimfw_check_dumpfile() {
-  _zimfw_print -u2 -PR '%F{yellow}! Deprecated action. This is now handled by the completion module alone.'
 }
 
 _zimfw_clean_compiled() {
@@ -434,19 +434,11 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-24 14:45:38 UTC, previous commit is a34b8da)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-26 14:32:46 UTC, previous commit is b7b33f3)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
   done
-}
-
-_zimfw_install_update() {
-  local -r _zargs_action=${1}
-  _zimfw_source_zimrc 1 && zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
-  # Ignore return from zargs with -P. Was missing values before zsh 5.9, and
-  # it's intermittently failing in zsh 5.9 and macOS. See https://www.zsh.org/mla/workers/2022/msg00611.html
-  return 0
 }
 
 _zimfw_uninstall() {
@@ -545,12 +537,16 @@ _zimfw_run_tool() {
       fi
       _zimfw_print -nR $'\E[2K\r'"Installing ${zname} ..."
       ;;
-    update)
+    check|update)
       if [[ ! -d ${_zdirs[${zname}]} ]]; then
         print -u2 -PR $'\E[2K\r'"%F{red}x %B${zname}:%b Not installed. Run %Bzimfw install%b to install.%f"
         return 1
       fi
-      _zimfw_print -nR $'\E[2K\r'"Updating ${zname} ..."
+      if [[ ${_zargs_action} == check ]]; then
+        if (( _zprintlevel > 1 )) print -nR $'\E[2K\r'"Checking ${zname} ..."
+      else
+        _zimfw_print -nR $'\E[2K\r'"Updating ${zname} ..."
+      fi
       ;;
     *)
       print -u2 -PR $'\E[2K\r'"%F{red}x %B${zname}:%b Unknown action ${_zargs_action}%f"
@@ -561,7 +557,8 @@ _zimfw_run_tool() {
   case ${_ztools[${zname}]} in
     degit) zcmd="# This runs in a new shell
 builtin emulate -L zsh -o EXTENDED_GLOB
-readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
+integer PRINTLEVEL=\${1}
+readonly -i SUBMODULES=\${8}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} REV=\${7} ONPULL=\${9} TEMP=.zdegit_\${sysparams[pid]}
 readonly TARBALL_TARGET=\${DIR}/\${TEMP}_tarball.tar.gz INFO_TARGET=\${DIR}/.zdegit
 
@@ -580,7 +577,7 @@ print_okay() {
   fi
 }
 
-handle() {
+on_pull() {
   if [[ -n \${ONPULL} ]]; then
     if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && builtin eval \${ONPULL} 2>&1); then
       print_error 'Error during on-pull' \${ERR}
@@ -589,7 +586,6 @@ handle() {
       builtin set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
     fi
   fi
-  print_okay \"\${@}\"
 }
 
 download_tarball() {
@@ -615,14 +611,23 @@ download_tarball() {
       info_header=\${info[3]}
     fi
     local -r tarball_url=https://api.github.com/repos/\${repo}/tarball/\${REV}
-    if (( \${+commands[curl]} )); then
-      if ! ERR=\$(command curl -fsSL \${info_header:+-H} \${info_header} -o \${TARBALL_TARGET} -D \${headers_target} \${tarball_url} 2>&1); then
-        print_error \"Error downloading \${tarball_url} with curl\" \${ERR}
-        return 1
+    if [[ \${ACTION} == check ]]; then
+      if [[ -z \${info_header} ]] return 0
+      if (( \${+commands[curl]} )); then
+        command curl -IfsL -H \${info_header} \${tarball_url} >\${headers_target}
+      else
+        command wget --spider -qS --header=\${info_header} \${tarball_url} 2>\${headers_target}
       fi
     else
-      # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
-      command wget -q \${info_header:+--header=\${info_header}} -O \${TARBALL_TARGET} -S \${tarball_url} 2>\${headers_target}
+      if (( \${+commands[curl]} )); then
+        if ! ERR=\$(command curl -fsSL \${info_header:+-H} \${info_header} -o \${TARBALL_TARGET} -D \${headers_target} \${tarball_url} 2>&1); then
+          print_error \"Error downloading \${tarball_url} with curl\" \${ERR}
+          return 1
+        fi
+      else
+        # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
+        command wget -qS \${info_header:+--header=\${info_header}} -O \${TARBALL_TARGET} \${tarball_url} 2>\${headers_target}
+      fi
     fi
     local -i http_code
     while IFS= read -r header; do
@@ -645,9 +650,13 @@ download_tarball() {
       print_error \"Error downloading \${tarball_url}, no ETag header found in response\"
       return 1
     fi
-    if ! print -lR \"\${URL}\" \"\${REV}\" \"If-None-Match: \${etag}\" >! \${INFO_TARGET} 2>/dev/null; then
-      print_error \"Error creating or updating \${INFO_TARGET}\"
-      return 1
+    if [[ \${ACTION} == check ]]; then
+      command touch \${TARBALL_TARGET} # Update available
+    else
+      if ! print -lR \"\${URL}\" \"\${REV}\" \"If-None-Match: \${etag}\" >! \${INFO_TARGET} 2>/dev/null; then
+        print_error \"Error creating or updating \${INFO_TARGET}\"
+        return 1
+      fi
     fi
   } always {
     command rm -f \${headers_target} 2>/dev/null
@@ -671,7 +680,7 @@ create_dir() {
 case \${ACTION} in
   install)
     {
-      create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && handle Installed
+      create_dir \${DIR} && download_tarball && untar_tarball \${DIR} && on_pull && print_okay Installed
     } always {
       # return 1 does not change \${TRY_BLOCK_ERROR}, only changes \${?}
       (( TRY_BLOCK_ERROR = ? ))
@@ -679,31 +688,40 @@ case \${ACTION} in
       if (( TRY_BLOCK_ERROR )) command rm -rf \${DIR} 2>/dev/null
     }
     ;;
-  update)
+  check|update)
     if [[ ! -r \${INFO_TARGET} ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using Zim's degit. Will not try to \${ACTION}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
       fi
       return 0
     fi
     readonly DIR_NEW=\${DIR}\${TEMP}
     {
       download_tarball || return 1
-      if [[ ! -e \${TARBALL_TARGET} ]]; then
-        handle 'Already up to date'
-        return \${?}
+      if [[ \${ACTION} == check ]]; then
+        if [[ -e \${TARBALL_TARGET} ]]; then
+          print_okay 'Update available'
+        else
+          (( PRINTLEVEL-- ))
+          print_okay 'Already up to date'
+        fi
+      else
+        if [[ ! -e \${TARBALL_TARGET} ]]; then
+          on_pull && print_okay 'Already up to date'
+          return \${?}
+        fi
+        create_dir \${DIR_NEW} && untar_tarball \${DIR_NEW} || return 1
+        if (( \${+commands[diff]} )); then
+          LOG=\$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr \${DIR} \${DIR_NEW} 2>/dev/null)
+          LOG=\${\${LOG//\${DIR_NEW}/new}//\${DIR}/old}
+        fi
+        if ! ERR=\$({ command cp -f \${INFO_TARGET} \${DIR_NEW} && \
+            command rm -rf \${DIR} && command mv -f \${DIR_NEW} \${DIR} } 2>&1); then
+          print_error \"Error updating \${DIR}\" \${ERR}
+          return 1
+        fi
+        on_pull && print_okay Updated \${LOG}
       fi
-      create_dir \${DIR_NEW} && untar_tarball \${DIR_NEW} || return 1
-      if (( \${+commands[diff]} )); then
-        LOG=\$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr \${DIR} \${DIR_NEW} 2>/dev/null)
-        LOG=\${\${LOG//\${DIR_NEW}/new}//\${DIR}/old}
-      fi
-      if ! ERR=\$({ command cp -f \${INFO_TARGET} \${DIR_NEW} && \
-          command rm -rf \${DIR} && command mv -f \${DIR_NEW} \${DIR} } 2>&1); then
-        print_error \"Error updating \${DIR}\" \${ERR}
-        return 1
-      fi
-      handle Updated \${LOG}
     } always {
       command rm -f \${TARBALL_TARGET} 2>/dev/null
       command rm -rf \${DIR_NEW} 2>/dev/null
@@ -713,7 +731,8 @@ esac
 " ;;
     git) zcmd="# This runs in a new shell
 builtin emulate -L zsh
-readonly -i PRINTLEVEL=\${1} SUBMODULES=\${8}
+integer PRINTLEVEL=\${1}
+readonly -i SUBMODULES=\${8}
 readonly ACTION=\${2} MODULE=\${3} DIR=\${4} URL=\${5} TYPE=\${6} ONPULL=\${9}
 REV=\${7}
 
@@ -725,66 +744,84 @@ print_okay() {
   if (( PRINTLEVEL > 0 )) print -PlR $'\E[2K\r'\"%F{green})%f %B\${MODULE}:%b \${1}\" \${2:+\${(F):-  \${(f)^2}}}
 }
 
-handle() {
+on_pull() {
   if [[ -n \${ONPULL} ]]; then
     if ! ERR=\$(builtin cd -q \${DIR} 2>&1 && builtin eval \${ONPULL} 2>&1); then
       print_error 'Error during on-pull' \${ERR}
       return 1
     elif [[ \${PRINTLEVEL} -gt 1 && -n \${ERR} ]]; then
-      builtin set \${1} \${2:+\${2}$'\n'}\"On-pull output:\"$'\n'\${ERR}
+      builtin set \${1} \${2:+\${2}$'\n'}'On-pull output:'$'\n'\${ERR}
     fi
   fi
-  print_okay \"\${@}\"
 }
 
 case \${ACTION} in
   install)
     if ERR=\$(command git clone \${REV:+-b} \${REV} -q --config core.autocrlf=false \${\${SUBMODULES:#0}:+--recursive} -- \${URL} \${DIR} 2>&1); then
-      handle Installed
+      on_pull && print_okay Installed
     else
       print_error 'Error during git clone' \${ERR}
       return 1
     fi
     ;;
-  update)
+  check|update)
     if [[ ! -r \${DIR}/.git ]]; then
       if (( PRINTLEVEL > 0 )); then
-        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using git. Will not try to update. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
+        print -u2 -PR $'\E[2K\r'\"%F{yellow}! %B\${MODULE}:%b Module was not installed using git. Will not try to \${ACTION}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f\"
       fi
       return 0
     fi
     if [[ \${URL} != \$(command git -C \${DIR} config --get remote.origin.url) ]]; then
-      print_error \"URL does not match. Expected \${URL}. Will not try to update.\"
+      print_error \"URL does not match. Expected \${URL}. Will not try to \${ACTION}.\"
       return 1
     fi
-    if ! ERR=\$(command git -C \${DIR} fetch -pq origin 2>&1); then
+    if ! ERR=\$(command git -C \${DIR} fetch -pqt origin 2>&1); then
       print_error 'Error during git fetch' \${ERR}
       return 1
     fi
-    if [[ \${TYPE} == tag ]]; then
-      if [[ \${REV} == \$(command git -C \${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
-        handle 'Already up to date'
-        return \${?}
-      fi
-    elif [[ -z \${REV} ]]; then
-      # Get HEAD remote branch
-      if ! ERR=\$(command git -C \${DIR} remote set-head origin -a 2>&1); then
-        print_error 'Error during git remote set-head' \${ERR}
-        return 1
-      fi
-      if REV=\$(command git -C \${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
-        REV=\${REV#origin/}
-      else
-        print_error 'Error during git symbolic-ref' \${REV}
-        return 1
-      fi
-    fi
     if [[ \${TYPE} == branch ]]; then
-      LOG_REV=\${REV}@{u}
+      if [[ -z \${REV} ]]; then
+        # Get HEAD remote branch
+        if ! ERR=\$(command git -C \${DIR} remote set-head origin -a 2>&1); then
+          print_error 'Error during git remote set-head' \${ERR}
+          return 1
+        fi
+        if REV=\$(command git -C \${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+          REV=\${REV#origin/}
+        else
+          print_error 'Error during git symbolic-ref' \${REV}
+          return 1
+        fi
+      fi
+      TO_REV=\${REV}@{u}
+      if [[ \${ACTION} == check ]]; then
+        local -ri behind=\$(command git rev-list --count \${REV}..\${TO_REV} -- 2>/dev/null)
+        if (( behind )); then
+          print_okay \"Update available [behind \${behind}]\"
+        else
+          (( PRINTLEVEL-- ))
+          print_okay 'Already up to date'
+        fi
+        return 0
+      fi
     else
-      LOG_REV=\${REV}
+      if [[ \${REV} == \$(command git -C \${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
+        if [[ \${ACTION} == check ]]; then
+          (( PRINTLEVEL-- ))
+          print_okay 'Already up to date'
+          return 0
+        else
+          on_pull && print_okay 'Already up to date'
+          return \${?}
+        fi
+      fi
+      if [[ \${ACTION} == check ]]; then
+        print_okay 'Update available'
+        return 0
+      fi
+      TO_REV=\${REV}
     fi
-    LOG=\$(command git -C \${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${LOG_REV} -- 2>/dev/null)
+    LOG=\$(command git -C \${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..\${TO_REV} -- 2>/dev/null)
     if ! ERR=\$(command git -C \${DIR} checkout -q \${REV} -- 2>&1); then
       print_error 'Error during git checkout' \${ERR}
       return 1
@@ -805,7 +842,7 @@ case \${ACTION} in
         return 1
       fi
     fi
-    handle \${OUT} \${LOG}
+    on_pull && print_okay \${OUT} \${LOG}
     ;;
 esac
 " ;;
@@ -815,6 +852,14 @@ esac
       ;;
   esac
   zsh -c ${zcmd} ${_ztools[${zname}]} "${_zprintlevel}" "${_zargs_action}" "${zname}" "${_zdirs[${zname}]}" "${_zurls[${zname}]}" "${_ztypes[${zname}]}" "${_zrevs[${zname}]}" "${_zsubmodules[${zname}]}" "${_zonpulls[${zname}]}"
+}
+
+_zimfw_run_tool_action() {
+  local -r _zargs_action=${1}
+  zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  # Ignore return from zargs with -P. Was missing values before zsh 5.9, and
+  # it's intermittently failing in zsh 5.9 and macOS. See https://www.zsh.org/mla/workers/2022/msg00611.html
+  return 0
 }
 
 zimfw() {
@@ -836,11 +881,13 @@ Actions:
   %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
                   output, any on-pull output and skipped modules.
   %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
+  %Bcheck%b           Check if updates for current modules are available. Use %B-v%b to also see
+                  skipped and up to date modules.
   %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
                   output, any on-pull output and skipped modules.
+  %Bcheck-version%b   Check if a new version of zimfw is available.
   %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
   %Bversion%b         Print zimfw version.
-  %Bversion-check%b   Check if a new version of zimfw is available.
 
 Options:
   %B-q%b              Quiet (yes to prompts and only outputs errors)
@@ -863,11 +910,10 @@ Options:
     esac
   fi
 
-  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != version-check ]]; then
+  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != check-version ]]; then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
-    _zimfw_version_check ${zversion_check_force}
-    print
+    _zimfw_check_version ${zversion_check_force}
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
@@ -888,27 +934,33 @@ Options:
       _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
+    check)
+      _zrestartmsg=
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
+      (( _zprintlevel-- ))
+      _zimfw_print -PR "Done with ${1}." # Only printed in verbose mode
+      ;;
     init)
       _zrestartmsg=
-      _zimfw_install_update install || return 1
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -PR "Done with install.${_zrestartmsg}" # Only printed in verbose mode
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_print -PR "Done with install." # Only printed in verbose mode
+      _zimfw_build && _zimfw_compile
       ;;
     install|update)
-      _zimfw_install_update ${1} || return 1
+      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -PR "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    check-version) _zimfw_check_version 1 ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
     version) print -PR ${_zversion} ;;
-    version-check) _zimfw_version_check 1 ;;
     *)
       print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
       return 2
