@@ -434,7 +434,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-26 14:32:46 UTC, previous commit is b7b33f3)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-03-26 21:48:32 UTC, previous commit is 903e0e5)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -795,7 +795,7 @@ case \${ACTION} in
       fi
       TO_REV=\${REV}@{u}
       if [[ \${ACTION} == check ]]; then
-        local -ri behind=\$(command git rev-list --count \${REV}..\${TO_REV} -- 2>/dev/null)
+        local -ri behind=\$(command git -C \${DIR} rev-list --count \${REV}..\${TO_REV} -- 2>/dev/null)
         if (( behind )); then
           print_okay \"Update available [behind \${behind}]\"
         else

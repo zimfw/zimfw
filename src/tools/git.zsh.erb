@@ -64,7 +64,7 @@ case ${ACTION} in
       fi
       TO_REV=${REV}@{u}
       if [[ ${ACTION} == check ]]; then
-        local -ri behind=$(command git rev-list --count ${REV}..${TO_REV} -- 2>/dev/null)
+        local -ri behind=$(command git -C ${DIR} rev-list --count ${REV}..${TO_REV} -- 2>/dev/null)
         if (( behind )); then
           print_okay "Update available [behind ${behind}]"
         else
