@@ -1,0 +1,152 @@
+_zimfw_download_tarball() {
+  local host repo
+  if [[ ${zurl} =~ <%= url_regex %> ]]; then
+    host=${match[3]}
+    repo=${match[4]%.git}
+  fi
+  if [[ ${host} != github.com || -z ${repo} ]]; then
+    _zimfw_print_error "${zurl} is not a valid GitHub zurl. Will not try to ${_zaction}."
+    return 1
+  fi
+  local -r headers_target=${zdir}/${ztemp}_headers
+  {
+    local info_header header etag zerr
+    if [[ -r ${zinfo_target} ]]; then
+      local -r info=("${(@f)"$(<${zinfo_target})"}")
+      if [[ ${zurl} != ${info[1]} ]]; then
+        _zimfw_print_error "zurl does not match. Expected ${zurl}. Will not try to ${_zaction}."
+        return 1
+      fi
+      # Previous zrev is in line 2, reserved for future use.
+      info_header=${info[3]}
+    fi
+    local -r tarball_url=https://api.github.com/repos/${repo}/tarball/${zrev}
+    if [[ ${_zaction} == check ]]; then
+      if [[ -z ${info_header} ]] return 0
+      if (( ${+commands[curl]} )); then
+        command curl -IfsL -H ${info_header} ${tarball_url} >${headers_target}
+      else
+        command wget --spider -qS --header=${info_header} ${tarball_url} 2>${headers_target}
+      fi
+    else
+      if (( ${+commands[curl]} )); then
+        if ! zerr=$(command curl -fsSL ${info_header:+-H} ${info_header} -o ${ztarball_target} -D ${headers_target} ${tarball_url} 2>&1); then
+          _zimfw_print_error "Error downloading ${tarball_url} with curl" ${zerr}
+          return 1
+        fi
+      else
+        # wget returns 8 when 304 Not Modified, so we cannot use wget's error codes
+        command wget -qS ${info_header:+--header=${info_header}} -O ${ztarball_target} ${tarball_url} 2>${headers_target}
+      fi
+    fi
+    local -i http_code
+    while IFS= read -r header; do
+      header=${${header## ##}%%$'\r'##}
+      if [[ ${header} == HTTP/* ]]; then
+        http_code=${${(s: :)header}[2]}
+      elif [[ ${${(L)header%%:*}%% ##} == etag ]]; then
+        etag=${${header#*:}## ##}
+      fi
+    done < ${headers_target}
+    if (( http_code == 304 )); then
+      # Not Modified
+      command rm -f ${ztarball_target} 2>/dev/null
+      return 0
+    elif (( http_code != 200 )); then
+      _zimfw_print_error "Error downloading ${tarball_url}, HTTP code ${http_code}"
+      return 1
+    fi
+    if [[ -z ${etag} ]]; then
+      _zimfw_print_error "Error downloading ${tarball_url}, no ETag header found in response"
+      return 1
+    fi
+    if [[ ${_zaction} == check ]]; then
+      command touch ${ztarball_target} # Update available
+    else
+      if ! print -lR "${zurl}" "${zrev}" "If-None-Match: ${etag}" >! ${zinfo_target} 2>/dev/null; then
+        _zimfw_print_error "Error creating or updating ${zinfo_target}"
+        return 1
+      fi
+    fi
+  } always {
+    command rm -f ${headers_target} 2>/dev/null
+  }
+}
+
+_zimfw_untar_tarball() {
+  local zerr
+  if ! zerr=$(command tar -C ${1} --strip=1 -xzf ${ztarball_target} 2>&1); then
+    _zimfw_print_error "Error extracting ${ztarball_target}" ${zerr}
+    return 1
+  fi
+}
+
+_zimfw_create_dir() {
+  local zerr
+  if ! zerr=$(command mkdir -p ${1} 2>&1); then
+    _zimfw_print_error "Error creating ${1}" ${zerr}
+    return 1
+  fi
+}
+
+_zimfw_tool_degit() {
+  local -ri zsubmodules=${5}
+  local -r zdir=${1} zurl=${2} zrev=${4} zonpull=${6} ztemp=.zdegit_${sysparams[pid]}
+  local -r ztarball_target=${zdir}/${ztemp}_tarball.tar.gz zinfo_target=${zdir}/.zdegit
+  case ${_zaction} in
+    install)
+      {
+        _zimfw_create_dir ${zdir} && _zimfw_download_tarball && _zimfw_untar_tarball ${zdir} && _zimfw_pull_print_okay Installed || return 1
+      } always {
+        # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
+        (( TRY_BLOCK_ERROR = ? ))
+        command rm -f ${ztarball_target} 2>/dev/null
+        if (( TRY_BLOCK_ERROR )) command rm -rf ${zdir} 2>/dev/null
+      }
+      ;;
+    check|update)
+      if [[ ! -r ${zinfo_target} ]]; then
+        if (( _zprintlevel > 0 )); then
+          print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
+        fi
+        return 0
+      fi
+      readonly zdir_new=${zdir}${ztemp}
+      {
+        local zerr zlog
+        _zimfw_download_tarball || return 1
+        if [[ ${_zaction} == check ]]; then
+          if [[ -e ${ztarball_target} ]]; then
+            _zimfw_print_okay 'Update available'
+            return 4
+          fi
+          _zimfw_print_okay 'Already up to date' 1
+          return 0
+        else
+          if [[ -e ${ztarball_target} ]]; then
+            _zimfw_create_dir ${zdir_new} && _zimfw_untar_tarball ${zdir_new} || return 1
+            if (( ${+commands[diff]} )); then
+              zlog=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${zdir} ${zdir_new} 2>/dev/null)
+              zlog=${${zlog//${zdir_new}/new}//${zdir}/old}
+            fi
+            if ! zerr=$({ command cp -f ${zinfo_target} ${zdir_new} && \
+                command rm -rf ${zdir} && command mv -f ${zdir_new} ${zdir} } 2>&1); then
+              _zimfw_print_error "Error updating ${zdir}" ${zerr}
+              return 1
+            fi
+            _zimfw_pull_print_okay Updated 0 ${zlog} || return 1
+          else
+            _zimfw_pull_print_okay 'Already up to date' || return 1
+          fi
+        fi
+      } always {
+        command rm -f ${ztarball_target} 2>/dev/null
+        command rm -rf ${zdir_new} 2>/dev/null
+      }
+      ;;
+  esac
+  # Check after successful install or update
+  if [[ ${_zprintlevel} -gt 0 && ${zsubmodules} -ne 0 && -e ${zdir}/.gitmodules ]]; then
+    print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module contains git submodules, which are not supported by Zim's degit. Use zmodule option %B--no-submodules%b to disable this warning.%f"
+  fi
+}

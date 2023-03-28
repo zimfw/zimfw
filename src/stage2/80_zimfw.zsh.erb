@@ -72,22 +72,22 @@ Options:
       ;;
     check)
       _zrestartmsg=
-      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
+      _zimfw_run_tool_action ${1} || return 1
       (( _zprintlevel-- ))
       _zimfw_print -PR "<%= done %>Done with ${1}." # Only printed in verbose mode
       ;;
     init)
       _zrestartmsg=
-      _zimfw_source_zimrc 3 && _zimfw_run_tool_action install || return 1
+      _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
       _zimfw_print -PR "<%= done %>Done with install." # Only printed in verbose mode
-      _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
     install|update)
-      _zimfw_source_zimrc 3 && _zimfw_run_tool_action ${1} || return 1
+      _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -PR "<%= done %>Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     check-version) _zimfw_check_version 1 ;;

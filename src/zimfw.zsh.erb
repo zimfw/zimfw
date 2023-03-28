@@ -31,16 +31,6 @@ class Zim
   def render_commented(filename)
     render(filename).gsub(/^(?=.)/, "# ").gsub(/^$/, "#")
   end
-
-  def render_escaped(filename)
-    render(filename).gsub(/(?=\$[^']|"|`)/, "\\\\").gsub(/#\{/, "$\{")
-  end
-
-  def render_tools(pattern, var)
-    Dir[pattern].sort.map { |filename|
-      "    #{File.basename(filename, ".zsh.erb")}) #{var}=\"#{render_escaped(filename)}\" ;;"
-    }.join("\n")
-  end
 end
 zim = Zim.new
 %># AUTOMATICALLY GENERATED FILE. EDIT ONLY THE SOURCE FILES AND THEN COMPILE.

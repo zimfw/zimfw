@@ -5,6 +5,6 @@ _zimfw_build_login_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -nR "<%= render_escaped("src/templates/login_init.zsh.erb") %>"
+    print '# Do nothing. This file is deprecated.'
   ) ${ztarget}
 }

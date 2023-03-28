@@ -1,0 +1,3 @@
+_zimfw_print_okay() {
+  if (( _zprintlevel > ${2:-0} )) print -PlR <%= clear_line %>"<%= okay %>%B${_zname}:%b ${1}" ${3:+${(F):-  ${(f)^3}}}
+}

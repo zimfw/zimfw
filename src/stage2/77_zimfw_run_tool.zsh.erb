@@ -1,0 +1,45 @@
+_zimfw_run_tool() {
+  local -r _zname=${1}
+  if [[ -z ${_zurls[${_zname}]} ]]; then
+    _zimfw_print_okay 'Skipping external module' 1
+    return 0
+  fi
+  if (( _zfrozens[${_zname}] )); then
+    _zimfw_print_okay 'Skipping frozen module' 1
+    return 0
+  fi
+  case ${_zaction} in
+    install)
+      if [[ -e ${_zdirs[${_zname}]} ]]; then
+        _zimfw_print_okay 'Skipping already installed module' 1
+        return 0
+      fi
+      _zimfw_print -nR <%= clear_line %>"Installing ${_zname}<%= ellipsis %>"
+      ;;
+    check|update)
+      if [[ ! -d ${_zdirs[${_zname}]} ]]; then
+        _zimfw_print_error 'Not installed. Run %Bzimfw install%b to install.'
+        return 1
+      fi
+      if [[ ${_zaction} == check ]]; then
+        if (( _zprintlevel > 1 )) print -nR <%= clear_line %>"Checking ${_zname}<%= ellipsis %>"
+      else
+        _zimfw_print -nR <%= clear_line %>"Updating ${_zname}<%= ellipsis %>"
+      fi
+      ;;
+    *)
+      _zimfw_print_error "Unknown action ${_zaction}"
+      return 1
+      ;;
+  esac
+  local -r ztool=${_ztools[${_zname}]}
+  case ${ztool} in
+    degit|git)
+      _zimfw_tool_${ztool} "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+      ;;
+    *)
+      _zimfw_print_error "Unknown tool ${ztool}"
+      return 1
+      ;;
+  esac
+}
