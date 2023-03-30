@@ -179,11 +179,11 @@ Per-call initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
-        zcmds+=("source ${(q-)zarg:A}")
+        zcmds+=("source ${(q-)zarg:a}")
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(q-)zroot_dir:A}})
+        zcmds+=(${1//{}/${(q-)zroot_dir:a}})
         ;;
       -d|--disabled) _zdisabled_root_dirs+=(${zroot_dir}) ;;
       *)
@@ -211,11 +211,11 @@ Per-call initialization options:
       local -ra prezto_scripts=(${zroot_dir}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
-        zcmds=('source '${(q-)^prezto_scripts:A})
+        zcmds=('source '${(q-)^prezto_scripts:a})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
         local -ra zscripts=(${zroot_dir}/(init.zsh|(${zname:t}|${zroot_dir:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds=('source '${(q-)^zscripts:A})
+        zcmds=('source '${(q-)^zscripts:a})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
