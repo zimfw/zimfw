@@ -1,50 +1,51 @@
 _zimfw_tool_git() {
-  local -ri zsubmodules=${5}
-  local -r zdir=${1} zurl=${2} ztype=${3} zonpull=${6}
-  local zrev=${4} ztorev zerr zout zlog
+  # This runs in a subshell
+  readonly -i SUBMODULES=${5}
+  readonly  DIR=${1} URL=${2} TYPE=${3} ONPULL=${6}
+  REV=${4}
   case ${_zaction} in
     install)
-      if zerr=$(command git clone ${zrev:+-b} ${zrev} -q --config core.autocrlf=false ${${zsubmodules:#0}:+--recursive} -- ${zurl} ${zdir} 2>&1); then
+      if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
         _zimfw_pull_print_okay Installed
       else
-        _zimfw_print_error 'Error during git clone' ${zerr}
+        _zimfw_print_error 'Error during git clone' ${ERR}
         return 1
       fi
       ;;
     check|update)
-      if [[ ! -r ${zdir}/.git ]]; then
+      if [[ ! -r ${DIR}/.git ]]; then
         if (( _zprintlevel > 0 )); then
           print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using git. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
         fi
         return 0
       fi
-      if [[ ${zurl} != $(command git -C ${zdir} config --get remote.origin.url) ]]; then
-        _zimfw_print_error "zurl does not match. Expected ${zurl}. Will not try to ${_zaction}."
+      if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
+        _zimfw_print_error "URL does not match. Expected ${URL}. Will not try to ${_zaction}."
         return 1
       fi
-      if ! zerr=$(command git -C ${zdir} fetch -pqt origin 2>&1); then
-        _zimfw_print_error 'Error during git fetch' ${zerr}
+      if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then
+        _zimfw_print_error 'Error during git fetch' ${ERR}
         return 1
       fi
-      if [[ ${ztype} == branch ]]; then
-        if [[ -z ${zrev} ]]; then
+      if [[ ${TYPE} == branch ]]; then
+        if [[ -z ${REV} ]]; then
           # Get HEAD remote branch
-          if ! zerr=$(command git -C ${zdir} remote set-head origin -a 2>&1); then
-            _zimfw_print_error 'Error during git remote set-head' ${zerr}
+          if ! ERR=$(command git -C ${DIR} remote set-head origin -a 2>&1); then
+            _zimfw_print_error 'Error during git remote set-head' ${ERR}
             return 1
           fi
-          if zrev=$(command git -C ${zdir} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
-            zrev=${zrev#origin/}
+          if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+            REV=${REV#origin/}
           else
-            _zimfw_print_error 'Error during git symbolic-ref' ${zrev}
+            _zimfw_print_error 'Error during git symbolic-ref' ${REV}
             return 1
           fi
         fi
-        ztorev=${zrev}@{u}
+        TO_REV=${REV}@{u}
         if [[ ${_zaction} == check ]]; then
-          local -ri behind=$(command git -C ${zdir} rev-list --count ${zrev}..${ztorev} -- 2>/dev/null)
-          if (( behind )); then
-            _zimfw_print_okay "Update available [behind ${behind}]"
+          readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${TO_REV} -- 2>/dev/null)
+          if (( BEHIND )); then
+            _zimfw_print_okay "Update available [behind ${BEHIND}]"
             return 4
           else
             _zimfw_print_okay 'Already up to date' 1
@@ -52,7 +53,7 @@ _zimfw_tool_git() {
           fi
         fi
       else
-        if [[ ${zrev} == $(command git -C ${zdir} describe --tags --exact-match 2>/dev/null) ]]; then
+        if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
           if [[ ${_zaction} == check ]]; then
             _zimfw_print_okay 'Already up to date' 1
             return 0
@@ -65,30 +66,30 @@ _zimfw_tool_git() {
           _zimfw_print_okay 'Update available'
           return 4
         fi
-        ztorev=${zrev}
+        TO_REV=${REV}
       fi
-      zlog=$(command git -C ${zdir} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${ztorev} -- 2>/dev/null)
-      if ! zerr=$(command git -C ${zdir} checkout -q ${zrev} -- 2>&1); then
-        _zimfw_print_error 'Error during git checkout' ${zerr}
+      LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
+      if ! ERR=$(command git -C ${DIR} checkout -q ${REV} -- 2>&1); then
+        _zimfw_print_error 'Error during git checkout' ${ERR}
         return 1
       fi
-      if [[ ${ztype} == branch ]]; then
-        if ! zout=$(command git -C ${zdir} merge --ff-only --no-progress -n 2>&1); then
-          _zimfw_print_error 'Error during git merge' ${zout}
+      if [[ ${TYPE} == branch ]]; then
+        if ! OUT=$(command git -C ${DIR} merge --ff-only --no-progress -n 2>&1); then
+          _zimfw_print_error 'Error during git merge' ${OUT}
           return 1
         fi
-        # keep just first line of zout
-        zout=${zout%%($'\n'|$'\r')*}
+        # keep just first line of OUT
+        OUT=${OUT%%($'\n'|$'\r')*}
       else
-        zout="Updating to ${ztype} ${zrev}"
+        OUT="Updating to ${TYPE} ${REV}"
       fi
-      if (( zsubmodules )); then
-        if ! zerr=$(command git -C ${zdir} submodule update --init --recursive -q -- 2>&1); then
-          _zimfw_print_error 'Error during git submodule update' ${zerr}
+      if (( SUBMODULES )); then
+        if ! ERR=$(command git -C ${DIR} submodule update --init --recursive -q -- 2>&1); then
+          _zimfw_print_error 'Error during git submodule update' ${ERR}
           return 1
         fi
       fi
-      _zimfw_pull_print_okay ${zout} 0 ${zlog}
+      _zimfw_pull_print_okay ${OUT} 0 ${LOG}
       ;;
   esac
 }

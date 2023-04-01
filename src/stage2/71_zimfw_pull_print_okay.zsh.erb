@@ -1,12 +1,12 @@
 _zimfw_pull_print_okay() {
-  if [[ -n ${zonpull} ]]; then
-    local zerr
-    if ! zerr=$(builtin cd -q ${zdir} 2>&1 && builtin eval ${zonpull} 2>&1); then
-      _zimfw_print_error 'Error during on-pull' ${zerr}
+  # Useb by tools, which run in a subshell
+  if [[ -n ${ONPULL} ]]; then
+    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && builtin eval ${ONPULL} 2>&1); then
+      _zimfw_print_error 'Error during on-pull' ${ERR}
       return 1
-    elif [[ ${_zprintlevel} -gt 1 && -n ${zerr} ]]; then
+    elif [[ ${_zprintlevel} -gt 1 && -n ${ERR} ]]; then
       # Overrides ${3} to include the on-pull output, to be used by _zimfw_print_okay below.
-      builtin set ${1} ${2:-0} ${3:+${3}$'\n'}'On-pull output:'$'\n'${zerr}
+      builtin set ${1} ${2:-0} ${3:+${3}$'\n'}'On-pull output:'$'\n'${ERR}
     fi
   fi
   _zimfw_print_okay "${@}"
