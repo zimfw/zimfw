@@ -423,6 +423,12 @@ _zimfw_compile() {
   # Compile Zim scripts
   local zroot_dir zfile
   for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
+    if [[ ! -w ${zroot_dir} ]]; then
+      if (( _zprintlevel > 0 )); then
+        print -PR "%F{yellow}! %B${zroot_dir}:%b No write permission, unable to compile.%f"
+      fi
+      continue
+    fi
     for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
         zcompile -UR ${zfile} && _zimfw_print -PR "%F{green})%f %B${zfile}.zwc:%b Compiled"
@@ -433,7 +439,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-04-01 01:32:16 UTC, previous commit is 5db1155)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-06-13 16:31:31 UTC, previous commit is db96076)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
