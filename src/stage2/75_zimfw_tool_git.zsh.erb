@@ -14,9 +14,7 @@ _zimfw_tool_git() {
       ;;
     check|update)
       if [[ ! -r ${DIR}/.git ]]; then
-        if (( _zprintlevel > 0 )); then
-          print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using git. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
-        fi
+        _zimfw_print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using git. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
         return 0
       fi
       if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then

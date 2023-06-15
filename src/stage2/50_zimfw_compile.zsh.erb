@@ -3,9 +3,7 @@ _zimfw_compile() {
   local zroot_dir zfile
   for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
     if [[ ! -w ${zroot_dir} ]]; then
-      if (( _zprintlevel > 0 )); then
-        print -PR "%F{yellow}<%= warn %>%B${zroot_dir}:%b No write permission, unable to compile.%f"
-      fi
+      _zimfw_print -PR "%F{yellow}<%= warn %>%B${zroot_dir}:%b No write permission, unable to compile.%f"
       continue
     fi
     for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do

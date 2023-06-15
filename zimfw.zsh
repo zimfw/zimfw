@@ -395,9 +395,7 @@ _zimfw_check_version() {
   fi
   local -r zlatest_version=$(<${_zversion_target})
   if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-    if (( _zprintlevel > 0 )); then
-      print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
-    fi
+    _zimfw_print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
     return 4
   fi
 }
@@ -424,9 +422,7 @@ _zimfw_compile() {
   local zroot_dir zfile
   for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
     if [[ ! -w ${zroot_dir} ]]; then
-      if (( _zprintlevel > 0 )); then
-        print -PR "%F{yellow}! %B${zroot_dir}:%b No write permission, unable to compile.%f"
-      fi
+      _zimfw_print -PR "%F{yellow}! %B${zroot_dir}:%b No write permission, unable to compile.%f"
       continue
     fi
     for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
@@ -439,7 +435,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-06-13 16:31:31 UTC, previous commit is db96076)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-06-15 14:32:20 UTC, previous commit is f9648e0)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -650,9 +646,7 @@ _zimfw_tool_degit() {
       ;;
     check|update)
       if [[ ! -r ${INFO_TARGET} ]]; then
-        if (( _zprintlevel > 0 )); then
-          print -u2 -PR $'\E[2K\r'"%F{yellow}! %B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
-        fi
+        _zimfw_print -u2 -PR $'\E[2K\r'"%F{yellow}! %B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
         return 0
       fi
       readonly DIR_NEW=${DIR}${TEMP}
@@ -710,9 +704,7 @@ _zimfw_tool_git() {
       ;;
     check|update)
       if [[ ! -r ${DIR}/.git ]]; then
-        if (( _zprintlevel > 0 )); then
-          print -u2 -PR $'\E[2K\r'"%F{yellow}! %B${_zname}:%b Module was not installed using git. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
-        fi
+        _zimfw_print -u2 -PR $'\E[2K\r'"%F{yellow}! %B${_zname}:%b Module was not installed using git. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
         return 0
       fi
       if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then

@@ -102,9 +102,7 @@ _zimfw_tool_degit() {
       ;;
     check|update)
       if [[ ! -r ${INFO_TARGET} ]]; then
-        if (( _zprintlevel > 0 )); then
-          print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
-        fi
+        _zimfw_print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
         return 0
       fi
       readonly DIR_NEW=${DIR}${TEMP}
