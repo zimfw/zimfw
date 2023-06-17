@@ -386,17 +386,28 @@ _zimfw_check_dumpfile() {
 }
 
 _zimfw_check_version() {
-  if [[ ${1} -ne 0 ]]; then
+  if (( ${1} )); then
     # Get latest version (get all `v*` tags from repo, delete `*v` from beginning,
     # sort in descending `O`rder `n`umerically, and get the `[1]` first)
-    local tags
-    tags=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*') || return 1
-    >! ${_zversion_target} <<<${${(On)${(f)tags}##*v}[1]} || return 1
+    if (( ${2} )); then
+      # background check
+      if [[ -w ${_zversion_target:h} ]]; then
+        print -R ${${(On)${(f)"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs \
+            https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${_zversion_target} &!
+      fi
+    else
+      # foreground check
+      local tags
+      tags=$(command git ls-remote --tags --refs https://github.com/zimfw/zimfw.git 'v*') || return 1
+      >! ${_zversion_target} <<<${${(On)${(f)tags}##*v}[1]} || return 1
+    fi
   fi
-  local -r zlatest_version=$(<${_zversion_target})
-  if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-    _zimfw_print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
-    return 4
+  if [[ -f ${_zversion_target} ]]; then
+    local -r zlatest_version=$(<${_zversion_target})
+    if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+      _zimfw_print -u2 -PR "%F{yellow}Latest zimfw version is %B${zlatest_version}%b. You're using version %B${_zversion}%b. Run %Bzimfw upgrade%b to upgrade.%f"
+      return 4
+    fi
   fi
 }
 
@@ -435,7 +446,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-06-15 14:32:20 UTC, previous commit is f9648e0)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-06-17 01:23:46 UTC, previous commit is 0566b9b)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -885,7 +896,7 @@ Options:
   if ! zstyle -t ':zim' disable-version-check && [[ ${1} != check-version ]]; then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
-    _zimfw_check_version ${zversion_check_force}
+    _zimfw_check_version ${zversion_check_force} 1
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'

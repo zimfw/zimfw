@@ -49,7 +49,7 @@ Options:
   if ! zstyle -t ':zim' disable-version-check && [[ ${1} != check-version ]]; then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
-    _zimfw_check_version ${zversion_check_force}
+    _zimfw_check_version ${zversion_check_force} 1
   fi
 
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
