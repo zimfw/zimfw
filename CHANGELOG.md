@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.12.0] - 2023-07-17
+
+### Added
+
+- `check-version` action, that immediately checks if a new version of `zimfw` is
+  available and returns code 4 if there is one.
+- `check` action, that checks if there are updates available for current modules.
+- Output of `LANG` and `LC_*` parameters in `info` action.
+
+### Changed
+
+- Don't resolve symlinks when building init.zsh.
+
+### Fixed
+
+- Show warning when there's no write permission to compile Zsh scripts.
+
 ## [1.11.3] - 2023-02-26
 
 ### Deprecated
@@ -337,7 +354,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.11.3...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/zimfw/zimfw/compare/v1.11.3...v1.12.0
 [1.11.3]: https://github.com/zimfw/zimfw/compare/v1.11.2...v1.11.3
 [1.11.2]: https://github.com/zimfw/zimfw/compare/v1.11.1...v1.11.2
 [1.11.1]: https://github.com/zimfw/zimfw/compare/v1.11.0...v1.11.1
