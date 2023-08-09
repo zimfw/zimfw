@@ -166,6 +166,8 @@ define the modules you want to use.
 
 Usage
 -----
+TL;DR: Add the `zmodule` call to the `~/.zimrc` file, and then run `zimfw install`. More information on [zmodule sintax](#zmodule) or [zimfw](#zimfw)
+
 The `zimfw` plugin manager installs your modules at `${ZIM_HOME}/modules`, and
 builds a static script at `${ZIM_HOME}/init.zsh` that will initialize them. Your
 modules are defined in your `~/.zimrc` file.
