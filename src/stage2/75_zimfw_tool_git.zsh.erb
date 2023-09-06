@@ -87,7 +87,7 @@ _zimfw_tool_git() {
           return 1
         fi
       fi
-      _zimfw_pull_print_okay ${OUT} 0 ${LOG}
+      _zimfw_pull_print_okay ${OUT} 0 ${LOG//\`/\\\`}
       ;;
   esac
 }

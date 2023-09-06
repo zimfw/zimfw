@@ -446,7 +446,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-07-17 23:54:58 UTC, previous commit is 49386ca)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2023-09-08 22:34:50 UTC, previous commit is c15a827)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -788,7 +788,7 @@ _zimfw_tool_git() {
           return 1
         fi
       fi
-      _zimfw_pull_print_okay ${OUT} 0 ${LOG}
+      _zimfw_pull_print_okay ${OUT} 0 ${LOG//\`/\\\`}
       ;;
   esac
 }
