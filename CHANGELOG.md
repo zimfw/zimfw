@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.12.1] - 2023-09-16
+
+### Fixed
+
+- Expansion of prompt sequences in print statements causing text between
+  backticks to be executed by the shell.
+
 ## [1.12.0] - 2023-07-17
 
 ### Added
@@ -30,7 +37,7 @@ _No unreleased changes._
 
 ### Deprecated
 
-- The `zmodule check-dumpfile` action. The [completion] module alone now handles
+- `check-dumpfile` action. The [completion] module alone now handles
   checking the dumpfile. (See
   [zimfw/completion#12](https://github.com/zimfw/completion/pull/12))
 
@@ -354,7 +361,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.12.1...HEAD
+[1.12.1]: https://github.com/zimfw/zimfw/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/zimfw/zimfw/compare/v1.11.3...v1.12.0
 [1.11.3]: https://github.com/zimfw/zimfw/compare/v1.11.2...v1.11.3
 [1.11.2]: https://github.com/zimfw/zimfw/compare/v1.11.1...v1.11.2
