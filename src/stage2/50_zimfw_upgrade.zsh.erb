@@ -8,7 +8,7 @@ _zimfw_upgrade() {
       if (( _zprintlevel <= 1 )) zopt=-q
       if ! command wget -nv ${zopt} -O ${ztarget}.new.gz ${zurl}; then
         if (( _zprintlevel <= 1 )); then
-          print -u2 -PR "%F{red}<%= failed %>Failed to download %B${zurl}%b. Use %B-v%b option to see details.%f"
+          print -u2 -R $'<%= red %>Failed to download <%= bold %>'${zurl}$'<%= normalred %>. Use <%= bold %>-v<%= normalred %> option to see details.<%= normal %>'
         fi
         return 1
       fi
@@ -17,7 +17,7 @@ _zimfw_upgrade() {
     # .latest_version can be outdated and will yield a false warning if zimfw is
     # upgraded before .latest_version is refreshed. Bad thing about having a cache.
     _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
-        _zimfw_print -P '<%= done %>Done with upgrade.'
+        _zimfw_print 'Done with upgrade.'
   } always {
     command rm -f ${ztarget}.new{,.gz}
   }

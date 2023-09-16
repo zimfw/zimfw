@@ -102,7 +102,7 @@ _zimfw_tool_degit() {
       ;;
     check|update)
       if [[ ! -r ${INFO_TARGET} ]]; then
-        _zimfw_print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module was not installed using Zim's degit. Will not try to ${_zaction}. Use zmodule option %B-z%b|%B--frozen%b to disable this warning.%f"
+        _zimfw_print -u2 -R $'<%= clear_line %><%= yellow %><%= warn %><%= bold %>'${_zname}$':<%= normalyellow %> Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option <%= bold %>-z<%= normalyellow %>|<%= bold %>--frozen<%= normalyellow %> to disable this warning.<%= normal %>'
         return 0
       fi
       readonly DIR_NEW=${DIR}${TEMP}
@@ -140,6 +140,6 @@ _zimfw_tool_degit() {
   esac
   # Check after successful install or update
   if [[ ${_zprintlevel} -gt 0 && ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    print -u2 -PR <%= clear_line %>"%F{yellow}<%= warn %>%B${_zname}:%b Module contains git submodules, which are not supported by Zim's degit. Use zmodule option %B--no-submodules%b to disable this warning.%f"
+    print -u2 -R $'<%= clear_line %><%= yellow %><%= warn %><%= bold %>'${_zname}$':<%= normalyellow %> Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option <%= bold %>--no-submodules<%= normalyellow %> to disable this warning.<%= normal %>'
   fi
 }

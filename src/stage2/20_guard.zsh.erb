@@ -1,8 +1,8 @@
 autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
-  print -u2 -PR "%F{red}${0}: Error starting Zim. You're using Zsh version %B${ZSH_VERSION}%b and versions < %B<%= min_zsh_version %>%b are not supported. Upgrade your Zsh.%f"
+  print -u2 -R $'<%= red %>'${0}$': Error starting zimfw. You\'re using Zsh version <%= bold %>'${ZSH_VERSION}$'<%= normalred %> and versions < <%= bold %><%= min_zsh_version %><%= normalred %> are not supported. Upgrade your Zsh.<%= normal %>'
   return 1
 fi
 autoload -Uz zargs
 
-# Define Zim location
+# Define zimfw location
 if (( ! ${+ZIM_HOME} )) typeset -g ZIM_HOME=${0:h}

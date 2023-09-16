@@ -2,11 +2,11 @@ _zimfw_source_zimrc() {
   local -r ztarget=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} _zflags=${1}
   local -i _zfailed=0
   if ! source ${ztarget} || (( _zfailed )); then
-    print -u2 -PR "%F{red}<%= failed %>Failed to source %B${ztarget}%b%f"
+    print -u2 -R $'<%= red %>Failed to source <%= bold %>'${ztarget}$'<%= normal %>'
     return 1
   fi
   if (( _zflags & 1 && ${#_znames} == 0 )); then
-    print -u2 -PR "%F{red}<%= failed %>No modules defined in %B${ztarget}%b%f"
+    print -u2 -R $'<%= red %>No modules defined in <%= bold %>'${ztarget}$'<%= normal %>'
     return 1
   fi
   # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes

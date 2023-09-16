@@ -1,16 +1,16 @@
 _zimfw_compile() {
-  # Compile Zim scripts
+  # Compile zimfw scripts
   local zroot_dir zfile
   for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
     if [[ ! -w ${zroot_dir} ]]; then
-      _zimfw_print -PR "%F{yellow}<%= warn %>%B${zroot_dir}:%b No write permission, unable to compile.%f"
+      _zimfw_print -R $'<%= yellow %><%= warn %><%= bold %>'${zroot_dir}$':<%= normalyellow %> No write permission, unable to compile.<%= normal %>'
       continue
     fi
     for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
-        zcompile -UR ${zfile} && _zimfw_print -PR "<%= okay %>%B${zfile}.zwc:%b Compiled"
+        zcompile -UR ${zfile} && _zimfw_print -R $'<%= okay %><%= bold %>'${zfile}$'.zwc:<%= normal %> Compiled'
       fi
     done
   done
-  _zimfw_print -P '<%= done %>Done with compile.'
+  _zimfw_print 'Done with compile.'
 }

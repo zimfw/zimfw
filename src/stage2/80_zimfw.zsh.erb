@@ -1,46 +1,46 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='<%= version %>' _zversion_target=${ZIM_HOME}/.latest_version zusage="Usage: %B${0}%b <action> [%B-q%b|%B-v%b]
+  local -r _zversion='<%= version %>' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
 
 Actions:
-  %Bbuild%b           Build %B${ZIM_HOME}/init.zsh%b and %B${ZIM_HOME}/login_init.zsh%b.
-                  Also does %Bcompile%b. Use %B-v%b to also see its output.
-  %Bclean%b           Clean all. Does both %Bclean-compiled%b and %Bclean-dumpfile%b.
-  %Bclean-compiled%b  Clean Zsh compiled files.
-  %Bclean-dumpfile%b  Clean completion dumpfile.
-  %Bcompile%b         Compile Zsh files.
-  %Bhelp%b            Print this help.
-  %Binfo%b            Print Zim and system info.
-  %Blist%b            List all modules currently defined in %B${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}%b.
-                  Use %B-v%b to also see the modules details.
-  %Binit%b            Same as %Binstall%b, but with output tailored to be used at terminal startup.
-  %Binstall%b         Install new modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
+  <%= bold %>build<%= normal %>           Build <%= bold %>'${ZIM_HOME}$'/init.zsh<%= normal %> and <%= bold %>'${ZIM_HOME}$'/login_init.zsh<%= normal %>.
+                  Also does <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see its output.
+  <%= bold %>clean<%= normal %>           Clean all. Does both <%= bold %>clean-compiled<%= normal %> and <%= bold %>clean-dumpfile<%= normal %>.
+  <%= bold %>clean-compiled<%= normal %>  Clean Zsh compiled files.
+  <%= bold %>clean-dumpfile<%= normal %>  Clean completion dumpfile.
+  <%= bold %>compile<%= normal %>         Compile Zsh files.
+  <%= bold %>help<%= normal %>            Print this help.
+  <%= bold %>info<%= normal %>            Print zimfw and system info.
+  <%= bold %>list<%= normal %>            List all modules currently defined in <%= bold %>'${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}$'<%= normal %>.
+                  Use <%= bold %>-v<%= normal %> to also see the modules details.
+  <%= bold %>init<%= normal %>            Same as <%= bold %>install<%= normal %>, but with output tailored to be used at terminal startup.
+  <%= bold %>install<%= normal %>         Install new modules. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their
                   output, any on-pull output and skipped modules.
-  %Buninstall%b       Delete unused modules. Prompts for confirmation. Use %B-q%b for quiet uninstall.
-  %Bcheck%b           Check if updates for current modules are available. Use %B-v%b to also see
+  <%= bold %>uninstall<%= normal %>       Delete unused modules. Prompts for confirmation. Use <%= bold %>-q<%= normal %> for quiet uninstall.
+  <%= bold %>check<%= normal %>           Check if updates for current modules are available. Use <%= bold %>-v<%= normal %> to also see
                   skipped and up to date modules.
-  %Bupdate%b          Update current modules. Also does %Bbuild%b, %Bcompile%b. Use %B-v%b to also see their
+  <%= bold %>update<%= normal %>          Update current modules. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their
                   output, any on-pull output and skipped modules.
-  %Bcheck-version%b   Check if a new version of zimfw is available.
-  %Bupgrade%b         Upgrade zimfw. Also does %Bcompile%b. Use %B-v%b to also see its output.
-  %Bversion%b         Print zimfw version.
+  <%= bold %>check-version<%= normal %>   Check if a new version of zimfw is available.
+  <%= bold %>upgrade<%= normal %>         Upgrade zimfw. Also does <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see its output.
+  <%= bold %>version<%= normal %>         Print zimfw version.
 
 Options:
-  %B-q%b              Quiet (yes to prompts and only outputs errors)
-  %B-v%b              Verbose (outputs more details)"
+  <%= bold %>-q<%= normal %>              Quiet (yes to prompts and only outputs errors)
+  <%= bold %>-v<%= normal %>              Verbose (outputs more details)'
   local -Ua _znames _zroot_dirs _zdisabled_root_dirs
   local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
-     print -u2 -PlR "%F{red}${0}: Too many options%f" '' ${zusage}
+     print -u2 -lR $'<%= red %>'${0}$': Too many options<%= normal %>' '' ${zusage}
      return 2
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
-        print -u2 -PlR "%F{red}${0}: Unknown option ${2}%f" '' ${zusage}
+        print -u2 -lR $'<%= red %>'${0}': Unknown option '${2}$'<%= normal %>' '' ${zusage}
         return 2
         ;;
     esac
@@ -64,7 +64,7 @@ Options:
     clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_source_zimrc 2 && _zimfw_compile ;;
-    help) print -PR ${zusage} ;;
+    help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
@@ -74,18 +74,18 @@ Options:
       _zrestartmsg=
       _zimfw_run_tool_action ${1} || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -PR "<%= done %>Done with ${1}." # Only printed in verbose mode
+      _zimfw_print -R "Done with ${1}." # Only printed in verbose mode
       ;;
     init)
       _zrestartmsg=
       _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -PR "<%= done %>Done with install." # Only printed in verbose mode
+      _zimfw_print 'Done with install.' # Only printed in verbose mode
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
     install|update)
       _zimfw_run_tool_action ${1} || return 1
-      _zimfw_print -PR "<%= done %>Done with ${1}.${_zrestartmsg}"
+      _zimfw_print -R "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
@@ -96,9 +96,9 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_compile
       ;;
-    version) print -PR ${_zversion} ;;
+    version) print -R ${_zversion} ;;
     *)
-      print -u2 -PlR "%F{red}${0}: Unknown action ${1}%f" '' ${zusage}
+      print -u2 -lR $'<%= red %>'${0}': Unknown action '${1}$'<%= normal %>' '' ${zusage}
       return 2
       ;;
   esac

@@ -14,17 +14,17 @@ _zimfw_run_tool() {
         _zimfw_print_okay 'Skipping already installed module' 1
         return 0
       fi
-      _zimfw_print -nR <%= clear_line %>"Installing ${_zname}<%= ellipsis %>"
+      _zimfw_print -nR $'<%= clear_line %>Installing '${_zname}'<%= ellipsis %>'
       ;;
     check|update)
       if [[ ! -d ${_zdirs[${_zname}]} ]]; then
-        _zimfw_print_error 'Not installed. Run %Bzimfw install%b to install.'
+        _zimfw_print_error $'Not installed. Run <%= bold %>zimfw install<%= normalred %> to install.'
         return 1
       fi
       if [[ ${_zaction} == check ]]; then
-        if (( _zprintlevel > 1 )) print -nR <%= clear_line %>"Checking ${_zname}<%= ellipsis %>"
+        if (( _zprintlevel > 1 )) print -nR $'<%= clear_line %>Checking '${_zname}'<%= ellipsis %>'
       else
-        _zimfw_print -nR <%= clear_line %>"Updating ${_zname}<%= ellipsis %>"
+        _zimfw_print -nR $'<%= clear_line %>Updating '${_zname}'<%= ellipsis %>'
       fi
       ;;
     *)
