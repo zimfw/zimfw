@@ -255,6 +255,9 @@ Per-module options:
 Per-module-root options:
   <b>--if</b> &lt;test&gt;                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
+  <b>--if-command</b> &lt;command&gt;     Will only initialize module root if specified external command is
+                             available. This is evaluated at every new terminal startup.
+                             Equivalent to <b>--if "(( \\\${+commands[\${1}]} ))"</b>.
   <b>--on-pull</b> &lt;command&gt;        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize the module root or uninstall the module.

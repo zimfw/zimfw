@@ -106,6 +106,9 @@ _zimfw_build_login_init() {
   ) ${ztarget}
 }
 
+zeval() {
+}
+
 _zimfw_build() {
   _zimfw_build_init && _zimfw_build_login_init && _zimfw_print 'Done with build.'
 }
@@ -148,6 +151,9 @@ Per-module options:
 Per-module-root options:
   \E[1m--if\E[0m <test>                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
+  \E[1m--if-command\E[0m <command>     Will only initialize module root if specified external command is
+                             available. This is evaluated at every new terminal startup.
+                             Equivalent to \E[1m--if "(( \\\${+commands[\${1}]} ))"\E[0m.
   \E[1m--on-pull\E[0m <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   \E[1m-d\E[0m|\E[1m--disabled\E[0m              Don\'t initialize the module root or uninstall the module.
@@ -237,7 +243,7 @@ Per-call initialization options:
   # Set values from options
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|--if-command|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -lR $'\E[31mx '${funcfiletrace[1]}$':\E[1m'${zname}$':\E[0;31m Missing argument for zmodule option \E[1m'${1}$'\E[0m' '' ${zusage}
           _zfailed=1
@@ -276,6 +282,10 @@ Per-call initialization options:
       --if)
         shift
         _zifs[${zroot_dir}]=${1}
+        ;;
+      --if-command)
+        shift
+        _zifs[${zroot_dir}]="(( \${+commands[${1}]} ))"
         ;;
       -f|--fpath)
         shift
@@ -444,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2023-09-16 18:25:16 UTC, previous commit is 26151d2)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-01-23 02:30:19 UTC, previous commit is 5f649d3)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}

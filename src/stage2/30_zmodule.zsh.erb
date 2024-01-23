@@ -36,6 +36,9 @@ Per-module options:
 Per-module-root options:
   <%= bold %>--if<%= normal %> <test>                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
+  <%= bold %>--if-command<%= normal %> <command>     Will only initialize module root if specified external command is
+                             available. This is evaluated at every new terminal startup.
+                             Equivalent to <%= bold %>--if "(( \\\${+commands[\${1}]} ))"<%= normal %>.
   <%= bold %>--on-pull<%= normal %> <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <%= bold %>-d<%= normal %>|<%= bold %>--disabled<%= normal %>              Don\'t initialize the module root or uninstall the module.
@@ -125,7 +128,7 @@ Per-call initialization options:
   # Set values from options
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|--if-command|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Missing argument for zmodule option <%= bold %>'${1}$'<%= normal %>' '' ${zusage}
           _zfailed=1
@@ -164,6 +167,10 @@ Per-call initialization options:
       --if)
         shift
         _zifs[${zroot_dir}]=${1}
+        ;;
+      --if-command)
+        shift
+        _zifs[${zroot_dir}]="(( \${+commands[${1}]} ))"
         ;;
       -f|--fpath)
         shift
