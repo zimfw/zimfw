@@ -77,13 +77,6 @@ _zimfw_untar_tarball() {
   fi
 }
 
-_zimfw_create_dir() {
-  if ! ERR=$(command mkdir -p ${1} 2>&1); then
-    _zimfw_print_error "Error creating ${1}" ${ERR}
-    return 1
-  fi
-}
-
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${5}
@@ -102,7 +95,7 @@ _zimfw_tool_degit() {
       ;;
     check|update)
       if [[ ! -r ${INFO_TARGET} ]]; then
-        _zimfw_print -u2 -R $'<%= clear_line %><%= yellow %><%= warn %><%= bold %>'${_zname}$':<%= normalyellow %> Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option <%= bold %>-z<%= normalyellow %>|<%= bold %>--frozen<%= normalyellow %> to disable this warning.<%= normal %>'
+        _zimfw_print_warn $'Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option <%= bold %>-z<%= normalyellow %>|<%= bold %>--frozen<%= normalyellow %> to disable this warning.'
         return 0
       fi
       readonly DIR_NEW=${DIR}${TEMP}
@@ -139,7 +132,7 @@ _zimfw_tool_degit() {
       ;;
   esac
   # Check after successful install or update
-  if [[ ${_zprintlevel} -gt 0 && ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    print -u2 -R $'<%= clear_line %><%= yellow %><%= warn %><%= bold %>'${_zname}$':<%= normalyellow %> Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option <%= bold %>--no-submodules<%= normalyellow %> to disable this warning.<%= normal %>'
+  if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
+    _zimfw_print_warn $'Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option <%= bold %>--no-submodules<%= normalyellow %> to disable this warning.'
   fi
 }

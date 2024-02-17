@@ -1,0 +1,14 @@
+_zimfw_tool_mkdir() {
+  # This runs in a subshell
+  readonly -i SUBMODULES=${5}
+  readonly DIR=${1} TYPE=${3} REV=${4} ONPULL=${6}
+  if [[ -n ${REV} ]]; then
+    _zimfw_print_warn $'The zmodule option <%= bold %>-'${TYPE[1]}$'<%= normalyellow %>|<%= bold %>--'${TYPE}$'<%= normalyellow %> has no effect when using the mkdir tool'
+  fi
+  if (( ! SUBMODULES )); then
+    _zimfw_print_warn $'The zmodule option <%= bold %>--no-submodules<%= normalyellow %> has no effect when using the mkdir tool'
+  fi
+  if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
+    _zimfw_create_dir ${DIR} && _zimfw_pull_print_okay Created || return 1
+  fi
+}

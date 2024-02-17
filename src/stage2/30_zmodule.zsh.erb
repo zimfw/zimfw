@@ -8,7 +8,7 @@ The initialization will be done in the same order it\'s defined.
   <url>                      Module absolute path or repository URL. The following URL formats
                              are equivalent: <%= bold %>foo<%= normal %>, <%= bold %>zimfw/foo<%= normal %>, <%= bold %>https://github.com/zimfw/foo.git<%= normal %>.
                              If an absolute path is given, the module is considered externally
-                             installed, and won\'t be installed or updated by zimfw.
+                             installed and won\'t be installed or updated by zimfw.
   <%= bold %>-n<%= normal %>|<%= bold %>--name<%= normal %> <module_name>    Set a custom module name. Default: the last component in <url>.
                              Slashes can be used inside the name to organize the module into
                              subdirectories. The module will be installed at
@@ -20,13 +20,16 @@ Per-module options:
                              Overrides the tag option. Default: the repository default branch.
   <%= bold %>-t<%= normal %>|<%= bold %>--tag<%= normal %> <tag_name>        Use specified tag when installing and updating the module. Over-
                              rides the branch option.
-  <%= bold %>-u<%= normal %>|<%= bold %>--use<%= normal %> <<%= bold %>git<%= normal %>|<%= bold %>degit<%= normal %>>       Install and update the module using the defined tool. Default is
-                             either defined by <%= bold %>zstyle \':zim:zmodule\' use \'<%= normal %><<%= bold %>git<%= normal %>|<%= bold %>degit<%= normal %>><%= bold %>\'<%= normal %>, or <%= bold %>git<%= normal %>
-                             if none is provided.
-                             <%= bold %>git<%= normal %> requires git itself. Local changes are preserved on updates.
-                             <%= bold %>degit<%= normal %> requires curl or wget, and currently only works with GitHub
+  <%= bold %>-u<%= normal %>|<%= bold %>--use<%= normal %> <tool_name>       Install and update the module using the defined tool. Default is
+                             either defined by <%= bold %>zstyle \':zim:zmodule\' use \'<%= normal %><tool_name><%= bold %>\'<%= normal %>, or <%= bold %>git<%= normal %>
+                             if none is provided. The tools available are:
+                             <%= bold %>git<%= normal %> uses the git command. Local changes are preserved on updates.
+                             <%= bold %>degit<%= normal %> uses curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
+                             <%= bold %>mkdir<%= normal %> creates an empty directory. The <url> is only used to set
+                             the module name. Use the <%= bold %>-c<%= normal %>|<%= bold %>--cmd<%= normal %> or <%= bold %>--on-pull<%= normal %> options to execute
+                             the desired command to generate the module files.
   <%= bold %>--no-submodules<%= normal %>            Don\'t install or update git submodules.
   <%= bold %>-z<%= normal %>|<%= bold %>--frozen<%= normal %>                Don\'t install or update the module.
 
@@ -36,9 +39,9 @@ Per-module options:
 Per-module-root options:
   <%= bold %>--if<%= normal %> <test>                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-  <%= bold %>--if-command<%= normal %> <command>     Will only initialize module root if specified external command is
+  <%= bold %>--if-command<%= normal %> <cmd_name>    Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to <%= bold %>--if "(( \\\${+commands[\${1}]} ))"<%= normal %>.
+                             Equivalent to <%= bold %>--if \'(( \${+commands[<%= normal %><cmd_name><%= bold %>]} ))\'<%= normal %>.
   <%= bold %>--on-pull<%= normal %> <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <%= bold %>-d<%= normal %>|<%= bold %>--disabled<%= normal %>              Don\'t initialize the module root or uninstall the module.

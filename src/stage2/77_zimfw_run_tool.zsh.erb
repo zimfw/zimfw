@@ -34,7 +34,7 @@ _zimfw_run_tool() {
   esac
   local -r ztool=${_ztools[${_zname}]}
   case ${ztool} in
-    degit|git)
+    degit|git|mkdir)
       _zimfw_tool_${ztool} "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
       ;;
     *)

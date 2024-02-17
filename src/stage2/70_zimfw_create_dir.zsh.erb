@@ -1,0 +1,6 @@
+_zimfw_create_dir() {
+  if ! ERR=$(command mkdir -p ${1} 2>&1); then
+    _zimfw_print_error "Error creating ${1}" ${ERR}
+    return 1
+  fi
+}

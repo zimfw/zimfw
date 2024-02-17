@@ -106,9 +106,6 @@ _zimfw_build_login_init() {
   ) ${ztarget}
 }
 
-zeval() {
-}
-
 _zimfw_build() {
   _zimfw_build_init && _zimfw_build_login_init && _zimfw_print 'Done with build.'
 }
@@ -123,7 +120,7 @@ The initialization will be done in the same order it\'s defined.
   <url>                      Module absolute path or repository URL. The following URL formats
                              are equivalent: \E[1mfoo\E[0m, \E[1mzimfw/foo\E[0m, \E[1mhttps://github.com/zimfw/foo.git\E[0m.
                              If an absolute path is given, the module is considered externally
-                             installed, and won\'t be installed or updated by zimfw.
+                             installed and won\'t be installed or updated by zimfw.
   \E[1m-n\E[0m|\E[1m--name\E[0m <module_name>    Set a custom module name. Default: the last component in <url>.
                              Slashes can be used inside the name to organize the module into
                              subdirectories. The module will be installed at
@@ -135,13 +132,16 @@ Per-module options:
                              Overrides the tag option. Default: the repository default branch.
   \E[1m-t\E[0m|\E[1m--tag\E[0m <tag_name>        Use specified tag when installing and updating the module. Over-
                              rides the branch option.
-  \E[1m-u\E[0m|\E[1m--use\E[0m <\E[1mgit\E[0m|\E[1mdegit\E[0m>       Install and update the module using the defined tool. Default is
-                             either defined by \E[1mzstyle \':zim:zmodule\' use \'\E[0m<\E[1mgit\E[0m|\E[1mdegit\E[0m>\E[1m\'\E[0m, or \E[1mgit\E[0m
-                             if none is provided.
-                             \E[1mgit\E[0m requires git itself. Local changes are preserved on updates.
-                             \E[1mdegit\E[0m requires curl or wget, and currently only works with GitHub
+  \E[1m-u\E[0m|\E[1m--use\E[0m <tool_name>       Install and update the module using the defined tool. Default is
+                             either defined by \E[1mzstyle \':zim:zmodule\' use \'\E[0m<tool_name>\E[1m\'\E[0m, or \E[1mgit\E[0m
+                             if none is provided. The tools available are:
+                             \E[1mgit\E[0m uses the git command. Local changes are preserved on updates.
+                             \E[1mdegit\E[0m uses curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
+                             \E[1mmkdir\E[0m creates an empty directory. The <url> is only used to set
+                             the module name. Use the \E[1m-c\E[0m|\E[1m--cmd\E[0m or \E[1m--on-pull\E[0m options to execute
+                             the desired command to generate the module files.
   \E[1m--no-submodules\E[0m            Don\'t install or update git submodules.
   \E[1m-z\E[0m|\E[1m--frozen\E[0m                Don\'t install or update the module.
 
@@ -151,9 +151,9 @@ Per-module options:
 Per-module-root options:
   \E[1m--if\E[0m <test>                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-  \E[1m--if-command\E[0m <command>     Will only initialize module root if specified external command is
+  \E[1m--if-command\E[0m <cmd_name>    Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to \E[1m--if "(( \\\${+commands[\${1}]} ))"\E[0m.
+                             Equivalent to \E[1m--if \'(( \${+commands[\E[0m<cmd_name>\E[1m]} ))\'\E[0m.
   \E[1m--on-pull\E[0m <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   \E[1m-d\E[0m|\E[1m--disabled\E[0m              Don\'t initialize the module root or uninstall the module.
@@ -454,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-01-23 02:30:19 UTC, previous commit is 5f649d3)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-02-17 01:39:24 UTC, previous commit is 8bec2f7)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -539,12 +539,23 @@ _zimfw_run_list() {
   fi
 }
 
+_zimfw_create_dir() {
+  if ! ERR=$(command mkdir -p ${1} 2>&1); then
+    _zimfw_print_error "Error creating ${1}" ${ERR}
+    return 1
+  fi
+}
+
 _zimfw_print_error() {
   print -u2 -lR $'\E[2K\r\E[31mx \E[1m'${_zname}$':\E[0;31m '${1}$'\E[0m' ${2:+${(F):-  ${(f)^2}}}
 }
 
 _zimfw_print_okay() {
   if (( _zprintlevel > ${2:-0} )) print -lR $'\E[2K\r\E[32m)\E[0m \E[1m'${_zname}$':\E[0m '${1} ${3:+${(F):-  ${(f)^3}}}
+}
+
+_zimfw_print_warn() {
+  _zimfw_print -u2 -R $'\E[2K\r\E[33m! \E[1m'${_zname}$':\E[0;33m '${1}$'\E[0m'
 }
 
 _zimfw_pull_print_okay() {
@@ -640,13 +651,6 @@ _zimfw_untar_tarball() {
   fi
 }
 
-_zimfw_create_dir() {
-  if ! ERR=$(command mkdir -p ${1} 2>&1); then
-    _zimfw_print_error "Error creating ${1}" ${ERR}
-    return 1
-  fi
-}
-
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${5}
@@ -665,7 +669,7 @@ _zimfw_tool_degit() {
       ;;
     check|update)
       if [[ ! -r ${INFO_TARGET} ]]; then
-        _zimfw_print -u2 -R $'\E[2K\r\E[33m! \E[1m'${_zname}$':\E[0;33m Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.\E[0m'
+        _zimfw_print_warn $'Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.'
         return 0
       fi
       readonly DIR_NEW=${DIR}${TEMP}
@@ -702,8 +706,8 @@ _zimfw_tool_degit() {
       ;;
   esac
   # Check after successful install or update
-  if [[ ${_zprintlevel} -gt 0 && ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    print -u2 -R $'\E[2K\r\E[33m! \E[1m'${_zname}$':\E[0;33m Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option \E[1m--no-submodules\E[0;33m to disable this warning.\E[0m'
+  if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
+    _zimfw_print_warn $'Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option \E[1m--no-submodules\E[0;33m to disable this warning.'
   fi
 }
 
@@ -723,7 +727,7 @@ _zimfw_tool_git() {
       ;;
     check|update)
       if [[ ! -r ${DIR}/.git ]]; then
-        _zimfw_print -u2 -R $'\E[2K\r\E[33m! \E[1m'${_zname}$':\E[0;33m Module was not installed using git. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.\E[0m'
+        _zimfw_print_warn 'Module was not installed using git. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.'
         return 0
       fi
       if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
@@ -801,6 +805,21 @@ _zimfw_tool_git() {
   esac
 }
 
+_zimfw_tool_mkdir() {
+  # This runs in a subshell
+  readonly -i SUBMODULES=${5}
+  readonly DIR=${1} TYPE=${3} REV=${4} ONPULL=${6}
+  if [[ -n ${REV} ]]; then
+    _zimfw_print_warn $'The zmodule option \E[1m-'${TYPE[1]}$'\E[0;33m|\E[1m--'${TYPE}$'\E[0;33m has no effect when using the mkdir tool'
+  fi
+  if (( ! SUBMODULES )); then
+    _zimfw_print_warn $'The zmodule option \E[1m--no-submodules\E[0;33m has no effect when using the mkdir tool'
+  fi
+  if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
+    _zimfw_create_dir ${DIR} && _zimfw_pull_print_okay Created || return 1
+  fi
+}
+
 _zimfw_run_tool() {
   local -r _zname=${1}
   if [[ -z ${_zurls[${_zname}]} ]]; then
@@ -837,7 +856,7 @@ _zimfw_run_tool() {
   esac
   local -r ztool=${_ztools[${_zname}]}
   case ${ztool} in
-    degit|git)
+    degit|git|mkdir)
       _zimfw_tool_${ztool} "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
       ;;
     *)
