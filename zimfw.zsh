@@ -4,7 +4,7 @@
 # MIT License
 #
 # Copyright (c) 2015-2016 Matt Hamilton and contributors
-# Copyright (c) 2016-2023 Eric Nielsen, Matt Hamilton and contributors
+# Copyright (c) 2016-2024 Eric Nielsen, Matt Hamilton and contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -454,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-02-17 01:39:24 UTC, previous commit is 8bec2f7)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-02-17 02:05:06 UTC, previous commit is 9de3984)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -874,7 +874,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.12.1' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zversion='1.13.0' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.

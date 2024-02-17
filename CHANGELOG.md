@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.13.0] - 2024-02-17
 
 ### Added
 
 - `--if-command` option to zmodule. This option is equivalent to
   `--if "(( \${+commands[${1}]} ))"`.
+- `mkdir` tool option in `zmodule` that creates an empty directory. This allows
+  creating modules that contain only externally generated files.
 
 ## [1.12.1] - 2023-09-16
 
@@ -365,7 +370,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.12.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/zimfw/zimfw/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/zimfw/zimfw/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/zimfw/zimfw/compare/v1.11.3...v1.12.0
 [1.11.3]: https://github.com/zimfw/zimfw/compare/v1.11.2...v1.11.3
