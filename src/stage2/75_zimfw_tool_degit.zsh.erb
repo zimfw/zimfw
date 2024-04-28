@@ -71,10 +71,17 @@ _zimfw_download_tarball() {
 }
 
 _zimfw_untar_tarball() {
-  if ! ERR=$(command tar -C ${1} --strip=1 -xzf ${TARBALL_TARGET} 2>&1); then
+  if ! ERR=$(command tar -C ${1} -xzf ${TARBALL_TARGET} 2>&1); then
     _zimfw_print_error "Error extracting ${TARBALL_TARGET}" ${ERR}
     return 1
   fi
+  local zsubdir
+  for zsubdir in ${1}/*(/); do
+    if ! ERR=$(command mv -f ${zsubdir}/*(DN) ${1} 2>&1 && command rmdir ${zsubdir} 2>&1); then
+      _zimfw_print_error "Error moving ${zsubdir}" ${ERR}
+      return 1
+    fi
+  done
 }
 
 _zimfw_tool_degit() {

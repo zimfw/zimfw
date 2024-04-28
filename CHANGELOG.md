@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.13.1] - 2024-04-28
+
+### Fixed
+
+- The `--strip` option in tar command is not BSD compatible.
+
 ## [1.13.0] - 2024-02-17
 
 ### Added

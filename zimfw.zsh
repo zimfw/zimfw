@@ -454,7 +454,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-02-17 02:05:06 UTC, previous commit is 9de3984)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-04-28 19:04:33 UTC, previous commit is 39d2087)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -645,10 +645,17 @@ _zimfw_download_tarball() {
 }
 
 _zimfw_untar_tarball() {
-  if ! ERR=$(command tar -C ${1} --strip=1 -xzf ${TARBALL_TARGET} 2>&1); then
+  if ! ERR=$(command tar -C ${1} -xzf ${TARBALL_TARGET} 2>&1); then
     _zimfw_print_error "Error extracting ${TARBALL_TARGET}" ${ERR}
     return 1
   fi
+  local zsubdir
+  for zsubdir in ${1}/*(/); do
+    if ! ERR=$(command mv -f ${zsubdir}/*(DN) ${1} 2>&1 && command rmdir ${zsubdir} 2>&1); then
+      _zimfw_print_error "Error moving ${zsubdir}" ${ERR}
+      return 1
+    fi
+  done
 }
 
 _zimfw_tool_degit() {
@@ -874,7 +881,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.13.0' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zversion='1.13.1-SNAPSHOT' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.
