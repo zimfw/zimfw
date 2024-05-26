@@ -47,12 +47,14 @@ Installing Zim is easy. You can choose either the automatic or manual method bel
 This will install a predefined set of modules and a theme for you.
 
 * With `curl`:
-
-      curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+  ```zsh
+  curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+  ```
 
 * With `wget`:
-
-      wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+  ```zsh
+  wget -nv -O - https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+  ```
 
 Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
 to tweak your [`~/.zshrc`](#set-up-zshrc) file, and to also check the available
@@ -82,7 +84,16 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    This is optional, and only required if you don't have `git` installed (yes,
    Zim works even without `git`!)
 
-2. To set where the directory used by Zim will be located:
+2. To set where the `zimfw` plugin manager configuration file will be located:
+   ```zsh
+   ZIM_CONFIG_FILE=~/.config/zsh/zimrc
+   ```
+   This is optional. The value of `ZIM_CONFIG_FILE` can be any path your user
+   has at least read access to. By default, the file must be at `~/.zimrc`, if
+   the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
+   `${ZDOTDIR}/.zimrc`.
+
+3. To set where the directory used by Zim will be located:
    ```zsh
    ZIM_HOME=~/.zim
    ```
@@ -91,7 +102,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    `~/.cache/zim` if you also include the step below, that automatically
    downloads the `zimfw` plugin manager.
 
-3. To automatically download the `zimfw` plugin manager if missing:
+4. To automatically download the `zimfw` plugin manager if missing:
    ```zsh
    # Download zimfw plugin manager if missing.
    if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
@@ -110,11 +121,11 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    This is optional. If you choose to not include this step, you should manually
    download the `zimfw.zsh` script once and keep it at `${ZIM_HOME}`.
 
-4. To automatically install missing modules and update the static initialization
+5. To automatically install missing modules and update the static initialization
    script if missing or outdated:
    ```zsh
    # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
-   if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+   if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
      source ${ZIM_HOME}/zimfw.zsh init -q
    fi
    ```
@@ -122,7 +133,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    it, you must remember to manually run `zimfw install` every time after you
    update your [`~/.zimrc`](#create-zimrc) file.
 
-5. To source the static script, that will initialize your modules:
+6. To source the static script, that will initialize your modules:
    ```zsh
    # Initialize modules.
    source ${ZIM_HOME}/init.zsh
@@ -130,18 +141,31 @@ Add the lines below to your `~/.zshrc` file, in the following order:
 
 #### Create `~/.zimrc`
 
-You must create your `.zimrc` file at `~/.zimrc`, if the `ZDOTDIR` environment
-variable is not defined. Otherwise, it must be at `${ZDOTDIR}/.zimrc`. It's
-referred to as `~/.zimrc` in the documentation for the sake of simplicity.
+This file configures the `zimfw` plugin manager. It's referred to as `~/.zimrc`
+in the documentation for the sake of simplicity, but the actual location of the
+file is defined following these rules:
 
-You can start with just:
+1. You can define the full path and name of the file with a `ZIM_CONFIG_FILE`
+   environment variable. For example:
+   ```zsh
+   ZIM_CONFIG_FILE=~/.config/zsh/zimrc
+   ```
+
+2. Or, if you defined a `ZDOTDIR` environment variable, then the file must be at
+   `${ZDOTDIR}/.zimrc`
+
+3. Otherwise, it must be at at `~/.zimrc`, which is it's default location.
+
+As for the contents of the file, you can start with just:
 ```zsh
 zmodule zsh-users/zsh-syntax-highlighting
 zmodule zsh-users/zsh-autosuggestions
 ```
 
 If you also want one of our prompt [themes]:
-```
+```zsh
+zmodule git-info
+zmodule duration-info
 zmodule asciiship
 zmodule zsh-users/zsh-syntax-highlighting
 zmodule zsh-users/zsh-autosuggestions
@@ -149,6 +173,8 @@ zmodule zsh-users/zsh-autosuggestions
 
 If you want to use our [completion] module too, instead of using `compinit` directly:
 ```zsh
+zmodule git-info
+zmodule duration-info
 zmodule asciiship
 zmodule zsh-users/zsh-completions --fpath src
 zmodule completion
