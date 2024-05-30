@@ -58,7 +58,6 @@ _zimfw_build_init() {
   fi
   _zimfw_mv =(
     print -R "zimfw() { source ${(q-)ZIM_HOME}/zimfw.zsh \"\${@}\" }"
-    print -R "zmodule() { source ${(q-)ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
@@ -110,6 +109,7 @@ _zimfw_build() {
   _zimfw_build_init && _zimfw_build_login_init && _zimfw_print 'Done with build.'
 }
 
+_zimfw_source_zimrc() {
 zmodule() {
   local -r ztarget=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc}
   local -r zusage=$'Usage: \E[1m'${0}$'\E[0m <url> [\E[1m-n\E[0m|\E[1m--name\E[0m <module_name>] [\E[1m-r\E[0m|\E[1m--root\E[0m <path>] [options]
@@ -351,25 +351,28 @@ Per-call initialization options:
   fi
 }
 
-_zimfw_source_zimrc() {
-  local -r ztarget=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zflags=${1}
-  local -i _zfailed=0
-  if ! source ${ztarget} || (( _zfailed )); then
-    print -u2 -R $'\E[31mFailed to source \E[1m'${ztarget}$'\E[0m'
-    return 1
-  fi
-  if (( _zflags & 1 && ${#_znames} == 0 )); then
-    print -u2 -R $'\E[31mNo modules defined in \E[1m'${ztarget}$'\E[0m'
-    return 1
-  fi
-  # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes
-  local zroot_dir zpre
-  for zroot_dir in ${_zdisabled_root_dirs}; do
-    zpre=${zroot_dir}$'\0'
-    _zfpaths=(${_zfpaths:#${zpre}*})
-    _zfunctions=(${_zfunctions:#${zpre}*})
-    _zcmds=(${_zcmds:#${zpre}*})
-  done
+  {
+    local -r ztarget=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zflags=${1}
+    local -i _zfailed=0
+    if ! source ${ztarget} || (( _zfailed )); then
+      print -u2 -R $'\E[31mFailed to source \E[1m'${ztarget}$'\E[0m'
+      return 1
+    fi
+    if (( _zflags & 1 && ${#_znames} == 0 )); then
+      print -u2 -R $'\E[31mNo modules defined in \E[1m'${ztarget}$'\E[0m'
+      return 1
+    fi
+    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes
+    local zroot_dir zpre
+    for zroot_dir in ${_zdisabled_root_dirs}; do
+      zpre=${zroot_dir}$'\0'
+      _zfpaths=(${_zfpaths:#${zpre}*})
+      _zfunctions=(${_zfunctions:#${zpre}*})
+      _zcmds=(${_zcmds:#${zpre}*})
+    done
+  } always {
+    unfunction zmodule
+  }
 }
 
 _zimfw_list_unuseds() {
@@ -454,7 +457,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-04-28 19:07:19 UTC, previous commit is c86223f)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-05-30 14:18:19 UTC, previous commit is 6c4e1b0)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -985,8 +988,4 @@ Options:
   esac
 }
 
-if [[ ${functrace[1]} == zmodule:* ]]; then
-  zmodule "${@}"
-else
-  zimfw "${@}"
-fi
+zimfw "${@}"

@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Changed
+
+- Don't allow calling `zmodule` from the command line. Let it fail with "command
+  not found" instead. It's inteded to be used only in the .zimrc script.
 
 ## [1.13.1] - 2024-04-28
 
@@ -19,7 +22,7 @@ _No unreleased changes._
 
 ### Added
 
-- `--if-command` option to zmodule. This option is equivalent to
+- `--if-command` option to `zmodule`. This option is equivalent to
   `--if "(( \${+commands[${1}]} ))"`.
 - `mkdir` tool option in `zmodule` that creates an empty directory. This allows
   creating modules that contain only externally generated files.
