@@ -18,7 +18,7 @@ _zimfw_tool_git() {
         return 0
       fi
       if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
-        _zimfw_print_error "URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The git URL does not match. Expected ${URL}. Will not try to ${_zaction}."
         return 1
       fi
       if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then

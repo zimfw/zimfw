@@ -4,7 +4,7 @@ _zimfw_download_tarball() {
     readonly REPO=${match[4]%.git}
   fi
   if [[ ${HOST} != github.com || -z ${REPO} ]]; then
-    _zimfw_print_error "${URL} is not a valid GitHub URL. Will not try to ${_zaction}."
+    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${_zaction}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option <%= bold %>--use git<%= normalred %> to use git instead.'
     return 1
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
@@ -12,7 +12,7 @@ _zimfw_download_tarball() {
     if [[ -r ${INFO_TARGET} ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
       if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${_zaction}."
         return 1
       fi
       # Previous REV is in line 2, reserved for future use.

@@ -457,7 +457,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-05-30 14:18:19 UTC, previous commit is 6c4e1b0)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-05-30 14:34:14 UTC, previous commit is cdd9258)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -581,7 +581,7 @@ _zimfw_download_tarball() {
     readonly REPO=${match[4]%.git}
   fi
   if [[ ${HOST} != github.com || -z ${REPO} ]]; then
-    _zimfw_print_error "${URL} is not a valid GitHub URL. Will not try to ${_zaction}."
+    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${_zaction}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option \E[1m--use git\E[0;31m to use git instead.'
     return 1
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
@@ -589,7 +589,7 @@ _zimfw_download_tarball() {
     if [[ -r ${INFO_TARGET} ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
       if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${_zaction}."
         return 1
       fi
       # Previous REV is in line 2, reserved for future use.
@@ -741,7 +741,7 @@ _zimfw_tool_git() {
         return 0
       fi
       if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
-        _zimfw_print_error "URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The git URL does not match. Expected ${URL}. Will not try to ${_zaction}."
         return 1
       fi
       if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then
