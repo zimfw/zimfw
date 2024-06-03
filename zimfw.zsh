@@ -46,7 +46,7 @@ _zimfw_mv() {
     if [[ -e ${2} ]]; then
       command mv -f ${2}{,.old} || return 1
     fi
-    command mv -f ${1} ${2} && _zimfw_print -R $'\E[32m)\E[0m \E[1m'${2}$':\E[0m Updated.'${_zrestartmsg}
+    command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R $'\E[32m)\E[0m \E[1m'${2}$':\E[0m Updated.'${_zrestartmsg}
   fi
 }
 
@@ -457,7 +457,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-05-30 14:34:14 UTC, previous commit is cdd9258)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-03 13:45:11 UTC, previous commit is 96f60da)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -884,7 +884,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.13.1' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zversion='1.14.0-SNAPSHOT' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.

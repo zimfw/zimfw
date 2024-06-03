@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don't allow calling `zmodule` from the command line. Let it fail with "command
   not found" instead. It's inteded to be used only in the .zimrc script.
 
+### Fixed
+
+- Update error messages to hopefully make it clearer when either the git or the
+  degit tool is being used.
+- Set read permissions to generated init.zsh script, so it can be read from
+  other users.
+
 ## [1.13.1] - 2024-04-28
 
 ### Fixed
