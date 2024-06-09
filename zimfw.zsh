@@ -57,7 +57,7 @@ _zimfw_build_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -R 'zimfw() { source '${${(qqq)ZIM_HOME}/${HOME}/\${HOME}}'/zimfw.zsh "${@}" }'
+    print -R "zimfw() { source ${(q-)ZIM_HOME}/zimfw.zsh \"\${@}\" }"
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
@@ -73,7 +73,7 @@ _zimfw_build_init() {
       fi
     done
     zpre=$'*\0'
-    if (( ${#_zfpaths} )) print -R 'fpath=('${${(qqq)${_zfpaths#${~zpre}}:a}/${HOME}/\${HOME}}' ${fpath})'
+    if (( ${#_zfpaths} )) print -R 'fpath=('${(q-)${_zfpaths#${~zpre}}:a}' ${fpath})'
     if (( ${#zfunctions} )) print -R 'autoload -Uz -- '${zfunctions#${~zpre}}
     for zroot_dir in ${_zroot_dirs}; do
       zpre=${zroot_dir}$'\0'
@@ -301,11 +301,11 @@ Per-call initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
-        zcmds+=('source '${(qqq)zarg:a})
+        zcmds+=("source ${(q-)zarg:a}")
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(qqq)zroot_dir:a}})
+        zcmds+=(${1//{}/${(q-)zroot_dir:a}})
         ;;
       -d|--disabled) _zdisabled_root_dirs+=(${zroot_dir}) ;;
       *)
@@ -333,11 +333,11 @@ Per-call initialization options:
       local -ra prezto_scripts=(${zroot_dir}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
-        zcmds=('source '${(qqq)^prezto_scripts:a})
+        zcmds=('source '${(q-)^prezto_scripts:a})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
         local -ra zscripts=(${zroot_dir}/(init.zsh|(${zname:t}|${zroot_dir:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds=('source '${(qqq)^zscripts:a})
+        zcmds=('source '${(q-)^zscripts:a})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
@@ -347,7 +347,6 @@ Per-call initialization options:
     local -r zpre=${zroot_dir}$'\0'
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})
-    zcmds=(${zcmds//${HOME}/\${HOME}})
     _zcmds+=(${zpre}${^zcmds})
   fi
 }
@@ -458,7 +457,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-09 16:29:54 UTC, previous commit is f4c1634)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-03 13:45:11 UTC, previous commit is 96f60da)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
