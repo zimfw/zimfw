@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Don't allow calling `zmodule` from the command line. Let it fail with "command
-  not found" instead. It's inteded to be used only in the .zimrc script.
+  not found" instead, as it's intended to be used only in the .zimrc script.
+- Allow zimfw.zsh to exist anywhere else, not only inside `ZIM_HOME`. This
+  enables installing the zimfw.zsh script independently with a package manager.
 
 ### Fixed
 

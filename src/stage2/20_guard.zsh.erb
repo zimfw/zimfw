@@ -4,5 +4,9 @@ autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
 fi
 autoload -Uz zargs
 
+if (( ! ${+ZIM_HOME} )); then
+  print -u2 -R $'<%= red %>'${0}$': ZIM_HOME not defined<%= normal %>'
+  return 1
+fi
 # Define zimfw location
-if (( ! ${+ZIM_HOME} )) typeset -g ZIM_HOME=${0:h}
+typeset -g __ZIMFW_PATH=${0:h}
