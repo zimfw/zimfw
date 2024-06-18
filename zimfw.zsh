@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-18 22:08:02 UTC, previous commit is 897afc9)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-18 22:39:30 UTC, previous commit is 3e812ed)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -943,7 +943,9 @@ Options:
     esac
   fi
 
-  if ! zstyle -t ':zim' disable-version-check && [[ ${1} != check-version ]]; then
+  if ! zstyle -t ':zim' disable-version-check && \
+      [[ ${1} != check-version && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
+  then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
     _zimfw_check_version ${zversion_check_force} 1
