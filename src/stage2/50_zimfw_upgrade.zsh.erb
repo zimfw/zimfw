@@ -1,5 +1,13 @@
 _zimfw_upgrade() {
+  if [[ ! -w ${__ZIMFW_PATH} ]]; then
+    print -u2 -R $'<%= red %>No write access to <%= bold %>'${__ZIMFW_PATH}$'<%= normalred %>. Will not try to upgrade.<%= normal %>'
+    return 1
+  fi
   local -r ztarget=${__ZIMFW_PATH}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
+  if [[ -L ${ztarget} || ! -f ${ztarget} ]]; then
+    print -u2 -R $'<%= red %><%= bold %>'${ztarget}$'<%= normalred %> is a symlink or not a regular file. Will not try to upgrade.<%= normal %>'
+    return 1
+  fi
   {
     if (( ${+commands[curl]} )); then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1

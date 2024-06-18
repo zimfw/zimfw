@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-17 12:21:22 UTC, previous commit is 76164d6)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-18 22:08:02 UTC, previous commit is 897afc9)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -482,7 +482,15 @@ _zimfw_uninstall() {
 }
 
 _zimfw_upgrade() {
+  if [[ ! -w ${__ZIMFW_PATH} ]]; then
+    print -u2 -R $'\E[31mNo write access to \E[1m'${__ZIMFW_PATH}$'\E[0;31m. Will not try to upgrade.\E[0m'
+    return 1
+  fi
   local -r ztarget=${__ZIMFW_PATH}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
+  if [[ -L ${ztarget} || ! -f ${ztarget} ]]; then
+    print -u2 -R $'\E[31m\E[1m'${ztarget}$'\E[0;31m is a symlink or not a regular file. Will not try to upgrade.\E[0m'
+    return 1
+  fi
   {
     if (( ${+commands[curl]} )); then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
