@@ -5,7 +5,7 @@ fi
 autoload -Uz zargs
 
 if (( ! ${+ZIM_HOME} )); then
-  print -u2 -R $'<%= red %>'${0}$': ZIM_HOME not defined<%= normal %>'
+  print -u2 -R $'<%= red %>'${0}$': <%= bold %>ZIM_HOME<%= normalred %> not defined<%= normal %>'
   return 1
 fi
 # Define zimfw location

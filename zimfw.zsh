@@ -31,7 +31,7 @@ fi
 autoload -Uz zargs
 
 if (( ! ${+ZIM_HOME} )); then
-  print -u2 -R $'\E[31m'${0}$': ZIM_HOME not defined\E[0m'
+  print -u2 -R $'\E[31m'${0}$': \E[1mZIM_HOME\E[0;31m not defined\E[0m'
   return 1
 fi
 # Define zimfw location
@@ -61,7 +61,7 @@ _zimfw_build_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -R 'zimfw() { source '${${(qqq)__ZIMFW_PATH}/${HOME}/\${HOME}}'/zimfw.zsh "${@}" }'
+    print -R 'if (( ${+ZIM_HOME} )) zimfw() { source '${${(qqq)__ZIMFW_PATH}/${HOME}/\${HOME}}'/zimfw.zsh "${@}" }'
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-18 22:39:30 UTC, previous commit is 3e812ed)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-21 20:42:45 UTC, previous commit is eb37844)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -483,7 +483,7 @@ _zimfw_uninstall() {
 
 _zimfw_upgrade() {
   if [[ ! -w ${__ZIMFW_PATH} ]]; then
-    print -u2 -R $'\E[31mNo write access to \E[1m'${__ZIMFW_PATH}$'\E[0;31m. Will not try to upgrade.\E[0m'
+    print -u2 -R $'\E[31mNo write permission to \E[1m'${__ZIMFW_PATH}$'\E[0;31m. Will not try to upgrade.\E[0m'
     return 1
   fi
   local -r ztarget=${__ZIMFW_PATH}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
@@ -891,13 +891,14 @@ _zimfw_run_tool() {
 
 _zimfw_run_tool_action() {
   local -r _zaction=${1}
-  _zimfw_source_zimrc 1 && zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  _zimfw_source_zimrc 1 || return 1
+  zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
   return 0
 }
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.14.0-SNAPSHOT' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zversion='1.14.0-SNAPSHOT' zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.
@@ -943,14 +944,19 @@ Options:
     esac
   fi
 
+  local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
+      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
     _zimfw_check_version ${zversion_check_force} 1
   fi
 
+  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|check-version) ]]; then
+    print -u2 -R $'\E[31m'${0}$': No write permission to \E[1m'${ZIM_HOME}$'\E[0;31m. Will not try to '${1}$'.\E[0m'
+    return 1
+  fi
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)

@@ -1,6 +1,6 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='<%= version %>' _zversion_target=${ZIM_HOME}/.latest_version zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
+  local -r _zversion='<%= version %>' zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
 
 Actions:
   <%= bold %>build<%= normal %>           Build <%= bold %>'${ZIM_HOME}$'/init.zsh<%= normal %> and <%= bold %>'${ZIM_HOME}$'/login_init.zsh<%= normal %>.
@@ -46,14 +46,19 @@ Options:
     esac
   fi
 
+  local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
+      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
     _zimfw_check_version ${zversion_check_force} 1
   fi
 
+  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|check-version) ]]; then
+    print -u2 -R $'<%= red %>'${0}$': No write permission to <%= bold %>'${ZIM_HOME}$'<%= normalred %>. Will not try to '${1}$'.<%= normal %>'
+    return 1
+  fi
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
