@@ -17,7 +17,7 @@
 What is Zim?
 ------------
 Zim is a Zsh configuration framework that bundles a [plugin manager](#usage),
-useful [modules], and a wide variety of [themes], without compromising on [speed].
+useful [modules] and a wide variety of [themes], without compromising on [speed].
 
 Check how Zim compares to other frameworks and plugin managers:
 
@@ -57,7 +57,7 @@ This will install a predefined set of modules and a theme for you.
   ```
 
 Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
-to tweak your [`~/.zshrc`](#set-up-zshrc) file, and to also check the available
+to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
 [modules] and [themes] you can add to your [`~/.zimrc`](#create-zimrc).
 
 ### Manual installation
@@ -81,10 +81,10 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    ```zsh
    zstyle ':zim:zmodule' use 'degit'
    ````
-   This is optional, and only required if you don't have `git` installed (yes,
-   Zim works even without `git`!)
+   This is optional and only required if you don't have `git` installed (yes,
+   zimfw works even without `git`!)
 
-2. To set where the `zimfw` plugin manager configuration file will be located:
+2. To set where the zimfw plugin manager configuration file will be located:
    ```zsh
    ZIM_CONFIG_FILE=~/.config/zsh/zimrc
    ```
@@ -93,16 +93,15 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
    `${ZDOTDIR}/.zimrc`.
 
-3. To set where the directory used by Zim will be located:
+3. To set the directory where the zimfw plugin manager will keep necessary files:
    ```zsh
    ZIM_HOME=~/.zim
    ```
    The value of `ZIM_HOME` can be any directory your user has write access to.
    You can even set it to a cache directory like `${XDG_CACHE_HOME}/zim` or
-   `~/.cache/zim` if you also include the step below, that automatically
-   downloads the `zimfw` plugin manager.
+   `~/.cache/zim`.
 
-4. To automatically download the `zimfw` plugin manager if missing:
+4. To automatically download the zimfw plugin manager if missing:
    ```zsh
    # Download zimfw plugin manager if missing.
    if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
@@ -118,20 +117,25 @@ Add the lines below to your `~/.zshrc` file, in the following order:
          https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
    fi
    ```
-   This is optional. If you choose to not include this step, you should manually
-   download the `zimfw.zsh` script once and keep it at `${ZIM_HOME}`.
+   This is optional. Alternatively, you can download the `zimfw.zsh` script
+   anywhere your user has write access to: just replace the occurrences of
+   `${ZIM_HOME}/zimfw.zsh` by the preferred path, like `/usr/local/bin/zimfw.zsh`
+   for example. If you choose to not include this step, you should manually
+   download the `zimfw.zsh` script once and keep it at the preferred path.
 
 5. To automatically install missing modules and update the static initialization
    script if missing or outdated:
    ```zsh
-   # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
+   # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
    if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
      source ${ZIM_HOME}/zimfw.zsh init -q
    fi
    ```
    This step is optional, but highly recommended. If you choose to not include
-   it, you must remember to manually run `zimfw install` every time after you
-   update your [`~/.zimrc`](#create-zimrc) file.
+   it, you must remember to manually run `zimfw install` every time you update
+   your [`~/.zimrc`](#create-zimrc) file. If you have chosen to keep the
+   `zimfw.zsh` in a different path as mentioned in the previous step, replace
+   `${ZIM_HOME}/zimfw.zsh` by the chosen path.
 
 6. To source the static script, that will initialize your modules:
    ```zsh
@@ -141,9 +145,9 @@ Add the lines below to your `~/.zshrc` file, in the following order:
 
 #### Create `~/.zimrc`
 
-This file configures the `zimfw` plugin manager. It's referred to as `~/.zimrc`
+This file configures the zimfw plugin manager. It's referred to as `~/.zimrc`
 in the documentation for the sake of simplicity, but the actual location of the
-file is defined following these rules:
+file is defined by the following rules:
 
 1. You can define the full path and name of the file with a `ZIM_CONFIG_FILE`
    environment variable. For example:
@@ -192,15 +196,15 @@ define the modules you want to use.
 
 Usage
 -----
-The `zimfw` plugin manager installs your modules at `${ZIM_HOME}/modules`, and
+The zimfw plugin manager installs your modules at `${ZIM_HOME}/modules` and
 builds a static script at `${ZIM_HOME}/init.zsh` that will initialize them. Your
 modules are defined in your `~/.zimrc` file.
 
 The `~/.zimrc` file must contain `zmodule` calls to define the modules to be
-initialized. The initialization will be done in the same order it's defined.
+initialized. The modules will be initialized in the same order they're defined.
 
-The `~/.zimrc` file is not sourced during Zsh startup, and it's only used to
-configure the `zimfw` plugin manager.
+The `~/.zimrc` file is not sourced during Zsh startup and it's only used to
+configure the zimfw plugin manager.
 
 Check [examples of `~/.zimrc` files](#create-zimrc) above.
 
@@ -214,7 +218,7 @@ Below are some usage examples:
   * A module at an absolute path, that is already installed:
     `zmodule /usr/local/share/zsh-autosuggestions`
   * A module with a custom fpath: `zmodule zsh-users/zsh-completions --fpath src`
-  * A module with a custom initialization file, and with git submodules disabled:
+  * A module with a custom initialization file and with git submodules disabled:
     `zmodule spaceship-prompt/spaceship-prompt --source spaceship.zsh --no-submodules` or
     `zmodule spaceship-prompt/spaceship-prompt --name spaceship --no-submodules`
   * A module with two custom initialization files:
@@ -325,17 +329,17 @@ The Zim plugin manager:
   * Added new modules to `~/.zimrc`? Run `zimfw install`.
   * Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
   * Want to update your modules to their latest revisions? Run `zimfw update`.
-  * Want to upgrade `zimfw` to its latest version? Run `zimfw upgrade`.
-  * For more information about the `zimfw` plugin manager, run `zimfw help`.
+  * Want to upgrade zimfw to its latest version? Run `zimfw upgrade`.
+  * For more information about the zimfw plugin manager, run `zimfw help`.
 
 Settings
 --------
-Customize path of the directory used by Zim with the `ZIM_HOME` environment
+Set the path of the directory used by zimfw with the `ZIM_HOME` environment
 variable:
 
     ZIM_HOME=~/.zim
 
-By default, the `zimfw` plugin manager configuration file must be at `~/.zimrc`,
+By default, the zimfw plugin manager configuration file must be at `~/.zimrc`,
 if the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
 `${ZDOTDIR}/.zimrc`. You can customize its full path and name with the
 `ZIM_CONFIG_FILE` environment variable:
@@ -348,8 +352,10 @@ lighter module installations, you can set degit as the default tool with:
 
     zstyle ':zim:zmodule' use 'degit'
 
-By default, `zimfw` will check if it has a new version available every 30 days.
-This can be disabled with:
+By default, zimfw will check if it has a new version available every 30 days. If
+the `zimfw.zsh` file cannot be upgraded, either because your user does not have
+write access to it, or because it was sourced from a symlink, then this will be
+disabled. This can be manually disabled with:
 
     zstyle ':zim' disable-version-check yes
 

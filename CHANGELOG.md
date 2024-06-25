@@ -7,15 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.14.0] - 2024-06-25
+
 ### Changed
 
+- Don't expand `${HOME}` in the init.zsh script. (See
+  [#509](https://github.com/zimfw/zimfw/issues/509))
 - Don't allow calling `zmodule` from the command line. Let it fail with "command
   not found" instead, as it's intended to be used only in the .zimrc script.
 - `ZIM_HOME` must be defined before sourcing zimfw.zsh. All documentation was
-  already doing so, hence not considering this is a breaking change.
+  already doing so, hence not considering this as a breaking change.
 - Allow zimfw.zsh to exist anywhere else, not only inside `ZIM_HOME`. This
   enables installing the zimfw.zsh script independently with a package manager.
 - Don't try to upgrade if sourced zimfw.zsh is not in a writable path.
+- Don't try actions that write to `ZIM_HOME` if user has no write permissions
+  there.
 
 ### Fixed
 
@@ -391,7 +399,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.13.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/zimfw/zimfw/compare/v1.13.1...v1.14.0
 [1.13.1]: https://github.com/zimfw/zimfw/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/zimfw/zimfw/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/zimfw/zimfw/compare/v1.12.0...v1.12.1
