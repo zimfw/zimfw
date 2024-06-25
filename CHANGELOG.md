@@ -15,8 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already doing so, hence not considering this is a breaking change.
 - Allow zimfw.zsh to exist anywhere else, not only inside `ZIM_HOME`. This
   enables installing the zimfw.zsh script independently with a package manager.
-- Don't try to upgrade if sourced zimfw.zsh is not in a writable path or is a
-  symlink.
+- Don't try to upgrade if sourced zimfw.zsh is not in a writable path.
 
 ### Fixed
 

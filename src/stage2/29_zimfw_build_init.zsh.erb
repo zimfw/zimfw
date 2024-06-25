@@ -5,7 +5,7 @@ _zimfw_build_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -R 'if (( ${+ZIM_HOME} )) zimfw() { source '${${(qqq)__ZIMFW_PATH}/${HOME}/\${HOME}}'/zimfw.zsh "${@}" }'
+    print -R 'if (( ${+ZIM_HOME} )) zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})

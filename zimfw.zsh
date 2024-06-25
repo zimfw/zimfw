@@ -35,7 +35,7 @@ if (( ! ${+ZIM_HOME} )); then
   return 1
 fi
 # Define zimfw location
-typeset -g __ZIMFW_PATH=${0:h}
+typeset -g __ZIMFW_FILE=${0}
 
 _zimfw_print() {
   if (( _zprintlevel > 0 )) print "${@}"
@@ -61,7 +61,7 @@ _zimfw_build_init() {
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
-    print -R 'if (( ${+ZIM_HOME} )) zimfw() { source '${${(qqq)__ZIMFW_PATH}/${HOME}/\${HOME}}'/zimfw.zsh "${@}" }'
+    print -R 'if (( ${+ZIM_HOME} )) zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-21 20:42:45 UTC, previous commit is eb37844)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-25 14:06:08 UTC, previous commit is 0785d87)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -482,13 +482,9 @@ _zimfw_uninstall() {
 }
 
 _zimfw_upgrade() {
-  if [[ ! -w ${__ZIMFW_PATH} ]]; then
-    print -u2 -R $'\E[31mNo write permission to \E[1m'${__ZIMFW_PATH}$'\E[0;31m. Will not try to upgrade.\E[0m'
-    return 1
-  fi
-  local -r ztarget=${__ZIMFW_PATH}/zimfw.zsh zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
-  if [[ -L ${ztarget} || ! -f ${ztarget} ]]; then
-    print -u2 -R $'\E[31m\E[1m'${ztarget}$'\E[0;31m is a symlink or not a regular file. Will not try to upgrade.\E[0m'
+  local -r ztarget=${__ZIMFW_FILE:A} zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
+  if [[ ! -w ${ztarget:h} ]]; then
+    print -u2 -R $'\E[31mNo write permission to \E[1m'${ztarget:h}$'\E[0;31m. Will not try to upgrade.\E[0m'
     return 1
   fi
   {
@@ -946,7 +942,7 @@ Options:
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
+      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}

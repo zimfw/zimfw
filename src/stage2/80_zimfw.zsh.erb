@@ -48,7 +48,7 @@ Options:
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_PATH} && ! -L ${__ZIMFW_PATH}/zimfw.zsh && -f ${__ZIMFW_PATH}/zimfw.zsh ]]
+      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
