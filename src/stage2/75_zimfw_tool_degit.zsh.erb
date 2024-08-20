@@ -4,7 +4,7 @@ _zimfw_download_tarball() {
     readonly REPO=${match[4]%.git}
   fi
   if [[ ${HOST} != github.com || -z ${REPO} ]]; then
-    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${_zaction}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option <%= bold %>--use git<%= normalred %> to use git instead.'
+    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${ACTION}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option <%= bold %>--use git<%= normalred %> to use git instead.'
     return 1
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
@@ -12,14 +12,14 @@ _zimfw_download_tarball() {
     if [[ -r ${INFO_TARGET} ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
       if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${ACTION}."
         return 1
       fi
       # Previous REV is in line 2, reserved for future use.
       readonly INFO_HEADER=${INFO[3]}
     fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
-    if [[ ${_zaction} == check ]]; then
+    if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
       if (( ${+commands[curl]} )); then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
@@ -57,7 +57,7 @@ _zimfw_download_tarball() {
       _zimfw_print_error "Error downloading ${TARBALL_URL}, no ETag header found in response"
       return 1
     fi
-    if [[ ${_zaction} == check ]]; then
+    if [[ ${ACTION} == check ]]; then
       command touch ${TARBALL_TARGET} # Update available
     else
       if ! print -lR "${URL}" "${REV}" "If-None-Match: ${ETAG}" >! ${INFO_TARGET} 2>/dev/null; then
@@ -86,10 +86,19 @@ _zimfw_untar_tarball() {
 
 _zimfw_tool_degit() {
   # This runs in a subshell
-  readonly -i SUBMODULES=${5}
-  readonly DIR=${1} URL=${2} REV=${4} ONPULL=${6} TEMP=.zdegit_${sysparams[pid]}
+  readonly -i SUBMODULES=${6}
+  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}
   readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
-  case ${_zaction} in
+  case ${ACTION} in
+    pre)
+      if [[ -e ${DIR} ]]; then
+        if [[ ! -r ${INFO_TARGET} ]]; then
+          _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error.'
+          return 1
+        fi
+      fi
+      return 0
+      ;;
     install)
       {
         _zimfw_create_dir ${DIR} && _zimfw_download_tarball && _zimfw_untar_tarball ${DIR} && _zimfw_pull_print_okay Installed || return 1
@@ -101,14 +110,10 @@ _zimfw_tool_degit() {
       }
       ;;
     check|update)
-      if [[ ! -r ${INFO_TARGET} ]]; then
-        _zimfw_print_warn $'Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option <%= bold %>-z<%= normalyellow %>|<%= bold %>--frozen<%= normalyellow %> to disable this warning.'
-        return 0
-      fi
       readonly DIR_NEW=${DIR}${TEMP}
       {
         _zimfw_download_tarball || return 1
-        if [[ ${_zaction} == check ]]; then
+        if [[ ${ACTION} == check ]]; then
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_print_okay 'Update available'
             return 4

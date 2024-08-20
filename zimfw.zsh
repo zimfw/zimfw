@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-06-25 18:20:18 UTC, previous commit is 6166fce)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-08-20 13:01:29 UTC, previous commit is 7f3491b)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -590,7 +590,7 @@ _zimfw_download_tarball() {
     readonly REPO=${match[4]%.git}
   fi
   if [[ ${HOST} != github.com || -z ${REPO} ]]; then
-    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${_zaction}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option \E[1m--use git\E[0;31m to use git instead.'
+    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${ACTION}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option \E[1m--use git\E[0;31m to use git instead.'
     return 1
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
@@ -598,14 +598,14 @@ _zimfw_download_tarball() {
     if [[ -r ${INFO_TARGET} ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
       if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${_zaction}."
+        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${ACTION}."
         return 1
       fi
       # Previous REV is in line 2, reserved for future use.
       readonly INFO_HEADER=${INFO[3]}
     fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
-    if [[ ${_zaction} == check ]]; then
+    if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
       if (( ${+commands[curl]} )); then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
@@ -643,7 +643,7 @@ _zimfw_download_tarball() {
       _zimfw_print_error "Error downloading ${TARBALL_URL}, no ETag header found in response"
       return 1
     fi
-    if [[ ${_zaction} == check ]]; then
+    if [[ ${ACTION} == check ]]; then
       command touch ${TARBALL_TARGET} # Update available
     else
       if ! print -lR "${URL}" "${REV}" "If-None-Match: ${ETAG}" >! ${INFO_TARGET} 2>/dev/null; then
@@ -672,10 +672,19 @@ _zimfw_untar_tarball() {
 
 _zimfw_tool_degit() {
   # This runs in a subshell
-  readonly -i SUBMODULES=${5}
-  readonly DIR=${1} URL=${2} REV=${4} ONPULL=${6} TEMP=.zdegit_${sysparams[pid]}
+  readonly -i SUBMODULES=${6}
+  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}
   readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
-  case ${_zaction} in
+  case ${ACTION} in
+    pre)
+      if [[ -e ${DIR} ]]; then
+        if [[ ! -r ${INFO_TARGET} ]]; then
+          _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          return 1
+        fi
+      fi
+      return 0
+      ;;
     install)
       {
         _zimfw_create_dir ${DIR} && _zimfw_download_tarball && _zimfw_untar_tarball ${DIR} && _zimfw_pull_print_okay Installed || return 1
@@ -687,14 +696,10 @@ _zimfw_tool_degit() {
       }
       ;;
     check|update)
-      if [[ ! -r ${INFO_TARGET} ]]; then
-        _zimfw_print_warn $'Module was not installed using zimfw\'s degit. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.'
-        return 0
-      fi
       readonly DIR_NEW=${DIR}${TEMP}
       {
         _zimfw_download_tarball || return 1
-        if [[ ${_zaction} == check ]]; then
+        if [[ ${ACTION} == check ]]; then
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_print_okay 'Update available'
             return 4
@@ -732,10 +737,22 @@ _zimfw_tool_degit() {
 
 _zimfw_tool_git() {
   # This runs in a subshell
-  readonly -i SUBMODULES=${5}
-  readonly  DIR=${1} URL=${2} TYPE=${3} ONPULL=${6}
-  REV=${4}
-  case ${_zaction} in
+  readonly -i SUBMODULES=${6}
+  readonly ACTION=${1} DIR=${2} URL=${3} TYPE=${4} ONPULL=${7}
+  REV=${5}
+  case ${ACTION} in
+    pre)
+      if [[ -e ${DIR} ]]; then
+        if [[ ! -r ${DIR}/.git ]]; then
+          _zimfw_print_error $'Module was not installed using git. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          return 1
+        fi
+        if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
+          _zimfw_print_error 'The git URL does not match. Expected '${URL}.$' Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          return 1
+        fi
+      fi
+      ;;
     install)
       if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
         _zimfw_pull_print_okay Installed
@@ -745,14 +762,6 @@ _zimfw_tool_git() {
       fi
       ;;
     check|update)
-      if [[ ! -r ${DIR}/.git ]]; then
-        _zimfw_print_warn 'Module was not installed using git. Will not try to '${_zaction}$'. Use zmodule option \E[1m-z\E[0;33m|\E[1m--frozen\E[0;33m to disable this warning.'
-        return 0
-      fi
-      if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
-        _zimfw_print_error "The git URL does not match. Expected ${URL}. Will not try to ${_zaction}."
-        return 1
-      fi
       if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then
         _zimfw_print_error 'Error during git fetch' ${ERR}
         return 1
@@ -772,7 +781,7 @@ _zimfw_tool_git() {
           fi
         fi
         TO_REV=${REV}@{u}
-        if [[ ${_zaction} == check ]]; then
+        if [[ ${ACTION} == check ]]; then
           readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${TO_REV} -- 2>/dev/null)
           if (( BEHIND )); then
             _zimfw_print_okay "Update available [behind ${BEHIND}]"
@@ -784,7 +793,7 @@ _zimfw_tool_git() {
         fi
       else
         if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
-          if [[ ${_zaction} == check ]]; then
+          if [[ ${ACTION} == check ]]; then
             _zimfw_print_okay 'Already up to date' 1
             return 0
           else
@@ -792,7 +801,7 @@ _zimfw_tool_git() {
             return ${?}
           fi
         fi
-        if [[ ${_zaction} == check ]]; then
+        if [[ ${ACTION} == check ]]; then
           _zimfw_print_okay 'Update available'
           return 4
         fi
@@ -826,8 +835,9 @@ _zimfw_tool_git() {
 
 _zimfw_tool_mkdir() {
   # This runs in a subshell
-  readonly -i SUBMODULES=${5}
-  readonly DIR=${1} TYPE=${3} REV=${4} ONPULL=${6}
+  readonly -i SUBMODULES=${6}
+  readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
+  if [[ ${ACTION} == pre ]] return 0
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn $'The zmodule option \E[1m-'${TYPE[1]}$'\E[0;33m|\E[1m--'${TYPE}$'\E[0;33m has no effect when using the mkdir tool'
   fi
@@ -849,6 +859,13 @@ _zimfw_run_tool() {
     _zimfw_print_okay 'Skipping frozen module' 1
     return 0
   fi
+  local -r ztool=${_ztools[${_zname}]}
+  if [[ ${ztool} != (degit|git|mkdir) ]]; then
+    _zimfw_print_error "Unknown tool ${ztool}"
+    return 1
+  fi
+  set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+  _zimfw_tool_${ztool} pre "${@}" || return 1
   case ${_zaction} in
     install)
       if [[ -e ${_zdirs[${_zname}]} ]]; then
@@ -873,16 +890,7 @@ _zimfw_run_tool() {
       return 1
       ;;
   esac
-  local -r ztool=${_ztools[${_zname}]}
-  case ${ztool} in
-    degit|git|mkdir)
-      _zimfw_tool_${ztool} "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
-      ;;
-    *)
-      _zimfw_print_error "Unknown tool ${ztool}"
-      return 1
-      ;;
-  esac
+  _zimfw_tool_${ztool} ${_zaction} "${@}"
 }
 
 _zimfw_run_tool_action() {
@@ -894,7 +902,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.14.0' zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zversion='1.15.0-SNAPSHOT' zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.

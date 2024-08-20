@@ -8,6 +8,13 @@ _zimfw_run_tool() {
     _zimfw_print_okay 'Skipping frozen module' 1
     return 0
   fi
+  local -r ztool=${_ztools[${_zname}]}
+  if [[ ${ztool} != (degit|git|mkdir) ]]; then
+    _zimfw_print_error "Unknown tool ${ztool}"
+    return 1
+  fi
+  set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+  _zimfw_tool_${ztool} pre "${@}" || return 1
   case ${_zaction} in
     install)
       if [[ -e ${_zdirs[${_zname}]} ]]; then
@@ -32,14 +39,5 @@ _zimfw_run_tool() {
       return 1
       ;;
   esac
-  local -r ztool=${_ztools[${_zname}]}
-  case ${ztool} in
-    degit|git|mkdir)
-      _zimfw_tool_${ztool} "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
-      ;;
-    *)
-      _zimfw_print_error "Unknown tool ${ztool}"
-      return 1
-      ;;
-  esac
+  _zimfw_tool_${ztool} ${_zaction} "${@}"
 }
