@@ -8,15 +8,19 @@ _zimfw_run_list() {
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
-      print -nR "  From: ${_zurls[${zname}]}, "
-      if [[ -z ${_zrevs[${zname}]} ]]; then
-        print -n 'default branch'
+      if [[ ${_ztools[${zname}]} == mkdir ]]; then
+        print '  From: mkdir'
       else
-        print -nR "${_ztypes[${zname}]} ${_zrevs[${zname}]}"
+        print -nR "  From: ${_zurls[${zname}]}, "
+        if [[ -z ${_zrevs[${zname}]} ]]; then
+          print -n 'default branch'
+        else
+          print -nR "${_ztypes[${zname}]} ${_zrevs[${zname}]}"
+        fi
+        print -nR ", using ${_ztools[${zname}]}"
+        if (( ! _zsubmodules[${zname}] )) print -n ', no git submodules'
+        print
       fi
-      print -nR ", using ${_ztools[${zname}]}"
-      if (( ! _zsubmodules[${zname}] )) print -n ', no git submodules'
-      print
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
     # Match the current module dir prefix from _zroot_dirs
