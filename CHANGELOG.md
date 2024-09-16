@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Changed
+
+- Ask before uninstalling each unused module, instead of asking just once for
+  all.
 
 ## [1.14.0] - 2024-06-25
 

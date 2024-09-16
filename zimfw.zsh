@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-09-16 23:05:08 UTC, previous commit is ded640e)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-09-16 23:27:18 UTC, previous commit is 3fe3ba2)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -470,15 +470,21 @@ _zimfw_info() {
 }
 
 _zimfw_uninstall() {
-  local zopt
-  if (( _zprintlevel > 0 )) zopt=-v
-  if (( ${#_zunused_dirs} )); then
-    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunused_dirs} module(s) listed above [y/N]? "; then
-      _zimfw_print
-      command rm -rf ${zopt} ${_zunused_dirs} || return 1
-    fi
+  if (( _zprintlevel <= 0 )); then
+    command rm -rf ${_zunused_dirs} || return 1
+  else
+    local zunused_dir
+    print $'Found \E[1m'${#_zunused_dirs}$'\E[0m unused module(s).'
+    for zunused_dir in ${_zunused_dirs}; do
+      if read -q "?Uninstall ${zunused_dir} [y/N]? "; then
+        print
+        command rm -rfv ${zunused_dir} || return 1
+      else
+        print
+      fi
+    done
+    print 'Done with uninstall.'
   fi
-  _zimfw_print 'Done with uninstall.'
 }
 
 _zimfw_upgrade() {

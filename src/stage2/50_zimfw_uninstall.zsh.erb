@@ -1,11 +1,17 @@
 _zimfw_uninstall() {
-  local zopt
-  if (( _zprintlevel > 0 )) zopt=-v
-  if (( ${#_zunused_dirs} )); then
-    if (( _zprintlevel <= 0 )) || read -q "?Uninstall ${#_zunused_dirs} module(s) listed above [y/N]? "; then
-      _zimfw_print
-      command rm -rf ${zopt} ${_zunused_dirs} || return 1
-    fi
+  if (( _zprintlevel <= 0 )); then
+    command rm -rf ${_zunused_dirs} || return 1
+  else
+    local zunused_dir
+    print $'Found <%= bold %>'${#_zunused_dirs}$'<%= normal %> unused module(s).'
+    for zunused_dir in ${_zunused_dirs}; do
+      if read -q "?Uninstall ${zunused_dir} [y/N]? "; then
+        print
+        command rm -rfv ${zunused_dir} || return 1
+      else
+        print
+      fi
+    done
+    print 'Done with uninstall.'
   fi
-  _zimfw_print 'Done with uninstall.'
 }
