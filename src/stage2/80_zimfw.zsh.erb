@@ -67,10 +67,10 @@ Options:
       _zimfw_compile
       ;;
     check-dumpfile) _zimfw_check_dumpfile ;;
-    clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
-    clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
+    clean) _zimfw_source_zimrc 0 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_source_zimrc 0 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc 2 && _zimfw_compile ;;
+    compile) _zimfw_source_zimrc 0 && _zimfw_compile ;;
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
@@ -96,12 +96,12 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     check-version) _zimfw_check_version 1 ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_compile
+      _zimfw_source_zimrc 0 && _zimfw_compile
       ;;
     version) print -R ${_zversion} ;;
     *)

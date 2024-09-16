@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-08-20 13:01:29 UTC, previous commit is 7f3491b)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-09-16 23:05:08 UTC, previous commit is ded640e)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -599,15 +599,9 @@ _zimfw_download_tarball() {
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
   {
-    if [[ -r ${INFO_TARGET} ]]; then
-      readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
-      if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${ACTION}."
-        return 1
-      fi
-      # Previous REV is in line 2, reserved for future use.
-      readonly INFO_HEADER=${INFO[3]}
-    fi
+    readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+    # Previous REV is in line 2, reserved for future use.
+    readonly INFO_HEADER=${INFO[3]}
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
@@ -684,6 +678,11 @@ _zimfw_tool_degit() {
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          return 1
+        fi
+        readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+        if [[ ${URL} != ${INFO[1]} ]]; then
+          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}$'. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
           return 1
         fi
       fi
@@ -973,10 +972,10 @@ Options:
       _zimfw_compile
       ;;
     check-dumpfile) _zimfw_check_dumpfile ;;
-    clean) _zimfw_source_zimrc 2 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
-    clean-compiled) _zimfw_source_zimrc 2 && _zimfw_clean_compiled ;;
+    clean) _zimfw_source_zimrc 0 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
+    clean-compiled) _zimfw_source_zimrc 0 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
-    compile) _zimfw_source_zimrc 2 && _zimfw_compile ;;
+    compile) _zimfw_source_zimrc 0 && _zimfw_compile ;;
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
@@ -1002,12 +1001,12 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc 2 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     check-version) _zimfw_check_version 1 ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_compile
+      _zimfw_source_zimrc 0 && _zimfw_compile
       ;;
     version) print -R ${_zversion} ;;
     *)

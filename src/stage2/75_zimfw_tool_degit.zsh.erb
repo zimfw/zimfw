@@ -9,15 +9,9 @@ _zimfw_download_tarball() {
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
   {
-    if [[ -r ${INFO_TARGET} ]]; then
-      readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
-      if [[ ${URL} != ${INFO[1]} ]]; then
-        _zimfw_print_error "The zimfw degit URL does not match. Expected ${URL}. Will not try to ${ACTION}."
-        return 1
-      fi
-      # Previous REV is in line 2, reserved for future use.
-      readonly INFO_HEADER=${INFO[3]}
-    fi
+    readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+    # Previous REV is in line 2, reserved for future use.
+    readonly INFO_HEADER=${INFO[3]}
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
@@ -94,6 +88,11 @@ _zimfw_tool_degit() {
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error.'
+          return 1
+        fi
+        readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+        if [[ ${URL} != ${INFO[1]} ]]; then
+          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}$'. Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error.'
           return 1
         fi
       fi
