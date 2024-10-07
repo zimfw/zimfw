@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `reinstall` action, that removes and then installs again the modules that
+  failed any of the checks:
+  - module was installed with the defined tool,
+  - module URL matches the defined one.
+
 ### Changed
 
 - Ask before uninstalling each unused module, instead of asking just once for

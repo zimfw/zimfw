@@ -1,6 +1,7 @@
 _zimfw_run_tool_action() {
-  local -r _zaction=${1}
+  local -i zmaxprocs=0
+  if [[ ${1} == reinstall ]] zmaxprocs=1
   _zimfw_source_zimrc 1 || return 1
-  zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  zargs -n 2 -P ${zmaxprocs} -- "${_znames[@]}" -- _zimfw_run_tool ${1}
   return 0
 }

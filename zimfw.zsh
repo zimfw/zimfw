@@ -25,7 +25,7 @@
 # SOFTWARE.
 
 autoload -Uz is-at-least && if ! is-at-least 5.2; then
-  print -u2 -R $'\E[31m'${0}$': Error starting zimfw. You\'re using Zsh version \E[1m'${ZSH_VERSION}$'\E[0;31m and versions < \E[1m5.2\E[0;31m are not supported. Upgrade your Zsh.\E[0m'
+  print -u2 -R $'\E[31m'${0}$': Error starting zimfw. You\'re using Zsh version \E[1m'${ZSH_VERSION}$'\E[0;31m and versions < \E[1m5.2\E[0;31m are not supported. Update your Zsh.\E[0m'
   return 1
 fi
 autoload -Uz zargs
@@ -462,7 +462,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-09-16 23:27:18 UTC, previous commit is 3fe3ba2)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-07 13:45:47 UTC, previous commit is 869a8f5)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -680,15 +680,17 @@ _zimfw_tool_degit() {
   readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}
   readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
   case ${ACTION} in
-    pre)
+    pre|prereinstall)
+      local premsg
+      if [[ ${ACTION} == pre ]] premsg=$' Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error or run \E[1mzimfw reinstall\E[0;31m to reinstall.'
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
-          _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
           return 1
         fi
         readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
         if [[ ${URL} != ${INFO[1]} ]]; then
-          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}$'. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
       fi
@@ -750,14 +752,16 @@ _zimfw_tool_git() {
   readonly ACTION=${1} DIR=${2} URL=${3} TYPE=${4} ONPULL=${7}
   REV=${5}
   case ${ACTION} in
-    pre)
+    pre|prereinstall)
+      local premsg
+      if [[ ${ACTION} == pre ]] premsg=$' Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error or run \E[1mzimfw reinstall\E[0;31m to reinstall.'
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${DIR}/.git ]]; then
-          _zimfw_print_error $'Module was not installed using git. Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          _zimfw_print_error 'Module was not installed using git.'${premsg}
           return 1
         fi
         if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
-          _zimfw_print_error 'The git URL does not match. Expected '${URL}.$' Use zmodule option \E[1m-z\E[0;31m|\E[1m--frozen\E[0;31m to disable this error.'
+          _zimfw_print_error 'The git URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
       fi
@@ -846,7 +850,7 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == pre ]] return 0
+  if [[ ${ACTION} == (pre|reinstall) ]] return 0
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn $'The zmodule option \E[1m-'${TYPE[1]}$'\E[0;33m|\E[1m--'${TYPE}$'\E[0;33m has no effect when using the mkdir tool'
   fi
@@ -859,7 +863,8 @@ _zimfw_tool_mkdir() {
 }
 
 _zimfw_run_tool() {
-  local -r _zname=${1}
+  local zaction=${1}
+  local -r _zname=${2}
   if [[ -z ${_zurls[${_zname}]} ]]; then
     _zimfw_print_okay 'Skipping external module' 1
     return 0
@@ -874,8 +879,26 @@ _zimfw_run_tool() {
     return 1
   fi
   set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
-  _zimfw_tool_${ztool} pre "${@}" || return 1
-  case ${_zaction} in
+  if [[ ${zaction} == reinstall ]]; then
+    _zimfw_tool_${ztool} prereinstall "${@}" && return 0
+    if (( _zprintlevel <= 0 )); then
+      command rm -rf ${_zdirs[${_zname}]} || return 1
+    else
+      local zopt
+      if (( _zprintlevel > 1 )) zopt=-v
+      if read -q "?Reinstall ${_zname} [y/N]? "; then
+        print
+        command rm -rf ${zopt} ${_zdirs[${_zname}]} || return 1
+      else
+        print
+        return 0
+      fi
+    fi
+    zaction=install
+  else
+    _zimfw_tool_${ztool} pre "${@}" || return 1
+  fi
+  case ${zaction} in
     install)
       if [[ -e ${_zdirs[${_zname}]} ]]; then
         _zimfw_print_okay 'Skipping already installed module' 1
@@ -888,24 +911,25 @@ _zimfw_run_tool() {
         _zimfw_print_error $'Not installed. Run \E[1mzimfw install\E[0;31m to install.'
         return 1
       fi
-      if [[ ${_zaction} == check ]]; then
+      if [[ ${zaction} == check ]]; then
         if (( _zprintlevel > 1 )) print -nR $'\E[2K\rChecking '${_zname}' ...'
       else
         _zimfw_print -nR $'\E[2K\rUpdating '${_zname}' ...'
       fi
       ;;
     *)
-      _zimfw_print_error "Unknown action ${_zaction}"
+      _zimfw_print_error "Unknown action ${zaction}"
       return 1
       ;;
   esac
-  _zimfw_tool_${ztool} ${_zaction} "${@}"
+  _zimfw_tool_${ztool} ${zaction} "${@}"
 }
 
 _zimfw_run_tool_action() {
-  local -r _zaction=${1}
+  local -i zmaxprocs=0
+  if [[ ${1} == reinstall ]] zmaxprocs=1
   _zimfw_source_zimrc 1 || return 1
-  zargs -n 1 -P 0 -- "${_znames[@]}" -- _zimfw_run_tool
+  zargs -n 2 -P ${zmaxprocs} -- "${_znames[@]}" -- _zimfw_run_tool ${1}
   return 0
 }
 
@@ -927,6 +951,9 @@ Actions:
   \E[1minit\E[0m            Same as \E[1minstall\E[0m, but with output tailored to be used at terminal startup.
   \E[1minstall\E[0m         Install new modules. Also does \E[1mbuild\E[0m, \E[1mcompile\E[0m. Use \E[1m-v\E[0m to also see their
                   output, any on-pull output and skipped modules.
+  \E[1mreinstall\E[0m       Reinstall modules that failed check. Prompts for confirmation. Use \E[1m-q\E[0m for
+                  quiet reinstall. Also does \E[1mbuild\E[0m, \E[1mcompile\E[0m. Use \E[1m-v\E[0m to also see their output,
+                  any on-pull output and skipped modules.
   \E[1muninstall\E[0m       Delete unused modules. Prompts for confirmation. Use \E[1m-q\E[0m for quiet uninstall.
   \E[1mcheck\E[0m           Check if updates for current modules are available. Use \E[1m-v\E[0m to also see
                   skipped and up to date modules.
@@ -966,7 +993,7 @@ Options:
     _zimfw_check_version ${zversion_check_force} 1
   fi
 
-  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|check-version) ]]; then
+  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|reinstall|check-version) ]]; then
     print -u2 -R $'\E[31m'${0}$': No write permission to \E[1m'${ZIM_HOME}$'\E[0;31m. Will not try to '${1}$'.\E[0m'
     return 1
   fi
@@ -1001,7 +1028,7 @@ Options:
       _zimfw_print 'Done with install.' # Only printed in verbose mode
       _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
       ;;
-    install|update)
+    install|update|reinstall)
       _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -R "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))

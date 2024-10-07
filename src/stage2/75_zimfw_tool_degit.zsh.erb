@@ -84,15 +84,17 @@ _zimfw_tool_degit() {
   readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}
   readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
   case ${ACTION} in
-    pre)
+    pre|prereinstall)
+      local premsg
+      if [[ ${ACTION} == pre ]] premsg=$' Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error or run <%= bold %>zimfw reinstall<%= normalred %> to reinstall.'
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
-          _zimfw_print_error $'Module was not installed using zimfw\'s degit. Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error.'
+          _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
           return 1
         fi
         readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
         if [[ ${URL} != ${INFO[1]} ]]; then
-          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}$'. Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error.'
+          _zimfw_print_error 'The zimfw degit URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
       fi

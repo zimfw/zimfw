@@ -1,5 +1,5 @@
 autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
-  print -u2 -R $'<%= red %>'${0}$': Error starting zimfw. You\'re using Zsh version <%= bold %>'${ZSH_VERSION}$'<%= normalred %> and versions < <%= bold %><%= min_zsh_version %><%= normalred %> are not supported. Upgrade your Zsh.<%= normal %>'
+  print -u2 -R $'<%= red %>'${0}$': Error starting zimfw. You\'re using Zsh version <%= bold %>'${ZSH_VERSION}$'<%= normalred %> and versions < <%= bold %><%= min_zsh_version %><%= normalred %> are not supported. Update your Zsh.<%= normal %>'
   return 1
 fi
 autoload -Uz zargs

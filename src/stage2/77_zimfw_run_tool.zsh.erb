@@ -1,5 +1,6 @@
 _zimfw_run_tool() {
-  local -r _zname=${1}
+  local zaction=${1}
+  local -r _zname=${2}
   if [[ -z ${_zurls[${_zname}]} ]]; then
     _zimfw_print_okay 'Skipping external module' 1
     return 0
@@ -14,8 +15,26 @@ _zimfw_run_tool() {
     return 1
   fi
   set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
-  _zimfw_tool_${ztool} pre "${@}" || return 1
-  case ${_zaction} in
+  if [[ ${zaction} == reinstall ]]; then
+    _zimfw_tool_${ztool} prereinstall "${@}" && return 0
+    if (( _zprintlevel <= 0 )); then
+      command rm -rf ${_zdirs[${_zname}]} || return 1
+    else
+      local zopt
+      if (( _zprintlevel > 1 )) zopt=-v
+      if read -q "?Reinstall ${_zname} [y/N]? "; then
+        print
+        command rm -rf ${zopt} ${_zdirs[${_zname}]} || return 1
+      else
+        print
+        return 0
+      fi
+    fi
+    zaction=install
+  else
+    _zimfw_tool_${ztool} pre "${@}" || return 1
+  fi
+  case ${zaction} in
     install)
       if [[ -e ${_zdirs[${_zname}]} ]]; then
         _zimfw_print_okay 'Skipping already installed module' 1
@@ -28,16 +47,16 @@ _zimfw_run_tool() {
         _zimfw_print_error $'Not installed. Run <%= bold %>zimfw install<%= normalred %> to install.'
         return 1
       fi
-      if [[ ${_zaction} == check ]]; then
+      if [[ ${zaction} == check ]]; then
         if (( _zprintlevel > 1 )) print -nR $'<%= clear_line %>Checking '${_zname}'<%= ellipsis %>'
       else
         _zimfw_print -nR $'<%= clear_line %>Updating '${_zname}'<%= ellipsis %>'
       fi
       ;;
     *)
-      _zimfw_print_error "Unknown action ${_zaction}"
+      _zimfw_print_error "Unknown action ${zaction}"
       return 1
       ;;
   esac
-  _zimfw_tool_${ztool} ${_zaction} "${@}"
+  _zimfw_tool_${ztool} ${zaction} "${@}"
 }
