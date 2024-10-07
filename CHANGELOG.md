@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ask before uninstalling each unused module, instead of asking just once for
   all.
+- Add disclaimer comment at beginning of .zimrc file.
 
 ## [1.14.0] - 2024-06-25
 

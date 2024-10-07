@@ -1,10 +1,13 @@
 _zimfw_build_init() {
   local -r ztarget=${ZIM_HOME}/init.zsh
   # Force update of init.zsh if it's older than .zimrc
-  if [[ ${ztarget} -ot ${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} ]]; then
+  if [[ ${ztarget} -ot ${_zconfig} ]]; then
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
+    print -R '# FILE AUTOMATICALLY GENERATED FROM '${_zconfig}
+    print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
+    print
     print -R 'if [[ -e ${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds

@@ -57,10 +57,13 @@ _zimfw_mv() {
 _zimfw_build_init() {
   local -r ztarget=${ZIM_HOME}/init.zsh
   # Force update of init.zsh if it's older than .zimrc
-  if [[ ${ztarget} -ot ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
+  if [[ ${ztarget} -ot ${_zconfig} ]]; then
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
+    print -R '# FILE AUTOMATICALLY GENERATED FROM '${_zconfig}
+    print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
+    print
     print -R 'if [[ -e ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
     local zroot_dir zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
@@ -101,7 +104,7 @@ _zimfw_build_init() {
 _zimfw_build_login_init() {
   local -r ztarget=${ZIM_HOME}/login_init.zsh
   # Force update of login_init.zsh if it's older than .zimrc
-  if [[ ${ztarget} -ot ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
+  if [[ ${ztarget} -ot ${_zconfig} ]]; then
     command mv -f ${ztarget}{,.old} || return 1
   fi
   _zimfw_mv =(
@@ -115,10 +118,9 @@ _zimfw_build() {
 
 _zimfw_source_zimrc() {
 zmodule() {
-  local -r ztarget=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc}
   local -r zusage=$'Usage: \E[1m'${0}$'\E[0m <url> [\E[1m-n\E[0m|\E[1m--name\E[0m <module_name>] [\E[1m-r\E[0m|\E[1m--root\E[0m <path>] [options]
 
-Add \E[1mzmodule\E[0m calls to your \E[1m'${ztarget}$'\E[0m file to define the modules to be initialized.
+Add \E[1mzmodule\E[0m calls to your \E[1m'${_zconfig}$'\E[0m file to define the modules to be initialized.
 The initialization will be done in the same order it\'s defined.
 
   <url>                      Module absolute path or repository URL. The following URL formats
@@ -185,10 +187,6 @@ Per-call initialization options:
   other per-call initialization options, so only your provided values will be used. I.e. these
   values are either all automatic, or all manual in each zmodule call. To use default values
   and also provided values, use separate zmodule calls.'
-  if [[ ${${funcfiletrace[1]%:*}:A} != ${ztarget:A} ]]; then
-    print -u2 -lR $'\E[31m'${0}$': Must be called from \E[1m'${ztarget}$'\E[0m' '' ${zusage}
-    return 2
-  fi
   if (( ! # )); then
     print -u2 -lR $'\E[31mx '${funcfiletrace[1]}$': Missing zmodule url\E[0m' '' ${zusage}
     _zfailed=1
@@ -357,14 +355,14 @@ Per-call initialization options:
 }
 
   {
-    local -r ztarget=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zflags=${1}
+    local -r _zflags=${1}
     local -i _zfailed=0
-    if ! source ${ztarget} || (( _zfailed )); then
-      print -u2 -R $'\E[31mFailed to source \E[1m'${ztarget}$'\E[0m'
+    if ! source ${_zconfig} || (( _zfailed )); then
+      print -u2 -R $'\E[31mFailed to source \E[1m'${_zconfig}$'\E[0m'
       return 1
     fi
     if (( _zflags & 1 && ${#_znames} == 0 )); then
-      print -u2 -R $'\E[31mNo modules defined in \E[1m'${ztarget}$'\E[0m'
+      print -u2 -R $'\E[31mNo modules defined in \E[1m'${_zconfig}$'\E[0m'
       return 1
     fi
     # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes
@@ -462,7 +460,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-07 13:45:47 UTC, previous commit is 869a8f5)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-07 14:26:45 UTC, previous commit is 92c3eed)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -935,7 +933,8 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='1.15.0-SNAPSHOT' zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.15.0-SNAPSHOT'
+  local -r zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
   \E[1mbuild\E[0m           Build \E[1m'${ZIM_HOME}$'/init.zsh\E[0m and \E[1m'${ZIM_HOME}$'/login_init.zsh\E[0m.
@@ -946,7 +945,7 @@ Actions:
   \E[1mcompile\E[0m         Compile Zsh files.
   \E[1mhelp\E[0m            Print this help.
   \E[1minfo\E[0m            Print zimfw and system info.
-  \E[1mlist\E[0m            List all modules currently defined in \E[1m'${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc}$'\E[0m.
+  \E[1mlist\E[0m            List all modules currently defined in \E[1m'${_zconfig}$'\E[0m.
                   Use \E[1m-v\E[0m to also see the modules details.
   \E[1minit\E[0m            Same as \E[1minstall\E[0m, but with output tailored to be used at terminal startup.
   \E[1minstall\E[0m         Install new modules. Also does \E[1mbuild\E[0m, \E[1mcompile\E[0m. Use \E[1m-v\E[0m to also see their

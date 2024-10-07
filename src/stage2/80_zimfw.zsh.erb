@@ -1,6 +1,7 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zversion='<%= version %>' zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
+  local -r _zconfig=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} _zversion='<%= version %>'
+  local -r zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
 
 Actions:
   <%= bold %>build<%= normal %>           Build <%= bold %>'${ZIM_HOME}$'/init.zsh<%= normal %> and <%= bold %>'${ZIM_HOME}$'/login_init.zsh<%= normal %>.
@@ -11,7 +12,7 @@ Actions:
   <%= bold %>compile<%= normal %>         Compile Zsh files.
   <%= bold %>help<%= normal %>            Print this help.
   <%= bold %>info<%= normal %>            Print zimfw and system info.
-  <%= bold %>list<%= normal %>            List all modules currently defined in <%= bold %>'${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}$'<%= normal %>.
+  <%= bold %>list<%= normal %>            List all modules currently defined in <%= bold %>'${_zconfig}$'<%= normal %>.
                   Use <%= bold %>-v<%= normal %> to also see the modules details.
   <%= bold %>init<%= normal %>            Same as <%= bold %>install<%= normal %>, but with output tailored to be used at terminal startup.
   <%= bold %>install<%= normal %>         Install new modules. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their

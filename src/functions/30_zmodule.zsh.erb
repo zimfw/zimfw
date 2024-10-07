@@ -1,8 +1,7 @@
 zmodule() {
-  local -r ztarget=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc}
   local -r zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <url> [<%= bold %>-n<%= normal %>|<%= bold %>--name<%= normal %> <module_name>] [<%= bold %>-r<%= normal %>|<%= bold %>--root<%= normal %> <path>] [options]
 
-Add <%= bold %>zmodule<%= normal %> calls to your <%= bold %>'${ztarget}$'<%= normal %> file to define the modules to be initialized.
+Add <%= bold %>zmodule<%= normal %> calls to your <%= bold %>'${_zconfig}$'<%= normal %> file to define the modules to be initialized.
 The initialization will be done in the same order it\'s defined.
 
   <url>                      Module absolute path or repository URL. The following URL formats
@@ -69,10 +68,6 @@ Per-call initialization options:
   other per-call initialization options, so only your provided values will be used. I.e. these
   values are either all automatic, or all manual in each zmodule call. To use default values
   and also provided values, use separate zmodule calls.'
-  if [[ ${${funcfiletrace[1]%:*}:A} != ${ztarget:A} ]]; then
-    print -u2 -lR $'<%= red %>'${0}$': Must be called from <%= bold %>'${ztarget}$'<%= normal %>' '' ${zusage}
-    return 2
-  fi
   if (( ! # )); then
     print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$': Missing zmodule url<%= normal %>' '' ${zusage}
     _zfailed=1
