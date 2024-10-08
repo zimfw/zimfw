@@ -41,6 +41,9 @@ Per-module-root options:
   <%= bold %>--if-command<%= normal %> <cmd_name>    Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
                              Equivalent to <%= bold %>--if \'(( \${+commands[<%= normal %><cmd_name><%= bold %>]} ))\'<%= normal %>.
+  <%= bold %>--if-ostype<%= normal %> <ostype>       Will only initialize module root if <%= bold %>OSTYPE<%= normal %> is equal to the given
+                             expression. This is evaluated at every new terminal startup.
+                             Equivalent to <%= bold %>--if \'[[ \${OSTYPE} == <%= normal %><ostype><%= bold %> ]]\'<%= normal %>.
   <%= bold %>--on-pull<%= normal %> <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <%= bold %>-d<%= normal %>|<%= bold %>--disabled<%= normal %>              Don\'t initialize the module root or uninstall the module.
@@ -126,7 +129,7 @@ Per-call initialization options:
   # Set values from options
   while (( # > 0 )); do
     case ${1} in
-      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|--if-command|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
+      -b|--branch|-t|--tag|-u|--use|--on-pull|--if|--if-command|--if-ostype|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
           print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Missing argument for zmodule option <%= bold %>'${1}$'<%= normal %>' '' ${zusage}
           _zfailed=1
@@ -169,6 +172,10 @@ Per-call initialization options:
       --if-command)
         shift
         _zifs[${zroot_dir}]="(( \${+commands[${1}]} ))"
+        ;;
+      --if-ostype)
+        shift
+        _zifs[${zroot_dir}]="[[ \${OSTYPE} == ${1} ]]"
         ;;
       -f|--fpath)
         shift
