@@ -291,6 +291,9 @@ Per-module-root options:
   <b>--if-command</b> &lt;cmd_name&gt;    Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
                              Equivalent to <b>--if &apos;(( ${+commands[</b>&lt;cmd_name&gt;<b>]} ))&apos;</b>.
+  <b>--if-ostype</b> &lt;ostype&gt;       Will only initialize module root if <b>OSTYPE</b> is equal to the given
+                             expression. This is evaluated at every new terminal startup.
+                             Equivalent to <b>--if &apos;[[ ${OSTYPE} == </b>&lt;ostype&gt;<b> ]]&apos;</b>.
   <b>--on-pull</b> &lt;command&gt;        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
   <b>-d</b>|<b>--disabled</b>              Don&apos;t initialize the module root or uninstall the module.
