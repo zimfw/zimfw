@@ -467,7 +467,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-10 00:22:56 UTC, previous commit is f4bc83d)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-10 00:28:19 UTC, previous commit is 331f1c5)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -946,7 +946,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.15.1-SNAPSHOT'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.15.1'
   local -r zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:

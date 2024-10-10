@@ -9,12 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.15.1] - 2024-10-10
+
+### Fixed
+
+- Preserve original module if reinstall fails instead of removing it first.
+
 ## [1.15.0] - 2024-10-08
 
 ### Added
 
 - `reinstall` action, that removes and then installs again the modules that
-  failed any of the checks:
+  failed any of the checks: (See [#542](https://github.com/zimfw/zimfw/issues/542))
   - module was installed with the defined tool,
   - module URL matches the defined one.
 - `--if-ostype` option to `zmodule`. This option is equivalent to
@@ -416,7 +422,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.15.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.15.1...HEAD
+[1.15.1]: https://github.com/zimfw/zimfw/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/zimfw/zimfw/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/zimfw/zimfw/compare/v1.13.1...v1.14.0
 [1.13.1]: https://github.com/zimfw/zimfw/compare/v1.13.0...v1.13.1
