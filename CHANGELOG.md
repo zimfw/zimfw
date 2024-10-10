@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- Also output zimfw config and zimfw.zsh script paths in `info` action,
+  following symlinks if any.
 
 ## [1.15.1] - 2024-10-10
 

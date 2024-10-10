@@ -1,0 +1,5 @@
+_zimfw_info_print_symlink() {
+  print -Rn ${(r.22....:.)1}${2}
+  if [[ -L ${2} ]] print -Rn ' -> '${2:A}
+  print
+}
