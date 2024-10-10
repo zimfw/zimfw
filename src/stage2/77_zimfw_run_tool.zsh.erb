@@ -17,20 +17,26 @@ _zimfw_run_tool() {
   set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
   if [[ ${zaction} == reinstall ]]; then
     _zimfw_tool_${ztool} prereinstall "${@}" && return 0
-    if (( _zprintlevel <= 0 )); then
-      command rm -rf ${_zdirs[${_zname}]} || return 1
-    else
-      local zopt
-      if (( _zprintlevel > 1 )) zopt=-v
+    if (( _zprintlevel > 0 )); then
       if read -q "?Reinstall ${_zname} [y/N]? "; then
         print
-        command rm -rf ${zopt} ${_zdirs[${_zname}]} || return 1
       else
         print
         return 0
       fi
     fi
-    zaction=install
+    local -r zdir_new=.${_zdirs[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    _zimfw_print -nR 'Reinstalling '${_zname}'<%= ellipsis %>'
+    {
+      _zimfw_tool_${ztool} install ${zdir_new} "${@:2}" || return 1
+      if ! ERR=$({ command rm -rf ${_zdirs[${_zname}]} && command mv -f ${zdir_new} ${_zdirs[${_zname}]} } 2>&1); then
+        _zimfw_print_error "Error updating ${_zdirs[${_zname}]}" ${ERR}
+        return 1
+      fi
+    } always {
+      command rm -rf ${zdir_new} 2>/dev/null
+    }
+    return 0
   else
     _zimfw_tool_${ztool} pre "${@}" || return 1
   fi

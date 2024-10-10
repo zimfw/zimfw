@@ -467,7 +467,7 @@ _zimfw_compile() {
 }
 
 _zimfw_info() {
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-08 23:27:26 UTC, previous commit is 4bb6172)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-10 00:22:56 UTC, previous commit is f4bc83d)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZIM_HOME ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -682,7 +682,7 @@ _zimfw_untar_tarball() {
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}
+  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
   readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
   case ${ACTION} in
     pre|prereinstall)
@@ -855,7 +855,7 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == (pre|reinstall) ]] return 0
+  if [[ ${ACTION} == (pre|prereinstall) ]] return 0
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn $'The zmodule option \E[1m-'${TYPE[1]}$'\E[0;33m|\E[1m--'${TYPE}$'\E[0;33m has no effect when using the mkdir tool'
   fi
@@ -886,20 +886,26 @@ _zimfw_run_tool() {
   set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
   if [[ ${zaction} == reinstall ]]; then
     _zimfw_tool_${ztool} prereinstall "${@}" && return 0
-    if (( _zprintlevel <= 0 )); then
-      command rm -rf ${_zdirs[${_zname}]} || return 1
-    else
-      local zopt
-      if (( _zprintlevel > 1 )) zopt=-v
+    if (( _zprintlevel > 0 )); then
       if read -q "?Reinstall ${_zname} [y/N]? "; then
         print
-        command rm -rf ${zopt} ${_zdirs[${_zname}]} || return 1
       else
         print
         return 0
       fi
     fi
-    zaction=install
+    local -r zdir_new=.${_zdirs[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    _zimfw_print -nR 'Reinstalling '${_zname}' ...'
+    {
+      _zimfw_tool_${ztool} install ${zdir_new} "${@:2}" || return 1
+      if ! ERR=$({ command rm -rf ${_zdirs[${_zname}]} && command mv -f ${zdir_new} ${_zdirs[${_zname}]} } 2>&1); then
+        _zimfw_print_error "Error updating ${_zdirs[${_zname}]}" ${ERR}
+        return 1
+      fi
+    } always {
+      command rm -rf ${zdir_new} 2>/dev/null
+    }
+    return 0
   else
     _zimfw_tool_${ztool} pre "${@}" || return 1
   fi
@@ -940,7 +946,7 @@ _zimfw_run_tool_action() {
 
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.15.0'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.15.1-SNAPSHOT'
   local -r zusage=$'Usage: \E[1m'${0}$'\E[0m <action> [\E[1m-q\E[0m|\E[1m-v\E[0m]
 
 Actions:
