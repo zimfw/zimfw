@@ -470,7 +470,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-10 14:13:57 UTC, previous commit is 84c59ed)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-10-25 16:12:27 UTC, previous commit is e8e26c1)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -864,7 +864,7 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == (pre|prereinstall) ]] return 0
+  if [[ ${ACTION} == (pre|prereinstall|check) ]] return 0
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn $'The zmodule option \E[1m-'${TYPE[1]}$'\E[0;33m|\E[1m--'${TYPE}$'\E[0;33m has no effect when using the mkdir tool'
   fi

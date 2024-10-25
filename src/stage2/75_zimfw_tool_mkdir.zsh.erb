@@ -2,7 +2,7 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == (pre|prereinstall) ]] return 0
+  if [[ ${ACTION} == (pre|prereinstall|check) ]] return 0
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn $'The zmodule option <%= bold %>-'${TYPE[1]}$'<%= normalyellow %>|<%= bold %>--'${TYPE}$'<%= normalyellow %> has no effect when using the mkdir tool'
   fi
