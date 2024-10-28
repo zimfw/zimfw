@@ -16,7 +16,7 @@ _zimfw_check_version() {
   if [[ -f ${_zversion_target} ]]; then
     local -r zlatest_version=$(<${_zversion_target})
     if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
-      _zimfw_print -u2 -R $'<%= yellow %>Latest zimfw version is <%= bold %>'${zlatest_version}$'<%= normalyellow %>. You\'re using version <%= bold %>'${_zversion}$'<%= normalyellow %>. Run <%= bold %>zimfw upgrade<%= normalyellow %> to upgrade.<%= normal %>'
+      _zimfw_print -u2 -R "${_zyellow}Latest zimfw version is ${_zbold}${zlatest_version}${_znormalyellow}. You're using version ${_zbold}${_zversion}${_znormalyellow}. Run ${_zbold}zimfw upgrade${_znormalyellow} to upgrade.${_znormal}"
       return 4
     fi
   fi

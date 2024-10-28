@@ -4,11 +4,11 @@ _zimfw_source_zimrc() {
     local -r _zflags=${1}
     local -i _zfailed=0
     if ! source ${_zconfig} || (( _zfailed )); then
-      print -u2 -R $'<%= red %>Failed to source <%= bold %>'${_zconfig}$'<%= normal %>'
+      print -u2 -R "${_zred}Failed to source ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
     if (( _zflags & 1 && ${#_znames} == 0 )); then
-      print -u2 -R $'<%= red %>No modules defined in <%= bold %>'${_zconfig}$'<%= normal %>'
+      print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
     # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes

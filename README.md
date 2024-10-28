@@ -362,6 +362,16 @@ disabled. This can be manually disabled with:
 
     zstyle ':zim' disable-version-check yes
 
+To disable color output from zimfw, prefix the zimfw call with `NO_COLOR=1`,
+like:
+
+    NO_COLOR=1 zimfw install
+
+or add the following to your `.zshrc`, which should also disable color output
+for other tools. See https://no-color.org/
+
+    export NO_COLOR=1
+
 Uninstalling
 ------------
 The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and

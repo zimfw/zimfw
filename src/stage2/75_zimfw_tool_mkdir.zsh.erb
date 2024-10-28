@@ -4,10 +4,10 @@ _zimfw_tool_mkdir() {
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
   if [[ ${ACTION} == (pre|prereinstall|check) ]] return 0
   if [[ -n ${REV} ]]; then
-    _zimfw_print_warn $'The zmodule option <%= bold %>-'${TYPE[1]}$'<%= normalyellow %>|<%= bold %>--'${TYPE}$'<%= normalyellow %> has no effect when using the mkdir tool'
+    _zimfw_print_warn "The zmodule option ${_zbold}-${TYPE[1]}${_znormalyellow}|${_zbold}--${TYPE}${_znormalyellow} has no effect when using the mkdir tool"
   fi
   if (( ! SUBMODULES )); then
-    _zimfw_print_warn $'The zmodule option <%= bold %>--no-submodules<%= normalyellow %> has no effect when using the mkdir tool'
+    _zimfw_print_warn "The zmodule option ${_zbold}--no-submodules${_znormalyellow} has no effect when using the mkdir tool"
   fi
   if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
     _zimfw_create_dir ${DIR} && _zimfw_pull_print_okay Created || return 1

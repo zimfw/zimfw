@@ -3,12 +3,12 @@ _zimfw_compile() {
   local zroot_dir zfile
   for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
     if [[ ! -w ${zroot_dir} ]]; then
-      _zimfw_print -R $'<%= yellow %><%= warn %><%= bold %>'${zroot_dir}$':<%= normalyellow %> No write permission, unable to compile.<%= normal %>'
+      _zimfw_print -R "${_zwarn}${_zbold}${zroot_dir}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
     fi
     for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
-        zcompile -UR ${zfile} && _zimfw_print -R $'<%= okay %><%= bold %>'${zfile}$'.zwc:<%= normal %> Compiled'
+        zcompile -UR ${zfile} && _zimfw_print -R "${_zokay}${_zbold}${zfile}.zwc:${_znormal} Compiled"
       fi
     done
   done

@@ -4,7 +4,7 @@ _zimfw_download_tarball() {
     readonly REPO=${match[4]%.git}
   fi
   if [[ ${HOST} != github.com || -z ${REPO} ]]; then
-    _zimfw_print_error ${URL}$' is not a valid URL. Will not try to '${ACTION}$'. The zimfw degit tool only supports GitHub URLs. Use zmodule option <%= bold %>--use git<%= normalred %> to use git instead.'
+    _zimfw_print_error "${URL} is not a valid URL. Will not try to ${ACTION}. The zimfw degit tool only supports GitHub URLs. Use zmodule option ${_zbold}--use git${_znormalred} to use git instead."
     return 1
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
@@ -86,7 +86,7 @@ _zimfw_tool_degit() {
   case ${ACTION} in
     pre|prereinstall)
       local premsg
-      if [[ ${ACTION} == pre ]] premsg=$' Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error or run <%= bold %>zimfw reinstall<%= normalred %> to reinstall.'
+      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to disable this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
@@ -146,6 +146,6 @@ _zimfw_tool_degit() {
   esac
   # Check after successful install or update
   if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    _zimfw_print_warn $'Module contains git submodules, which are not supported by zimfw\'s degit. Use zmodule option <%= bold %>--no-submodules<%= normalyellow %> to disable this warning.'
+    _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to disable this warning."
   fi
 }

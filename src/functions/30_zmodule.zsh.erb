@@ -1,78 +1,78 @@
 zmodule() {
-  local -r zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <url> [<%= bold %>-n<%= normal %>|<%= bold %>--name<%= normal %> <module_name>] [<%= bold %>-r<%= normal %>|<%= bold %>--root<%= normal %> <path>] [options]
+  local -r zusage="Usage: ${_zbold}${0}${_znormal} <url> [${_zbold}-n${_znormal}|${_zbold}--name${_znormal} <module_name>] [${_zbold}-r${_znormal}|${_zbold}--root${_znormal} <path>] [options]
 
-Add <%= bold %>zmodule<%= normal %> calls to your <%= bold %>'${_zconfig}$'<%= normal %> file to define the modules to be initialized.
-The initialization will be done in the same order it\'s defined.
+Add ${_zbold}zmodule${_znormal} calls to your ${_zbold}${_zconfig}${_znormal} file to define the modules to be initialized.
+The initialization will be done in the same order it's defined.
 
   <url>                      Module absolute path or repository URL. The following URL formats
-                             are equivalent: <%= bold %>foo<%= normal %>, <%= bold %>zimfw/foo<%= normal %>, <%= bold %>https://github.com/zimfw/foo.git<%= normal %>.
+                             are equivalent: ${_zbold}foo${_znormal}, ${_zbold}zimfw/foo${_znormal}, ${_zbold}https://github.com/zimfw/foo.git${_znormal}.
                              If an absolute path is given, the module is considered externally
-                             installed and won\'t be installed or updated by zimfw.
-  <%= bold %>-n<%= normal %>|<%= bold %>--name<%= normal %> <module_name>    Set a custom module name. Default: the last component in <url>.
+                             installed and won't be installed or updated by zimfw.
+  ${_zbold}-n${_znormal}|${_zbold}--name${_znormal} <module_name>    Set a custom module name. Default: the last component in <url>.
                              Slashes can be used inside the name to organize the module into
                              subdirectories. The module will be installed at
-                             <%= bold %>'${ZIM_HOME}$'/<%= normal %><module_name>.
-  <%= bold %>-r<%= normal %>|<%= bold %>--root<%= normal %> <path>           Relative path to the module root.
+                             ${_zbold}${ZIM_HOME}/${_znormal}<module_name>.
+  ${_zbold}-r${_znormal}|${_zbold}--root${_znormal} <path>           Relative path to the module root.
 
 Per-module options:
-  <%= bold %>-b<%= normal %>|<%= bold %>--branch<%= normal %> <branch_name>  Use specified branch when installing and updating the module.
+  ${_zbold}-b${_znormal}|${_zbold}--branch${_znormal} <branch_name>  Use specified branch when installing and updating the module.
                              Overrides the tag option. Default: the repository default branch.
-  <%= bold %>-t<%= normal %>|<%= bold %>--tag<%= normal %> <tag_name>        Use specified tag when installing and updating the module. Over-
+  ${_zbold}-t${_znormal}|${_zbold}--tag${_znormal} <tag_name>        Use specified tag when installing and updating the module. Over-
                              rides the branch option.
-  <%= bold %>-u<%= normal %>|<%= bold %>--use<%= normal %> <tool_name>       Install and update the module using the defined tool. Default is
-                             either defined by <%= bold %>zstyle \':zim:zmodule\' use \'<%= normal %><tool_name><%= bold %>\'<%= normal %>, or <%= bold %>git<%= normal %>
+  ${_zbold}-u${_znormal}|${_zbold}--use${_znormal} <tool_name>       Install and update the module using the defined tool. Default is
+                             either defined by ${_zbold}zstyle ':zim:zmodule' use '${_znormal}<tool_name>${_zbold}'${_znormal}, or ${_zbold}git${_znormal}
                              if none is provided. The tools available are:
-                             <%= bold %>git<%= normal %> uses the git command. Local changes are preserved on updates.
-                             <%= bold %>degit<%= normal %> uses curl or wget, and currently only works with GitHub
+                             ${_zbold}git${_znormal} uses the git command. Local changes are preserved on updates.
+                             ${_zbold}degit${_znormal} uses curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
                              changes are lost on updates. Git submodules are not supported.
-                             <%= bold %>mkdir<%= normal %> creates an empty directory. The <url> is only used to set
-                             the module name. Use the <%= bold %>-c<%= normal %>|<%= bold %>--cmd<%= normal %> or <%= bold %>--on-pull<%= normal %> options to execute
+                             ${_zbold}mkdir${_znormal} creates an empty directory. The <url> is only used to set
+                             the module name. Use the ${_zbold}-c${_znormal}|${_zbold}--cmd${_znormal} or ${_zbold}--on-pull${_znormal} options to execute
                              the desired command to generate the module files.
-  <%= bold %>--no-submodules<%= normal %>            Don\'t install or update git submodules.
-  <%= bold %>-z<%= normal %>|<%= bold %>--frozen<%= normal %>                Don\'t install or update the module.
+  ${_zbold}--no-submodules${_znormal}            Don't install or update git submodules.
+  ${_zbold}-z${_znormal}|${_zbold}--frozen${_znormal}                Don't install or update the module.
 
   The per-module options above are carried over multiple zmodule calls for the same module.
   Modules are uniquely identified by their name.
 
 Per-module-root options:
-  <%= bold %>--if<%= normal %> <test>                Will only initialize module root if specified test returns a zero
+  ${_zbold}--if${_znormal} <test>                Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-  <%= bold %>--if-command<%= normal %> <cmd_name>    Will only initialize module root if specified external command is
+  ${_zbold}--if-command${_znormal} <cmd_name>    Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to <%= bold %>--if \'(( \${+commands[<%= normal %><cmd_name><%= bold %>]} ))\'<%= normal %>.
-  <%= bold %>--if-ostype<%= normal %> <ostype>       Will only initialize module root if <%= bold %>OSTYPE<%= normal %> is equal to the given
+                             Equivalent to ${_zbold}--if '(( \${+commands[${_znormal}<cmd_name>${_zbold}]} ))'${_znormal}.
+  ${_zbold}--if-ostype${_znormal} <ostype>       Will only initialize module root if ${_zbold}OSTYPE${_znormal} is equal to the given
                              expression. This is evaluated at every new terminal startup.
-                             Equivalent to <%= bold %>--if \'[[ \${OSTYPE} == <%= normal %><ostype><%= bold %> ]]\'<%= normal %>.
-  <%= bold %>--on-pull<%= normal %> <command>        Execute command after installing or updating the module. The com-
+                             Equivalent to ${_zbold}--if '[[ \${OSTYPE} == ${_znormal}<ostype>${_zbold} ]]'${_znormal}.
+  ${_zbold}--on-pull${_znormal} <command>        Execute command after installing or updating the module. The com-
                              mand is executed in the module root directory.
-  <%= bold %>-d<%= normal %>|<%= bold %>--disabled<%= normal %>              Don\'t initialize the module root or uninstall the module.
+  ${_zbold}-d${_znormal}|${_zbold}--disabled${_znormal}              Don't initialize the module root or uninstall the module.
 
   The per-module-root options above are carried over multiple zmodule calls for the same mod-
   ule root.
 
 Per-call initialization options:
-  <%= bold %>-f<%= normal %>|<%= bold %>--fpath<%= normal %> <path>          Will add specified path to fpath. The path is relative to the
-                             module root directory. Default: <%= bold %>functions<%= normal %>, if the subdirectory
+  ${_zbold}-f${_znormal}|${_zbold}--fpath${_znormal} <path>          Will add specified path to fpath. The path is relative to the
+                             module root directory. Default: ${_zbold}functions${_znormal}, if the subdirectory
                              exists and is non-empty.
-  <%= bold %>-a<%= normal %>|<%= bold %>--autoload<%= normal %> <func_name>  Will autoload specified function. Default: all valid names inside
-                             the <%= bold %>functions<%= normal %> subdirectory, if any.
-  <%= bold %>-s<%= normal %>|<%= bold %>--source<%= normal %> <file_path>    Will source specified file. The path is relative to the module
-                             root directory. Default: <%= bold %>init.zsh<%= normal %>, if a non-empty <%= bold %>functions<%= normal %> sub-
+  ${_zbold}-a${_znormal}|${_zbold}--autoload${_znormal} <func_name>  Will autoload specified function. Default: all valid names inside
+                             the ${_zbold}functions${_znormal} subdirectory, if any.
+  ${_zbold}-s${_znormal}|${_zbold}--source${_znormal} <file_path>    Will source specified file. The path is relative to the module
+                             root directory. Default: ${_zbold}init.zsh${_znormal}, if a non-empty ${_zbold}functions${_znormal} sub-
                              directory exists, else the largest of the files matching the glob
-                             <%= bold %>(init.zsh|<%= normal %><name><%= bold %>.(zsh|plugin.zsh|zsh-theme|sh))<%= normal %>, if any.
+                             ${_zbold}(init.zsh|${_znormal}<name>${_zbold}.(zsh|plugin.zsh|zsh-theme|sh))${_znormal}, if any.
                              <name> in the glob is resolved to the last component of the mod-
                              ule name, or the last component of the path to the module root.
-  <%= bold %>-c<%= normal %>|<%= bold %>--cmd<%= normal %> <command>         Will execute specified command. Occurrences of the <%= bold %>{}<%= normal %> placeholder
+  ${_zbold}-c${_znormal}|${_zbold}--cmd${_znormal} <command>         Will execute specified command. Occurrences of the ${_zbold}{}${_znormal} placeholder
                              in the command are substituted by the module root directory path.
-                             I.e., <%= bold %>-s \'foo.zsh\'<%= normal %> and <%= bold %>-c \'source {}/foo.zsh\'<%= normal %> are equivalent.
+                             I.e., ${_zbold}-s 'foo.zsh'${_znormal} and ${_zbold}-c 'source {}/foo.zsh'${_znormal} are equivalent.
 
   Setting any per-call initialization option above will disable the default values from the
   other per-call initialization options, so only your provided values will be used. I.e. these
   values are either all automatic, or all manual in each zmodule call. To use default values
-  and also provided values, use separate zmodule calls.'
+  and also provided values, use separate zmodule calls."
   if (( ! # )); then
-    print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$': Missing zmodule url<%= normal %>' '' ${zusage}
+    print -u2 -lR "${_zerror}${funcfiletrace[1]}: Missing zmodule url${_znormal}" '' ${zusage}
     _zfailed=1
     return 2
   fi
@@ -90,7 +90,7 @@ Per-call initialization options:
   shift
   while [[ ${1} == (-n|--name|-r|--root) ]]; do
     if (( # < 2 )); then
-      print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Missing argument for zmodule option <%= bold %>'${1}$'<%= normal %>' '' ${zusage}
+      print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Missing argument for zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
       _zfailed=1
       return 2
     fi
@@ -113,7 +113,7 @@ Per-call initialization options:
     _zdirs[${zname}]=${ZIM_HOME}/modules/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
-    print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Module already defined with a different URL. Expected <%= bold %>'${_zurls[${zname}]}$'<%= normal %>' '' ${zusage}
+    print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
     _zfailed=1
     return 2
   fi
@@ -131,7 +131,7 @@ Per-call initialization options:
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|--on-pull|--if|--if-command|--if-ostype|-f|--fpath|-a|--autoload|-s|--source|-c|--cmd)
         if (( # < 2 )); then
-          print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Missing argument for zmodule option <%= bold %>'${1}$'<%= normal %>' '' ${zusage}
+          print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Missing argument for zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
           _zfailed=1
           return 2
         fi
@@ -139,7 +139,7 @@ Per-call initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|--no-submodules)
-        if [[ -z ${zurl} ]] _zimfw_print -u2 -R $'<%= yellow %><%= warn %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalyellow %> The zmodule option <%= bold %>'${1}$'<%= normalyellow %> has no effect for external modules<%= normal %>'
+        if [[ -z ${zurl} ]] _zimfw_print -u2 -R "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} The zmodule option ${_zbold}${1}${_znormalyellow} has no effect for external modules${_znormal}"
         ;;
     esac
     case ${1} in
@@ -199,7 +199,7 @@ Per-call initialization options:
         ;;
       -d|--disabled) _zdisabled_root_dirs+=(${zroot_dir}) ;;
       *)
-        print -u2 -lR $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalred %> Unknown zmodule option <%= bold %>'${1}$'<%= normal %>' '' ${zusage}
+        print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Unknown zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
         _zfailed=1
         return 2
         ;;
@@ -211,7 +211,7 @@ Per-call initialization options:
   fi
   if (( _zflags & 2 )); then
     if [[ ! -e ${zroot_dir} ]]; then
-      print -u2 -R $'<%= red %><%= error %>'${funcfiletrace[1]}$':<%= bold %>'${zname}': '${zroot_dir}$'<%= normalred %> not found<%= normal %>'
+      print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
       _zfailed=1
       return 1
     fi
@@ -231,7 +231,7 @@ Per-call initialization options:
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      _zimfw_print -u2 -lR $'<%= yellow %><%= warn %>'${funcfiletrace[1]}$':<%= bold %>'${zname}$':<%= normalyellow %> Nothing found to be initialized. Customize the module name, root or initialization with <%= bold %>zmodule<%= normalyellow %> options.<%= normal %>' '' ${zusage}
+      _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Nothing found to be initialized. Customize the module name, root or initialization with ${_zbold}zmodule${_znormalyellow} options.${_znormal}" '' ${zusage}
     fi
     # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root dir
     local -r zpre=${zroot_dir}$'\0'

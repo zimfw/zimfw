@@ -4,5 +4,5 @@ _zimfw_clean_compiled() {
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \
-      _zimfw_print $'Done with clean-compiled. Restart your terminal or run <%= bold %>zimfw compile<%= normal %> to re-compile.'
+      _zimfw_print "Done with clean-compiled. Restart your terminal or run ${_zbold}zimfw compile${_znormal} to re-compile."
 }

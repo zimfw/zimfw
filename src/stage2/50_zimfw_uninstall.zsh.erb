@@ -3,7 +3,7 @@ _zimfw_uninstall() {
     command rm -rf ${_zunused_dirs} || return 1
   else
     local zunused_dir
-    print $'Found <%= bold %>'${#_zunused_dirs}$'<%= normal %> unused module(s).'
+    print "Found ${_zbold}${#_zunused_dirs}${_znormal} unused module(s)."
     for zunused_dir in ${_zunused_dirs}; do
       if read -q "?Uninstall ${zunused_dir} [y/N]? "; then
         print

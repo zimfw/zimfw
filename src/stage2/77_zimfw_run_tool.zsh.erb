@@ -50,7 +50,7 @@ _zimfw_run_tool() {
       ;;
     check|update)
       if [[ ! -d ${_zdirs[${_zname}]} ]]; then
-        _zimfw_print_error $'Not installed. Run <%= bold %>zimfw install<%= normalred %> to install.'
+        _zimfw_print_error "Not installed. Run ${_zbold}zimfw install${_znormalred} to install."
         return 1
       fi
       if [[ ${zaction} == check ]]; then

@@ -11,15 +11,9 @@ class Zim
     # but not file:///path/to/repo or /path/to/repo
     # ${match[3]} contains host, and ${match[4]} contains org/repo
     @url_regex = "^([^:@/]+://)?([^@]+@)?([^:/]+)[:/]([^/]+/[^/]+)/?$"
-    @bold = "\\E[1m"
-    @normal = "\\E[0m"
-    @yellow = "\\E[33m"
-    @normalyellow = "\\E[0;33m"
-    @red = "\\E[31m"
-    @normalred = "\\E[0;31m"
     @clear_line = "\\E[2K\\r"
     @ellipsis = " ..."
-    @okay = "\\E[32m)\\E[0m "
+    @okay = ") "
     @warn = "! "
     @error = "x "
   end

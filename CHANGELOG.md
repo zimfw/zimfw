@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Also output zimfw config and zimfw.zsh script paths in `info` action,
   following symlinks if any.
+- Don't output colors if `NO_COLOR` environment variable is set to a non-empty
+  value.
 
 ## [1.15.1] - 2024-10-10
 

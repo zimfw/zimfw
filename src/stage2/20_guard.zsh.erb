@@ -1,11 +1,11 @@
 autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
-  print -u2 -R $'<%= red %>'${0}$': Error starting zimfw. You\'re using Zsh version <%= bold %>'${ZSH_VERSION}$'<%= normalred %> and versions < <%= bold %><%= min_zsh_version %><%= normalred %> are not supported. Update your Zsh.<%= normal %>'
+  print -u2 -R "${_zred}${0}: Error starting zimfw. You're using Zsh version ${_zbold}${ZSH_VERSION}${_znormalred} and versions < ${_zbold}<%= min_zsh_version %>${_znormalred} are not supported. Update your Zsh.${_znormal}"
   return 1
 fi
 autoload -Uz zargs
 
 if (( ! ${+ZIM_HOME} )); then
-  print -u2 -R $'<%= red %>'${0}$': <%= bold %>ZIM_HOME<%= normalred %> not defined<%= normal %>'
+  print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
   return 1
 fi
 # Define zimfw location

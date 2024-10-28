@@ -6,7 +6,7 @@ _zimfw_tool_git() {
   case ${ACTION} in
     pre|prereinstall)
       local premsg
-      if [[ ${ACTION} == pre ]] premsg=$' Use zmodule option <%= bold %>-z<%= normalred %>|<%= bold %>--frozen<%= normalred %> to disable this error or run <%= bold %>zimfw reinstall<%= normalred %> to reinstall.'
+      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to disable this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${DIR}/.git ]]; then
           _zimfw_print_error 'Module was not installed using git.'${premsg}
@@ -72,7 +72,11 @@ _zimfw_tool_git() {
         fi
         TO_REV=${REV}
       fi
-      LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
+      if [[ -z ${NO_COLOR} ]]; then
+        LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
+      else
+        LOG=$(command git -C ${DIR} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
+      fi
       if ! ERR=$(command git -C ${DIR} checkout -q ${REV} -- 2>&1); then
         _zimfw_print_error 'Error during git checkout' ${ERR}
         return 1

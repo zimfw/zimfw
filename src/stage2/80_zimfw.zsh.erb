@@ -1,50 +1,56 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
+  if [[ -z ${NO_COLOR} ]]; then
+    local -r _znormal=$'\E[0m' _zbold=$'\E[1m' _zred=$'\E[31m' _znormalred=$'\E[0;31m' _zgreen=$'\E[32m' _zyellow=$'\E[33m' _znormalyellow=$'\E[0;33m'
+  else
+    local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
+  fi
+  local -r _zerror="${_zred}<%= error %>" _zokay="${_zgreen}<%= okay %>${_znormal}" _zwarn="${_zyellow}<%= warn %>"
   local -r _zconfig=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} _zversion='<%= version %>'
-  local -r zusage=$'Usage: <%= bold %>'${0}$'<%= normal %> <action> [<%= bold %>-q<%= normal %>|<%= bold %>-v<%= normal %>]
+  local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [${_zbold}-q${_znormal}|${_zbold}-v${_znormal}]
 
 Actions:
-  <%= bold %>build<%= normal %>           Build <%= bold %>'${ZIM_HOME}$'/init.zsh<%= normal %> and <%= bold %>'${ZIM_HOME}$'/login_init.zsh<%= normal %>.
-                  Also does <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see its output.
-  <%= bold %>clean<%= normal %>           Clean all. Does both <%= bold %>clean-compiled<%= normal %> and <%= bold %>clean-dumpfile<%= normal %>.
-  <%= bold %>clean-compiled<%= normal %>  Clean Zsh compiled files.
-  <%= bold %>clean-dumpfile<%= normal %>  Clean completion dumpfile.
-  <%= bold %>compile<%= normal %>         Compile Zsh files.
-  <%= bold %>help<%= normal %>            Print this help.
-  <%= bold %>info<%= normal %>            Print zimfw and system info.
-  <%= bold %>list<%= normal %>            List all modules currently defined in <%= bold %>'${_zconfig}$'<%= normal %>.
-                  Use <%= bold %>-v<%= normal %> to also see the modules details.
-  <%= bold %>init<%= normal %>            Same as <%= bold %>install<%= normal %>, but with output tailored to be used at terminal startup.
-  <%= bold %>install<%= normal %>         Install new modules. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their
+  ${_zbold}build${_znormal}           Build ${_zbold}${ZIM_HOME}/init.zsh${_znormal} and ${_zbold}${ZIM_HOME}/login_init.zsh${_znormal}.
+                  Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
+  ${_zbold}clean${_znormal}           Clean all. Does both ${_zbold}clean-compiled${_znormal} and ${_zbold}clean-dumpfile${_znormal}.
+  ${_zbold}clean-compiled${_znormal}  Clean Zsh compiled files.
+  ${_zbold}clean-dumpfile${_znormal}  Clean completion dumpfile.
+  ${_zbold}compile${_znormal}         Compile Zsh files.
+  ${_zbold}help${_znormal}            Print this help.
+  ${_zbold}info${_znormal}            Print zimfw and system info.
+  ${_zbold}list${_znormal}            List all modules currently defined in ${_zbold}${_zconfig}${_znormal}.
+                  Use ${_zbold}-v${_znormal} to also see the modules details.
+  ${_zbold}init${_znormal}            Same as ${_zbold}install${_znormal}, but with output tailored to be used at terminal startup.
+  ${_zbold}install${_znormal}         Install new modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
                   output, any on-pull output and skipped modules.
-  <%= bold %>reinstall<%= normal %>       Reinstall modules that failed check. Prompts for confirmation. Use <%= bold %>-q<%= normal %> for
-                  quiet reinstall. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their output,
+  ${_zbold}reinstall${_znormal}       Reinstall modules that failed check. Prompts for confirmation. Use ${_zbold}-q${_znormal} for
+                  quiet reinstall. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output,
                   any on-pull output and skipped modules.
-  <%= bold %>uninstall<%= normal %>       Delete unused modules. Prompts for confirmation. Use <%= bold %>-q<%= normal %> for quiet uninstall.
-  <%= bold %>check<%= normal %>           Check if updates for current modules are available. Use <%= bold %>-v<%= normal %> to also see
+  ${_zbold}uninstall${_znormal}       Delete unused modules. Prompts for confirmation. Use ${_zbold}-q${_znormal} for quiet uninstall.
+  ${_zbold}check${_znormal}           Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
                   skipped and up to date modules.
-  <%= bold %>update<%= normal %>          Update current modules. Also does <%= bold %>build<%= normal %>, <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see their
+  ${_zbold}update${_znormal}          Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
                   output, any on-pull output and skipped modules.
-  <%= bold %>check-version<%= normal %>   Check if a new version of zimfw is available.
-  <%= bold %>upgrade<%= normal %>         Upgrade zimfw. Also does <%= bold %>compile<%= normal %>. Use <%= bold %>-v<%= normal %> to also see its output.
-  <%= bold %>version<%= normal %>         Print zimfw version.
+  ${_zbold}check-version${_znormal}   Check if a new version of zimfw is available.
+  ${_zbold}upgrade${_znormal}         Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
+  ${_zbold}version${_znormal}         Print zimfw version.
 
 Options:
-  <%= bold %>-q<%= normal %>              Quiet (yes to prompts and only outputs errors)
-  <%= bold %>-v<%= normal %>              Verbose (outputs more details)'
+  ${_zbold}-q${_znormal}              Quiet (yes to prompts and only outputs errors)
+  ${_zbold}-v${_znormal}              Verbose (outputs more details)"
   local -Ua _znames _zroot_dirs _zdisabled_root_dirs
   local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
-     print -u2 -lR $'<%= red %>'${0}$': Too many options<%= normal %>' '' ${zusage}
+     print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}
      return 2
   elif (( # > 1 )); then
     case ${2} in
       -q) _zprintlevel=0 ;;
       -v) _zprintlevel=2 ;;
       *)
-        print -u2 -lR $'<%= red %>'${0}': Unknown option '${2}$'<%= normal %>' '' ${zusage}
+        print -u2 -lR "${_zred}${0}: Unknown option ${2}${_znormal}" '' ${zusage}
         return 2
         ;;
     esac
@@ -60,7 +66,7 @@ Options:
   fi
 
   if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|reinstall|check-version) ]]; then
-    print -u2 -R $'<%= red %>'${0}$': No write permission to <%= bold %>'${ZIM_HOME}$'<%= normalred %>. Will not try to '${1}$'.<%= normal %>'
+    print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
@@ -109,7 +115,7 @@ Options:
       ;;
     version) print -R ${_zversion} ;;
     *)
-      print -u2 -lR $'<%= red %>'${0}': Unknown action '${1}$'<%= normal %>' '' ${zusage}
+      print -u2 -lR "${_zred}${0}: Unknown action ${1}${_znormal}" '' ${zusage}
       return 2
       ;;
   esac

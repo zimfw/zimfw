@@ -1,7 +1,7 @@
 _zimfw_upgrade() {
   local -r ztarget=${__ZIMFW_FILE:A} zurl=https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh.gz
   if [[ ! -w ${ztarget:h} ]]; then
-    print -u2 -R $'<%= red %>No write permission to <%= bold %>'${ztarget:h}$'<%= normalred %>. Will not try to upgrade.<%= normal %>'
+    print -u2 -R "${_zred}No write permission to ${_zbold}${ztarget:h}${_znormalred}. Will not try to upgrade.${_znormal}"
     return 1
   fi
   {
@@ -12,7 +12,7 @@ _zimfw_upgrade() {
       if (( _zprintlevel <= 1 )) zopt=-q
       if ! command wget -nv ${zopt} -O ${ztarget}.new.gz ${zurl}; then
         if (( _zprintlevel <= 1 )); then
-          print -u2 -R $'<%= red %>Failed to download <%= bold %>'${zurl}$'<%= normalred %>. Use <%= bold %>-v<%= normalred %> option to see details.<%= normal %>'
+          print -u2 -R "${_zred}Failed to download ${_zbold}${zurl}${_znormalred}. Use ${_zbold}-v${_znormalred} option to see details.${_znormal}"
         fi
         return 1
       fi

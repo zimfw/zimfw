@@ -2,11 +2,11 @@ _zimfw_mv() {
   local -a cklines
   if cklines=(${(f)"$(command cksum ${1} ${2} 2>/dev/null)"}) && \
       [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
-    _zimfw_print -R $'<%= okay %><%= bold %>'${2}$':<%= normal %> Already up to date'
+    _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Already up to date"
   else
     if [[ -e ${2} ]]; then
       command mv -f ${2}{,.old} || return 1
     fi
-    command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R $'<%= okay %><%= bold %>'${2}$':<%= normal %> Updated.'${_zrestartmsg}
+    command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Updated.${_zrestartmsg}"
   fi
 }
