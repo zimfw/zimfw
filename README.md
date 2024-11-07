@@ -119,7 +119,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    ```
    This is optional. Alternatively, you can download the `zimfw.zsh` script
    anywhere your user has write access to: just replace the occurrences of
-   `${ZIM_HOME}/zimfw.zsh` by the preferred path, like `/usr/local/bin/zimfw.zsh`
+   `${ZIM_HOME}/zimfw.zsh` by the preferred path, like `/usr/local/share/zimfw/zimfw.zsh`
    for example. If you choose to not include this step, you should manually
    download the `zimfw.zsh` script once and keep it at the preferred path.
 
