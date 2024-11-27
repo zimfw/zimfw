@@ -2,6 +2,7 @@ _zimfw_run_list() {
   local -r zname=${1}
   local -r zdir=${_zdirs[${zname}]}
   print -nR "${_zbold}${zname}:${_znormal} ${zdir}"
+  if [[ ! -e ${zdir} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
   if (( ${_zdisabled_root_dirs[(I)${zdir}]} )) print -n ' (disabled)'

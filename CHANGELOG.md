@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- Also list not installed modules with `list` action, when not in verbose mode.
 
 ## [1.16.0] - 2024-11-25
 

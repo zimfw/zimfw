@@ -84,8 +84,9 @@ Options:
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 1 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
-          _zimfw_list_unuseds ' (unused)'
+      _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
+          zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
+         _zimfw_list_unuseds ' (unused)'
       ;;
     check)
       _zrestartmsg=

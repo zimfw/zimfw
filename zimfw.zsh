@@ -468,7 +468,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-11-27 23:41:51 UTC, previous commit is 923014a)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-11-27 23:56:10 UTC, previous commit is e9279aa)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -532,6 +532,7 @@ _zimfw_run_list() {
   local -r zname=${1}
   local -r zdir=${_zdirs[${zname}]}
   print -nR "${_zbold}${zname}:${_znormal} ${zdir}"
+  if [[ ! -e ${zdir} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
   if (( ${_zdisabled_root_dirs[(I)${zdir}]} )) print -n ' (disabled)'
@@ -1041,8 +1042,9 @@ Options:
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 1 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
-          _zimfw_list_unuseds ' (unused)'
+      _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
+          zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
+         _zimfw_list_unuseds ' (unused)'
       ;;
     check)
       _zrestartmsg=
