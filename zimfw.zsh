@@ -325,10 +325,8 @@ Per-call initialization options:
     esac
     shift
   done
-  if (( _zflags & 1 )); then
-    _znames+=(${zname})
-  fi
-  if (( _zflags & 2 )); then
+  _znames+=(${zname})
+  if (( _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
       _zfailed=1
@@ -362,13 +360,13 @@ Per-call initialization options:
 }
 
   {
-    local -r _zflags=${1}
+    local -ri _zeager=${1}
     local -i _zfailed=0
     if ! source ${_zconfig} || (( _zfailed )); then
       print -u2 -R "${_zred}Failed to source ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
-    if (( _zflags & 1 && ${#_znames} == 0 )); then
+    if (( ${#_znames} == 0 )); then
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
@@ -470,7 +468,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-11-25 13:50:33 UTC, previous commit is 2d5718e)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2024-11-27 23:41:51 UTC, previous commit is 923014a)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -952,7 +950,7 @@ _zimfw_run_tool() {
 _zimfw_run_tool_action() {
   local -i zmaxprocs=0
   if [[ ${1} == reinstall ]] zmaxprocs=1
-  _zimfw_source_zimrc 1 || return 1
+  _zimfw_source_zimrc 0 || return 1
   zargs -n 2 -P ${zmaxprocs} -- "${_znames[@]}" -- _zimfw_run_tool ${1}
   return 0
 }
@@ -965,7 +963,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.16.0'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.17.0-SNAPSHOT'
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [${_zbold}-q${_znormal}|${_zbold}-v${_znormal}]
 
 Actions:
@@ -1031,7 +1029,7 @@ Options:
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
-      _zimfw_source_zimrc 2 && _zimfw_build || return 1
+      _zimfw_source_zimrc 1 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
@@ -1043,7 +1041,7 @@ Options:
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 1 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     check)
@@ -1057,13 +1055,13 @@ Options:
       _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
       _zimfw_print 'Done with install.' # Only printed in verbose mode
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     install|update|reinstall)
       _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -R "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     check-version) _zimfw_check_version 1 ;;

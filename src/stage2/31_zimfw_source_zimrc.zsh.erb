@@ -1,13 +1,13 @@
 _zimfw_source_zimrc() {
 <%= render_all("src/functions/*.erb") %>
   {
-    local -r _zflags=${1}
+    local -ri _zeager=${1}
     local -i _zfailed=0
     if ! source ${_zconfig} || (( _zfailed )); then
       print -u2 -R "${_zred}Failed to source ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
-    if (( _zflags & 1 && ${#_znames} == 0 )); then
+    if (( ${#_znames} == 0 )); then
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi

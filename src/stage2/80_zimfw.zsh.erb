@@ -72,7 +72,7 @@ Options:
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
-      _zimfw_source_zimrc 2 && _zimfw_build || return 1
+      _zimfw_source_zimrc 1 && _zimfw_build || return 1
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
@@ -84,7 +84,7 @@ Options:
     help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
-      _zimfw_source_zimrc 3 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
+      _zimfw_source_zimrc 1 && zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
           _zimfw_list_unuseds ' (unused)'
       ;;
     check)
@@ -98,13 +98,13 @@ Options:
       _zimfw_run_tool_action install || return 1
       (( _zprintlevel-- ))
       _zimfw_print 'Done with install.' # Only printed in verbose mode
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     install|update|reinstall)
       _zimfw_run_tool_action ${1} || return 1
       _zimfw_print -R "Done with ${1}.${_zrestartmsg}"
       (( _zprintlevel-- ))
-      _zimfw_source_zimrc 2 && _zimfw_build && _zimfw_compile
+      _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
     check-version) _zimfw_check_version 1 ;;

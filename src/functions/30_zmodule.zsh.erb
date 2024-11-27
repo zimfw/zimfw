@@ -206,10 +206,8 @@ Per-call initialization options:
     esac
     shift
   done
-  if (( _zflags & 1 )); then
-    _znames+=(${zname})
-  fi
-  if (( _zflags & 2 )); then
+  _znames+=(${zname})
+  if (( _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
       _zfailed=1
