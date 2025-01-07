@@ -38,9 +38,6 @@ Actions:
 Options:
   ${_zbold}-q${_znormal}              Quiet (yes to prompts and only outputs errors)
   ${_zbold}-v${_znormal}              Verbose (outputs more details)"
-  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
-  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
-  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}
@@ -54,6 +51,21 @@ Options:
         return 2
         ;;
     esac
+  fi
+  case ${1} in
+    help)
+      print -R ${zusage}
+      return
+      ;;
+    version)
+      print -R ${_zversion}
+      return
+      ;;
+  esac
+
+  if (( ! ${+ZIM_HOME} )); then
+    print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
+    return 1
   fi
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
@@ -69,6 +81,9 @@ Options:
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
+  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
+  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
+  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
@@ -81,7 +96,6 @@ Options:
     clean-compiled) _zimfw_source_zimrc 0 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_source_zimrc 0 && _zimfw_compile ;;
-    help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
@@ -114,7 +128,6 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 0 && _zimfw_compile
       ;;
-    version) print -R ${_zversion} ;;
     *)
       print -u2 -lR "${_zred}${0}: Unknown action ${1}${_znormal}" '' ${zusage}
       return 2

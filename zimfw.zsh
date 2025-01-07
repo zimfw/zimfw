@@ -30,10 +30,6 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
 fi
 autoload -Uz zargs
 
-if (( ! ${+ZIM_HOME} )); then
-  print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
-  return 1
-fi
 # Define zimfw location
 typeset -g __ZIMFW_FILE=${0}
 
@@ -468,7 +464,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2024-11-27 23:56:10 UTC, previous commit is e9279aa)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-07 01:10:19 UTC, previous commit is f51b548)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -996,9 +992,6 @@ Actions:
 Options:
   ${_zbold}-q${_znormal}              Quiet (yes to prompts and only outputs errors)
   ${_zbold}-v${_znormal}              Verbose (outputs more details)"
-  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
-  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
-  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}
@@ -1012,6 +1005,21 @@ Options:
         return 2
         ;;
     esac
+  fi
+  case ${1} in
+    help)
+      print -R ${zusage}
+      return
+      ;;
+    version)
+      print -R ${_zversion}
+      return
+      ;;
+  esac
+
+  if (( ! ${+ZIM_HOME} )); then
+    print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
+    return 1
   fi
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
@@ -1027,6 +1035,9 @@ Options:
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
+  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
+  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
+  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   case ${1} in
     build)
@@ -1039,7 +1050,6 @@ Options:
     clean-compiled) _zimfw_source_zimrc 0 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
     compile) _zimfw_source_zimrc 0 && _zimfw_compile ;;
-    help) print -R ${zusage} ;;
     info) _zimfw_info ;;
     list)
       _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
@@ -1072,7 +1082,6 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 0 && _zimfw_compile
       ;;
-    version) print -R ${_zversion} ;;
     *)
       print -u2 -lR "${_zred}${0}: Unknown action ${1}${_znormal}" '' ${zusage}
       return 2
