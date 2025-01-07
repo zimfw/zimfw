@@ -85,6 +85,7 @@ Options:
   local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
+  autoload -Uz zargs
   case ${1} in
     build)
       _zimfw_source_zimrc 1 && _zimfw_build || return 1

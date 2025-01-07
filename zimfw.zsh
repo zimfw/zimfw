@@ -28,7 +28,6 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
   print -u2 -R "${_zred}${0}: Error starting zimfw. You're using Zsh version ${_zbold}${ZSH_VERSION}${_znormalred} and versions < ${_zbold}5.2${_znormalred} are not supported. Update your Zsh.${_znormal}"
   return 1
 fi
-autoload -Uz zargs
 
 # Define zimfw location
 typeset -g __ZIMFW_FILE=${0}
@@ -464,7 +463,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-07 01:10:19 UTC, previous commit is f51b548)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-07 01:26:16 UTC, previous commit is 30ab012)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1039,6 +1038,7 @@ Options:
   local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
   local -a _zfpaths _zfunctions _zcmds _zunused_dirs
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
+  autoload -Uz zargs
   case ${1} in
     build)
       _zimfw_source_zimrc 1 && _zimfw_build || return 1

@@ -2,7 +2,6 @@ autoload -Uz is-at-least && if ! is-at-least <%= min_zsh_version %>; then
   print -u2 -R "${_zred}${0}: Error starting zimfw. You're using Zsh version ${_zbold}${ZSH_VERSION}${_znormalred} and versions < ${_zbold}<%= min_zsh_version %>${_znormalred} are not supported. Update your Zsh.${_znormal}"
   return 1
 fi
-autoload -Uz zargs
 
 # Define zimfw location
 typeset -g __ZIMFW_FILE=${0}
