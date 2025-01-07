@@ -14,6 +14,8 @@
   </a>
 </div>
 
+([简体中文-镜像](README_CN.md))
+
 What is Zim?
 ------------
 Zim is a Zsh configuration framework that bundles a [plugin manager](#usage),
