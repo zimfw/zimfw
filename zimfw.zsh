@@ -134,8 +134,11 @@ Per-module options:
   ${_zbold}-t${_znormal}|${_zbold}--tag${_znormal} <tag_name>        Use specified tag when installing and updating the module. Over-
                              rides the branch option.
   ${_zbold}-u${_znormal}|${_zbold}--use${_znormal} <tool_name>       Install and update the module using the defined tool. Default is
-                             either defined by ${_zbold}zstyle ':zim:zmodule' use '${_znormal}<tool_name>${_zbold}'${_znormal}, or ${_zbold}git${_znormal}
-                             if none is provided. The tools available are:
+                             either defined by ${_zbold}zstyle ':zim:zmodule' use '${_znormal}<tool_name>${_zbold}'${_znormal}, or
+                             set to ${_zbold}auto${_znormal}. The tools available are:
+                             ${_zbold}auto${_znormal} tries to auto detect the tool to be used. When installing a
+                             new module, ${_zbold}git${_znormal} will be used if the git command is available,
+                             otherwise ${_zbold}degit${_znormal} will be used.
                              ${_zbold}git${_znormal} uses the git command. Local changes are preserved on updates.
                              ${_zbold}degit${_znormal} uses curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
@@ -236,7 +239,7 @@ Per-call initialization options:
   _zroot_dirs+=(${zroot_dir})
   # Set default values
   if (( ! ${+_ztools[${zname}]} )); then
-    zstyle -s ':zim:zmodule' use "_ztools[${zname}]" || _ztools[${zname}]=git
+    zstyle -s ':zim:zmodule' use "_ztools[${zname}]" || _ztools[${zname}]=auto
   fi
   if (( ! ${+_ztypes[${zname}]} )) _ztypes[${zname}]=branch
   if (( ! ${+_zsubmodules[${zname}]} )) _zsubmodules[${zname}]=1
@@ -320,6 +323,25 @@ Per-call initialization options:
     esac
     shift
   done
+  # Detect tool if auto and not external and not frozen module
+  if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
+    if [[ -e ${_zdirs[${zname}]} ]]; then
+      if [[ -r ${_zdirs[${zname}]}/.git ]]; then
+        _ztools[${zname}]=git
+      elif [[ -r ${_zdirs[${zname}]}/.zdegit ]]; then
+        _ztools[${zname}]=degit
+      else
+        _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to disable this warning.${_znormal}"
+        _ztools[${zname}]=mkdir
+      fi
+    else
+      if (( ${+commands[git]} )); then
+        _ztools[${zname}]=git
+      else
+        _ztools[${zname}]=degit
+      fi
+    fi
+  fi
   _znames+=(${zname})
   if (( _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
@@ -463,7 +485,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-07 01:26:16 UTC, previous commit is 30ab012)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-16 01:28:55 UTC, previous commit is 4f1c59a)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Also list not installed modules with `list` action, when not in verbose mode.
+- `auto` tool in `zmodule`, which auto detects the best tool available for installing a new
+  module or the tool used when an existing module was installed. This is now the default tool
+  and makes life automatically easier for users without git installed.
 
 ## [1.16.0] - 2024-11-25
 
