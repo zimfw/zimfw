@@ -77,14 +77,7 @@ to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
 
 Add the lines below to your `~/.zshrc` file, in the following order:
 
-1. To use our `degit` tool by default to install modules:
-   ```zsh
-   zstyle ':zim:zmodule' use 'degit'
-   ````
-   This is optional and only required if you don't have `git` installed (yes,
-   zimfw works even without `git`!)
-
-2. To set where the zimfw plugin manager configuration file will be located:
+1. To set where the zimfw plugin manager configuration file will be located:
    ```zsh
    ZIM_CONFIG_FILE=~/.config/zsh/zimrc
    ```
@@ -93,7 +86,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
    `${ZDOTDIR}/.zimrc`.
 
-3. To set the directory where the zimfw plugin manager will keep necessary files:
+2. To set the directory where the zimfw plugin manager will keep necessary files:
    ```zsh
    ZIM_HOME=~/.zim
    ```
@@ -101,7 +94,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    You can even set it to a cache directory like `${XDG_CACHE_HOME}/zim` or
    `~/.cache/zim`.
 
-4. To automatically download the zimfw plugin manager if missing:
+3. To automatically download the zimfw plugin manager if missing:
    ```zsh
    # Download zimfw plugin manager if missing.
    if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
@@ -123,7 +116,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    for example. If you choose to not include this step, you should manually
    download the `zimfw.zsh` script once and keep it at the preferred path.
 
-5. To automatically install missing modules and update the static initialization
+4. To automatically install missing modules and update the static initialization
    script if missing or outdated:
    ```zsh
    # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
@@ -137,7 +130,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    `zimfw.zsh` in a different path as mentioned in the previous step, replace
    `${ZIM_HOME}/zimfw.zsh` by the chosen path.
 
-6. To source the static script, that will initialize your modules:
+5. To source the static script, that will initialize your modules:
    ```zsh
    # Initialize modules.
    source ${ZIM_HOME}/init.zsh
@@ -270,8 +263,11 @@ Per-module options:
   <b>-t</b>|<b>--tag</b> &lt;tag_name&gt;        Use specified tag when installing and updating the module. Over-
                              rides the branch option.
   <b>-u</b>|<b>--use</b> &lt;tool_name&gt;       Install and update the module using the defined tool. Default is
-                             either defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;tool_name&gt;<b>&apos;</b>, or <b>git</b>
-                             if none is provided. The tools available are:
+                             either defined by <b>zstyle &apos;:zim:zmodule&apos; use &apos;</b>&lt;tool_name&gt;<b>&apos;</b>, or
+                             set to <b>auto</b>. The tools available are:
+                             <b>auto</b> tries to auto detect the tool to be used. When installing a
+                             new module, <b>git</b> will be used if the git command is available,
+                             otherwise <b>degit</b> will be used.
                              <b>git</b> uses the git command. Local changes are preserved on updates.
                              <b>degit</b> uses curl or wget, and currently only works with GitHub
                              URLs. Modules install faster and take less disk space. Local
@@ -349,8 +345,8 @@ if the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
 
     ZIM_CONFIG_FILE=~/.config/zsh/zimrc
 
-Modules are installed using `git` by default. If you don't have `git`
-installed, or if you want to take advantage of our degit tool for faster and
+The zimfw plugin manager will detect if `git` is installed and fall back to work without `git`
+with its degit tool. If you want to take advantage of its degit tool regardless for faster and
 lighter module installations, you can set degit as the default tool with:
 
     zstyle ':zim:zmodule' use 'degit'

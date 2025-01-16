@@ -10,9 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Also list not installed modules with `list` action, when not in verbose mode.
-- `auto` tool in `zmodule`, which auto detects the best tool available for installing a new
-  module or the tool used when an existing module was installed. This is now the default tool
-  and makes life automatically easier for users without git installed.
+- `auto` tool in `zmodule`, which auto detects the best tool available for
+  installing a new module or the tool used when an existing module was
+  installed. This is now the default tool and makes life automatically easier
+  for users without git installed.
+
+### Fixed
+
+- Print help or version even if `ZIM_HOME` is not set.
+- "no such file or directory: /path/to/.zdegit" error when installing a new
+  module with the degit tool.
 
 ## [1.16.0] - 2024-11-25
 
