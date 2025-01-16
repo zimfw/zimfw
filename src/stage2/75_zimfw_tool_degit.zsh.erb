@@ -9,9 +9,11 @@ _zimfw_download_tarball() {
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
   {
-    readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
-    # Previous REV is in line 2, reserved for future use.
-    readonly INFO_HEADER=${INFO[3]}
+    if [[ ${ACTION} != install ]]; then
+      readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+      # Previous REV is in line 2, reserved for future use.
+      readonly INFO_HEADER=${INFO[3]}
+    fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0

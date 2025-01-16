@@ -485,7 +485,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-16 02:07:28 UTC, previous commit is 4850633)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-16 02:29:49 UTC, previous commit is 913e815)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -635,9 +635,11 @@ _zimfw_download_tarball() {
   fi
   readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
   {
-    readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
-    # Previous REV is in line 2, reserved for future use.
-    readonly INFO_HEADER=${INFO[3]}
+    if [[ ${ACTION} != install ]]; then
+      readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
+      # Previous REV is in line 2, reserved for future use.
+      readonly INFO_HEADER=${INFO[3]}
+    fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
