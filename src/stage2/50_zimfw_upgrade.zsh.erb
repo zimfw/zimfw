@@ -5,7 +5,7 @@ _zimfw_upgrade() {
     return 1
   fi
   {
-    if (( ${+commands[curl]} )); then
+    if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
     else
       local zopt

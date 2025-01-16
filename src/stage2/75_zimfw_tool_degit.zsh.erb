@@ -15,13 +15,13 @@ _zimfw_download_tarball() {
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
-      if (( ${+commands[curl]} )); then
+      if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
       else
         command wget --spider -qS --header=${INFO_HEADER} ${TARBALL_URL} 2>${HEADERS_TARGET}
       fi
     else
-      if (( ${+commands[curl]} )); then
+      if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         if ! ERR=$(command curl -fsSL ${INFO_HEADER:+-H} ${INFO_HEADER} -o ${TARBALL_TARGET} -D ${HEADERS_TARGET} ${TARBALL_URL} 2>&1); then
           _zimfw_print_error "Error downloading ${TARBALL_URL} with curl" ${ERR}
           return 1
@@ -124,7 +124,7 @@ _zimfw_tool_degit() {
         else
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_create_dir ${DIR_NEW} && _zimfw_untar_tarball ${DIR_NEW} || return 1
-            if (( ${+commands[diff]} )); then
+            if [[ ${+commands[diff]} -ne 0 && -x ${commands[diff]} ]]; then
               LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
               LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
             fi

@@ -221,7 +221,7 @@ Per-call initialization options:
         _ztools[${zname}]=mkdir
       fi
     else
-      if (( ${+commands[git]} )); then
+      if [[ ${+commands[git]} -ne 0 && -x ${commands[git]} ]]; then
         _ztools[${zname}]=git
       else
         _ztools[${zname}]=degit

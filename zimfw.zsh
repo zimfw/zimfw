@@ -335,7 +335,7 @@ Per-call initialization options:
         _ztools[${zname}]=mkdir
       fi
     else
-      if (( ${+commands[git]} )); then
+      if [[ ${+commands[git]} -ne 0 && -x ${commands[git]} ]]; then
         _ztools[${zname}]=git
       else
         _ztools[${zname}]=degit
@@ -485,7 +485,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-16 01:28:55 UTC, previous commit is 4f1c59a)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-01-16 02:07:28 UTC, previous commit is 4850633)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -523,7 +523,7 @@ _zimfw_upgrade() {
     return 1
   fi
   {
-    if (( ${+commands[curl]} )); then
+    if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
       command curl -fsSL -o ${ztarget}.new.gz ${zurl} || return 1
     else
       local zopt
@@ -641,13 +641,13 @@ _zimfw_download_tarball() {
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
       if [[ -z ${INFO_HEADER} ]] return 0
-      if (( ${+commands[curl]} )); then
+      if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
       else
         command wget --spider -qS --header=${INFO_HEADER} ${TARBALL_URL} 2>${HEADERS_TARGET}
       fi
     else
-      if (( ${+commands[curl]} )); then
+      if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         if ! ERR=$(command curl -fsSL ${INFO_HEADER:+-H} ${INFO_HEADER} -o ${TARBALL_TARGET} -D ${HEADERS_TARGET} ${TARBALL_URL} 2>&1); then
           _zimfw_print_error "Error downloading ${TARBALL_URL} with curl" ${ERR}
           return 1
@@ -750,7 +750,7 @@ _zimfw_tool_degit() {
         else
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_create_dir ${DIR_NEW} && _zimfw_untar_tarball ${DIR_NEW} || return 1
-            if (( ${+commands[diff]} )); then
+            if [[ ${+commands[diff]} -ne 0 && -x ${commands[diff]} ]]; then
               LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
               LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
             fi
