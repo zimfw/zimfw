@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.17.0] - 2025-01-16
+
 ### Added
 
 - Also list not installed modules with `list` action, when not in verbose mode.
@@ -443,7 +447,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.16.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.17.0...HEAD
+[1.17.0]: https://github.com/zimfw/zimfw/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/zimfw/zimfw/compare/v1.15.1...v1.16.0
 [1.15.1]: https://github.com/zimfw/zimfw/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/zimfw/zimfw/compare/v1.14.0...v1.15.0
