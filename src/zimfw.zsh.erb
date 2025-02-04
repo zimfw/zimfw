@@ -1,18 +1,16 @@
 <%
 class Zim
   attr_reader :version, :home, :min_zsh_version, :url_regex,
-      :bold, :normal, :red, :normalred, :yellow, :normalyellow, :clear_line, :ellipsis, :okay, :warn, :error
+      :bold, :normal, :red, :normalred, :yellow, :normalyellow, :okay, :warn, :error
 
   def initialize
-    @version = "1.17.0"
+    @version = "1.18.0-SNAPSHOT"
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"
     # Matches {ssh,http,https,git}://{user@,}host/org/repo and {user@,}host:org/repo
     # but not file:///path/to/repo or /path/to/repo
     # ${match[3]} contains host, and ${match[4]} contains org/repo
     @url_regex = "^([^:@/]+://)?([^@]+@)?([^:/]+)[:/]([^/]+/[^/]+)/?$"
-    @clear_line = "\\E[2K\\r"
-    @ellipsis = " ..."
     @okay = ") "
     @warn = "! "
     @error = "x "

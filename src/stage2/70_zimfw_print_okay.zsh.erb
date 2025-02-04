@@ -1,3 +1,3 @@
 _zimfw_print_okay() {
-  if (( _zprintlevel > ${2:-0} )) print -lR $'<%= clear_line %>'"${_zokay}${_zbold}${_zname}:${_znormal} ${1}" ${3:+${(F):-  ${(f)^3}}}
+  if (( _zprintlevel > ${2:-0} )) print -lR "${_zokay}${_zbold}${_zname}:${_znormal} ${1}" ${3:+${(F):-  ${(f)^3}}}
 }
