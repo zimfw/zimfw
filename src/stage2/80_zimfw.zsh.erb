@@ -67,6 +67,9 @@ Options:
     print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
     return 1
   fi
+  if [[ ! -e ${ZIM_HOME} ]]; then
+    command mkdir -p ${ZIM_HOME} || return 1
+  fi
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \

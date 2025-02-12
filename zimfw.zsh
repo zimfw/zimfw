@@ -485,7 +485,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-02-04 22:30:15 UTC, previous commit is 8ea4419)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-02-12 18:19:05 UTC, previous commit is f1f7ea1)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1036,6 +1036,9 @@ Options:
   if (( ! ${+ZIM_HOME} )); then
     print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
     return 1
+  fi
+  if [[ ! -e ${ZIM_HOME} ]]; then
+    command mkdir -p ${ZIM_HOME} || return 1
   fi
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
