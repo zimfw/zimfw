@@ -29,6 +29,7 @@ Table of Contents
 -----------------
 * [Installation](#installation)
   * [Automatic installation](#automatic-installation)
+  * [Homebrew](#homebrew)
   * [Manual installation](#manual-installation)
     * [Set up `~/.zshrc`](#set-up-zshrc)
     * [Create `~/.zimrc`](#create-zimrc)
@@ -59,6 +60,33 @@ This will install a predefined set of modules and a theme for you.
 Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
 to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
 [modules] and [themes] you can add to your [`~/.zimrc`](#create-zimrc).
+
+### Homebrew
+
+1. Install zimfw with brew:
+    ```zsh
+    brew install --formula zimfw
+    ```
+
+2. Add the following to your `~/.zshrc`:
+   ```zsh
+   ZIM_HOME=~/.zim
+   # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
+   if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
+     source /path/to/zimfw.zsh init -q
+   fi
+   # Initialize modules.
+   source ${ZIM_HOME}/init.zsh
+   ```
+   replacing `/path/to/zimfw.zsh` with the path where brew installed the script,
+   which is shown in the brew formula caveats. It is usually:
+   * `/opt/homebrew/opt/zimfw/share/zimfw.zsh` on Apple Silicon macOS,
+   * `/usr/local/opt/zimfw/share/zimfw.zsh` on Intel macOS,
+   * `/home/linuxbrew/.linuxbrew/opt/zimfw/share/zimfw.zsh` on Linux.
+
+3. [Create your `~/.zimrc` file](#create-zimrc)
+
+4. Restart your terminal and you're done. Enjoy your Zsh IMproved!
 
 ### Manual installation
 
@@ -155,29 +183,114 @@ file is defined by the following rules:
 
 As for the contents of the file, you can start with just:
 ```zsh
+# Fish-like syntax highlighting for Zsh.
 zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like autosuggestions for Zsh.
+zmodule zsh-users/zsh-autosuggestions
+```
+
+If you also want saner defaults:
+```zsh
+#
+# Modules
+#
+
+# Sets sane Zsh built-in environment options.
+zmodule environment
+# Applies correct bindkeys for input events.
+zmodule input
+# Utility aliases and functions. Adds colour to ls, grep and less.
+zmodule utility
+
+#
+# Modules that must be initialized last
+#
+
+# Fish-like syntax highlighting for Zsh.
+zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions
 ```
 
 If you also want one of our prompt [themes]:
 ```zsh
-zmodule git-info
+#
+# Modules
+#
+
+# Sets sane Zsh built-in environment options.
+zmodule environment
+# Applies correct bindkeys for input events.
+zmodule input
+# Utility aliases and functions. Adds colour to ls, grep and less.
+zmodule utility
+
+#
+# Prompt
+#
+
+# Exposes to prompts how long the last command took to execute, used by asciiship.
 zmodule duration-info
+# Exposes git repository status information to prompts, used by asciiship.
+zmodule git-info
+# A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
+
+#
+# Modules that must be initialized last
+#
+
+# Fish-like syntax highlighting for Zsh.
 zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions
 ```
 
 If you want to use our [completion] module too, instead of using `compinit` directly:
 ```zsh
-zmodule git-info
+#
+# Modules
+#
+
+# Sets sane Zsh built-in environment options.
+zmodule environment
+# Applies correct bindkeys for input events.
+zmodule input
+# Utility aliases and functions. Adds colour to ls, grep and less.
+zmodule utility
+
+#
+# Prompt
+#
+
+# Exposes to prompts how long the last command took to execute, used by asciiship.
 zmodule duration-info
+# Exposes git repository status information to prompts, used by asciiship.
+zmodule git-info
+# A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
+
+#
+# Completion
+#
+
+# Additional completion definitions for Zsh.
 zmodule zsh-users/zsh-completions --fpath src
+# Enables and configures smart and extensive tab completion.
+# completion must be sourced after all modules that add completion definitions.
 zmodule completion
+
+#
+# Modules that must be initialized last
+#
+
+# Fish-like syntax highlighting for Zsh.
+# zsh-users/zsh-syntax-highlighting must be sourced after completion
 zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions
 ```
+
 The [completion] module calls `compinit` for you. You should remove any
 `compinit` calls from your `~/.zshrc` when you use this module. The modules will
 be initialized in the order they are defined, and [completion] must be
