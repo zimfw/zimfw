@@ -485,7 +485,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-02-12 18:27:35 UTC, previous commit is f722adf)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-02-19 19:33:02 UTC, previous commit is a8c17c0)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -977,37 +977,37 @@ zimfw() {
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
   local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.17.1'
-  local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [${_zbold}-q${_znormal}|${_zbold}-v${_znormal}]
+  local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:
-  ${_zbold}build${_znormal}           Build ${_zbold}${ZIM_HOME}/init.zsh${_znormal} and ${_zbold}${ZIM_HOME}/login_init.zsh${_znormal}.
-                  Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
-  ${_zbold}clean${_znormal}           Clean all. Does both ${_zbold}clean-compiled${_znormal} and ${_zbold}clean-dumpfile${_znormal}.
-  ${_zbold}clean-compiled${_znormal}  Clean Zsh compiled files.
-  ${_zbold}clean-dumpfile${_znormal}  Clean completion dumpfile.
-  ${_zbold}compile${_znormal}         Compile Zsh files.
-  ${_zbold}help${_znormal}            Print this help.
-  ${_zbold}info${_znormal}            Print zimfw and system info.
-  ${_zbold}list${_znormal}            List all modules currently defined in ${_zbold}${_zconfig}${_znormal}.
-                  Use ${_zbold}-v${_znormal} to also see the modules details.
-  ${_zbold}init${_znormal}            Same as ${_zbold}install${_znormal}, but with output tailored to be used at terminal startup.
-  ${_zbold}install${_znormal}         Install new modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
-                  output, any on-pull output and skipped modules.
-  ${_zbold}reinstall${_znormal}       Reinstall modules that failed check. Prompts for confirmation. Use ${_zbold}-q${_znormal} for
-                  quiet reinstall. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output,
-                  any on-pull output and skipped modules.
-  ${_zbold}uninstall${_znormal}       Delete unused modules. Prompts for confirmation. Use ${_zbold}-q${_znormal} for quiet uninstall.
-  ${_zbold}check${_znormal}           Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
-                  skipped and up to date modules.
-  ${_zbold}update${_znormal}          Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
-                  output, any on-pull output and skipped modules.
-  ${_zbold}check-version${_znormal}   Check if a new version of zimfw is available.
-  ${_zbold}upgrade${_znormal}         Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
-  ${_zbold}version${_znormal}         Print zimfw version.
+  ${_zbold}build${_znormal}               Build ${_zbold}${ZIM_HOME}/init.zsh${_znormal} and ${_zbold}${ZIM_HOME}/login_init.zsh${_znormal}.
+                      Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
+  ${_zbold}clean${_znormal}               Clean all. Does both ${_zbold}clean-compiled${_znormal} and ${_zbold}clean-dumpfile${_znormal}.
+  ${_zbold}clean-compiled${_znormal}      Clean Zsh compiled files.
+  ${_zbold}clean-dumpfile${_znormal}      Clean completion dumpfile.
+  ${_zbold}compile${_znormal}             Compile Zsh files.
+  ${_zbold}info${_znormal}                Print zimfw and system info.
+  ${_zbold}list${_znormal}                List all modules defined in ${_zbold}${_zconfig}${_znormal}.
+                      Use ${_zbold}-v${_znormal} to also see their initialization details.
+  ${_zbold}init${_znormal}                Same as ${_zbold}install${_znormal}, but with output tailored for the terminal startup.
+  ${_zbold}install${_znormal}             Install new modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
+                      output, any on-pull output and skipped modules.
+  ${_zbold}reinstall${_znormal}           Reinstall modules that failed check. Prompts for confirmation, unless ${_zbold}-q${_znormal}
+                      is used. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output, any
+                      on-pull output and skipped modules.
+  ${_zbold}uninstall${_znormal}           Delete unused modules. Prompts for confirmation, unless ${_zbold}-q${_znormal} is used.
+  ${_zbold}check${_znormal}               Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
+                      skipped and up to date modules.
+  ${_zbold}update${_znormal}              Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see
+                      their output, any on-pull output and skipped modules.
+  ${_zbold}check-version${_znormal}       Check if a new version of zimfw is available.
+  ${_zbold}upgrade${_znormal}             Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
+  ${_zbold}help${_znormal}, ${_zbold}--help${_znormal}        Print this help.
+  ${_zbold}version${_znormal}, ${_zbold}--version${_znormal}  Print zimfw version.
 
 Options:
-  ${_zbold}-q${_znormal}              Quiet (yes to prompts and only outputs errors)
-  ${_zbold}-v${_znormal}              Verbose (outputs more details)"
+  ${_zbold}-q${_znormal}                  Quiet (yes to prompts and only outputs errors)
+  ${_zbold}-v${_znormal}                  Verbose (outputs more details)"
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}
@@ -1023,11 +1023,11 @@ Options:
     esac
   fi
   case ${1} in
-    help)
+    help|--help)
       print -R ${zusage}
       return
       ;;
-    version)
+    version|--version)
       print -R ${_zversion}
       return
       ;;
