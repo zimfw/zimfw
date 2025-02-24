@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+Changes in this release are one more little step towards better adherence to the
+[command line interface guidelines].
+
+### Added
+
+- `--help` and `--version` actions. These are aliases to the already existing
+  `help` and `version` actions.
+
+### Changed
+
+- Disable color output when executed through a pipe or as a non-TTY ssh command.
 
 ## [1.17.1] - 2025-02-12
 
@@ -447,6 +457,7 @@ Take your time to review the updated [README.md] and the changes listed below.
 - `ZIM_HOME` is set in .zshenv instead of .zshrc. The issue was that the
   variable was not available in .zlogin in non-interactive login shells.
 
+[command line interface guidelines]: https://clig.dev
 [completion]: https://github.com/zimfw/completion
 [README.md]: https://github.com/zimfw/zimfw/blob/master/README.md
 [environment]: https://github.com/zimfw/environment

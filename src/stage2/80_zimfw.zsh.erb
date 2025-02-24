@@ -1,6 +1,6 @@
 zimfw() {
   builtin emulate -L zsh -o EXTENDED_GLOB
-  if [[ -z ${NO_COLOR} ]]; then
+  if [[ -z ${NO_COLOR} && -t 1 ]]; then
     local -r _znormal=$'\E[0m' _zbold=$'\E[1m' _zred=$'\E[31m' _znormalred=$'\E[0;31m' _zgreen=$'\E[32m' _zyellow=$'\E[33m' _znormalyellow=$'\E[0;33m'
   else
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
@@ -32,7 +32,7 @@ Actions:
                       their output, any on-pull output and skipped modules.
   ${_zbold}check-version${_znormal}       Check if a new version of zimfw is available.
   ${_zbold}upgrade${_znormal}             Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
-  ${_zbold}help${_znormal}, ${_zbold}--help${_znormal}        Print this help.
+  ${_zbold}help${_znormal},    ${_zbold}--help${_znormal}     Print this help.
   ${_zbold}version${_znormal}, ${_zbold}--version${_znormal}  Print zimfw version.
 
 Options:

@@ -72,7 +72,7 @@ _zimfw_tool_git() {
         fi
         TO_REV=${REV}
       fi
-      if [[ -z ${NO_COLOR} ]]; then
+      if [[ -z ${NO_COLOR} && -t 1 ]]; then
         LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
       else
         LOG=$(command git -C ${DIR} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
