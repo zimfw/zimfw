@@ -73,7 +73,7 @@ to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
    ZIM_HOME=~/.zim
    # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
    if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
-     source /path/to/zimfw.zsh init -q
+     source /path/to/zimfw.zsh init
    fi
    # Initialize modules.
    source ${ZIM_HOME}/init.zsh
@@ -149,7 +149,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    ```zsh
    # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
    if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
-     source ${ZIM_HOME}/zimfw.zsh init -q
+     source ${ZIM_HOME}/zimfw.zsh init
    fi
    ```
    This step is optional, but highly recommended. If you choose to not include
