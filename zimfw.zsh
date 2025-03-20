@@ -424,7 +424,7 @@ _zimfw_list_unuseds() {
 }
 
 _zimfw_check_dumpfile() {
-  _zimfw_print -u2 "${_zwarn}Deprecated action. This is now handled by the completion module alone.${_znormal}"
+  _zimfw_print -u2 "${_zyellow}Deprecated action. This is now handled by the completion module alone.${_znormal}"
 }
 
 _zimfw_check_version() {
@@ -489,7 +489,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-02-24 13:45:50 UTC, previous commit is 337ed33)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-03-20 20:32:21 UTC, previous commit is c131777)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
