@@ -24,6 +24,12 @@ class Zim
     Dir[pattern].sort.map { |filename| render(filename) }.join("\n")
   end
 
+  def render_template(filename)
+    render(filename)
+      .gsub(/\\/, "\\\\\\\\")
+      .gsub(/(?=\$[^']|"|`)/, "\\\\")
+  end
+
   def render_commented(filename)
     render(filename).gsub(/^(?=.)/, "# ").gsub(/^$/, "#")
   end

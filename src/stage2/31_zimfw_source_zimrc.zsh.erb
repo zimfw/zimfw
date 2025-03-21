@@ -3,6 +3,11 @@ _zimfw_source_zimrc() {
   {
     local -ri _zeager=${1}
     local -i _zfailed=0
+    if [[ ! -e ${_zconfig} ]]; then
+      _zimfw_print -u2 "${_zyellow}Config file not found, will create ${_zbold}${_zconfig}${_znormal}"
+      command mkdir -p ${_zconfig:h} || return 1
+      print -R "<%= render_template("src/templates/zimrc") %>" >${_zconfig} || return 1
+    fi
     if ! source ${_zconfig} || (( _zfailed )); then
       print -u2 -R "${_zred}Failed to source ${_zbold}${_zconfig}${_znormal}"
       return 1
