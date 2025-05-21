@@ -107,10 +107,9 @@ Options:
          _zimfw_list_unuseds ' (unused)'
       ;;
     check)
-      _zrestartmsg=
       _zimfw_run_tool_action ${1} || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -R "Done with ${1}." # Only printed in verbose mode
+      _zimfw_print -R "Done with ${1}. Run ${_zbold}zimfw update${_znormal} to update modules." # Only printed in verbose mode
       ;;
     init)
       _zrestartmsg=
@@ -126,7 +125,11 @@ Options:
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
-    check-version) _zimfw_check_version 1 ;;
+    check-version)
+      _zimfw_check_version 1
+      (( _zprintlevel-- ))
+      _zimfw_print -R "Done with ${1}." # Only printed in verbose mode
+      ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))

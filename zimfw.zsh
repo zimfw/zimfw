@@ -45,7 +45,7 @@ _zimfw_mv() {
     if [[ -e ${2} ]]; then
       command mv -f ${2}{,.old} || return 1
     fi
-    command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Updated.${_zrestartmsg}"
+    command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Updated"
   fi
 }
 
@@ -108,7 +108,7 @@ _zimfw_build_login_init() {
 }
 
 _zimfw_build() {
-  _zimfw_build_init && _zimfw_build_login_init && _zimfw_print 'Done with build.'
+  _zimfw_build_init && _zimfw_build_login_init && _zimfw_print "Done with build.${_zrestartmsg}"
 }
 
 _zimfw_source_zimrc() {
@@ -546,7 +546,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-05-05 23:23:04 UTC, previous commit is 987823e)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-05-21 13:10:18 UTC, previous commit is c7fac24)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -600,7 +600,7 @@ _zimfw_upgrade() {
     # .latest_version can be outdated and will yield a false warning if zimfw is
     # upgraded before .latest_version is refreshed. Bad thing about having a cache.
     _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
-        _zimfw_print 'Done with upgrade.'
+        _zimfw_print "Done with upgrade.${_zrestartmsg}"
   } always {
     command rm -f ${ztarget}.new{,.gz}
   }
@@ -1138,10 +1138,9 @@ Options:
          _zimfw_list_unuseds ' (unused)'
       ;;
     check)
-      _zrestartmsg=
       _zimfw_run_tool_action ${1} || return 1
       (( _zprintlevel-- ))
-      _zimfw_print -R "Done with ${1}." # Only printed in verbose mode
+      _zimfw_print -R "Done with ${1}. Run ${_zbold}zimfw update${_znormal} to update modules." # Only printed in verbose mode
       ;;
     init)
       _zrestartmsg=
@@ -1157,7 +1156,11 @@ Options:
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
-    check-version) _zimfw_check_version 1 ;;
+    check-version)
+      _zimfw_check_version 1
+      (( _zprintlevel-- ))
+      _zimfw_print -R "Done with ${1}." # Only printed in verbose mode
+      ;;
     upgrade)
       _zimfw_upgrade || return 1
       (( _zprintlevel-- ))
