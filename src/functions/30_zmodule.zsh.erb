@@ -221,7 +221,7 @@ Per-call initialization options:
       elif [[ -r ${_zdirs[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
-        _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to disable this warning.${_znormal}"
+        _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"
         _ztools[${zname}]=mkdir
       fi
     else

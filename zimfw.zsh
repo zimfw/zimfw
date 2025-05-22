@@ -335,7 +335,7 @@ Per-call initialization options:
       elif [[ -r ${_zdirs[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
-        _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to disable this warning.${_znormal}"
+        _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"
         _ztools[${zname}]=mkdir
       fi
     else
@@ -546,7 +546,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-05-21 13:10:18 UTC, previous commit is c7fac24)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-05-22 14:59:26 UTC, previous commit is abb7d50)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -835,7 +835,7 @@ _zimfw_tool_degit() {
   esac
   # Check after successful install or update
   if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to disable this warning."
+    _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to stop this warning."
   fi
 }
 

@@ -148,6 +148,6 @@ _zimfw_tool_degit() {
   esac
   # Check after successful install or update
   if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
-    _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to disable this warning."
+    _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to stop this warning."
   fi
 }
