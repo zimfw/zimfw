@@ -117,7 +117,8 @@ Per-call initialization options:
     _zdirs[${zname}]=${zurl%%/##}
     zurl=
   else
-    _zdirs[${zname}]=${ZIM_HOME}/modules/${zname}
+    zname=modules/${zname}
+    _zdirs[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
     print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}

@@ -14,5 +14,5 @@ _zimfw_list_unuseds() {
   # Unused = all installed dirs not in zdirs
   _zunused_dirs=(${zinstalled:|zdirs})
   local zunused
-  for zunused (${_zunused_dirs}) _zimfw_print -R "${_zbold}${zunused:t}:${_znormal} ${zunused}${1}"
+  for zunused (${_zunused_dirs}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}:${_znormal} ${zunused}${1}"
 }
