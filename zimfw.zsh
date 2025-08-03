@@ -387,7 +387,7 @@ Per-call initialization options:
       _zimfw_print -u2 "${_zyellow}Config file not found, will create ${_zbold}${_zconfig}${_znormal}"
       command mkdir -p ${_zconfig:h} || return 1
       print -R "#
-# This is not sourced during shell startup and it's only used to configure zimfw
+# This is not sourced during shell startup and is only used to configure zimfw.
 #
 
 #
@@ -409,9 +409,9 @@ zmodule utility
 # Prompt
 #
 
-# Exposes to prompts how long the last command took to run, used by asciiship.
+# Exposes how long the last command took to run to prompts.
 zmodule duration-info
-# Exposes git repository status information to prompts, used by asciiship.
+# Exposes git repository status information to prompts.
 zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
@@ -422,19 +422,17 @@ zmodule asciiship
 
 # Additional completion definitions for Zsh.
 zmodule zsh-users/zsh-completions --fpath src
-# Enables and configures smart and extensive tab completion.
-# completion must be sourced after all modules that add completion definitions.
+# Enables and configures smart and extensive tab completion, must be sourced
+# after all modules that add completion definitions.
 zmodule completion
 
 #
 # Modules that must be initialized last
 #
 
-# Fish-like syntax highlighting for Zsh.
-# zsh-users/zsh-syntax-highlighting must be sourced after completion
+# Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like history search (up arrow) for Zsh.
-# zsh-users/zsh-history-substring-search must be sourced after zsh-users/zsh-syntax-highlighting
+# Fish-like history search for Zsh, must be sourced after zsh-users/zsh-syntax-highlighting.
 #zmodule zsh-users/zsh-history-substring-search
 # Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions
@@ -546,7 +544,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-05-22 14:59:26 UTC, previous commit is abb7d50)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-08-03 00:20:29 UTC, previous commit is fd010a0)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1053,22 +1051,22 @@ Actions:
   ${_zbold}init${_znormal}                Same as ${_zbold}install${_znormal}, but with output tailored for the terminal startup.
   ${_zbold}install${_znormal}             Install new modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
                       output, any on-pull output and skipped modules.
+  ${_zbold}update${_znormal}              Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see
+                      their output, any on-pull output and skipped modules.
   ${_zbold}reinstall${_znormal}           Reinstall modules that failed check. Prompts for confirmation, unless ${_zbold}-q${_znormal}
                       is used. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output, any
                       on-pull output and skipped modules.
   ${_zbold}uninstall${_znormal}           Delete unused modules. Prompts for confirmation, unless ${_zbold}-q${_znormal} is used.
   ${_zbold}check${_znormal}               Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
                       skipped and up to date modules.
-  ${_zbold}update${_znormal}              Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see
-                      their output, any on-pull output and skipped modules.
   ${_zbold}check-version${_znormal}       Check if a new version of zimfw is available.
   ${_zbold}upgrade${_znormal}             Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
   ${_zbold}help${_znormal},    ${_zbold}--help${_znormal}     Print this help.
   ${_zbold}version${_znormal}, ${_zbold}--version${_znormal}  Print zimfw version.
 
 Options:
-  ${_zbold}-q${_znormal}                  Quiet (yes to prompts and only outputs errors)
-  ${_zbold}-v${_znormal}                  Verbose (outputs more details)"
+  ${_zbold}-q${_znormal}                  Quiet (yes to prompts and only output errors)
+  ${_zbold}-v${_znormal}                  Verbose (output more details)"
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}

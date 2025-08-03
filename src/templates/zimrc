@@ -1,5 +1,5 @@
 #
-# This is not sourced during shell startup and it's only used to configure zimfw
+# This is not sourced during shell startup and is only used to configure zimfw.
 #
 
 #
@@ -21,9 +21,9 @@ zmodule utility
 # Prompt
 #
 
-# Exposes to prompts how long the last command took to run, used by asciiship.
+# Exposes how long the last command took to run to prompts.
 zmodule duration-info
-# Exposes git repository status information to prompts, used by asciiship.
+# Exposes git repository status information to prompts.
 zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
@@ -34,19 +34,17 @@ zmodule asciiship
 
 # Additional completion definitions for Zsh.
 zmodule zsh-users/zsh-completions --fpath src
-# Enables and configures smart and extensive tab completion.
-# completion must be sourced after all modules that add completion definitions.
+# Enables and configures smart and extensive tab completion, must be sourced
+# after all modules that add completion definitions.
 zmodule completion
 
 #
 # Modules that must be initialized last
 #
 
-# Fish-like syntax highlighting for Zsh.
-# zsh-users/zsh-syntax-highlighting must be sourced after completion
+# Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like history search (up arrow) for Zsh.
-# zsh-users/zsh-history-substring-search must be sourced after zsh-users/zsh-syntax-highlighting
+# Fish-like history search for Zsh, must be sourced after zsh-users/zsh-syntax-highlighting.
 #zmodule zsh-users/zsh-history-substring-search
 # Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions

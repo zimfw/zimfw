@@ -22,22 +22,22 @@ Actions:
   ${_zbold}init${_znormal}                Same as ${_zbold}install${_znormal}, but with output tailored for the terminal startup.
   ${_zbold}install${_znormal}             Install new modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their
                       output, any on-pull output and skipped modules.
+  ${_zbold}update${_znormal}              Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see
+                      their output, any on-pull output and skipped modules.
   ${_zbold}reinstall${_znormal}           Reinstall modules that failed check. Prompts for confirmation, unless ${_zbold}-q${_znormal}
                       is used. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output, any
                       on-pull output and skipped modules.
   ${_zbold}uninstall${_znormal}           Delete unused modules. Prompts for confirmation, unless ${_zbold}-q${_znormal} is used.
   ${_zbold}check${_znormal}               Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
                       skipped and up to date modules.
-  ${_zbold}update${_znormal}              Update current modules. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see
-                      their output, any on-pull output and skipped modules.
   ${_zbold}check-version${_znormal}       Check if a new version of zimfw is available.
   ${_zbold}upgrade${_znormal}             Upgrade zimfw. Also does ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
   ${_zbold}help${_znormal},    ${_zbold}--help${_znormal}     Print this help.
   ${_zbold}version${_znormal}, ${_zbold}--version${_znormal}  Print zimfw version.
 
 Options:
-  ${_zbold}-q${_znormal}                  Quiet (yes to prompts and only outputs errors)
-  ${_zbold}-v${_znormal}                  Verbose (outputs more details)"
+  ${_zbold}-q${_znormal}                  Quiet (yes to prompts and only output errors)
+  ${_zbold}-v${_znormal}                  Verbose (output more details)"
   local -i _zprintlevel=1
   if (( # > 2 )); then
      print -u2 -lR "${_zred}${0}: Too many options${_znormal}" '' ${zusage}

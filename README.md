@@ -70,7 +70,7 @@ to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
 
 2. Add the following to your `~/.zshrc`:
    ```zsh
-   ZIM_HOME=~/.zim
+   ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
    # Install missing modules and update ${ZIM_HOME}/init.zsh if missing or outdated.
    if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
      source /path/to/zimfw.zsh init
@@ -116,7 +116,7 @@ Add the lines below to your `~/.zshrc` file, in the following order:
 
 2. To set the directory where the zimfw plugin manager will keep necessary files:
    ```zsh
-   ZIM_HOME=~/.zim
+   ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
    ```
    The value of `ZIM_HOME` can be any directory your user has write access to.
    You can even set it to a cache directory like `${XDG_CACHE_HOME}/zim` or
@@ -453,7 +453,7 @@ Settings
 Set the path of the directory used by zimfw with the `ZIM_HOME` environment
 variable:
 
-    ZIM_HOME=~/.zim
+    ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 
 By default, the zimfw plugin manager configuration file must be at `~/.zimrc`,
 if the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
