@@ -1,13 +1,13 @@
 _zimfw_uninstall() {
   if (( _zprintlevel <= 0 )); then
-    command rm -rf ${_zunused_dirs} || return 1
+    command rm -rf ${_zunused_paths} || return 1
   else
-    local zunused_dir
-    print "Found ${_zbold}${#_zunused_dirs}${_znormal} unused module(s)."
-    for zunused_dir in ${_zunused_dirs}; do
-      if read -q "?Uninstall ${zunused_dir} [y/N]? "; then
+    local zunused_path
+    print "Found ${_zbold}${#_zunused_paths}${_znormal} unused module(s)."
+    for zunused_path in ${_zunused_paths}; do
+      if read -q "?Uninstall ${zunused_path} [y/N]? "; then
         print
-        command rm -rfv ${zunused_dir} || return 1
+        command rm -rfv ${zunused_path} || return 1
       else
         print
       fi

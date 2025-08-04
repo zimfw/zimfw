@@ -1,11 +1,11 @@
 _zimfw_run_list() {
   local -r zname=${1}
-  local -r zdir=${_zdirs[${zname}]}
-  print -nR "${_zbold}${zname}:${_znormal} ${zdir}"
-  if [[ ! -e ${zdir} ]] print -n ' (not installed)'
+  local -r zpath=${_zpaths[${zname}]}
+  print -nR "${_zbold}${zname}:${_znormal} ${zpath}"
+  if [[ ! -e ${zpath} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
-  if (( ${_zdisabled_root_dirs[(I)${zdir}]} )) print -n ' (disabled)'
+  if (( ${_zdisabled_paths[(I)${zpath}]} )) print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
@@ -25,18 +25,18 @@ _zimfw_run_list() {
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
     # Match the current module dir prefix from _zroot_dirs
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${zdir}/*})
+    local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}/*})
     if (( ${#zroot_dirs} )); then
       print '  Additional root:'
       local zroot_dir
       for zroot_dir in ${zroot_dirs}; do
         print -nR "    ${zroot_dir}"
-        if (( ${_zdisabled_root_dirs[(I)${zroot_dir}]} )) print -n ' (disabled)'
+        if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
       done
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${(q)zdir}(|/*)"$'\0'
+    local -r zpre="${(q)zpath}(|/*)"$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
     if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
     if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}

@@ -157,10 +157,10 @@ Per-module options:
 Per-module-root options:
       ${_zbold}--if${_znormal} <test>            Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-      ${_zbold}--if-command${_znormal} <cmd_name>
+      ${_zbold}--if-command${_znormal} <command_name>
                              Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to ${_zbold}--if '(( \${+commands[${_znormal}<cmd_name>${_zbold}]} ))'${_znormal}.
+                             Equivalent to ${_zbold}--if '(( \${+commands[${_znormal}<command_name>${_zbold}]} ))'${_znormal}.
       ${_zbold}--if-ostype${_znormal} <ostype>   Will only initialize module root if ${_zbold}OSTYPE${_znormal} is equal to the given
                              expression. This is evaluated at every new terminal startup.
                              Equivalent to ${_zbold}--if '[[ \${OSTYPE} == ${_znormal}<ostype>${_zbold} ]]'${_znormal}.
@@ -175,7 +175,7 @@ Per-call initialization options:
   ${_zbold}-f${_znormal}, ${_zbold}--fpath${_znormal} <path>         Will add specified path to fpath. The path is relative to the
                              module root directory. Default: ${_zbold}'functions'${_znormal}, if the subdirectory
                              exists and is non-empty.
-  ${_zbold}-a${_znormal}, ${_zbold}--autoload${_znormal} <func_name>
+  ${_zbold}-a${_znormal}, ${_zbold}--autoload${_znormal} <function_name>
                              Will autoload specified function. Default: all valid names inside
                              the ${_zbold}functions${_znormal} subdirectory, if any.
   ${_zbold}-s${_znormal}, ${_zbold}--source${_znormal} <file_path>   Will source specified file. The path is relative to the module
@@ -228,11 +228,11 @@ Per-call initialization options:
     shift
   done
   if [[ ${zurl} == /* ]]; then
-    _zdirs[${zname}]=${zurl%%/##}
+    _zpaths[${zname}]=${zurl%%/##}
     zurl=
   else
     zname=modules/${zname}
-    _zdirs[${zname}]=${ZIM_HOME}/${zname}
+    _zpaths[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
     print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
@@ -240,7 +240,7 @@ Per-call initialization options:
     return 2
   fi
   _zurls[${zname}]=${zurl}
-  local -r zroot_dir=${_zdirs[${zname}]}${zroot:+/${zroot}}
+  local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
   _zroot_dirs+=(${zroot_dir})
   # Set default values
   if (( ! ${+_ztools[${zname}]} )); then
@@ -319,7 +319,7 @@ Per-call initialization options:
         shift
         zcmds+=(${1//{}/${(qqq)zroot_dir:a}})
         ;;
-      -d|--disabled) _zdisabled_root_dirs+=(${zroot_dir}) ;;
+      -d|--disabled) _zdisabled_paths+=(${zroot_dir}) ;;
       *)
         print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Unknown zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
         _zfailed=1
@@ -330,10 +330,10 @@ Per-call initialization options:
   done
   # Detect tool if auto and not external and not frozen module
   if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
-    if [[ -e ${_zdirs[${zname}]} ]]; then
-      if [[ -r ${_zdirs[${zname}]}/.git ]]; then
+    if [[ -e ${_zpaths[${zname}]} ]]; then
+      if [[ -r ${_zpaths[${zname}]}/.git ]]; then
         _ztools[${zname}]=git
-      elif [[ -r ${_zdirs[${zname}]}/.zdegit ]]; then
+      elif [[ -r ${_zpaths[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
         _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"
@@ -447,10 +447,10 @@ zmodule zsh-users/zsh-autosuggestions
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
-    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled root dirs prefixes
-    local zroot_dir zpre
-    for zroot_dir in ${_zdisabled_root_dirs}; do
-      zpre=${zroot_dir}$'\0'
+    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled paths prefixes
+    local zpath zpre
+    for zpath in ${_zdisabled_paths}; do
+      zpre=${zpath}$'\0'
       _zfpaths=(${_zfpaths:#${zpre}*})
       _zfunctions=(${_zfunctions:#${zpre}*})
       _zcmds=(${_zcmds:#${zpre}*})
@@ -460,23 +460,23 @@ zmodule zsh-users/zsh-autosuggestions
   }
 }
 
-_zimfw_list_unuseds() {
+_zimfw_list_unused_paths() {
   local -i i=1
   local zinstalled=(${ZIM_HOME}/modules/*(N/))
-  local -r zdirs=(${(v)_zdirs})
+  local -r zpaths=(${(v)_zpaths})
   # Search into subdirectories
   while (( i <= ${#zinstalled} )); do
-    if (( ${zdirs[(I)${zinstalled[i]}/*]} )); then
+    if (( ${zpaths[(I)${zinstalled[i]}/*]} )); then
       zinstalled+=(${zinstalled[i]}/*(N/))
       zinstalled[i]=()
     else
       (( i++ ))
     fi
   done
-  # Unused = all installed dirs not in zdirs
-  _zunused_dirs=(${zinstalled:|zdirs})
+  # Unused = all installed dirs not in zpaths
+  _zunused_paths=(${zinstalled:|zpaths})
   local zunused
-  for zunused (${_zunused_dirs}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}:${_znormal} ${zunused}${1}"
+  for zunused (${_zunused_paths}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}:${_znormal} ${zunused}${1}"
 }
 
 _zimfw_check_dumpfile() {
@@ -509,7 +509,7 @@ _zimfw_check_version() {
 
 _zimfw_clean_compiled() {
   # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zdirs##${ZIM_HOME}/*}:A})
+  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zpaths##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \
@@ -527,7 +527,7 @@ _zimfw_clean_dumpfile() {
 _zimfw_compile() {
   # Compile zimfw scripts
   local zroot_dir zfile
-  for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
+  for zroot_dir in ${_zroot_dirs:|_zdisabled_paths}; do
     if [[ ! -w ${zroot_dir} ]]; then
       _zimfw_print -R "${_zwarn}${_zbold}${zroot_dir}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
@@ -545,7 +545,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-08-03 18:48:05 UTC, previous commit is e765874)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-08-04 17:55:03 UTC, previous commit is 5cde792)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -560,14 +560,14 @@ _zimfw_info_print_symlink() {
 
 _zimfw_uninstall() {
   if (( _zprintlevel <= 0 )); then
-    command rm -rf ${_zunused_dirs} || return 1
+    command rm -rf ${_zunused_paths} || return 1
   else
-    local zunused_dir
-    print "Found ${_zbold}${#_zunused_dirs}${_znormal} unused module(s)."
-    for zunused_dir in ${_zunused_dirs}; do
-      if read -q "?Uninstall ${zunused_dir} [y/N]? "; then
+    local zunused_path
+    print "Found ${_zbold}${#_zunused_paths}${_znormal} unused module(s)."
+    for zunused_path in ${_zunused_paths}; do
+      if read -q "?Uninstall ${zunused_path} [y/N]? "; then
         print
-        command rm -rfv ${zunused_dir} || return 1
+        command rm -rfv ${zunused_path} || return 1
       else
         print
       fi
@@ -607,12 +607,12 @@ _zimfw_upgrade() {
 
 _zimfw_run_list() {
   local -r zname=${1}
-  local -r zdir=${_zdirs[${zname}]}
-  print -nR "${_zbold}${zname}:${_znormal} ${zdir}"
-  if [[ ! -e ${zdir} ]] print -n ' (not installed)'
+  local -r zpath=${_zpaths[${zname}]}
+  print -nR "${_zbold}${zname}:${_znormal} ${zpath}"
+  if [[ ! -e ${zpath} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
-  if (( ${_zdisabled_root_dirs[(I)${zdir}]} )) print -n ' (disabled)'
+  if (( ${_zdisabled_paths[(I)${zpath}]} )) print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
@@ -632,18 +632,18 @@ _zimfw_run_list() {
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
     # Match the current module dir prefix from _zroot_dirs
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${zdir}/*})
+    local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}/*})
     if (( ${#zroot_dirs} )); then
       print '  Additional root:'
       local zroot_dir
       for zroot_dir in ${zroot_dirs}; do
         print -nR "    ${zroot_dir}"
-        if (( ${_zdisabled_root_dirs[(I)${zroot_dir}]} )) print -n ' (disabled)'
+        if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
       done
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${(q)zdir}(|/*)"$'\0'
+    local -r zpre="${(q)zpath}(|/*)"$'\0'
     local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
     if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
     if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
@@ -974,7 +974,7 @@ _zimfw_run_tool() {
     _zimfw_print_error "Unknown tool ${ztool}"
     return 1
   fi
-  set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+  set "${_zpaths[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
   if [[ ${zaction} == reinstall ]]; then
     _zimfw_tool_${ztool} prereinstall "${@}" && return 0
     if (( _zprintlevel > 0 )); then
@@ -985,15 +985,15 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r zdir_new=.${_zdirs[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    local -r zpath_new=.${_zpaths[${_zname}]}_${sysparams[pid]}_${RANDOM}
     {
-      _zimfw_tool_${ztool} install ${zdir_new} "${@:2}" || return 1
-      if ! ERR=$({ command rm -rf ${_zdirs[${_zname}]} && command mv -f ${zdir_new} ${_zdirs[${_zname}]} } 2>&1); then
-        _zimfw_print_error "Error reinstalling ${_zdirs[${_zname}]}" ${ERR}
+      _zimfw_tool_${ztool} install ${zpath_new} "${@:2}" || return 1
+      if ! ERR=$({ command rm -rf ${_zpaths[${_zname}]} && command mv -f ${zpath_new} ${_zpaths[${_zname}]} } 2>&1); then
+        _zimfw_print_error "Error reinstalling ${_zpaths[${_zname}]}" ${ERR}
         return 1
       fi
     } always {
-      command rm -rf ${zdir_new} 2>/dev/null
+      command rm -rf ${zpath_new} 2>/dev/null
     }
     return 0
   else
@@ -1001,13 +1001,13 @@ _zimfw_run_tool() {
   fi
   case ${zaction} in
     install)
-      if [[ -e ${_zdirs[${_zname}]} ]]; then
+      if [[ -e ${_zpaths[${_zname}]} ]]; then
         _zimfw_print_okay 'Skipping already installed module' 1
         return 0
       fi
       ;;
     check|update)
-      if [[ ! -d ${_zdirs[${_zname}]} ]]; then
+      if [[ ! -d ${_zpaths[${_zname}]} ]]; then
         _zimfw_print_error "Not installed. Run ${_zbold}zimfw install${_znormalred} to install."
         return 1
       fi
@@ -1114,9 +1114,9 @@ Options:
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
-  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
-  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
-  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
+  local -Ua _znames _zroot_dirs _zdisabled_paths
+  local -A _zfrozens _ztools _zpaths _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
+  local -a _zfpaths _zfunctions _zcmds _zunused_paths
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   autoload -Uz zargs
   case ${1} in
@@ -1134,7 +1134,7 @@ Options:
     list)
       _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
           zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
-         _zimfw_list_unuseds ' (unused)'
+         _zimfw_list_unused_paths ' (unused)'
       ;;
     check)
       _zimfw_run_tool_action ${1} || return 1
@@ -1154,7 +1154,7 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unused_paths && _zimfw_uninstall ;;
     check-version)
       _zimfw_check_version 1
       (( _zprintlevel-- ))

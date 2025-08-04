@@ -43,10 +43,10 @@ Per-module options:
 Per-module-root options:
       ${_zbold}--if${_znormal} <test>            Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-      ${_zbold}--if-command${_znormal} <cmd_name>
+      ${_zbold}--if-command${_znormal} <command_name>
                              Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to ${_zbold}--if '(( \${+commands[${_znormal}<cmd_name>${_zbold}]} ))'${_znormal}.
+                             Equivalent to ${_zbold}--if '(( \${+commands[${_znormal}<command_name>${_zbold}]} ))'${_znormal}.
       ${_zbold}--if-ostype${_znormal} <ostype>   Will only initialize module root if ${_zbold}OSTYPE${_znormal} is equal to the given
                              expression. This is evaluated at every new terminal startup.
                              Equivalent to ${_zbold}--if '[[ \${OSTYPE} == ${_znormal}<ostype>${_zbold} ]]'${_znormal}.
@@ -61,7 +61,7 @@ Per-call initialization options:
   ${_zbold}-f${_znormal}, ${_zbold}--fpath${_znormal} <path>         Will add specified path to fpath. The path is relative to the
                              module root directory. Default: ${_zbold}'functions'${_znormal}, if the subdirectory
                              exists and is non-empty.
-  ${_zbold}-a${_znormal}, ${_zbold}--autoload${_znormal} <func_name>
+  ${_zbold}-a${_znormal}, ${_zbold}--autoload${_znormal} <function_name>
                              Will autoload specified function. Default: all valid names inside
                              the ${_zbold}functions${_znormal} subdirectory, if any.
   ${_zbold}-s${_znormal}, ${_zbold}--source${_znormal} <file_path>   Will source specified file. The path is relative to the module
@@ -114,11 +114,11 @@ Per-call initialization options:
     shift
   done
   if [[ ${zurl} == /* ]]; then
-    _zdirs[${zname}]=${zurl%%/##}
+    _zpaths[${zname}]=${zurl%%/##}
     zurl=
   else
     zname=modules/${zname}
-    _zdirs[${zname}]=${ZIM_HOME}/${zname}
+    _zpaths[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
     print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
@@ -126,7 +126,7 @@ Per-call initialization options:
     return 2
   fi
   _zurls[${zname}]=${zurl}
-  local -r zroot_dir=${_zdirs[${zname}]}${zroot:+/${zroot}}
+  local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
   _zroot_dirs+=(${zroot_dir})
   # Set default values
   if (( ! ${+_ztools[${zname}]} )); then
@@ -205,7 +205,7 @@ Per-call initialization options:
         shift
         zcmds+=(${1//{}/${(qqq)zroot_dir:a}})
         ;;
-      -d|--disabled) _zdisabled_root_dirs+=(${zroot_dir}) ;;
+      -d|--disabled) _zdisabled_paths+=(${zroot_dir}) ;;
       *)
         print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Unknown zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
         _zfailed=1
@@ -216,10 +216,10 @@ Per-call initialization options:
   done
   # Detect tool if auto and not external and not frozen module
   if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
-    if [[ -e ${_zdirs[${zname}]} ]]; then
-      if [[ -r ${_zdirs[${zname}]}/.git ]]; then
+    if [[ -e ${_zpaths[${zname}]} ]]; then
+      if [[ -r ${_zpaths[${zname}]}/.git ]]; then
         _ztools[${zname}]=git
-      elif [[ -r ${_zdirs[${zname}]}/.zdegit ]]; then
+      elif [[ -r ${_zpaths[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
         _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"

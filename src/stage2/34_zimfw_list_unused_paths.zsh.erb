@@ -1,0 +1,18 @@
+_zimfw_list_unused_paths() {
+  local -i i=1
+  local zinstalled=(${ZIM_HOME}/modules/*(N/))
+  local -r zpaths=(${(v)_zpaths})
+  # Search into subdirectories
+  while (( i <= ${#zinstalled} )); do
+    if (( ${zpaths[(I)${zinstalled[i]}/*]} )); then
+      zinstalled+=(${zinstalled[i]}/*(N/))
+      zinstalled[i]=()
+    else
+      (( i++ ))
+    fi
+  done
+  # Unused = all installed dirs not in zpaths
+  _zunused_paths=(${zinstalled:|zpaths})
+  local zunused
+  for zunused (${_zunused_paths}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}:${_znormal} ${zunused}${1}"
+}

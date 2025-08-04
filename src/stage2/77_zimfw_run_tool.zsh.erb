@@ -14,7 +14,7 @@ _zimfw_run_tool() {
     _zimfw_print_error "Unknown tool ${ztool}"
     return 1
   fi
-  set "${_zdirs[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+  set "${_zpaths[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
   if [[ ${zaction} == reinstall ]]; then
     _zimfw_tool_${ztool} prereinstall "${@}" && return 0
     if (( _zprintlevel > 0 )); then
@@ -25,15 +25,15 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r zdir_new=.${_zdirs[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    local -r zpath_new=.${_zpaths[${_zname}]}_${sysparams[pid]}_${RANDOM}
     {
-      _zimfw_tool_${ztool} install ${zdir_new} "${@:2}" || return 1
-      if ! ERR=$({ command rm -rf ${_zdirs[${_zname}]} && command mv -f ${zdir_new} ${_zdirs[${_zname}]} } 2>&1); then
-        _zimfw_print_error "Error reinstalling ${_zdirs[${_zname}]}" ${ERR}
+      _zimfw_tool_${ztool} install ${zpath_new} "${@:2}" || return 1
+      if ! ERR=$({ command rm -rf ${_zpaths[${_zname}]} && command mv -f ${zpath_new} ${_zpaths[${_zname}]} } 2>&1); then
+        _zimfw_print_error "Error reinstalling ${_zpaths[${_zname}]}" ${ERR}
         return 1
       fi
     } always {
-      command rm -rf ${zdir_new} 2>/dev/null
+      command rm -rf ${zpath_new} 2>/dev/null
     }
     return 0
   else
@@ -41,13 +41,13 @@ _zimfw_run_tool() {
   fi
   case ${zaction} in
     install)
-      if [[ -e ${_zdirs[${_zname}]} ]]; then
+      if [[ -e ${_zpaths[${_zname}]} ]]; then
         _zimfw_print_okay 'Skipping already installed module' 1
         return 0
       fi
       ;;
     check|update)
-      if [[ ! -d ${_zdirs[${_zname}]} ]]; then
+      if [[ ! -d ${_zpaths[${_zname}]} ]]; then
         _zimfw_print_error "Not installed. Run ${_zbold}zimfw install${_znormalred} to install."
         return 1
       fi

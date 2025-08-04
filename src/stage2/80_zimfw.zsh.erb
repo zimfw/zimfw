@@ -84,9 +84,9 @@ Options:
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
-  local -Ua _znames _zroot_dirs _zdisabled_root_dirs
-  local -A _zfrozens _ztools _zdirs _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
-  local -a _zfpaths _zfunctions _zcmds _zunused_dirs
+  local -Ua _znames _zroot_dirs _zdisabled_paths
+  local -A _zfrozens _ztools _zpaths _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
+  local -a _zfpaths _zfunctions _zcmds _zunused_paths
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   autoload -Uz zargs
   case ${1} in
@@ -104,7 +104,7 @@ Options:
     list)
       _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
           zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
-         _zimfw_list_unuseds ' (unused)'
+         _zimfw_list_unused_paths ' (unused)'
       ;;
     check)
       _zimfw_run_tool_action ${1} || return 1
@@ -124,7 +124,7 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unuseds && _zimfw_uninstall ;;
+    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unused_paths && _zimfw_uninstall ;;
     check-version)
       _zimfw_check_version 1
       (( _zprintlevel-- ))

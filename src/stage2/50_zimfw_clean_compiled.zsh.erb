@@ -1,6 +1,6 @@
 _zimfw_clean_compiled() {
   # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zdirs##${ZIM_HOME}/*}:A})
+  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zpaths##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \

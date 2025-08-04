@@ -1,7 +1,7 @@
 _zimfw_compile() {
   # Compile zimfw scripts
   local zroot_dir zfile
-  for zroot_dir in ${_zroot_dirs:|_zdisabled_root_dirs}; do
+  for zroot_dir in ${_zroot_dirs:|_zdisabled_paths}; do
     if [[ ! -w ${zroot_dir} ]]; then
       _zimfw_print -R "${_zwarn}${_zbold}${zroot_dir}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
