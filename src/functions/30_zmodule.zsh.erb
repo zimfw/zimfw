@@ -125,6 +125,7 @@ Per-call initialization options:
     _zfailed=1
     return 2
   fi
+  _znames+=(${zname})
   _zurls[${zname}]=${zurl}
   local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
   _zroot_dirs+=(${zroot_dir})
@@ -233,7 +234,6 @@ Per-call initialization options:
       fi
     fi
   fi
-  _znames+=(${zname})
   if (( _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"

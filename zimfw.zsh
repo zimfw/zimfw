@@ -239,6 +239,7 @@ Per-call initialization options:
     _zfailed=1
     return 2
   fi
+  _znames+=(${zname})
   _zurls[${zname}]=${zurl}
   local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
   _zroot_dirs+=(${zroot_dir})
@@ -347,7 +348,6 @@ Per-call initialization options:
       fi
     fi
   fi
-  _znames+=(${zname})
   if (( _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
@@ -545,7 +545,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-08-04 17:55:03 UTC, previous commit is 5cde792)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-10-23 22:12:09 UTC, previous commit is 89e4e3d)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -856,6 +856,15 @@ _zimfw_tool_git() {
           _zimfw_print_error 'The git URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
+        if [[ ${TYPE} == branch ]]; then
+          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ...@{u} -- 2>/dev/null)
+          readonly -i AHEAD=${AHEAD_AND_BEHIND[(w)1]}
+          readonly -i BEHIND=${AHEAD_AND_BEHIND[(w)2]}
+          if (( AHEAD && BEHIND )); then
+            _zimfw_print_error "Diverged [ahead ${AHEAD}, behind ${BEHIND}]."${premsg}
+            return 1
+          fi
+        fi
       fi
       ;;
     install)
@@ -885,9 +894,8 @@ _zimfw_tool_git() {
             return 1
           fi
         fi
-        TO_REV=${REV}@{u}
         if [[ ${ACTION} == check ]]; then
-          readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${TO_REV} -- 2>/dev/null)
+          readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${REV}@{u} -- 2>/dev/null)
           if (( BEHIND )); then
             _zimfw_print_okay "Update available [behind ${BEHIND}]"
             return 4
@@ -896,6 +904,7 @@ _zimfw_tool_git() {
             return 0
           fi
         fi
+        TO_REV=${REV}@{u}
       else
         if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
           if [[ ${ACTION} == check ]]; then
