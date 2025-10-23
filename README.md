@@ -1,3 +1,18 @@
+<div align="center">
+  <a href="https://zimfw.sh" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://zimfw.github.io/images/logo-dark.svg"/>
+      <source media="(prefers-color-scheme: light)" srcset="https://zimfw.github.io/images/logo.svg"/>
+      <img alt="Zim Framework logo" src="https://zimfw.github.io/images/logo.svg"/>
+    </picture>
+  </a>
+</div>
+
+<p align="center">
+  <a href="https://zimfw.sh" target="_blank">Zim Framework</a>:
+  The Zsh configuration framework with blazing speed and modular extensions.
+</p>
+
 <p align="center">
   <a href="https://github.com/zimfw/zimfw/releases"><img src="https://img.shields.io/github/v/release/zimfw/zimfw"></a>
   <a href="https://github.com/zimfw/zimfw/issues"><img src="https://img.shields.io/github/issues/zimfw/zimfw.svg"></a>
@@ -8,18 +23,12 @@
   <a href="https://github.com/zimfw/zimfw/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/zimfw/zimfw"></a>
 </p>
 
-<div align="center">
-  <a href="https://github.com/zimfw/zimfw">
-    <img width="600" src="https://zimfw.github.io/images/zimfw-banner@2.jpg">
-  </a>
-</div>
+<hr/>
 
-What is Zim?
-------------
-Zim is a Zsh configuration framework that bundles a [plugin manager](#usage),
+Zim Framework is a Zsh configuration framework that bundles a [plugin manager](#usage),
 useful [modules] and a wide variety of [themes], without compromising on [speed].
 
-Check how Zim compares to other frameworks and plugin managers:
+Check how Zim Framework compares to other frameworks and plugin managers:
 
 <a href="https://github.com/zimfw/zimfw/wiki/Speed">
   <img src="https://zimfw.github.io/images/results.svg">
@@ -41,7 +50,8 @@ Table of Contents
 
 Installation
 ------------
-Installing Zim is easy. You can choose either the automatic or manual method below:
+Installing Zim Framework is easy. You can choose either the automatic or manual
+method below:
 
 ### Automatic installation
 
@@ -229,9 +239,9 @@ zmodule utility
 # Prompt
 #
 
-# Exposes to prompts how long the last command took to execute, used by asciiship.
+# Exposes how long the last command took to run to prompts.
 zmodule duration-info
-# Exposes git repository status information to prompts, used by asciiship.
+# Exposes git repository status information to prompts.
 zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
@@ -263,9 +273,9 @@ zmodule utility
 # Prompt
 #
 
-# Exposes to prompts how long the last command took to execute, used by asciiship.
+# Exposes how long the last command took to run to prompts.
 zmodule duration-info
-# Exposes git repository status information to prompts, used by asciiship.
+# Exposes git repository status information to prompts.
 zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
@@ -276,16 +286,15 @@ zmodule asciiship
 
 # Additional completion definitions for Zsh.
 zmodule zsh-users/zsh-completions --fpath src
-# Enables and configures smart and extensive tab completion.
-# completion must be sourced after all modules that add completion definitions.
+# Enables and configures smart and extensive tab completion, must be sourced
+# after all modules that add completion definitions.
 zmodule completion
 
 #
 # Modules that must be initialized last
 #
 
-# Fish-like syntax highlighting for Zsh.
-# zsh-users/zsh-syntax-highlighting must be sourced after completion
+# Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
 # Fish-like autosuggestions for Zsh.
 zmodule zsh-users/zsh-autosuggestions
@@ -440,7 +449,7 @@ Per-call initialization options:
 
 ### zimfw
 
-The Zim plugin manager:
+The Zim Framework plugin manager:
 
   * Added new modules to `~/.zimrc`? Run `zimfw install`.
   * Removed modules from `~/.zimrc`? Run `zimfw uninstall`.
@@ -462,9 +471,10 @@ if the `ZDOTDIR` environment variable is not defined. Otherwise, it must be at
 
     ZIM_CONFIG_FILE=~/.config/zsh/zimrc
 
-The zimfw plugin manager will detect if `git` is installed and fall back to work without `git`
-with its degit tool. If you want to take advantage of its degit tool regardless for faster and
-lighter module installations, you can set degit as the default tool with:
+The zimfw plugin manager will detect if `git` is installed and fall back to work
+without `git` with its degit tool. If you want to take advantage of its degit
+tool regardless for faster and lighter module installations, you can set degit
+as the default tool with:
 
     zstyle ':zim:zmodule' use 'degit'
 
@@ -487,7 +497,7 @@ for other tools. See https://no-color.org/
 
 Uninstalling
 ------------
-The best way to remove Zim is to manually delete `~/.zim`, `~/.zimrc`, and
+The best way to remove Zim Framework is to manually delete `~/.zim`, `~/.zimrc`, and
 remove the initialization lines from your `~/.zshenv`, `~/.zshrc` and `~/.zlogin`.
 
 [modules]: https://zimfw.sh/docs/modules/
