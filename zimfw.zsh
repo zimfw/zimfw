@@ -545,7 +545,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-10-23 22:12:09 UTC, previous commit is 89e4e3d)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-10-27 22:17:33 UTC, previous commit is cfbef12)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -857,7 +857,15 @@ _zimfw_tool_git() {
           return 1
         fi
         if [[ ${TYPE} == branch ]]; then
-          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ...@{u} -- 2>/dev/null)
+          if [[ -z ${REV} ]]; then
+            if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+              REV=${REV#origin/}
+            else
+              _zimfw_print_error 'Error during git symbolic-ref.'${premsg} ${REV}
+              return 1
+            fi
+          fi
+          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
           readonly -i AHEAD=${AHEAD_AND_BEHIND[(w)1]}
           readonly -i BEHIND=${AHEAD_AND_BEHIND[(w)2]}
           if (( AHEAD && BEHIND )); then

@@ -17,7 +17,15 @@ _zimfw_tool_git() {
           return 1
         fi
         if [[ ${TYPE} == branch ]]; then
-          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ...@{u} -- 2>/dev/null)
+          if [[ -z ${REV} ]]; then
+            if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+              REV=${REV#origin/}
+            else
+              _zimfw_print_error 'Error during git symbolic-ref.'${premsg} ${REV}
+              return 1
+            fi
+          fi
+          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
           readonly -i AHEAD=${AHEAD_AND_BEHIND[(w)1]}
           readonly -i BEHIND=${AHEAD_AND_BEHIND[(w)2]}
           if (( AHEAD && BEHIND )); then
