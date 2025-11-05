@@ -41,7 +41,6 @@ Table of Contents
   * [Homebrew](#homebrew)
   * [Manual installation](#manual-installation)
     * [Set up `~/.zshrc`](#set-up-zshrc)
-    * [Create `~/.zimrc`](#create-zimrc)
 * [Usage](#usage)
   * [`zmodule`](#zmodule)
   * [`zimfw`](#zimfw)
@@ -69,7 +68,7 @@ This will install a predefined set of modules and a theme for you.
 
 Restart your terminal and you're done. Enjoy your Zsh IMproved! Take some time
 to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
-[modules] and [themes] you can add to your [`~/.zimrc`](#create-zimrc).
+[modules] and [themes] you can add to your `~/.zimrc`.
 
 ### Homebrew
 
@@ -94,22 +93,18 @@ to tweak your [`~/.zshrc`](#set-up-zshrc) file and to also check the available
    * `/usr/local/opt/zimfw/share/zimfw.zsh` on Intel macOS,
    * `/home/linuxbrew/.linuxbrew/opt/zimfw/share/zimfw.zsh` on Linux.
 
-3. [Create your `~/.zimrc` file](#create-zimrc)
-
-4. Restart your terminal and you're done. Enjoy your Zsh IMproved!
+3. Restart your terminal and you're done. Enjoy your Zsh IMproved!
 
 ### Manual installation
 
 1. Set Zsh as the default shell, if you haven't done so already:
     ```zsh
     chsh -s $(which zsh)
-    ````
+    ```
 
 2. [Set up your `~/.zshrc` file](#set-up-zshrc)
 
-3. [Create your `~/.zimrc` file](#create-zimrc)
-
-4. Restart your terminal and you're done. Enjoy your Zsh IMproved!
+3. Restart your terminal and you're done. Enjoy your Zsh IMproved!
 
 #### Set up `~/.zshrc`
 
@@ -148,11 +143,12 @@ Add the lines below to your `~/.zshrc` file, in the following order:
          https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
    fi
    ```
-   This is optional. Alternatively, you can download the `zimfw.zsh` script
-   anywhere your user has write access to: just replace the occurrences of
-   `${ZIM_HOME}/zimfw.zsh` by the preferred path, like `/usr/local/share/zimfw/zimfw.zsh`
-   for example. If you choose to not include this step, you should manually
-   download the `zimfw.zsh` script once and keep it at the preferred path.
+   This is optional. Alternatively, the `zimfw.zsh` script can be installed with
+   a package manager or downloaded anywhere your user has write access to: just
+   replace the occurrences of `${ZIM_HOME}/zimfw.zsh` by the preferred path,
+   like `/usr/local/share/zimfw/zimfw.zsh` for example. If you choose to not
+   include this step, you should install or manually download the `zimfw.zsh`
+   script once and keep it at the preferred path.
 
 4. To automatically install missing modules and update the static initialization
    script if missing or outdated:
@@ -164,8 +160,8 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    ```
    This step is optional, but highly recommended. If you choose to not include
    it, you must remember to manually run `zimfw install` every time you update
-   your [`~/.zimrc`](#create-zimrc) file. If you have chosen to keep the
-   `zimfw.zsh` in a different path as mentioned in the previous step, replace
+   your `~/.zimrc` file. If you have chosen to keep the `zimfw.zsh` script in a
+   different path as mentioned in the previous step, replace
    `${ZIM_HOME}/zimfw.zsh` by the chosen path.
 
 5. To source the static script, that will initialize your modules:
@@ -173,141 +169,6 @@ Add the lines below to your `~/.zshrc` file, in the following order:
    # Initialize modules.
    source ${ZIM_HOME}/init.zsh
    ```
-
-#### Create `~/.zimrc`
-
-This file configures the zimfw plugin manager. It's referred to as `~/.zimrc`
-in the documentation for the sake of simplicity, but the actual location of the
-file is defined by the following rules:
-
-1. You can define the full path and name of the file with a `ZIM_CONFIG_FILE`
-   environment variable. For example:
-   ```zsh
-   ZIM_CONFIG_FILE=~/.config/zsh/zimrc
-   ```
-
-2. Or, if you defined a `ZDOTDIR` environment variable, then the file must be at
-   `${ZDOTDIR}/.zimrc`
-
-3. Otherwise, it must be at at `~/.zimrc`, which is it's default location.
-
-As for the contents of the file, you can start with just:
-```zsh
-# Fish-like syntax highlighting for Zsh.
-zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like autosuggestions for Zsh.
-zmodule zsh-users/zsh-autosuggestions
-```
-
-If you also want saner defaults:
-```zsh
-#
-# Modules
-#
-
-# Sets sane Zsh built-in environment options.
-zmodule environment
-# Applies correct bindkeys for input events.
-zmodule input
-# Utility aliases and functions. Adds colour to ls, grep and less.
-zmodule utility
-
-#
-# Modules that must be initialized last
-#
-
-# Fish-like syntax highlighting for Zsh.
-zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like autosuggestions for Zsh.
-zmodule zsh-users/zsh-autosuggestions
-```
-
-If you also want one of our prompt [themes]:
-```zsh
-#
-# Modules
-#
-
-# Sets sane Zsh built-in environment options.
-zmodule environment
-# Applies correct bindkeys for input events.
-zmodule input
-# Utility aliases and functions. Adds colour to ls, grep and less.
-zmodule utility
-
-#
-# Prompt
-#
-
-# Exposes how long the last command took to run to prompts.
-zmodule duration-info
-# Exposes git repository status information to prompts.
-zmodule git-info
-# A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
-zmodule asciiship
-
-#
-# Modules that must be initialized last
-#
-
-# Fish-like syntax highlighting for Zsh.
-zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like autosuggestions for Zsh.
-zmodule zsh-users/zsh-autosuggestions
-```
-
-If you want to use our [completion] module too, instead of using `compinit` directly:
-```zsh
-#
-# Modules
-#
-
-# Sets sane Zsh built-in environment options.
-zmodule environment
-# Applies correct bindkeys for input events.
-zmodule input
-# Utility aliases and functions. Adds colour to ls, grep and less.
-zmodule utility
-
-#
-# Prompt
-#
-
-# Exposes how long the last command took to run to prompts.
-zmodule duration-info
-# Exposes git repository status information to prompts.
-zmodule git-info
-# A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
-zmodule asciiship
-
-#
-# Completion
-#
-
-# Additional completion definitions for Zsh.
-zmodule zsh-users/zsh-completions --fpath src
-# Enables and configures smart and extensive tab completion, must be sourced
-# after all modules that add completion definitions.
-zmodule completion
-
-#
-# Modules that must be initialized last
-#
-
-# Fish-like syntax highlighting for Zsh, must be sourced after completion.
-zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like autosuggestions for Zsh.
-zmodule zsh-users/zsh-autosuggestions
-```
-
-The [completion] module calls `compinit` for you. You should remove any
-`compinit` calls from your `~/.zshrc` when you use this module. The modules will
-be initialized in the order they are defined, and [completion] must be
-initialized *after* all modules that add completion definitions, so it must come
-after [zsh-users/zsh-completions].
-
-Check the [`zmodule` usage](#zmodule) below for more examples on how to use it to
-define the modules you want to use.
 
 Usage
 -----
@@ -320,8 +181,6 @@ initialized. The modules will be initialized in the same order they're defined.
 
 The `~/.zimrc` file is not sourced during Zsh startup and it's only used to
 configure the zimfw plugin manager.
-
-Check [examples of `~/.zimrc` files](#create-zimrc) above.
 
 ### zmodule
 
@@ -408,10 +267,10 @@ Per-module options:
 Per-module-root options:
       <b>--if</b> &lt;test&gt;            Will only initialize module root if specified test returns a zero
                              exit status. The test is evaluated at every new terminal startup.
-      <b>--if-command</b> &lt;cmd_name&gt;
+      <b>--if-command</b> &lt;command_name&gt;
                              Will only initialize module root if specified external command is
                              available. This is evaluated at every new terminal startup.
-                             Equivalent to <b>--if &apos;(( \${+commands[</b>&lt;cmd_name&gt;<b>]} ))&apos;</b>.
+                             Equivalent to <b>--if &apos;(( \${+commands[</b>&lt;command_name&gt;<b>]} ))&apos;</b>.
       <b>--if-ostype</b> &lt;ostype&gt;   Will only initialize module root if <b>OSTYPE</b> is equal to the given
                              expression. This is evaluated at every new terminal startup.
                              Equivalent to <b>--if &apos;[[ \${OSTYPE} == </b>&lt;ostype&gt;<b> ]]&apos;</b>.
@@ -426,7 +285,7 @@ Per-call initialization options:
   <b>-f</b>, <b>--fpath</b> &lt;path&gt;         Will add specified path to fpath. The path is relative to the
                              module root directory. Default: <b>&apos;functions&apos;</b>, if the subdirectory
                              exists and is non-empty.
-  <b>-a</b>, <b>--autoload</b> &lt;func_name&gt;
+  <b>-a</b>, <b>--autoload</b> &lt;function_name&gt;
                              Will autoload specified function. Default: all valid names inside
                              the <b>functions</b> subdirectory, if any.
   <b>-s</b>, <b>--source</b> &lt;file_path&gt;   Will source specified file. The path is relative to the module

@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.19.0] - 2025-11-05
+
+### Added
+- Generate .zimrc if not found, to hopefully make installation easier.
+- Fail module check if git default remote branch has diverged. This allows
+  novice users to more easily reinstall the affected module to fix the issue.
+
+### Changed
+- Expand aliases when compiling with zcompile for a more predictable behavior.
+- Include modules/ prefix when outputting module names.
+
 ## [1.18.0] - 2025-03-20
 
 Changes in this release are one more little step towards better adherence to the
@@ -113,7 +124,7 @@ Changes in this release are one more little step towards better adherence to the
 ## [1.12.0] - 2023-07-17
 
 ### Added
-- `check-version` action, that immediately checks if a new version of `zimfw` is
+- `check-version` action, that immediately checks if a new version of zimfw is
   available and returns code 4 if there is one.
 - `check` action, that checks if there are updates available for current modules.
 - Output of `LANG` and `LC_*` parameters in `info` action.
@@ -196,7 +207,7 @@ Changes in this release are one more little step towards better adherence to the
 ### Changed
 - The output of `zimfw init` to be friendlier to the terminal startup screen
   when called without `-q`.
-- Only compile scripts via the `zimfw` tool after actions where scripts can
+- Only compile scripts via the zimfw tool after actions where scripts can
   change (build, install, update, upgrade).
 - Move compilation of the completion dumpfile to the completion module,
   [here](https://github.com/zimfw/completion/blob/9386a76eac3f55b1c04d57d26238f725b4b3ba25/init.zsh#L10-L11).
@@ -279,7 +290,7 @@ Changes in this release are one more little step towards better adherence to the
 
 ### Fixed
 - Prefer the prezto module format when using defaults to initialize a module.
-  This is the format we use in our Zim framework modules. It's not well
+  This is the format we use in our Zim Framework modules. It's not well
   documented anywhere officially, but in short words a prezto module can have:
   * a `functions` subdirectory that is added to the fpath by the framework,
   * files inside the `functions` subdirectory that are autoloaded by the
@@ -442,7 +453,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.18.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.19.0...HEAD
+[1.19.0]: https://github.com/zimfw/zimfw/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/zimfw/zimfw/compare/v1.17.1...v1.18.0
 [1.17.1]: https://github.com/zimfw/zimfw/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/zimfw/zimfw/compare/v1.16.0...v1.17.0

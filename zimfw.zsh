@@ -387,7 +387,7 @@ Per-call initialization options:
     if [[ ! -e ${_zconfig} ]]; then
       _zimfw_print -u2 "${_zyellow}Config file not found, will create ${_zbold}${_zconfig}${_znormal}"
       command mkdir -p ${_zconfig:h} || return 1
-      print -R "#
+      print -Rn "#
 # This is not sourced during shell startup and is only used to configure zimfw.
 #
 
@@ -405,6 +405,9 @@ zmodule input
 zmodule termtitle
 # Utility aliases and functions. Adds colour to ls, grep and less.
 zmodule utility
+
+# <-- Normally new modules should be added here. Check each module documentation
+# for any caveats.
 
 #
 # Prompt
@@ -433,9 +436,12 @@ zmodule completion
 
 # Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like history search for Zsh, must be sourced after zsh-users/zsh-syntax-highlighting.
+# Fish-like history search for Zsh, must be sourced after
+# zsh-users/zsh-syntax-highlighting. Bind keyboard shortcuts in your ~/.zshrc:
+# https://github.com/zsh-users/zsh-history-substring-search/blob/master/README.md#usage
 #zmodule zsh-users/zsh-history-substring-search
-# Fish-like autosuggestions for Zsh.
+# Fish-like autosuggestions for Zsh. Add the following to your ~/.zshrc to boost
+# performance: ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zmodule zsh-users/zsh-autosuggestions
 " >${_zconfig} || return 1
     fi
@@ -545,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-10-27 22:17:33 UTC, previous commit is cfbef12)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-05 23:29:33 UTC, previous commit is ad16a43)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1053,7 +1059,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.18.0'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.19.0'
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:

@@ -17,6 +17,9 @@ zmodule termtitle
 # Utility aliases and functions. Adds colour to ls, grep and less.
 zmodule utility
 
+# <-- Normally new modules should be added here. Check each module documentation
+# for any caveats.
+
 #
 # Prompt
 #
@@ -44,7 +47,10 @@ zmodule completion
 
 # Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like history search for Zsh, must be sourced after zsh-users/zsh-syntax-highlighting.
+# Fish-like history search for Zsh, must be sourced after
+# zsh-users/zsh-syntax-highlighting. Bind keyboard shortcuts in your ~/.zshrc:
+# https://github.com/zsh-users/zsh-history-substring-search/blob/master/README.md#usage
 #zmodule zsh-users/zsh-history-substring-search
-# Fish-like autosuggestions for Zsh.
+# Fish-like autosuggestions for Zsh. Add the following to your ~/.zshrc to boost
+# performance: ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zmodule zsh-users/zsh-autosuggestions
