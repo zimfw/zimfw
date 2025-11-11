@@ -40,7 +40,7 @@ setup() {
 print external
 EOF
   cat >${HOME}/.zimrc <<EOF
-zmodule macports -n zimfw/macports --if-ostype 'darwin*'
+zmodule macports --name zimfw/macports --if-ostype 'darwin*'
 zmodule git-info -n zimfw/git-info --if-command git
 zmodule asciiship -n zimfw/asciiship  --if '[[ -z \${NO_COLOR} ]]'
 zmodule zsh-users/zsh-completions --use degit --fpath src
@@ -48,7 +48,7 @@ zmodule zsh-users/zsh-syntax-highlighting --if '[[ -z \${NO_COLOR} ]]'
 zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
 zmodule ${HOME}/external
 EOF
-  cat >${HOME}/expected.zsh <<EOF
+  cat >${HOME}/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
@@ -97,7 +97,7 @@ EOF
   assert_not_exists ${ZIM_HOME}/modules/test/.zdegit
   assert_file_exists ${ZIM_HOME}/modules/test/init.zsh
   assert_file_exists ${ZIM_HOME}/modules/test/init.zsh.zwc
-  assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected.zsh
+  assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected_init.zsh
   cat >${HOME}/.zshrc <<EOF
 source ${ZIM_HOME}/init.zsh
 EOF
