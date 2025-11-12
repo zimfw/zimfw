@@ -1,19 +1,20 @@
 setup() {
-  BATS_LIB_PATH=${BATS_TEST_DIRNAME}/test_helper
+  # shellcheck disable=SC2034
+  BATS_LIB_PATH="${BATS_TEST_DIRNAME}"/test_helper
   bats_load_library bats-support
   bats_load_library bats-assert
   bats_load_library bats-file
 
-  assert_file_exists ${PWD}/zimfw.zsh
-  export HOME=${BATS_TEST_TMPDIR}
-  export ZIM_HOME=${HOME}/.zim
-  cat >${HOME}/.zshrc <<EOF
+  assert_file_exists "${PWD}"/zimfw.zsh
+  export HOME="${BATS_TEST_TMPDIR}"
+  export ZIM_HOME="${HOME}"/.zim
+  cat >"${HOME}"/.zshrc <<EOF
 source ${ZIM_HOME}/init.zsh
 EOF
 }
 
 @test 'can print info' {
-  run zsh ${PWD}/zimfw.zsh info
+  run zsh "${PWD}"/zimfw.zsh info
   assert_success
   assert_line "ZIM_HOME:             ${ZIM_HOME}"
   assert_line "zimfw config:         ${HOME}/.zimrc"
@@ -21,10 +22,10 @@ EOF
 }
 
 @test 'can turn script to absolute path' {
-  cat >${HOME}/.zimrc <<EOF
+  cat >"${HOME}"/.zimrc <<EOF
 zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
 EOF
-  cat >${HOME}/expected_init.zsh <<EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
@@ -35,7 +36,7 @@ EOF
   run zsh zimfw.zsh init
   assert_success
   assert_output ') modules/test: Created'
-  assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected_init.zsh
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh zimfw.zsh info
   assert_success
@@ -47,24 +48,24 @@ EOF
 }
 
 @test 'can check-version' {
-  run zsh ${PWD}/zimfw.zsh check-version
+  run zsh "${PWD}"/zimfw.zsh check-version
   assert_success
   assert_output ''
-  assert_file_exists ${ZIM_HOME}/.latest_version
-  LATEST_VERSION=$(<${ZIM_HOME}/.latest_version)
+  assert_file_exists "${ZIM_HOME}"/.latest_version
+  LATEST_VERSION="$(<"${ZIM_HOME}"/.latest_version)"
 
-  run zsh ${PWD}/zimfw.zsh version
+  run zsh "${PWD}"/zimfw.zsh version
   assert_success
-  assert_output ${LATEST_VERSION}
+  assert_output "${LATEST_VERSION}"
 }
 
 @test 'can define modules' {
   command -v git # assert git command installed
-  mkdir ${HOME}/external
-  cat >${HOME}/external/init.zsh <<EOF
+  mkdir "${HOME}"/external
+  cat >"${HOME}"/external/init.zsh <<EOF
 print external
 EOF
-  cat >${HOME}/.zimrc <<EOF
+  cat >"${HOME}"/.zimrc <<EOF
 zmodule macports --name zimfw/macports --if-ostype 'darwin*'
 zmodule git-info -n zimfw/git-info --if-command git
 zmodule asciiship -n zimfw/asciiship  --if '[[ -z \${NO_COLOR} ]]'
@@ -73,7 +74,7 @@ zmodule zsh-users/zsh-syntax-highlighting --if '[[ -z \${NO_COLOR} ]]'
 zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
 zmodule ${HOME}/external
 EOF
-  cat >${HOME}/expected_init.zsh <<EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
@@ -95,7 +96,7 @@ source "\${HOME}/.zim/modules/test/init.zsh"
 source "\${HOME}/external/init.zsh"
 EOF
 
-  run zsh ${PWD}/zimfw.zsh init
+  run zsh "${PWD}"/zimfw.zsh init
   assert_success
   assert_line ') modules/zimfw/macports: Installed'
   assert_line ') modules/zimfw/git-info: Installed'
@@ -103,33 +104,33 @@ EOF
   assert_line ') modules/zsh-completions: Installed'
   assert_line ') modules/zsh-syntax-highlighting: Installed'
   assert_line ') modules/test: Created'
-  assert_exists ${ZIM_HOME}/modules/zimfw/macports/.git
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/macports/init.zsh
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/macports/init.zsh.zwc
-  assert_exists ${ZIM_HOME}/modules/zimfw/git-info/.git
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/git-info/functions/coalesce
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/git-info/functions/git-action
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/git-info/functions/git-info
-  assert_exists ${ZIM_HOME}/modules/zimfw/asciiship/.git
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/asciiship/asciiship.zsh-theme
-  assert_file_exists ${ZIM_HOME}/modules/zimfw/asciiship/asciiship.zsh-theme.zwc
-  assert_file_exists ${ZIM_HOME}/modules/zsh-completions/.zdegit
-  assert_dir_exists ${ZIM_HOME}/modules/zsh-completions/src
-  assert_exists ${ZIM_HOME}/modules/zsh-syntax-highlighting/.git
-  assert_file_exists ${ZIM_HOME}/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-  assert_file_exists ${ZIM_HOME}/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh.zwc
-  assert_not_exists ${ZIM_HOME}/modules/test/.git
-  assert_not_exists ${ZIM_HOME}/modules/test/.zdegit
-  assert_file_exists ${ZIM_HOME}/modules/test/init.zsh
-  assert_file_exists ${ZIM_HOME}/modules/test/init.zsh.zwc
-  assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected_init.zsh
+  assert_exists "${ZIM_HOME}"/modules/zimfw/macports/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh.zwc
+  assert_exists "${ZIM_HOME}"/modules/zimfw/git-info/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/git-info/functions/coalesce
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/git-info/functions/git-action
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/git-info/functions/git-info
+  assert_exists "${ZIM_HOME}"/modules/zimfw/asciiship/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/asciiship/asciiship.zsh-theme
+  assert_file_exists "${ZIM_HOME}"/modules/zimfw/asciiship/asciiship.zsh-theme.zwc
+  assert_file_exists "${ZIM_HOME}"/modules/zsh-completions/.zdegit
+  assert_dir_exists "${ZIM_HOME}"/modules/zsh-completions/src
+  assert_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh.zwc
+  assert_not_exists "${ZIM_HOME}"/modules/test/.git
+  assert_not_exists "${ZIM_HOME}"/modules/test/.zdegit
+  assert_file_exists "${ZIM_HOME}"/modules/test/init.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/test/init.zsh.zwc
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh -ic exit
   assert_success
   assert_output 'test
 external'
 
-  run zsh ${PWD}/zimfw.zsh check -v
+  run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
   assert_line ') modules/zimfw/macports: Already up to date'
   assert_line ') modules/zimfw/git-info: Already up to date'
@@ -139,10 +140,10 @@ external'
   assert_line ') external: Skipping external module'
   assert_line 'Done with check. Run zimfw update to update modules.'
 
-  run zsh ${PWD}/zimfw.zsh clean-compiled
+  run zsh "${PWD}"/zimfw.zsh clean-compiled
   assert_success
-  REAL_HOME=$(realpath ${HOME})
-  REAL_ZIM_HOME=$(realpath ${ZIM_HOME})
+  REAL_HOME="$(realpath "${HOME}")"
+  REAL_ZIM_HOME="$(realpath "${ZIM_HOME}")"
   assert_output "${REAL_ZIM_HOME}/modules/test/init.zsh.zwc
 ${REAL_ZIM_HOME}/modules/zimfw/asciiship/asciiship.zsh-theme.zwc
 ${REAL_ZIM_HOME}/modules/zimfw/macports/init.zsh.zwc
@@ -159,7 +160,7 @@ ${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh.zwc
 ${REAL_HOME}/external/init.zsh.zwc
 Done with clean-compiled. Restart your terminal or run zimfw compile to re-compile."
 
-  run zsh ${PWD}/zimfw.zsh compile
+  run zsh "${PWD}"/zimfw.zsh compile
   assert_success
   assert_output ") ${ZIM_HOME}/modules/zimfw/macports/init.zsh.zwc: Compiled
 ) ${ZIM_HOME}/modules/zimfw/asciiship/asciiship.zsh-theme.zwc: Compiled
@@ -177,7 +178,7 @@ Done with clean-compiled. Restart your terminal or run zimfw compile to re-compi
 ) ${HOME}/external/init.zsh.zwc: Compiled
 Done with compile."
 
-  run zsh ${PWD}/zimfw.zsh list
+  run zsh "${PWD}"/zimfw.zsh list
   assert_success
   assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
 modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
@@ -187,7 +188,7 @@ modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
 modules/test: ${ZIM_HOME}/modules/test
 external: ${HOME}/external (external)"
 
-  run zsh ${PWD}/zimfw.zsh list -v
+  run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
   assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
   From: https://github.com/zimfw/macports.git, default branch, using git
