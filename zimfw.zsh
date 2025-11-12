@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-12 13:14:01 UTC, previous commit is 3f20581)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-12 23:25:24 UTC, previous commit is 5a934eb)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -970,7 +970,11 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == (pre|prereinstall|check) ]] return 0
+  if [[ ${ACTION} == (pre|prereinstall) ]] return 0
+  if [[ ${ACTION} == check ]]; then
+    _zimfw_print_okay 'Skipping mkdir module' 1
+    return 0
+  fi
   if [[ -n ${REV} ]]; then
     _zimfw_print_warn "The zmodule option ${_zbold}-${TYPE[1]}${_znormalyellow}|${_zbold}--${TYPE}${_znormalyellow} has no effect when using the mkdir tool"
   fi

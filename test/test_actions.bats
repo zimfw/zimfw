@@ -137,6 +137,7 @@ external'
   assert_line ') modules/zimfw/asciiship: Already up to date'
   assert_line ') modules/zsh-completions: Already up to date'
   assert_line ') modules/zsh-syntax-highlighting: Already up to date'
+  assert_line ') modules/test: Skipping mkdir module'
   assert_line ') external: Skipping external module'
   assert_line 'Done with check. Run zimfw update to update modules.'
 
