@@ -3,11 +3,13 @@ setup() {
   bats_load_library bats-support
   bats_load_library bats-assert
   bats_load_library bats-file
+
+  assert_file_exists ${PWD}/zimfw.zsh
+  export HOME=${BATS_TEST_TMPDIR}
+  export ZIM_HOME=${HOME}/.zim
 }
 
 _test_submodules() {
-  export HOME=${BATS_TEST_TMPDIR}
-  export ZIM_HOME=${HOME}/.zim
   if [[ -z ${USE_DEGIT} ]]; then
     command -v git # assert git command installed
   else

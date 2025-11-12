@@ -3,12 +3,16 @@ setup() {
   bats_load_library bats-support
   bats_load_library bats-assert
   bats_load_library bats-file
+
+  assert_file_exists ${PWD}/zimfw.zsh
+  export HOME=${BATS_TEST_TMPDIR}
+  export ZIM_HOME=${HOME}/.zim
+  cat >${HOME}/.zshrc <<EOF
+source ${ZIM_HOME}/init.zsh
+EOF
 }
 
 @test 'can print info' {
-  export HOME=${BATS_TEST_TMPDIR}
-  export ZIM_HOME=${HOME}/.zim
-
   run zsh ${PWD}/zimfw.zsh info
   assert_success
   assert_line "ZIM_HOME:             ${ZIM_HOME}"
@@ -16,10 +20,33 @@ setup() {
   assert_line "zimfw script:         ${PWD}/zimfw.zsh"
 }
 
-@test 'can check-version' {
-  export HOME=${BATS_TEST_TMPDIR}
-  export ZIM_HOME=${HOME}/.zim
+@test 'can turn script to absolute path' {
+  cat >${HOME}/.zimrc <<EOF
+zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
+EOF
+  cat >${HOME}/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+source "\${HOME}/.zim/modules/test/init.zsh"
+EOF
+
+  run zsh zimfw.zsh init
+  assert_success
+  assert_output ') modules/test: Created'
+  assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected_init.zsh
+
+  run zsh zimfw.zsh info
+  assert_success
+  assert_line "zimfw script:         ${PWD}/zimfw.zsh"
+
+  run zsh -ic 'zimfw info'
+  assert_success
+  assert_line "zimfw script:         ${PWD}/zimfw.zsh"
+}
+
+@test 'can check-version' {
   run zsh ${PWD}/zimfw.zsh check-version
   assert_success
   assert_output ''
@@ -33,8 +60,6 @@ setup() {
 
 @test 'can define modules' {
   command -v git # assert git command installed
-  export HOME=${BATS_TEST_TMPDIR}
-  export ZIM_HOME=${HOME}/.zim
   mkdir ${HOME}/external
   cat >${HOME}/external/init.zsh <<EOF
 print external
@@ -98,9 +123,6 @@ EOF
   assert_file_exists ${ZIM_HOME}/modules/test/init.zsh
   assert_file_exists ${ZIM_HOME}/modules/test/init.zsh.zwc
   assert_files_equal ${ZIM_HOME}/init.zsh ${HOME}/expected_init.zsh
-  cat >${HOME}/.zshrc <<EOF
-source ${ZIM_HOME}/init.zsh
-EOF
 
   run zsh -ic exit
   assert_success

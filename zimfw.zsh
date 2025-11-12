@@ -30,7 +30,7 @@ autoload -Uz is-at-least && if ! is-at-least 5.2; then
 fi
 
 # Define zimfw location
-typeset -g __ZIMFW_FILE=${0}
+typeset -g __ZIMFW_FILE=${0:a}
 
 _zimfw_print() {
   if (( _zprintlevel > 0 )) print "${@}"
@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-11 13:33:38 UTC, previous commit is db043ae)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-12 13:14:01 UTC, previous commit is 3f20581)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
