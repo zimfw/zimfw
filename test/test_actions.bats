@@ -67,6 +67,7 @@ print external
 EOF
   cat >"${HOME}"/.zimrc <<EOF
 zmodule macports --name zimfw/macports --if-ostype 'darwin*'
+zmodule duration-info -n zimfw/duration-info --frozen --disabled
 zmodule git-info -n zimfw/git-info --if-command git
 zmodule asciiship -n zimfw/asciiship  --if '[[ -z \${NO_COLOR} ]]'
 zmodule zsh-users/zsh-completions --use degit --fpath src
@@ -107,6 +108,7 @@ EOF
   assert_exists "${ZIM_HOME}"/modules/zimfw/macports/.git
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh.zwc
+  assert_dir_not_exists "${ZIM_HOME}"/modules/zimfw/duration-info
   assert_exists "${ZIM_HOME}"/modules/zimfw/git-info/.git
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/git-info/functions/coalesce
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/git-info/functions/git-action
@@ -182,6 +184,7 @@ Done with compile."
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
   assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
+modules/zimfw/duration-info: ${ZIM_HOME}/modules/zimfw/duration-info (not installed) (frozen) (disabled)
 modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
 modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship
 modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
@@ -194,6 +197,7 @@ external: ${HOME}/external (external)"
   assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
   From: https://github.com/zimfw/macports.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/zimfw/macports/init.zsh\"
+modules/zimfw/duration-info: ${ZIM_HOME}/modules/zimfw/duration-info (not installed) (frozen) (disabled)
 modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
   From: https://github.com/zimfw/git-info.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/zimfw/git-info/functions\"
@@ -282,7 +286,11 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
   assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.zdegit
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
-  run zsh "${PWD}"/zimfw.zsh check
+  run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
-  assert_output ''
+  assert_line ') modules/zimfw/git-info: Already up to date'
+  assert_line ') modules/zimfw/asciiship: Skipping frozen module'
+  assert_line ') modules/zsh-completions: Already up to date'
+  assert_line ') modules/zsh-syntax-highlighting: Already up to date'
+  assert_line 'Done with check. Run zimfw update to update modules.'
 }

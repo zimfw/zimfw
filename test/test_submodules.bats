@@ -64,7 +64,7 @@ EOF
   USE_DEGIT='' NO_SUBMODULES=--no-submodules _test_submodules
 }
 
-@test 'can use degit' {
+@test 'cannot install submodules using degit' {
   USE_DEGIT='--use degit' NO_SUBMODULES='' _test_submodules
 }
 

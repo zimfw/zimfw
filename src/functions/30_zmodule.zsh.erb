@@ -234,7 +234,7 @@ Per-call initialization options:
       fi
     fi
   fi
-  if (( _zeager )); then
+  if (( ! ${_zdisabled_paths[(I)${zroot_dir}]} && _zeager )); then
     if [[ ! -e ${zroot_dir} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
       _zfailed=1
