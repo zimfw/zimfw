@@ -294,3 +294,123 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
   assert_line ') modules/zsh-syntax-highlighting: Already up to date'
   assert_line 'Done with check. Run zimfw update to update modules.'
 }
+
+@test 'can define multiple source files from one module' {
+  command -v git # assert git command installed
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule sindresorhus/pure -s async.zsh -s pure.zsh
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+source "\${HOME}/.zim/modules/pure/async.zsh"
+source "\${HOME}/.zim/modules/pure/pure.zsh"
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_line ') modules/pure: Installed'
+  assert_exists "${ZIM_HOME}"/modules/pure/.git
+  assert_file_exists "${ZIM_HOME}"/modules/pure/async.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/pure/async.zsh.zwc
+  assert_file_exists "${ZIM_HOME}"/modules/pure/pure.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/pure/pure.zsh.zwc
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  From: https://github.com/sindresorhus/pure.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
+
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule sindresorhus/pure --source async.zsh
+zmodule sindresorhus/pure
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh build
+  assert_success
+  assert_output ") ${ZIM_HOME}/init.zsh: Updated
+) ${ZIM_HOME}/login_init.zsh: Updated
+Done with build. Restart your terminal for changes to take effect."
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  From: https://github.com/sindresorhus/pure.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
+
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule sindresorhus/pure --source async.zsh
+zmodule sindresorhus/pure --if '[[ \${TERM_PROGRAM} == Apple_Terminal ]]'
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+if [[ \${TERM_PROGRAM} == Apple_Terminal ]]; then
+  source "\${HOME}/.zim/modules/pure/async.zsh"
+  source "\${HOME}/.zim/modules/pure/pure.zsh"
+fi
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh build
+  assert_success
+  assert_output ") ${ZIM_HOME}/init.zsh: Updated
+) ${ZIM_HOME}/login_init.zsh: Updated
+Done with build. Restart your terminal for changes to take effect."
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  From: https://github.com/sindresorhus/pure.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
+
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule sindresorhus/pure --source async.zsh
+zmodule sindresorhus/pure --frozen --if '[[ \${TERM_PROGRAM} == Apple_Terminal ]]'
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh update -v
+  assert_success
+  assert_output ") modules/pure: Skipping frozen module
+Done with update. Restart your terminal for changes to take effect.
+) ${ZIM_HOME}/init.zsh: Updated
+) ${ZIM_HOME}/login_init.zsh: Updated
+Done with build. Restart your terminal for changes to take effect.
+Done with compile."
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/pure: ${ZIM_HOME}/modules/pure (frozen)
+  cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
+
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule sindresorhus/pure --source async.zsh
+zmodule sindresorhus/pure --disabled
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh build
+  assert_success
+  assert_output ") ${ZIM_HOME}/init.zsh: Updated
+) ${ZIM_HOME}/login_init.zsh: Updated
+Done with build. Restart your terminal for changes to take effect."
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/pure: ${ZIM_HOME}/modules/pure (disabled)
+  From: https://github.com/sindresorhus/pure.git, default branch, using git"
+}

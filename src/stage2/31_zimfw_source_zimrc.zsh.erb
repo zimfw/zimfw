@@ -16,6 +16,14 @@ _zimfw_source_zimrc() {
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
+    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled paths prefixes
+    local zpath zpre
+    for zpath in ${_zdisabled_paths}; do
+      zpre=${zpath}$'\0'
+      _zfpaths=(${_zfpaths:#${zpre}*})
+      _zfunctions=(${_zfunctions:#${zpre}*})
+      _zcmds=(${_zcmds:#${zpre}*})
+    done
   } always {
     unfunction zmodule
   }

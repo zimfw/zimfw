@@ -454,6 +454,14 @@ zmodule zsh-users/zsh-autosuggestions
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
+    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled paths prefixes
+    local zpath zpre
+    for zpath in ${_zdisabled_paths}; do
+      zpre=${zpath}$'\0'
+      _zfpaths=(${_zfpaths:#${zpre}*})
+      _zfunctions=(${_zfunctions:#${zpre}*})
+      _zcmds=(${_zcmds:#${zpre}*})
+    done
   } always {
     unfunction zmodule
   }
@@ -544,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 01:48:13 UTC, previous commit is add0ea7)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 13:00:24 UTC, previous commit is 05db20d)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
