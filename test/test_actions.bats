@@ -21,6 +21,20 @@ EOF
   assert_line "zimfw script:         ${PWD}/zimfw.zsh"
 }
 
+@test 'can print info with symlinks' {
+  mkdir -p "${HOME}"/dotfiles/zim
+  touch "${HOME}"/dotfiles/zimrc
+  ln -s "${HOME}"/dotfiles/zim "${HOME}"/.zim
+  ln -s "${HOME}"/dotfiles/zimrc "${HOME}"/.zimrc
+  ln -s "${PWD}"/zimfw.zsh "${HOME}"/zimfw.zsh
+  REAL_HOME="$(realpath "${HOME}")"
+  run zsh "${HOME}"/zimfw.zsh info
+  assert_success
+  assert_line "ZIM_HOME:             ${HOME}/.zim -> ${REAL_HOME}/dotfiles/zim"
+  assert_line "zimfw config:         ${HOME}/.zimrc -> ${REAL_HOME}/dotfiles/zimrc"
+  assert_line "zimfw script:         ${HOME}/zimfw.zsh -> ${PWD}/zimfw.zsh"
+}
+
 @test 'can turn script to absolute path' {
   cat >"${HOME}"/.zimrc <<EOF
 zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
@@ -219,10 +233,10 @@ external: ${HOME}/external (external)
   cmd: source \"\${HOME}/external/init.zsh\""
 
   cat >"${HOME}"/.zimrc <<EOF
-zmodule git-info -n zimfw/git-info --disabled
-zmodule asciiship -n zimfw/asciiship --use degit --frozen
-zmodule zsh-users/zsh-completions --use git --fpath src
-zmodule zsh-users/zsh-syntax-highlighting --use degit
+zmodule git-info -n zimfw/git-info -d
+zmodule asciiship -n zimfw/asciiship -u degit -z
+zmodule zsh-users/zsh-completions -u git -f src
+zmodule zsh-users/zsh-syntax-highlighting -u degit
 EOF
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
@@ -413,4 +427,98 @@ Done with build. Restart your terminal for changes to take effect."
   assert_success
   assert_output "modules/pure: ${ZIM_HOME}/modules/pure (disabled)
   From: https://github.com/sindresorhus/pure.git, default branch, using git"
+}
+
+@test 'cannot init with empty .zimrc' {
+  touch "${HOME}"/.zimrc
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_failure
+  assert_output "No modules defined in ${HOME}/.zimrc"
+}
+
+@test 'can create default .zimrc' {
+  command -v git # assert git command installed
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+fpath=("\${HOME}/.zim/modules/git/functions" "\${HOME}/.zim/modules/utility/functions" "\${HOME}/.zim/modules/duration-info/functions" "\${HOME}/.zim/modules/git-info/functions" "\${HOME}/.zim/modules/zsh-completions/src" "\${HOME}/.zim/modules/completion/functions" \${fpath})
+autoload -Uz -- git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove mkcd mkpw duration-info-precmd duration-info-preexec coalesce git-action git-info
+source "\${HOME}/.zim/modules/environment/init.zsh"
+source "\${HOME}/.zim/modules/git/init.zsh"
+source "\${HOME}/.zim/modules/input/init.zsh"
+source "\${HOME}/.zim/modules/termtitle/init.zsh"
+source "\${HOME}/.zim/modules/utility/init.zsh"
+source "\${HOME}/.zim/modules/duration-info/init.zsh"
+source "\${HOME}/.zim/modules/asciiship/asciiship.zsh-theme"
+source "\${HOME}/.zim/modules/completion/init.zsh"
+source "\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "\${HOME}/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh"
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_line "Config file not found, will create ${HOME}/.zimrc"
+  assert_line ') modules/environment: Installed'
+  assert_line ') modules/git: Installed'
+  assert_line ') modules/input: Installed'
+  assert_line ') modules/termtitle: Installed'
+  assert_line ') modules/utility: Installed'
+  assert_line ') modules/duration-info: Installed'
+  assert_line ') modules/git-info: Installed'
+  assert_line ') modules/asciiship: Installed'
+  assert_line ') modules/zsh-completions: Installed'
+  assert_line ') modules/completion: Installed'
+  assert_line ') modules/zsh-syntax-highlighting: Installed'
+  assert_line ') modules/zsh-autosuggestions: Installed'
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/environment: ${ZIM_HOME}/modules/environment
+  From: https://github.com/zimfw/environment.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/environment/init.zsh\"
+modules/git: ${ZIM_HOME}/modules/git
+  From: https://github.com/zimfw/git.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/git/functions\"
+  autoload: git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove
+  cmd: source \"\${HOME}/.zim/modules/git/init.zsh\"
+modules/input: ${ZIM_HOME}/modules/input
+  From: https://github.com/zimfw/input.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/input/init.zsh\"
+modules/termtitle: ${ZIM_HOME}/modules/termtitle
+  From: https://github.com/zimfw/termtitle.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/termtitle/init.zsh\"
+modules/utility: ${ZIM_HOME}/modules/utility
+  From: https://github.com/zimfw/utility.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/utility/functions\"
+  autoload: mkcd mkpw
+  cmd: source \"\${HOME}/.zim/modules/utility/init.zsh\"
+modules/duration-info: ${ZIM_HOME}/modules/duration-info
+  From: https://github.com/zimfw/duration-info.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/duration-info/functions\"
+  autoload: duration-info-precmd duration-info-preexec
+  cmd: source \"\${HOME}/.zim/modules/duration-info/init.zsh\"
+modules/git-info: ${ZIM_HOME}/modules/git-info
+  From: https://github.com/zimfw/git-info.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/git-info/functions\"
+  autoload: coalesce git-action git-info
+modules/asciiship: ${ZIM_HOME}/modules/asciiship
+  From: https://github.com/zimfw/asciiship.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/asciiship/asciiship.zsh-theme\"
+modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+  From: https://github.com/zsh-users/zsh-completions.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
+modules/completion: ${ZIM_HOME}/modules/completion
+  From: https://github.com/zimfw/completion.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/completion/functions\"
+  cmd: source \"\${HOME}/.zim/modules/completion/init.zsh\"
+modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+  From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
+modules/zsh-autosuggestions: ${ZIM_HOME}/modules/zsh-autosuggestions
+  From: https://github.com/zsh-users/zsh-autosuggestions.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh\""
 }
