@@ -5,6 +5,7 @@ setup() {
   bats_load_library bats-assert
   bats_load_library bats-file
 
+  command -v git # assert git command installed
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
@@ -74,7 +75,6 @@ EOF
 }
 
 @test 'can define modules' {
-  command -v git # assert git command installed
   mkdir "${HOME}"/external
   cat >"${HOME}"/external/init.zsh <<EOF
 print external
@@ -310,7 +310,6 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
 }
 
 @test 'can define multiple source files from one module' {
-  command -v git # assert git command installed
   cat >"${HOME}"/.zimrc <<EOF
 zmodule sindresorhus/pure -s async.zsh -s pure.zsh
 EOF
@@ -438,7 +437,6 @@ Done with build. Restart your terminal for changes to take effect."
 }
 
 @test 'can create default .zimrc' {
-  command -v git # assert git command installed
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!

@@ -5,15 +5,14 @@ setup() {
   bats_load_library bats-assert
   bats_load_library bats-file
 
+  command -v git # assert git command installed
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
 }
 
 _test_submodules() {
-  if [[ -z "${USE_DEGIT}" ]]; then
-    command -v git # assert git command installed
-  else
+  if [[ -n "${USE_DEGIT}" ]]; then
     cat >"${HOME}"/expected_zdegit <<EOF
 https://github.com/spaceship-prompt/spaceship-prompt.git
 v3.13.3
