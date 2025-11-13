@@ -34,6 +34,8 @@ _zimfw_run_list() {
         if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
       done
+    else
+      if (( ${+_zifs[${zpath}]} )) print -R '  if: '${_zifs[${zpath}]}
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre="${(q)zpath}(|/*)"$'\0'

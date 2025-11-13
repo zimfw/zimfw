@@ -210,20 +210,24 @@ external: ${HOME}/external (external)"
   assert_success
   assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
   From: https://github.com/zimfw/macports.git, default branch, using git
+  if: [[ \${OSTYPE} == darwin* ]]
   cmd: source \"\${HOME}/.zim/modules/zimfw/macports/init.zsh\"
 modules/zimfw/duration-info: ${ZIM_HOME}/modules/zimfw/duration-info (not installed) (frozen) (disabled)
 modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
   From: https://github.com/zimfw/git-info.git, default branch, using git
+  if: (( \${+commands[git]} ))
   fpath: \"\${HOME}/.zim/modules/zimfw/git-info/functions\"
   autoload: coalesce git-action git-info
 modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship
   From: https://github.com/zimfw/asciiship.git, default branch, using git
+  if: [[ -z \${NO_COLOR} ]]
   cmd: source \"\${HOME}/.zim/modules/zimfw/asciiship/asciiship.zsh-theme\"
 modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
   From: https://github.com/zsh-users/zsh-completions.git, default branch, using degit
   fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
 modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
   From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using git
+  if: [[ -z \${NO_COLOR} ]]
   cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
 modules/test: ${ZIM_HOME}/modules/test
   From: mkdir
@@ -382,6 +386,7 @@ Done with build. Restart your terminal for changes to take effect."
   assert_success
   assert_output "modules/pure: ${ZIM_HOME}/modules/pure
   From: https://github.com/sindresorhus/pure.git, default branch, using git
+  if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
 
   cat >"${HOME}"/.zimrc <<EOF
@@ -402,11 +407,12 @@ Done with compile."
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
   assert_output "modules/pure: ${ZIM_HOME}/modules/pure (frozen)
+  if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
 
   cat >"${HOME}"/.zimrc <<EOF
 zmodule sindresorhus/pure --source async.zsh
-zmodule sindresorhus/pure --disabled
+zmodule sindresorhus/pure --if '[[ \${TERM_PROGRAM} == Apple_Terminal ]]' --disabled
 EOF
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
@@ -425,7 +431,8 @@ Done with build. Restart your terminal for changes to take effect."
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
   assert_output "modules/pure: ${ZIM_HOME}/modules/pure (disabled)
-  From: https://github.com/sindresorhus/pure.git, default branch, using git"
+  From: https://github.com/sindresorhus/pure.git, default branch, using git
+  if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]"
 }
 
 @test 'cannot init with empty .zimrc' {

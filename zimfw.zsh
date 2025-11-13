@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 13:00:24 UTC, previous commit is 05db20d)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 13:46:01 UTC, previous commit is 748c768)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -648,6 +648,8 @@ _zimfw_run_list() {
         if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
       done
+    else
+      if (( ${+_zifs[${zpath}]} )) print -R '  if: '${_zifs[${zpath}]}
     fi
     # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
     local -r zpre="${(q)zpath}(|/*)"$'\0'
