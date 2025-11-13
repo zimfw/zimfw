@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-12 23:25:24 UTC, previous commit is 5a934eb)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 00:30:37 UTC, previous commit is ae71df5)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1085,7 +1085,8 @@ Actions:
   ${_zbold}reinstall${_znormal}           Reinstall modules that failed check. Prompts for confirmation, unless ${_zbold}-q${_znormal}
                       is used. Also does ${_zbold}build${_znormal}, ${_zbold}compile${_znormal}. Use ${_zbold}-v${_znormal} to also see their output, any
                       on-pull output and skipped modules.
-  ${_zbold}uninstall${_znormal}           Delete unused modules. Prompts for confirmation, unless ${_zbold}-q${_znormal} is used.
+  ${_zbold}uninstall${_znormal}           Delete unused modules. Prompts for confirmation, unless ${_zbold}-q${_znormal} is used. Also
+                      does ${_zbold}build${_znormal}. Use ${_zbold}-v${_znormal} to also see its output.
   ${_zbold}check${_znormal}               Check if updates for current modules are available. Use ${_zbold}-v${_znormal} to also see
                       skipped and up to date modules.
   ${_zbold}check-version${_znormal}       Check if a new version of zimfw is available.
@@ -1182,7 +1183,11 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
-    uninstall) _zimfw_source_zimrc 0 && _zimfw_list_unused_paths && _zimfw_uninstall ;;
+    uninstall)
+      _zimfw_source_zimrc 0 && _zimfw_list_unused_paths && _zimfw_uninstall || return 1
+      (( _zprintlevel-- ))
+      _zimfw_source_zimrc 1 && _zimfw_build
+      ;;
     check-version)
       _zimfw_check_version 1
       (( _zprintlevel-- ))

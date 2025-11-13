@@ -213,4 +213,76 @@ modules/test: ${ZIM_HOME}/modules/test
   cmd: source \"\${HOME}/.zim/modules/test/init.zsh\"
 external: ${HOME}/external (external)
   cmd: source \"\${HOME}/external/init.zsh\""
+
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule git-info -n zimfw/git-info --disabled
+zmodule asciiship -n zimfw/asciiship --use degit --frozen
+zmodule zsh-users/zsh-completions --use git --fpath src
+zmodule zsh-users/zsh-syntax-highlighting --use degit
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+fpath=("\${HOME}/.zim/modules/zsh-completions/src" \${fpath})
+source "\${HOME}/.zim/modules/zimfw/asciiship/asciiship.zsh-theme"
+source "\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output "modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info (disabled)
+modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship (frozen)
+modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+modules/test: ${ZIM_HOME}/modules/test (unused)
+modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports (unused)"
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info (disabled)
+  From: https://github.com/zimfw/git-info.git, default branch, using git
+modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship (frozen)
+  cmd: source \"\${HOME}/.zim/modules/zimfw/asciiship/asciiship.zsh-theme\"
+modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+  From: https://github.com/zsh-users/zsh-completions.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
+modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+  From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using degit
+  cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
+modules/test: ${ZIM_HOME}/modules/test (unused)
+modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports (unused)"
+
+  run zsh "${PWD}"/zimfw.zsh uninstall -q
+  assert_success
+  assert_output ''
+  assert_exists "${ZIM_HOME}"/modules/zimfw/git-info/.git
+  assert_exists "${ZIM_HOME}"/modules/zimfw/asciiship/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zsh-completions/.zdegit
+  assert_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.git
+  assert_dir_not_exists "${ZIM_HOME}"/modules/test
+  assert_dir_not_exists "${ZIM_HOME}"/modules/zimfw/macports
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh -ic exit
+  assert_success
+  assert_output ''
+
+  run zsh "${PWD}"/zimfw.zsh check
+  assert_success
+  assert_line "x modules/zsh-completions: Module was not installed using git. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
+  assert_line "x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
+
+  run zsh "${PWD}"/zimfw.zsh reinstall -q
+  assert_success
+  assert_output "x modules/zsh-completions: Module was not installed using git.
+x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit."
+  assert_exists "${ZIM_HOME}"/modules/zsh-completions/.git
+  assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.zdegit
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh check
+  assert_success
+  assert_output ''
 }
