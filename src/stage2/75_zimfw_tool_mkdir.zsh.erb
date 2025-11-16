@@ -14,6 +14,12 @@ _zimfw_tool_mkdir() {
     _zimfw_print_warn "The zmodule option ${_zbold}--no-submodules${_znormalyellow} has no effect when using the mkdir tool"
   fi
   if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
-    _zimfw_create_dir ${DIR} && _zimfw_pull_print_okay Created || return 1
+    _zimfw_create_dir ${DIR} || return 1
+    local -r zroot_dirs=(${(M)_zroot_dirs:#${DIR}/*})
+    local zroot_dir
+    for zroot_dir in ${zroot_dirs}; do
+      _zimfw_create_dir ${zroot_dir} || return 1
+    done
+    _zimfw_pull_print_okay Created || return 1
   fi
 }

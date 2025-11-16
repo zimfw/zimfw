@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-13 13:46:01 UTC, previous commit is 748c768)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-16 16:19:15 UTC, previous commit is 531255e)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -984,7 +984,13 @@ _zimfw_tool_mkdir() {
     _zimfw_print_warn "The zmodule option ${_zbold}--no-submodules${_znormalyellow} has no effect when using the mkdir tool"
   fi
   if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
-    _zimfw_create_dir ${DIR} && _zimfw_pull_print_okay Created || return 1
+    _zimfw_create_dir ${DIR} || return 1
+    local -r zroot_dirs=(${(M)_zroot_dirs:#${DIR}/*})
+    local zroot_dir
+    for zroot_dir in ${zroot_dirs}; do
+      _zimfw_create_dir ${zroot_dir} || return 1
+    done
+    _zimfw_pull_print_okay Created || return 1
   fi
 }
 
