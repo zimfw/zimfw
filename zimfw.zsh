@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-17 00:42:11 UTC, previous commit is f39b564)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-17 18:48:09 UTC, previous commit is b85ff37)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -645,7 +645,7 @@ _zimfw_run_list() {
       if [[ ${zroot_dirs} == (${zpath}) ]]; then
         zindent='  '
       else
-        print -nR '  root: '${zroot_dir}
+        print -nR '  Root: '${zroot_dir}
         if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
         zindent='    '

@@ -42,11 +42,11 @@ EOF
   assert_output "modules/custom: ${ZIM_HOME}/modules/custom
   From: mkdir
   On-pull: >init.zsh <<<\"print custom\"; (builtin cd -q 1; >init.zsh <<<\"print custom1\"); (builtin cd -q 2; >init.zsh <<<\"print custom2\")
-  root: ${ZIM_HOME}/modules/custom
+  Root: ${ZIM_HOME}/modules/custom
     cmd: source \"\${HOME}/.zim/modules/custom/init.zsh\"
-  root: ${ZIM_HOME}/modules/custom/1
+  Root: ${ZIM_HOME}/modules/custom/1
     cmd: source \"\${HOME}/.zim/modules/custom/1/init.zsh\"
-  root: ${ZIM_HOME}/modules/custom/2
+  Root: ${ZIM_HOME}/modules/custom/2
     cmd: source \"\${HOME}/.zim/modules/custom/2/init.zsh\""
 }
 
@@ -85,16 +85,17 @@ EOF
   assert_output "modules/custom: ${ZIM_HOME}/modules/custom
   From: mkdir
   On-pull: (builtin cd -q 1; >init.zsh <<<\"print \\\${CUSTOM1}\"); (builtin cd -q 2; >init.zsh <<<\"print custom2\"); (builtin cd -q 3; >init.zsh <<<\"print custom3\")
-  root: ${ZIM_HOME}/modules/custom/1
+  Root: ${ZIM_HOME}/modules/custom/1
     if: [[ -n \${CUSTOM1} ]]
     cmd: source \"\${HOME}/.zim/modules/custom/1/init.zsh\"; print -R \"\${(F)\$(<\"\${HOME}/.zim/modules/custom/1\"/init.zsh)}\"
-  root: ${ZIM_HOME}/modules/custom/2
+  Root: ${ZIM_HOME}/modules/custom/2
     cmd: source \"\${HOME}/.zim/modules/custom/2/init.zsh\"
-  root: ${ZIM_HOME}/modules/custom/3
+  Root: ${ZIM_HOME}/modules/custom/3
     if: (( \${+commands[cat]} ))
     cmd: cat \"\${HOME}/.zim/modules/custom/3\"/init.zsh"
 
   CUSTOM1=custom1 run zsh -ic 'exit'
+  # shellcheck disable=SC2016
   assert_output 'custom1
 print ${CUSTOM1}
 custom2
@@ -118,10 +119,10 @@ EOF
   run zsh zimfw.zsh list -v
   assert_success
   assert_output "modules/custom: ${ZIM_HOME}/modules/custom (frozen)
-  root: ${ZIM_HOME}/modules/custom/1 (disabled)
-  root: ${ZIM_HOME}/modules/custom/2
+  Root: ${ZIM_HOME}/modules/custom/1 (disabled)
+  Root: ${ZIM_HOME}/modules/custom/2
     cmd: source \"\${HOME}/.zim/modules/custom/2/init.zsh\"
-  root: ${ZIM_HOME}/modules/custom/3
+  Root: ${ZIM_HOME}/modules/custom/3
     cmd: cat \"\${HOME}/.zim/modules/custom/3\"/init.zsh"
 
   run zsh zimfw.zsh install -v
