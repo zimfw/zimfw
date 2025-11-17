@@ -552,7 +552,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-16 16:19:15 UTC, previous commit is 531255e)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-17 00:42:11 UTC, previous commit is f39b564)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -615,11 +615,12 @@ _zimfw_upgrade() {
 _zimfw_run_list() {
   local -r zname=${1}
   local -r zpath=${_zpaths[${zname}]}
+  local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}(|/*)})
   print -nR "${_zbold}${zname}:${_znormal} ${zpath}"
   if [[ ! -e ${zpath} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
-  if (( ${_zdisabled_paths[(I)${zpath}]} )) print -n ' (disabled)'
+  if [[ ${_zdisabled_paths[(I)${zpath}]} -ne 0 && ${zroot_dirs} == (${zpath}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
@@ -638,25 +639,26 @@ _zimfw_run_list() {
       fi
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
-    # Match the current module dir prefix from _zroot_dirs
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}/*})
-    if (( ${#zroot_dirs} )); then
-      print '  Additional root:'
-      local zroot_dir
-      for zroot_dir in ${zroot_dirs}; do
-        print -nR "    ${zroot_dir}"
+    local zroot_dir zindent zpre
+    local -a zfpaths zfunctions zcmds
+    for zroot_dir in ${zroot_dirs}; do
+      if [[ ${zroot_dirs} == (${zpath}) ]]; then
+        zindent='  '
+      else
+        print -nR '  root: '${zroot_dir}
         if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
-      done
-    else
-      if (( ${+_zifs[${zpath}]} )) print -R '  if: '${_zifs[${zpath}]}
-    fi
-    # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${(q)zpath}(|/*)"$'\0'
-    local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
-    if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
-    if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
-    if (( ${#zcmds} )) print -R '  cmd: '${(j:; :)zcmds}
+        zindent='    '
+      fi
+      if (( ${+_zifs[${zroot_dir}]} )) print -R ${zindent}'if: '${_zifs[${zroot_dir}]}
+      zpre=${zroot_dir}$'\0'
+      zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}})
+      zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}})
+      zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
+      if (( ${#zfpaths} )) print -R ${zindent}'fpath: '${zfpaths}
+      if (( ${#zfunctions} )) print -R ${zindent}'autoload: '${zfunctions}
+      if (( ${#zcmds} )) print -R ${zindent}'cmd: '${(j:; :)zcmds}
+    done
   fi
 }
 
@@ -984,8 +986,7 @@ _zimfw_tool_mkdir() {
     _zimfw_print_warn "The zmodule option ${_zbold}--no-submodules${_znormalyellow} has no effect when using the mkdir tool"
   fi
   if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
-    _zimfw_create_dir ${DIR} || return 1
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${DIR}/*})
+    local -r zroot_dirs=(${(M)_zroot_dirs:#${DIR}(|/*)})
     local zroot_dir
     for zroot_dir in ${zroot_dirs}; do
       _zimfw_create_dir ${zroot_dir} || return 1

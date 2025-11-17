@@ -1,11 +1,12 @@
 _zimfw_run_list() {
   local -r zname=${1}
   local -r zpath=${_zpaths[${zname}]}
+  local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}(|/*)})
   print -nR "${_zbold}${zname}:${_znormal} ${zpath}"
   if [[ ! -e ${zpath} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
-  if (( ${_zdisabled_paths[(I)${zpath}]} )) print -n ' (disabled)'
+  if [[ ${_zdisabled_paths[(I)${zpath}]} -ne 0 && ${zroot_dirs} == (${zpath}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
@@ -24,24 +25,25 @@ _zimfw_run_list() {
       fi
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
-    # Match the current module dir prefix from _zroot_dirs
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}/*})
-    if (( ${#zroot_dirs} )); then
-      print '  Additional root:'
-      local zroot_dir
-      for zroot_dir in ${zroot_dirs}; do
-        print -nR "    ${zroot_dir}"
+    local zroot_dir zindent zpre
+    local -a zfpaths zfunctions zcmds
+    for zroot_dir in ${zroot_dirs}; do
+      if [[ ${zroot_dirs} == (${zpath}) ]]; then
+        zindent='  '
+      else
+        print -nR '  root: '${zroot_dir}
         if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
         print
-      done
-    else
-      if (( ${+_zifs[${zpath}]} )) print -R '  if: '${_zifs[${zpath}]}
-    fi
-    # Match and remove the prefix from _zfpaths, _zfunctions and _zcmds
-    local -r zpre="${(q)zpath}(|/*)"$'\0'
-    local -r zfpaths=(${${(M)_zfpaths:#${~zpre}*}#${~zpre}}) zfunctions=(${${(M)_zfunctions:#${~zpre}*}#${~zpre}}) zcmds=(${${(M)_zcmds:#${~zpre}*}#${~zpre}})
-    if (( ${#zfpaths} )) print -R '  fpath: '${zfpaths}
-    if (( ${#zfunctions} )) print -R '  autoload: '${zfunctions}
-    if (( ${#zcmds} )) print -R '  cmd: '${(j:; :)zcmds}
+        zindent='    '
+      fi
+      if (( ${+_zifs[${zroot_dir}]} )) print -R ${zindent}'if: '${_zifs[${zroot_dir}]}
+      zpre=${zroot_dir}$'\0'
+      zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}})
+      zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}})
+      zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
+      if (( ${#zfpaths} )) print -R ${zindent}'fpath: '${zfpaths}
+      if (( ${#zfunctions} )) print -R ${zindent}'autoload: '${zfunctions}
+      if (( ${#zcmds} )) print -R ${zindent}'cmd: '${(j:; :)zcmds}
+    done
   fi
 }
