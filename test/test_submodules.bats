@@ -9,16 +9,12 @@ setup() {
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
+  cat >"${HOME}"/.zshenv <<EOF
+zstyle ':zim' disable-version-check yes
+EOF
 }
 
 _test_submodules() {
-  if [[ -n "${USE_DEGIT}" ]]; then
-    cat >"${HOME}"/expected_zdegit <<EOF
-https://github.com/spaceship-prompt/spaceship-prompt.git
-v3.13.3
-If-None-Match: "c8064a1deeb1585a09d77e8dc30c8a209b60ec093b2a3868a06a2c1411bf8ebf"
-EOF
-  fi
   cat >"${HOME}"/.zimrc <<EOF
 zmodule spaceship-prompt/spaceship-prompt --name spaceship --tag v3.13.3 ${USE_DEGIT} ${NO_SUBMODULES}
 EOF
@@ -42,6 +38,11 @@ EOF
     assert_exists "${ZIM_HOME}"/modules/spaceship/.git
     assert_equal "$(git -C "${ZIM_HOME}"/modules/spaceship rev-parse HEAD)" bdb247d84cffc0c068e2370dabcce29c3b671607
   else
+    cat >"${HOME}"/expected_zdegit <<EOF
+https://github.com/spaceship-prompt/spaceship-prompt.git
+v3.13.3
+If-None-Match: "c8064a1deeb1585a09d77e8dc30c8a209b60ec093b2a3868a06a2c1411bf8ebf"
+EOF
     assert_exists "${ZIM_HOME}"/modules/spaceship/.zdegit
     assert_files_equal "${ZIM_HOME}"/modules/spaceship/.zdegit "${HOME}"/expected_zdegit
   fi

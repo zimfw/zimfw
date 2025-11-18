@@ -5,10 +5,12 @@ setup() {
   bats_load_library bats-assert
   bats_load_library bats-file
 
-  command -v git # assert git command installed
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
+  cat >"${HOME}"/.zshenv <<EOF
+zstyle ':zim' disable-version-check yes
+EOF
   cat >"${HOME}"/.zshrc <<EOF
 source ${ZIM_HOME}/init.zsh
 EOF
@@ -38,14 +40,14 @@ EOF
 
 @test 'can turn script path to absolute path' {
   cat >"${HOME}"/.zimrc <<EOF
-zmodule test --use mkdir --on-pull '>init.zsh <<<"print test"'
+zmodule test --use mkdir --on-pull '>test.sh <<<"echo test"'
 EOF
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
 if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
-source "\${HOME}/.zim/modules/test/init.zsh"
+source "\${HOME}/.zim/modules/test/test.sh"
 EOF
 
   run zsh zimfw.zsh init

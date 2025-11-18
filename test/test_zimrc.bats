@@ -9,6 +9,9 @@ setup() {
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
+  cat >"${HOME}"/.zshenv <<EOF
+zstyle ':zim' disable-version-check yes
+EOF
 }
 
 @test 'cannot init with empty .zimrc' {
@@ -17,6 +20,30 @@ setup() {
   run zsh "${PWD}"/zimfw.zsh init
   assert_failure
   assert_output "No modules defined in ${HOME}/.zimrc"
+}
+
+@test 'can configure path to .zimrc' {
+  export ZIM_CONFIG_FILE="${HOME}"/.config/zsh/zimrc
+  mkdir -p "$(dirname "${ZIM_CONFIG_FILE}")"
+  cat >"${ZIM_CONFIG_FILE}" <<EOF
+zmodule test --use mkdir --on-pull '>test.zsh <<<"print test"'
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${ZIM_CONFIG_FILE}
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+source "\${HOME}/.zim/modules/test/test.zsh"
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh info
+  assert_success
+  assert_line "zimfw config:         ${ZIM_CONFIG_FILE}"
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_output ') modules/test: Created'
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 }
 
 @test 'can create default .zimrc' {

@@ -9,6 +9,9 @@ setup() {
   assert_file_exists "${PWD}"/zimfw.zsh
   export HOME="${BATS_TEST_TMPDIR}"
   export ZIM_HOME="${HOME}"/.zim
+  cat >"${HOME}"/.zshenv <<EOF
+zstyle ':zim' disable-version-check yes
+EOF
   cat >"${HOME}"/.zshrc <<EOF
 source ${ZIM_HOME}/init.zsh
 EOF
@@ -178,7 +181,7 @@ Done with build. Restart your terminal for changes to take effect."
   if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]"
 }
 
-@test 'can define modules' {
+@test 'can define modules with custom options' {
   mkdir "${HOME}"/external
   cat >"${HOME}"/external/init.zsh <<EOF
 print external
