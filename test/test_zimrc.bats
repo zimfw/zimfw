@@ -68,7 +68,7 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh init
   assert_success
-  assert_line "Config file not found, will create ${HOME}/.zimrc"
+  assert_line --index 0 "Config file not found, will create ${HOME}/.zimrc"
   assert_line ') modules/environment: Installed'
   assert_line ') modules/git: Installed'
   assert_line ') modules/input: Installed'
@@ -81,6 +81,7 @@ EOF
   assert_line ') modules/completion: Installed'
   assert_line ') modules/zsh-syntax-highlighting: Installed'
   assert_line ') modules/zsh-autosuggestions: Installed'
+  assert_equal "${#lines[@]}" 13
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh "${PWD}"/zimfw.zsh list -v

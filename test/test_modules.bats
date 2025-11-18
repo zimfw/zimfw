@@ -226,6 +226,7 @@ EOF
   assert_line ') modules/zsh-completions: Installed'
   assert_line ') modules/zsh-syntax-highlighting: Installed'
   assert_line ') modules/test: Created'
+  assert_equal "${#lines[@]}" 6
   assert_exists "${ZIM_HOME}"/modules/zimfw/macports/.git
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh
   assert_file_exists "${ZIM_HOME}"/modules/zimfw/macports/init.zsh.zwc
@@ -255,6 +256,7 @@ external'
 
   run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
+  assert_line ') modules/zimfw/duration-info: Skipping frozen module'
   assert_line ') modules/zimfw/macports: Already up to date'
   assert_line ') modules/zimfw/git-info: Already up to date'
   assert_line ') modules/zimfw/asciiship: Already up to date'
@@ -262,7 +264,8 @@ external'
   assert_line ') modules/zsh-syntax-highlighting: Already up to date'
   assert_line ') modules/test: Skipping mkdir module'
   assert_line ') external: Skipping external module'
-  assert_line 'Done with check. Run zimfw update to update modules.'
+  assert_line --index 8 'Done with check. Run zimfw update to update modules.'
+  assert_equal "${#lines[@]}" 9
 
   run zsh "${PWD}"/zimfw.zsh clean-compiled
   assert_success
@@ -402,6 +405,7 @@ modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports (unused)"
   assert_success
   assert_line "x modules/zsh-completions: Module was not installed using git. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
   assert_line "x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
+  assert_equal "${#lines[@]}" 2
 
   run zsh "${PWD}"/zimfw.zsh reinstall -q
   assert_success
@@ -417,7 +421,8 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
   assert_line ') modules/zimfw/asciiship: Skipping frozen module'
   assert_line ') modules/zsh-completions: Already up to date'
   assert_line ') modules/zsh-syntax-highlighting: Already up to date'
-  assert_line 'Done with check. Run zimfw update to update modules.'
+  assert_line --index 4 'Done with check. Run zimfw update to update modules.'
+  assert_equal "${#lines[@]}" 5
 }
 
 
