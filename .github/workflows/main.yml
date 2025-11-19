@@ -1,0 +1,15 @@
+name: Run test
+on: push
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: true
+    - name: Run test
+      uses: ./.github/action
+      with:
+        cmd: |
+          make test

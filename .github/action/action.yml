@@ -1,0 +1,10 @@
+name: 'Zsh Command'
+inputs:
+  cmd:
+    required: true
+    default: 'exit'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.cmd }}

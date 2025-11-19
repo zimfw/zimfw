@@ -8,5 +8,5 @@ zimfw.zsh: $(srcfiles)
 lint:
 	@shellcheck test/test_*.bats
 
-test: zimfw.zsh
+test: zimfw.zsh lint
 	@test/bats/bin/bats test/test_*.bats
