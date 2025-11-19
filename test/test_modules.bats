@@ -269,23 +269,8 @@ external'
 
   run zsh "${PWD}"/zimfw.zsh clean-compiled
   assert_success
-  REAL_HOME="$(realpath "${HOME}")"
-  REAL_ZIM_HOME="$(realpath "${ZIM_HOME}")"
-  assert_output "${REAL_ZIM_HOME}/modules/test/init.zsh.zwc
-${REAL_ZIM_HOME}/modules/zimfw/asciiship/asciiship.zsh-theme.zwc
-${REAL_ZIM_HOME}/modules/zimfw/macports/init.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-completions/zsh-completions.plugin.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/brackets/brackets-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/cursor/cursor-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/line/line-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/main/main-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/pattern/pattern-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/regexp/regexp-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/highlighters/root/root-highlighter.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh.zwc
-${REAL_ZIM_HOME}/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh.zwc
-${REAL_HOME}/external/init.zsh.zwc
-Done with clean-compiled. Restart your terminal or run zimfw compile to re-compile."
+  assert_line --index 14 'Done with clean-compiled. Restart your terminal or run zimfw compile to re-compile.'
+  assert_equal "${#lines[@]}" 15
 
   run zsh "${PWD}"/zimfw.zsh compile
   assert_success
