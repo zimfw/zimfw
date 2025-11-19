@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.19.1] - 2025-11-19
+
+Automated tests with [bats] were introduced in this version, allowing a better
+understanding of some edge case scenarios and being helpful to the work on
+improving how they're handled.
+
+### Fixed
+- Don't expand `${HOME}` in fpath in the init.zsh script.
+- Show skipped `mkdir` modules in `check` action in verbose mode.
+- Do `build` after `uninstall` action.
+- Allow defining new modules as both `--frozen` and `--disabled` so they're
+  neither installed nor initialized. Defining a new module as just `--frozen` is
+  still going to cause errors when trying to initialize it and nothing is found.
+- Show `--if` option values on `list` action output in verbose mode.
+- For modules with multiple roots, show the respective options nested under each
+  root on `list` action output in verbose mode.
+- Allow defining multiple roots in a module when using the `mkdir` tool. The
+  tool will create the subdirectories automatically in this case.
+
 ## [1.19.0] - 2025-11-05
 
 ### Added
@@ -444,6 +463,7 @@ Take your time to review the updated [README.md] and the changes listed below.
 - `ZIM_HOME` is set in .zshenv instead of .zshrc. The issue was that the
   variable was not available in .zlogin in non-interactive login shells.
 
+[bats]:https://bats-core.readthedocs.io
 [command line interface guidelines]: https://clig.dev
 [completion]: https://github.com/zimfw/completion
 [README.md]: https://github.com/zimfw/zimfw/blob/master/README.md
@@ -453,7 +473,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.19.1...HEAD
+[1.19.1]: https://github.com/zimfw/zimfw/compare/v1.19.0...v1.19.1
 [1.19.0]: https://github.com/zimfw/zimfw/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/zimfw/zimfw/compare/v1.17.1...v1.18.0
 [1.17.1]: https://github.com/zimfw/zimfw/compare/v1.17.0...v1.17.1
