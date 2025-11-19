@@ -1,4 +1,4 @@
-name: 'Bash Command'
+name: 'Zsh Command'
 inputs:
   cmd:
     required: true

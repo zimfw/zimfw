@@ -1,4 +1,4 @@
-name: CI
+name: Run test
 on: push
 jobs:
   run:
