@@ -46,6 +46,47 @@ EOF
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 }
 
+@test 'can define function in .zimrc' {
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule-eval() {
+  local -r zcommand=\${\${=1}[1]} ztarget=\${1//[^[:alnum:]]/-}.zsh
+  zmodule custom --root \${zcommand} --use mkdir --if-command \${zcommand} \
+      --cmd "if [[ ! {}/\${ztarget} -nt \\\${commands[\${zcommand}]} ]]; then \${1} >! {}/\${ztarget}; zcompile -R {}/\${ztarget}; fi" \
+      --source \${ztarget}
+}
+zmodule-eval 'zoxide init zsh'
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
+
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+if (( \${+commands[zoxide]} )); then
+  if [[ ! "\${HOME}/.zim/modules/custom/zoxide"/zoxide-init-zsh.zsh -nt \${commands[zoxide]} ]]; then zoxide init zsh >! "\${HOME}/.zim/modules/custom/zoxide"/zoxide-init-zsh.zsh; zcompile -R "\${HOME}/.zim/modules/custom/zoxide"/zoxide-init-zsh.zsh; fi
+  source "\${HOME}/.zim/modules/custom/zoxide/zoxide-init-zsh.zsh"
+fi
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_output ') modules/custom: Created'
+  assert_dir_exists "${ZIM_HOME}"/modules/custom/zoxide
+  assert_file_not_exists "${ZIM_HOME}"/modules/custom/zoxide/zoxide-init-zsh.zsh
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output 'modules/custom'
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/custom
+  From: mkdir
+  Root: zoxide
+    if: (( \${+commands[zoxide]} ))
+    cmd: if [[ ! \"\${HOME}/.zim/modules/custom/zoxide\"/zoxide-init-zsh.zsh -nt \${commands[zoxide]} ]]; then zoxide init zsh >! \"\${HOME}/.zim/modules/custom/zoxide\"/zoxide-init-zsh.zsh; zcompile -R \"\${HOME}/.zim/modules/custom/zoxide\"/zoxide-init-zsh.zsh; fi; source \"\${HOME}/.zim/modules/custom/zoxide/zoxide-init-zsh.zsh\""
+}
+
 @test 'can create default .zimrc' {
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
@@ -86,48 +127,48 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/environment: ${ZIM_HOME}/modules/environment
+  assert_output "modules/environment
   From: https://github.com/zimfw/environment.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/environment/init.zsh\"
-modules/git: ${ZIM_HOME}/modules/git
+modules/git
   From: https://github.com/zimfw/git.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/git/functions\"
   autoload: git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove
   cmd: source \"\${HOME}/.zim/modules/git/init.zsh\"
-modules/input: ${ZIM_HOME}/modules/input
+modules/input
   From: https://github.com/zimfw/input.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/input/init.zsh\"
-modules/termtitle: ${ZIM_HOME}/modules/termtitle
+modules/termtitle
   From: https://github.com/zimfw/termtitle.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/termtitle/init.zsh\"
-modules/utility: ${ZIM_HOME}/modules/utility
+modules/utility
   From: https://github.com/zimfw/utility.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/utility/functions\"
   autoload: mkcd mkpw
   cmd: source \"\${HOME}/.zim/modules/utility/init.zsh\"
-modules/duration-info: ${ZIM_HOME}/modules/duration-info
+modules/duration-info
   From: https://github.com/zimfw/duration-info.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/duration-info/functions\"
   autoload: duration-info-precmd duration-info-preexec
   cmd: source \"\${HOME}/.zim/modules/duration-info/init.zsh\"
-modules/git-info: ${ZIM_HOME}/modules/git-info
+modules/git-info
   From: https://github.com/zimfw/git-info.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/git-info/functions\"
   autoload: coalesce git-action git-info
-modules/asciiship: ${ZIM_HOME}/modules/asciiship
+modules/asciiship
   From: https://github.com/zimfw/asciiship.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/asciiship/asciiship.zsh-theme\"
-modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+modules/zsh-completions
   From: https://github.com/zsh-users/zsh-completions.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
-modules/completion: ${ZIM_HOME}/modules/completion
+modules/completion
   From: https://github.com/zimfw/completion.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/completion/functions\"
   cmd: source \"\${HOME}/.zim/modules/completion/init.zsh\"
-modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+modules/zsh-syntax-highlighting
   From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
-modules/zsh-autosuggestions: ${ZIM_HOME}/modules/zsh-autosuggestions
+modules/zsh-autosuggestions
   From: https://github.com/zsh-users/zsh-autosuggestions.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh\""
 }

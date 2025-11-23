@@ -84,7 +84,7 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  assert_output "modules/pure
   From: https://github.com/sindresorhus/pure.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
 
@@ -102,7 +102,7 @@ Done with build. Restart your terminal for changes to take effect."
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  assert_output "modules/pure
   From: https://github.com/sindresorhus/pure.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
 
@@ -130,7 +130,7 @@ Done with build. Restart your terminal for changes to take effect."
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/pure: ${ZIM_HOME}/modules/pure
+  assert_output "modules/pure
   From: https://github.com/sindresorhus/pure.git, default branch, using git
   if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
@@ -152,7 +152,7 @@ Done with compile."
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/pure: ${ZIM_HOME}/modules/pure (frozen)
+  assert_output "modules/pure (frozen)
   if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]
   cmd: source \"\${HOME}/.zim/modules/pure/async.zsh\"; source \"\${HOME}/.zim/modules/pure/pure.zsh\""
 
@@ -176,7 +176,7 @@ Done with build. Restart your terminal for changes to take effect."
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/pure: ${ZIM_HOME}/modules/pure (disabled)
+  assert_output "modules/pure (disabled)
   From: https://github.com/sindresorhus/pure.git, default branch, using git
   if: [[ \${TERM_PROGRAM} == Apple_Terminal ]]"
 }
@@ -292,43 +292,44 @@ Done with compile."
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
-modules/zimfw/duration-info: ${ZIM_HOME}/modules/zimfw/duration-info (not installed) (frozen) (disabled)
-modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
-modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship
-modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
-modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
-modules/test: ${ZIM_HOME}/modules/test
-external: ${HOME}/external (external)"
+  assert_output "modules/zimfw/macports
+modules/zimfw/duration-info (not installed) (frozen) (disabled)
+modules/zimfw/git-info
+modules/zimfw/asciiship
+modules/zsh-completions
+modules/zsh-syntax-highlighting
+modules/test
+external (external)"
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports
+  assert_output "modules/zimfw/macports
   From: https://github.com/zimfw/macports.git, default branch, using git
   if: [[ \${OSTYPE} == darwin* ]]
   cmd: source \"\${HOME}/.zim/modules/zimfw/macports/init.zsh\"
-modules/zimfw/duration-info: ${ZIM_HOME}/modules/zimfw/duration-info (not installed) (frozen) (disabled)
-modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info
+modules/zimfw/duration-info (not installed) (frozen) (disabled)
+modules/zimfw/git-info
   From: https://github.com/zimfw/git-info.git, default branch, using git
   if: (( \${+commands[git]} ))
   fpath: \"\${HOME}/.zim/modules/zimfw/git-info/functions\"
   autoload: coalesce git-action git-info
-modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship
+modules/zimfw/asciiship
   From: https://github.com/zimfw/asciiship.git, default branch, using git
   if: [[ -z \${NO_COLOR} ]]
   cmd: source \"\${HOME}/.zim/modules/zimfw/asciiship\"/asciiship.zsh-theme
-modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+modules/zsh-completions
   From: https://github.com/zsh-users/zsh-completions.git, default branch, using degit
   fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
-modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+modules/zsh-syntax-highlighting
   From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using git
   if: [[ -z \${NO_COLOR} ]]
   cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
-modules/test: ${ZIM_HOME}/modules/test
+modules/test
   From: mkdir
   On-pull: >init.zsh <<<\"print test\"
   cmd: source \"\${HOME}/.zim/modules/test/init.zsh\"
-external: ${HOME}/external (external)
+external (external)
+  From: ${HOME}/external
   cmd: source \"\${HOME}/external/init.zsh\""
 
   cat >"${HOME}"/.zimrc <<EOF
@@ -349,27 +350,27 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info (disabled)
-modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship (frozen)
-modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
-modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
-modules/test: ${ZIM_HOME}/modules/test (unused)
-modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports (unused)"
+  assert_output "modules/zimfw/git-info (disabled)
+modules/zimfw/asciiship (frozen)
+modules/zsh-completions
+modules/zsh-syntax-highlighting
+modules/test (unused)
+modules/zimfw/macports (unused)"
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "modules/zimfw/git-info: ${ZIM_HOME}/modules/zimfw/git-info (disabled)
+  assert_output "modules/zimfw/git-info (disabled)
   From: https://github.com/zimfw/git-info.git, default branch, using git
-modules/zimfw/asciiship: ${ZIM_HOME}/modules/zimfw/asciiship (frozen)
+modules/zimfw/asciiship (frozen)
   cmd: source \"\${HOME}/.zim/modules/zimfw/asciiship/asciiship.zsh-theme\"
-modules/zsh-completions: ${ZIM_HOME}/modules/zsh-completions
+modules/zsh-completions
   From: https://github.com/zsh-users/zsh-completions.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/zsh-completions/src\"
-modules/zsh-syntax-highlighting: ${ZIM_HOME}/modules/zsh-syntax-highlighting
+modules/zsh-syntax-highlighting
   From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using degit
   cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
-modules/test: ${ZIM_HOME}/modules/test (unused)
-modules/zimfw/macports: ${ZIM_HOME}/modules/zimfw/macports (unused)"
+modules/test (unused)
+modules/zimfw/macports (unused)"
 
   run zsh "${PWD}"/zimfw.zsh uninstall -q
   assert_success
@@ -410,4 +411,43 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
   assert_equal "${#lines[@]}" 5
 }
 
+@test 'can define external module with custom name' {
+  mkdir "${HOME}"/external-zsh
+  cat >"${HOME}"/external-zsh/external.zsh <<EOF
+print external
+EOF
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external-zsh --name external
+EOF
+  cat >"${HOME}"/expected_init.zsh <<EOF
+# FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
+# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
+if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
+source "\${HOME}/external-zsh/external.zsh"
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_output ''
+  assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+
+  run zsh -ic exit
+  assert_success
+  assert_output 'external'
+
+  run zsh "${PWD}"/zimfw.zsh check -v
+  assert_success
+  assert_output ") external: Skipping external module
+Done with check. Run zimfw update to update modules."
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output "external (external)"
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "external (external)
+  From: ${HOME}/external-zsh
+  cmd: source \"\${HOME}/external-zsh/external.zsh\""
+}

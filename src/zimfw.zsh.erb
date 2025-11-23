@@ -3,7 +3,7 @@ class Zim
   attr_reader :version, :home, :min_zsh_version, :url_regex, :okay, :warn, :error
 
   def initialize
-    @version = "1.19.1"
+    @version = "1.20.0-dev"
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"
     # Matches {ssh,http,https,git}://{user@,}host/org/repo and {user@,}host:org/repo

@@ -2,14 +2,16 @@ _zimfw_run_list() {
   local -r zname=${1}
   local -r zpath=${_zpaths[${zname}]}
   local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}(|/*)})
-  print -nR "${_zbold}${zname}:${_znormal} ${zpath}"
+  print -nR ${_zbold}${zname}${_znormal}
   if [[ ! -e ${zpath} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
-  if (( ${_zfrozens[${zname}]} )) print -n ' (frozen)'
+  if (( _zfrozens[${zname}] )) print -n ' (frozen)'
   if [[ ${_zdisabled_paths[(I)${zpath}]} -ne 0 && ${zroot_dirs} == (${zpath}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
-    if [[ ${_zfrozens[${zname}]} -eq 0 && -n ${_zurls[${zname}]} ]]; then
+    if [[ -z ${_zurls[${zname}]} ]]; then
+      print -R '  From: '${zpath}
+    elif (( ! _zfrozens[${zname}] )); then
       if [[ ${_ztools[${zname}]} == mkdir ]]; then
         print '  From: mkdir'
       else
@@ -31,8 +33,12 @@ _zimfw_run_list() {
       if [[ ${zroot_dirs} == (${zpath}) ]]; then
         zindent='  '
       else
-        print -nR '  Root: '${zroot_dir}
-        if (( ${_zdisabled_paths[(I)${zroot_dir}]} )) print -n ' (disabled)'
+        if [[ ${zroot_dir} == ${zpath} ]]; then
+          print -n '  Root: .'
+        else
+          print -nR '  Root: '${zroot_dir##${zpath}/}
+        fi
+        if (( _zdisabled_paths[(I)${zroot_dir}] )) print -n ' (disabled)'
         print
         zindent='    '
       fi
