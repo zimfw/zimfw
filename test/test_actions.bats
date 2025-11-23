@@ -65,13 +65,20 @@ EOF
 }
 
 @test 'can check-version' {
-  run zsh "${PWD}"/zimfw.zsh check-version
-  assert_success
-  assert_output ''
-  assert_file_exists "${ZIM_HOME}"/.latest_version
-  LATEST_VERSION="$(<"${ZIM_HOME}"/.latest_version)"
-
   run zsh "${PWD}"/zimfw.zsh version
   assert_success
-  assert_output "${LATEST_VERSION}"
+  assert_output --regexp '^[0-9]+\.[0-9]+\.[0-9]+(-dev)?$'
+  CURRENT_VERSION="${lines[0]}"
+
+  run zsh "${PWD}"/zimfw.zsh check-version
+  assert_success
+  assert_file_exists "${ZIM_HOME}"/.latest_version
+  LATEST_VERSION="$(<"${ZIM_HOME}"/.latest_version)"
+  # current version >= latest version (will be greater than when current version is not released yet)
+  printf '%s\n%s\n' "${LATEST_VERSION}" "${CURRENT_VERSION}" | sort -cV
+  if [ "${CURRENT_VERSION}" = "${LATEST_VERSION}" ]; then
+    assert_output ''
+  else
+    assert_output "Latest zimfw version is ${LATEST_VERSION}. You're using version ${CURRENT_VERSION}. Run zimfw upgrade to upgrade."
+  fi
 }
