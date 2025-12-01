@@ -1,20 +1,8 @@
 setup() {
   # shellcheck disable=SC2034
   BATS_LIB_PATH="${BATS_TEST_DIRNAME}"/test_helper
-  bats_load_library bats-support
-  bats_load_library bats-assert
-  bats_load_library bats-file
-
-  command -v git # assert git command installed
-  assert_file_exists "${PWD}"/zimfw.zsh
-  export HOME="${BATS_TEST_TMPDIR}"
-  export ZIM_HOME="${HOME}"/.zim
-  cat >"${HOME}"/.zshenv <<EOF
-zstyle ':zim' disable-version-check yes
-EOF
-  cat >"${HOME}"/.zshrc <<EOF
-source ${ZIM_HOME}/init.zsh
-EOF
+  bats_load_library setup_all
+  setup_all
 }
 
 @test 'can define module with custom cmd' {
