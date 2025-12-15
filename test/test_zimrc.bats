@@ -95,6 +95,7 @@ source "\${HOME}/.zim/modules/duration-info/init.zsh"
 source "\${HOME}/.zim/modules/asciiship/asciiship.zsh-theme"
 source "\${HOME}/.zim/modules/completion/init.zsh"
 source "\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "\${HOME}/.zim/modules/zsh-history-substring-search/zsh-history-substring-search.zsh"
 source "\${HOME}/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh"
 EOF
 
@@ -112,8 +113,9 @@ EOF
   assert_line ') modules/zsh-completions: Installed'
   assert_line ') modules/completion: Installed'
   assert_line ') modules/zsh-syntax-highlighting: Installed'
+  assert_line ') modules/zsh-history-substring-search: Installed'
   assert_line ') modules/zsh-autosuggestions: Installed'
-  assert_equal "${#lines[@]}" 13
+  assert_equal "${#lines[@]}" 14
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh "${PWD}"/zimfw.zsh list -v
@@ -159,6 +161,9 @@ modules/completion
 modules/zsh-syntax-highlighting
   From: https://github.com/zsh-users/zsh-syntax-highlighting.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"
+modules/zsh-history-substring-search
+  From: https://github.com/zsh-users/zsh-history-substring-search.git, default branch, using git
+  cmd: source \"\${HOME}/.zim/modules/zsh-history-substring-search/zsh-history-substring-search.zsh\"
 modules/zsh-autosuggestions
   From: https://github.com/zsh-users/zsh-autosuggestions.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh\""

@@ -23,6 +23,7 @@ EOF
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh -ic 'exit'
+  assert_success
   assert_output 'print test'
 }
 

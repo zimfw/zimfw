@@ -87,6 +87,7 @@ EOF
     cmd: cat \"\${HOME}/.zim/modules/custom/3\"/init.zsh"
 
   CUSTOM1=custom1 run zsh -ic 'exit'
+  assert_success
   # shellcheck disable=SC2016
   assert_output 'custom1
 print ${CUSTOM1}
@@ -131,6 +132,7 @@ Done with compile."
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh -ic 'exit'
+  assert_success
   assert_output 'custom2
 print custom3'
 }
