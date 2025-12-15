@@ -438,9 +438,8 @@ zmodule completion
 # Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
 # Fish-like history search for Zsh, must be sourced after
-# zsh-users/zsh-syntax-highlighting. Bind keyboard shortcuts in your ~/.zshrc:
-# https://github.com/zsh-users/zsh-history-substring-search/blob/master/README.md#usage
-#zmodule zsh-users/zsh-history-substring-search
+# zsh-users/zsh-syntax-highlighting.
+zmodule zsh-users/zsh-history-substring-search
 # Fish-like autosuggestions for Zsh. Add the following to your ~/.zshrc to boost
 # performance: ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zmodule zsh-users/zsh-autosuggestions
@@ -552,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-11-23 13:42:42 UTC, previous commit is fc65b80)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-12-15 01:24:04 UTC, previous commit is 1317e1f)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
