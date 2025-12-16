@@ -252,7 +252,7 @@ external'
   assert_line ') modules/zsh-completions: Already up to date'
   assert_line ') modules/zsh-syntax-highlighting: Already up to date'
   assert_line ') modules/test: Skipping mkdir module'
-  assert_line ') external: Skipping external module'
+  assert_line ') modules/external: Skipping external module'
   assert_line --index 8 'Done with check. Run zimfw update to update modules.'
   assert_equal "${#lines[@]}" 9
 
@@ -288,7 +288,7 @@ modules/zimfw/asciiship
 modules/zsh-completions
 modules/zsh-syntax-highlighting
 modules/test
-external (external)"
+modules/external (external)"
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
@@ -317,7 +317,7 @@ modules/test
   From: mkdir
   On-pull: >init.zsh <<<\"print test\"
   cmd: source \"\${HOME}/.zim/modules/test/init.zsh\"
-external (external)
+modules/external (external)
   From: ${HOME}/external
   cmd: source \"\${HOME}/external/init.zsh\""
 
@@ -427,16 +427,16 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
-  assert_output ") external: Skipping external module
+  assert_output ") modules/external: Skipping external module
 Done with check. Run zimfw update to update modules."
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "external (external)"
+  assert_output "modules/external (external)"
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "external (external)
+  assert_output "modules/external (external)
   From: ${HOME}/external-zsh
   cmd: source \"\${HOME}/external-zsh/external.zsh\""
 }

@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Changed
+- Output of `list` and `uninstall` actions. Module names are already their
+  relative path from `ZIM_HOME`, so listing their full path afterwards was
+  redundant. The full path to external modules is now shown in verbose mode.
+  Not considering this as a breaking change since zimfw's output is not meant to
+  be parsed by scripts.
+- Uncommented `zmodule zsh-users/zsh-history-substring-search` from generated
+  .zimrc, since our [input] module can now do a deferred initialization of it.
+  See announcement
+  [here](https://github.com/zimfw/zimfw/discussions/426#discussioncomment-15272879).
 
 ## [1.19.1] - 2025-11-19
 
@@ -98,7 +107,7 @@ Changes in this release are one more little step towards better adherence to the
 ### Changed
 - Ask before uninstalling each unused module, instead of asking just once for
   all.
-- Add disclaimer comment at beginning of .zimrc file.
+- Add disclaimer comment at beginning of init.zsh file.
 
 ## [1.14.0] - 2024-06-25
 

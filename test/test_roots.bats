@@ -222,16 +222,16 @@ EOF
 
   run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
-  assert_output ") external: Skipping external module
+  assert_output ") modules/external: Skipping external module
 Done with check. Run zimfw update to update modules."
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "external (external)"
+  assert_output "modules/external (external)"
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success
-  assert_output "external (external)
+  assert_output "modules/external (external)
   From: ${HOME}/external
   Root: 1
     cmd: source \"\${HOME}/external/1/external.zsh\"

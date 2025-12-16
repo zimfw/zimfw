@@ -227,11 +227,12 @@ Per-call initialization options:
     esac
     shift
   done
+  zname=modules/${zname}
+  _znames+=(${zname})
   if [[ ${zurl} == /* ]]; then
     _zpaths[${zname}]=${zurl%%/##}
     zurl=
   else
-    zname=modules/${zname}
     _zpaths[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
@@ -239,7 +240,6 @@ Per-call initialization options:
     _zfailed=1
     return 2
   fi
-  _znames+=(${zname})
   _zurls[${zname}]=${zurl}
   local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
   _zroot_dirs+=(${zroot_dir})
@@ -551,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-12-15 01:24:04 UTC, previous commit is 1317e1f)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2025-12-16 20:00:51 UTC, previous commit is c712030)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
