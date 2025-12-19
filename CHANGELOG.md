@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.20.0] - 2025-12-19
+
 ### Changed
 - Output of `list` and `uninstall` actions. Module names are already their
   relative path from `ZIM_HOME`, so listing their full path afterwards was
@@ -482,7 +486,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.19.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/zimfw/zimfw/compare/v1.19.1...v1.20.0
 [1.19.1]: https://github.com/zimfw/zimfw/compare/v1.19.0...v1.19.1
 [1.19.0]: https://github.com/zimfw/zimfw/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/zimfw/zimfw/compare/v1.17.1...v1.18.0
