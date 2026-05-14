@@ -551,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2025-12-19 13:42:11 UTC, previous commit is 88af323)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-05-14 03:15:01 UTC, previous commit is 472e884)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1071,7 +1071,7 @@ _zimfw_run_tool_action() {
 }
 
 zimfw() {
-  builtin emulate -L zsh -o EXTENDED_GLOB
+  builtin emulate -L zsh -o EXTENDED_GLOB -o NO_MARK_DIRS
   if [[ -z ${NO_COLOR} && -t 1 ]]; then
     local -r _znormal=$'\E[0m' _zbold=$'\E[1m' _zred=$'\E[31m' _znormalred=$'\E[0;31m' _zgreen=$'\E[32m' _zyellow=$'\E[33m' _znormalyellow=$'\E[0;33m'
   else

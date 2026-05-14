@@ -1,5 +1,5 @@
 zimfw() {
-  builtin emulate -L zsh -o EXTENDED_GLOB
+  builtin emulate -L zsh -o EXTENDED_GLOB -o NO_MARK_DIRS
   if [[ -z ${NO_COLOR} && -t 1 ]]; then
     local -r _znormal=$'\E[0m' _zbold=$'\E[1m' _zred=$'\E[31m' _znormalred=$'\E[0;31m' _zgreen=$'\E[32m' _zyellow=$'\E[33m' _znormalyellow=$'\E[0;33m'
   else
