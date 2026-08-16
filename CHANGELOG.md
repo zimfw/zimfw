@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.20.1] - 2026-08-16
+
+### Fixed
+- `MARK_DIRS` breaking `_zimfw_list_unused_paths` when set. (See
+  [#571](https://github.com/zimfw/zimfw/issues/571))
+- Missing `zmodule prompt-pwd` in generated .zimrc, which is used by most of our
+  prompt themes and now can be leveraged by [asciiship] too.
+
 ## [1.20.0] - 2025-12-19
 
 ### Changed
@@ -17,7 +25,7 @@ _No unreleased changes._
   redundant. The full path to external modules is now shown in verbose mode.
   Not considering this as a breaking change since zimfw's output is not meant to
   be parsed by scripts.
-- Uncommented `zmodule zsh-users/zsh-history-substring-search` from generated
+- Uncomment `zmodule zsh-users/zsh-history-substring-search` from generated
   .zimrc, since our [input] module can now do a deferred initialization of it.
   See announcement
   [here](https://github.com/zimfw/zimfw/discussions/426#discussioncomment-15272879).
@@ -476,6 +484,7 @@ Take your time to review the updated [README.md] and the changes listed below.
 - `ZIM_HOME` is set in .zshenv instead of .zshrc. The issue was that the
   variable was not available in .zlogin in non-interactive login shells.
 
+[asciiship]: https://github.com/zimfw/asciiship
 [bats]:https://bats-core.readthedocs.io
 [command line interface guidelines]: https://clig.dev
 [completion]: https://github.com/zimfw/completion
@@ -486,7 +495,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.1...HEAD
+[1.20.1]: https://github.com/zimfw/zimfw/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/zimfw/zimfw/compare/v1.19.1...v1.20.0
 [1.19.1]: https://github.com/zimfw/zimfw/compare/v1.19.0...v1.19.1
 [1.19.0]: https://github.com/zimfw/zimfw/compare/v1.18.0...v1.19.0
