@@ -378,8 +378,8 @@ modules/zimfw/macports (unused)"
 
   run zsh "${PWD}"/zimfw.zsh check
   assert_success
-  assert_line "x modules/zsh-completions: Module was not installed using git. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
-  assert_line "x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit. Use zmodule option -z|--frozen to disable this error or run zimfw reinstall to reinstall."
+  assert_line "x modules/zsh-completions: Module was not installed using git. Use zmodule option -z|--frozen to stop this error or run zimfw reinstall to reinstall."
+  assert_line "x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit. Use zmodule option -z|--frozen to stop this error or run zimfw reinstall to reinstall."
   assert_equal "${#lines[@]}" 2
 
   run zsh "${PWD}"/zimfw.zsh reinstall -q

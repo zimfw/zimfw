@@ -400,7 +400,9 @@ Per-call initialization options:
 zmodule environment
 # Provides handy git aliases and functions.
 zmodule git
-# Applies correct bindkeys for input events.
+# Applies correct bindkeys for input events. Add one of the following to the
+# beginning of your ~/.zshrc to set your preferred editor keymap to emacs or vi
+# respectively: bindkey -e or bindkey -v
 zmodule input
 # Sets a custom terminal title.
 zmodule termtitle
@@ -418,6 +420,8 @@ zmodule utility
 zmodule duration-info
 # Exposes git repository status information to prompts.
 zmodule git-info
+# Formats the current working directory for prompts.
+zmodule prompt-pwd
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
 
@@ -551,7 +555,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-05-14 03:15:01 UTC, previous commit is 472e884)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-16 22:01:01 UTC, previous commit is c2e4986)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -790,7 +794,7 @@ _zimfw_tool_degit() {
   case ${ACTION} in
     pre|prereinstall)
       local premsg
-      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to disable this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
+      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
@@ -862,7 +866,7 @@ _zimfw_tool_git() {
   case ${ACTION} in
     pre|prereinstall)
       local premsg
-      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to disable this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
+      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${DIR}/.git ]]; then
           _zimfw_print_error 'Module was not installed using git.'${premsg}

@@ -84,8 +84,8 @@ EOF
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!
 
 if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
-fpath=("\${HOME}/.zim/modules/git/functions" "\${HOME}/.zim/modules/utility/functions" "\${HOME}/.zim/modules/duration-info/functions" "\${HOME}/.zim/modules/git-info/functions" "\${HOME}/.zim/modules/zsh-completions/src" "\${HOME}/.zim/modules/completion/functions" \${fpath})
-autoload -Uz -- git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove mkcd mkpw duration-info-precmd duration-info-preexec coalesce git-action git-info
+fpath=("\${HOME}/.zim/modules/git/functions" "\${HOME}/.zim/modules/utility/functions" "\${HOME}/.zim/modules/duration-info/functions" "\${HOME}/.zim/modules/git-info/functions" "\${HOME}/.zim/modules/prompt-pwd/functions" "\${HOME}/.zim/modules/zsh-completions/src" "\${HOME}/.zim/modules/completion/functions" \${fpath})
+autoload -Uz -- git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove mkcd mkpw duration-info-precmd duration-info-preexec coalesce git-action git-info prompt-pwd
 source "\${HOME}/.zim/modules/environment/init.zsh"
 source "\${HOME}/.zim/modules/git/init.zsh"
 source "\${HOME}/.zim/modules/input/init.zsh"
@@ -109,13 +109,14 @@ EOF
   assert_line ') modules/utility: Installed'
   assert_line ') modules/duration-info: Installed'
   assert_line ') modules/git-info: Installed'
+  assert_line ') modules/prompt-pwd: Installed'
   assert_line ') modules/asciiship: Installed'
   assert_line ') modules/zsh-completions: Installed'
   assert_line ') modules/completion: Installed'
   assert_line ') modules/zsh-syntax-highlighting: Installed'
   assert_line ') modules/zsh-history-substring-search: Installed'
   assert_line ') modules/zsh-autosuggestions: Installed'
-  assert_equal "${#lines[@]}" 14
+  assert_equal "${#lines[@]}" 15
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
 
   run zsh "${PWD}"/zimfw.zsh list -v
@@ -148,6 +149,10 @@ modules/git-info
   From: https://github.com/zimfw/git-info.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/git-info/functions\"
   autoload: coalesce git-action git-info
+modules/prompt-pwd
+  From: https://github.com/zimfw/prompt-pwd.git, default branch, using git
+  fpath: \"\${HOME}/.zim/modules/prompt-pwd/functions\"
+  autoload: prompt-pwd
 modules/asciiship
   From: https://github.com/zimfw/asciiship.git, default branch, using git
   cmd: source \"\${HOME}/.zim/modules/asciiship/asciiship.zsh-theme\"

@@ -10,7 +10,9 @@
 zmodule environment
 # Provides handy git aliases and functions.
 zmodule git
-# Applies correct bindkeys for input events.
+# Applies correct bindkeys for input events. Add one of the following to the
+# beginning of your ~/.zshrc to set your preferred editor keymap to emacs or vi
+# respectively: bindkey -e or bindkey -v
 zmodule input
 # Sets a custom terminal title.
 zmodule termtitle
@@ -28,6 +30,8 @@ zmodule utility
 zmodule duration-info
 # Exposes git repository status information to prompts.
 zmodule git-info
+# Formats the current working directory for prompts.
+zmodule prompt-pwd
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
 

@@ -6,7 +6,7 @@ _zimfw_tool_git() {
   case ${ACTION} in
     pre|prereinstall)
       local premsg
-      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to disable this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
+      if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
       if [[ -e ${DIR} ]]; then
         if [[ ! -r ${DIR}/.git ]]; then
           _zimfw_print_error 'Module was not installed using git.'${premsg}
