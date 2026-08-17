@@ -510,10 +510,12 @@ _zimfw_check_version() {
   fi
   if [[ -f ${_zversion_target} ]]; then
     local -r zlatest_version=$(<${_zversion_target})
-    if [[ -n ${zlatest_version} && ${_zversion} != ${zlatest_version} ]]; then
+    if [[ -n ${zlatest_version} ]] && ! is-at-least ${zlatest_version} ${_zversion}; then
       _zimfw_print -u2 -R "${_zyellow}Latest zimfw version is ${_zbold}${zlatest_version}${_znormalyellow}. You're using version ${_zbold}${_zversion}${_znormalyellow}. Run ${_zbold}zimfw upgrade${_znormalyellow} to upgrade.${_znormal}"
       return 4
     fi
+    # Refresh .latest_version if empty or behind current version
+    if [[ ${zlatest_version} != ${_zversion} ]] command rm -f ${_zversion_target}
   fi
 }
 
@@ -555,7 +557,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-16 22:30:41 UTC, previous commit is 61d15d1)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-17 15:05:57 UTC, previous commit is afaa7ee)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -606,9 +608,7 @@ _zimfw_upgrade() {
       fi
     fi
     command gunzip -f ${ztarget}.new.gz || return 1
-    # .latest_version can be outdated and will yield a false warning if zimfw is
-    # upgraded before .latest_version is refreshed. Bad thing about having a cache.
-    _zimfw_mv ${ztarget}{.new,} && command rm -f ${ZIM_HOME}/.latest_version && \
+    _zimfw_mv ${ztarget}{.new,} && command rm -f ${_zversion_target} && \
         _zimfw_print "Done with upgrade.${_zrestartmsg}"
   } always {
     command rm -f ${ztarget}.new{,.gz}
@@ -1082,7 +1082,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.20.1'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.20.2-dev'
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:
