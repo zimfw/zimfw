@@ -19,7 +19,5 @@ _zimfw_check_version() {
       _zimfw_print -u2 -R "${_zyellow}Latest zimfw version is ${_zbold}${zlatest_version}${_znormalyellow}. You're using version ${_zbold}${_zversion}${_znormalyellow}. Run ${_zbold}zimfw upgrade${_znormalyellow} to upgrade.${_znormal}"
       return 4
     fi
-    # Refresh .latest_version if empty or behind current version
-    if [[ ${zlatest_version} != ${_zversion} ]] command rm -f ${_zversion_target}
   fi
 }

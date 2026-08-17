@@ -514,8 +514,6 @@ _zimfw_check_version() {
       _zimfw_print -u2 -R "${_zyellow}Latest zimfw version is ${_zbold}${zlatest_version}${_znormalyellow}. You're using version ${_zbold}${_zversion}${_znormalyellow}. Run ${_zbold}zimfw upgrade${_znormalyellow} to upgrade.${_znormal}"
       return 4
     fi
-    # Refresh .latest_version if empty or behind current version
-    if [[ ${zlatest_version} != ${_zversion} ]] command rm -f ${_zversion_target}
   fi
 }
 
@@ -557,7 +555,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-17 15:05:57 UTC, previous commit is afaa7ee)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-17 23:17:52 UTC, previous commit is 3a6a04d)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
