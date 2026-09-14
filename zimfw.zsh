@@ -60,14 +60,14 @@ _zimfw_build_init() {
     print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
     print
     print -R 'if [[ -e ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
-    local zroot_dir zpre
+    local zroot_target zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
-    # Keep fpath constant regardless of "if" root dirs, to avoid confusing compinit.
-    # Move all from zfunctions and zcmds with "if" root dirs prefixes.
-    for zroot_dir in ${_zroot_dirs}; do
-      if (( ${+_zifs[${zroot_dir}]} )); then
-        zpre=${zroot_dir}$'\0'
+    # Keep fpath constant regardless of "if" root targets, to avoid confusing compinit.
+    # Move all from zfunctions and zcmds with "if" root targets prefixes.
+    for zroot_target in ${_zroot_targets}; do
+      if (( ${+_zifs[${zroot_target}]} )); then
+        zpre=${zroot_target}$'\0'
         zif_functions+=(${(M)zfunctions:#${zpre}*})
         zif_cmds+=(${(M)zcmds:#${zpre}*})
         zfunctions=(${zfunctions:#${zpre}*})
@@ -77,13 +77,13 @@ _zimfw_build_init() {
     zpre=$'*\0'
     if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths#${~zpre}}' ${fpath})'
     if (( ${#zfunctions} )) print -R 'autoload -Uz -- '${zfunctions#${~zpre}}
-    for zroot_dir in ${_zroot_dirs}; do
-      zpre=${zroot_dir}$'\0'
-      if (( ${+_zifs[${zroot_dir}]} )); then
+    for zroot_target in ${_zroot_targets}; do
+      zpre=${zroot_target}$'\0'
+      if (( ${+_zifs[${zroot_target}]} )); then
         zroot_functions=(${${(M)zif_functions:#${zpre}*}#${zpre}})
         zroot_cmds=(${${(M)zif_cmds:#${zpre}*}#${zpre}})
         if (( ${#zroot_functions} || ${#zroot_cmds} )); then
-          print -R 'if '${_zifs[${zroot_dir}]}'; then'
+          print -R 'if '${_zifs[${zroot_target}]}'; then'
           if (( ${#zroot_functions} )) print -R '  autoload -Uz -- '${zroot_functions}
           if (( ${#zroot_cmds} )) print -R ${(F):-  ${^zroot_cmds}}
           print fi
@@ -230,10 +230,10 @@ Per-call initialization options:
   zname=modules/${zname}
   _znames+=(${zname})
   if [[ ${zurl} == /* ]]; then
-    _zpaths[${zname}]=${zurl%%/##}
+    _ztargets[${zname}]=${zurl%%/##}
     zurl=
   else
-    _zpaths[${zname}]=${ZIM_HOME}/${zname}
+    _ztargets[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
     print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
@@ -241,8 +241,8 @@ Per-call initialization options:
     return 2
   fi
   _zurls[${zname}]=${zurl}
-  local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
-  _zroot_dirs+=(${zroot_dir})
+  local -r zroot_target=${_ztargets[${zname}]}${zroot:+/${zroot}}
+  _zroot_targets+=(${zroot_target})
   # Set default values
   if (( ! ${+_ztools[${zname}]} )); then
     zstyle -s ':zim:zmodule' use "_ztools[${zname}]" || _ztools[${zname}]=auto
@@ -290,20 +290,20 @@ Per-call initialization options:
         ;;
       --if)
         shift
-        _zifs[${zroot_dir}]=${1}
+        _zifs[${zroot_target}]=${1}
         ;;
       --if-command)
         shift
-        _zifs[${zroot_dir}]="(( \${+commands[${1}]} ))"
+        _zifs[${zroot_target}]="(( \${+commands[${1}]} ))"
         ;;
       --if-ostype)
         shift
-        _zifs[${zroot_dir}]="[[ \${OSTYPE} == ${1} ]]"
+        _zifs[${zroot_target}]="[[ \${OSTYPE} == ${1} ]]"
         ;;
       -f|--fpath)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
         zfpaths+=(${zarg})
         ;;
       -a|--autoload)
@@ -313,14 +313,14 @@ Per-call initialization options:
       -s|--source)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
         zcmds+=('source '${(qqq)zarg:a})
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(qqq)zroot_dir:a}})
+        zcmds+=(${1//{}/${(qqq)zroot_target:a}})
         ;;
-      -d|--disabled) _zdisabled_paths+=(${zroot_dir}) ;;
+      -d|--disabled) _zdisabled_roots+=(${zroot_target}) ;;
       *)
         print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Unknown zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
         _zfailed=1
@@ -331,10 +331,10 @@ Per-call initialization options:
   done
   # Detect tool if auto and not external and not frozen module
   if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
-    if [[ -e ${_zpaths[${zname}]} ]]; then
-      if [[ -r ${_zpaths[${zname}]}/.git ]]; then
+    if [[ -e ${_ztargets[${zname}]} ]]; then
+      if [[ -r ${_ztargets[${zname}]}/.git ]]; then
         _ztools[${zname}]=git
-      elif [[ -r ${_zpaths[${zname}]}/.zdegit ]]; then
+      elif [[ -r ${_ztargets[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
         _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"
@@ -348,32 +348,32 @@ Per-call initialization options:
       fi
     fi
   fi
-  if (( ! ${_zdisabled_paths[(I)${zroot_dir}]} && _zeager )); then
-    if [[ ! -e ${zroot_dir} ]]; then
-      print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
+  if (( ! ${_zdisabled_roots[(I)${zroot_target}]} && _zeager )); then
+    if [[ ! -e ${zroot_target} ]]; then
+      print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_target}${_znormalred} not found${_znormal}"
       _zfailed=1
       return 1
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      zfpaths=(${zroot_dir}/functions(NF))
+      zfpaths=(${zroot_target}/functions(NF))
       # _* functions are autoloaded by compinit
       # prompt_*_setup functions are autoloaded by promptinit
       zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
-      local -ra prezto_scripts=(${zroot_dir}/init.zsh(N))
+      local -ra prezto_scripts=(${zroot_target}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
         zcmds=('source '${(qqq)^prezto_scripts:a})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-        local -ra zscripts=(${zroot_dir}/(init.zsh|(${zname:t}|${zroot_dir:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
         zcmds=('source '${(qqq)^zscripts:a})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
       _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Nothing found to be initialized. Customize the module name, root or initialization with ${_zbold}zmodule${_znormalyellow} options.${_znormal}" '' ${zusage}
     fi
-    # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root dir
-    local -r zpre=${zroot_dir}$'\0'
+    # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root target
+    local -r zpre=${zroot_target}$'\0'
     zfpaths=(${${(@qqq)zfpaths:a}/${HOME}/\${HOME}})
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})
@@ -457,10 +457,10 @@ zmodule zsh-users/zsh-autosuggestions
       print -u2 -R "${_zred}No modules defined in ${_zbold}${_zconfig}${_znormal}"
       return 1
     fi
-    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled paths prefixes
-    local zpath zpre
-    for zpath in ${_zdisabled_paths}; do
-      zpre=${zpath}$'\0'
+    # Remove all from _zfpaths, _zfunctions and _zcmds with disabled roots prefixes
+    local zroot_target zpre
+    for zroot_target in ${_zdisabled_roots}; do
+      zpre=${zroot_target}$'\0'
       _zfpaths=(${_zfpaths:#${zpre}*})
       _zfunctions=(${_zfunctions:#${zpre}*})
       _zcmds=(${_zcmds:#${zpre}*})
@@ -470,27 +470,23 @@ zmodule zsh-users/zsh-autosuggestions
   }
 }
 
-_zimfw_list_unused_paths() {
+_zimfw_list_unused() {
   local -i i=1
   local zinstalled=(${ZIM_HOME}/modules/*(N/))
-  local -r zpaths=(${(v)_zpaths})
+  local -r ztargets=(${(v)_ztargets})
   # Search into subdirectories
   while (( i <= ${#zinstalled} )); do
-    if (( zpaths[(I)${zinstalled[i]}/*] )); then
+    if (( ztargets[(I)${zinstalled[i]}/*] )); then
       zinstalled+=(${zinstalled[i]}/*(N/))
       zinstalled[i]=()
     else
       (( i++ ))
     fi
   done
-  # Unused = all installed dirs not in zpaths
-  _zunused_paths=(${zinstalled:|zpaths})
+  # Unused = all installed targets not in ztargets
+  _zunused_targets=(${zinstalled:|ztargets})
   local zunused
-  for zunused (${_zunused_paths}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}${_znormal}${1}"
-}
-
-_zimfw_check_dumpfile() {
-  _zimfw_print -u2 "${_zyellow}Deprecated action. This is now handled by the completion module alone.${_znormal}"
+  for zunused (${_zunused_targets}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}${_znormal}${1}"
 }
 
 _zimfw_check_version() {
@@ -518,11 +514,11 @@ _zimfw_check_version() {
 }
 
 _zimfw_clean_compiled() {
-  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zpaths##${ZIM_HOME}/*}:A})
+  # Array with unique targets. ${ZIM_HOME} or any external target should only occur once.
+  local -Ur ztargets=(${ZIM_HOME:A} ${${(v)_ztargets##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
-  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \
+  command rm -f ${zopt} ${^ztargets}/**/*.zwc(|.old)(N) && \
       _zimfw_print "Done with clean-compiled. Restart your terminal or run ${_zbold}zimfw compile${_znormal} to re-compile."
 }
 
@@ -536,13 +532,13 @@ _zimfw_clean_dumpfile() {
 
 _zimfw_compile() {
   # Compile zimfw scripts
-  local zroot_dir zfile
-  for zroot_dir in ${_zroot_dirs:|_zdisabled_paths}; do
-    if [[ ! -w ${zroot_dir} ]]; then
-      _zimfw_print -R "${_zwarn}${_zbold}${zroot_dir}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
+  local zroot_target zfile
+  for zroot_target in ${_zroot_targets:|_zdisabled_roots}; do
+    if [[ ! -w ${zroot_target} ]]; then
+      _zimfw_print -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
     fi
-    for zfile in ${zroot_dir}/(^*test*/)#*.zsh(|-theme)(N-.); do
+    for zfile in ${zroot_target}/(^*test*/)#*.zsh(|-theme)(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
         zcompile -R ${zfile} && _zimfw_print -R "${_zokay}${_zbold}${zfile}.zwc:${_znormal} Compiled"
       fi
@@ -555,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-08-17 23:17:52 UTC, previous commit is 3a6a04d)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-09-14 16:09:30 UTC, previous commit is 8062423)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -570,14 +566,14 @@ _zimfw_info_print_symlink() {
 
 _zimfw_uninstall() {
   if (( _zprintlevel <= 0 )); then
-    command rm -rf ${_zunused_paths} || return 1
+    command rm -rf ${_zunused_targets} || return 1
   else
-    local zunused_path
-    print "Found ${_zbold}${#_zunused_paths}${_znormal} unused module(s)."
-    for zunused_path in ${_zunused_paths}; do
-      if read -q "?Uninstall ${zunused_path} [y/N]? "; then
+    local zunused
+    print "Found ${_zbold}${#_zunused_targets}${_znormal} unused module(s)."
+    for zunused in ${_zunused_targets}; do
+      if read -q "?Uninstall ${zunused} [y/N]? "; then
         print
-        command rm -rfv ${zunused_path} || return 1
+        command rm -rfv ${zunused} || return 1
       else
         print
       fi
@@ -615,17 +611,17 @@ _zimfw_upgrade() {
 
 _zimfw_run_list() {
   local -r zname=${1}
-  local -r zpath=${_zpaths[${zname}]}
-  local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}(|/*)})
+  local -r ztarget=${_ztargets[${zname}]}
+  local -r zroot_targets=(${(M)_zroot_targets:#${ztarget}(|/*)})
   print -nR ${_zbold}${zname}${_znormal}
-  if [[ ! -e ${zpath} ]] print -n ' (not installed)'
+  if [[ ! -e ${ztarget} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( _zfrozens[${zname}] )) print -n ' (frozen)'
-  if [[ ${_zdisabled_paths[(I)${zpath}]} -ne 0 && ${zroot_dirs} == (${zpath}) ]] print -n ' (disabled)'
+  if [[ ${_zdisabled_roots[(I)${ztarget}]} -ne 0 && ${zroot_targets} == (${ztarget}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ -z ${_zurls[${zname}]} ]]; then
-      print -R '  From: '${zpath}
+      print -R '  From: '${ztarget}
     elif (( ! _zfrozens[${zname}] )); then
       if [[ ${_ztools[${zname}]} == mkdir ]]; then
         print '  From: mkdir'
@@ -642,23 +638,23 @@ _zimfw_run_list() {
       fi
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
-    local zroot_dir zindent zpre
+    local zroot_target zindent zpre
     local -a zfpaths zfunctions zcmds
-    for zroot_dir in ${zroot_dirs}; do
-      if [[ ${zroot_dirs} == (${zpath}) ]]; then
+    for zroot_target in ${zroot_targets}; do
+      if [[ ${zroot_targets} == (${ztarget}) ]]; then
         zindent='  '
       else
-        if [[ ${zroot_dir} == ${zpath} ]]; then
+        if [[ ${zroot_target} == ${ztarget} ]]; then
           print -n '  Root: .'
         else
-          print -nR '  Root: '${zroot_dir##${zpath}/}
+          print -nR '  Root: '${zroot_target##${ztarget}/}
         fi
-        if (( _zdisabled_paths[(I)${zroot_dir}] )) print -n ' (disabled)'
+        if (( _zdisabled_roots[(I)${zroot_target}] )) print -n ' (disabled)'
         print
         zindent='    '
       fi
-      if (( ${+_zifs[${zroot_dir}]} )) print -R ${zindent}'if: '${_zifs[${zroot_dir}]}
-      zpre=${zroot_dir}$'\0'
+      if (( ${+_zifs[${zroot_target}]} )) print -R ${zindent}'if: '${_zifs[${zroot_target}]}
+      zpre=${zroot_target}$'\0'
       zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}})
       zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}})
       zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})
@@ -691,7 +687,7 @@ _zimfw_print_warn() {
 _zimfw_pull_print_okay() {
   # Useb by tools, which run in a subshell
   if [[ -n ${ONPULL} ]]; then
-    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && builtin eval ${ONPULL} 2>&1); then
+    if ! ERR=$(builtin cd -q ${TARGET} 2>&1 && builtin eval ${ONPULL} 2>&1); then
       _zimfw_print_error 'Error during on-pull' ${ERR}
       return 1
     elif [[ ${_zprintlevel} -gt 1 && -n ${ERR} ]]; then
@@ -711,7 +707,7 @@ _zimfw_download_tarball() {
     _zimfw_print_error "${URL} is not a valid URL. Will not try to ${ACTION}. The zimfw degit tool only supports GitHub URLs. Use zmodule option ${_zbold}--use git${_znormalred} to use git instead."
     return 1
   fi
-  readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
+  readonly HEADERS_TARGET=${TARGET}/${TEMP}_headers
   {
     if [[ ${ACTION} != install ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
@@ -787,13 +783,13 @@ _zimfw_untar_tarball() {
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
-  readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
+  readonly ACTION=${1} TARGET=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
+  readonly TARBALL_TARGET=${TARGET}/${TEMP}_tarball.tar.gz INFO_TARGET=${TARGET}/.zdegit
   case ${ACTION} in
     pre|prereinstall)
       local premsg
       if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
-      if [[ -e ${DIR} ]]; then
+      if [[ -e ${TARGET} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
           return 1
@@ -808,16 +804,16 @@ _zimfw_tool_degit() {
       ;;
     install)
       {
-        _zimfw_create_dir ${DIR} && _zimfw_download_tarball && _zimfw_untar_tarball ${DIR} && _zimfw_pull_print_okay Installed || return 1
+        _zimfw_create_dir ${TARGET} && _zimfw_download_tarball && _zimfw_untar_tarball ${TARGET} && _zimfw_pull_print_okay Installed || return 1
       } always {
         # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
         (( TRY_BLOCK_ERROR = ? ))
         command rm -f ${TARBALL_TARGET} 2>/dev/null
-        if (( TRY_BLOCK_ERROR )) command rm -rf ${DIR} 2>/dev/null
+        if (( TRY_BLOCK_ERROR )) command rm -rf ${TARGET} 2>/dev/null
       }
       ;;
     check|update)
-      readonly DIR_NEW=${DIR}${TEMP}
+      readonly DIR_NEW=${TARGET}${TEMP}
       {
         _zimfw_download_tarball || return 1
         if [[ ${ACTION} == check ]]; then
@@ -831,12 +827,12 @@ _zimfw_tool_degit() {
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_create_dir ${DIR_NEW} && _zimfw_untar_tarball ${DIR_NEW} || return 1
             if [[ ${+commands[diff]} -ne 0 && -x ${commands[diff]} ]]; then
-              LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
-              LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
+              LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${TARGET} ${DIR_NEW} 2>/dev/null)
+              LOG=${${LOG//${DIR_NEW}/new}//${TARGET}/old}
             fi
             if ! ERR=$({ command cp -f ${INFO_TARGET} ${DIR_NEW} && \
-                command rm -rf ${DIR} && command mv -f ${DIR_NEW} ${DIR} } 2>&1); then
-              _zimfw_print_error "Error updating ${DIR}" ${ERR}
+                command rm -rf ${TARGET} && command mv -f ${DIR_NEW} ${TARGET} } 2>&1); then
+              _zimfw_print_error "Error updating ${TARGET}" ${ERR}
               return 1
             fi
             _zimfw_pull_print_okay Updated 0 ${LOG} || return 1
@@ -851,7 +847,7 @@ _zimfw_tool_degit() {
       ;;
   esac
   # Check after successful install or update
-  if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
+  if [[ ${SUBMODULES} -ne 0 && -e ${TARGET}/.gitmodules ]]; then
     _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to stop this warning."
   fi
 }
@@ -859,31 +855,31 @@ _zimfw_tool_degit() {
 _zimfw_tool_git() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} URL=${3} TYPE=${4} ONPULL=${7}
+  readonly ACTION=${1} TARGET=${2} URL=${3} TYPE=${4} ONPULL=${7}
   REV=${5}
   case ${ACTION} in
     pre|prereinstall)
       local premsg
       if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
-      if [[ -e ${DIR} ]]; then
-        if [[ ! -r ${DIR}/.git ]]; then
+      if [[ -e ${TARGET} ]]; then
+        if [[ ! -r ${TARGET}/.git ]]; then
           _zimfw_print_error 'Module was not installed using git.'${premsg}
           return 1
         fi
-        if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
+        if [[ ${URL} != $(command git -C ${TARGET} config --get remote.origin.url) ]]; then
           _zimfw_print_error 'The git URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
         if [[ ${TYPE} == branch ]]; then
           if [[ -z ${REV} ]]; then
-            if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+            if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
               REV=${REV#origin/}
             else
               _zimfw_print_error 'Error during git symbolic-ref.'${premsg} ${REV}
               return 1
             fi
           fi
-          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
+          readonly AHEAD_AND_BEHIND=$(command git -C ${TARGET} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
           readonly -i AHEAD=${AHEAD_AND_BEHIND[(w)1]}
           readonly -i BEHIND=${AHEAD_AND_BEHIND[(w)2]}
           if (( AHEAD && BEHIND )); then
@@ -894,7 +890,7 @@ _zimfw_tool_git() {
       fi
       ;;
     install)
-      if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
+      if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${TARGET} 2>&1); then
         _zimfw_pull_print_okay Installed
       else
         _zimfw_print_error 'Error during git clone' ${ERR}
@@ -902,18 +898,18 @@ _zimfw_tool_git() {
       fi
       ;;
     check|update)
-      if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then
+      if ! ERR=$(command git -C ${TARGET} fetch -pqt origin 2>&1); then
         _zimfw_print_error 'Error during git fetch' ${ERR}
         return 1
       fi
       if [[ ${TYPE} == branch ]]; then
         if [[ -z ${REV} ]]; then
           # Get HEAD remote branch
-          if ! ERR=$(command git -C ${DIR} remote set-head origin -a 2>&1); then
+          if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
             _zimfw_print_error 'Error during git remote set-head' ${ERR}
             return 1
           fi
-          if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+          if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
             REV=${REV#origin/}
           else
             _zimfw_print_error 'Error during git symbolic-ref' ${REV}
@@ -921,7 +917,7 @@ _zimfw_tool_git() {
           fi
         fi
         if [[ ${ACTION} == check ]]; then
-          readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${REV}@{u} -- 2>/dev/null)
+          readonly -i BEHIND=$(command git -C ${TARGET} rev-list --count ${REV}..${REV}@{u} -- 2>/dev/null)
           if (( BEHIND )); then
             _zimfw_print_okay "Update available [behind ${BEHIND}]"
             return 4
@@ -932,7 +928,7 @@ _zimfw_tool_git() {
         fi
         TO_REV=${REV}@{u}
       else
-        if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
+        if [[ ${REV} == $(command git -C ${TARGET} describe --tags --exact-match 2>/dev/null) ]]; then
           if [[ ${ACTION} == check ]]; then
             _zimfw_print_okay 'Already up to date' 1
             return 0
@@ -948,16 +944,16 @@ _zimfw_tool_git() {
         TO_REV=${REV}
       fi
       if [[ -z ${NO_COLOR} && -t 1 ]]; then
-        LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
+        LOG=$(command git -C ${TARGET} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
       else
-        LOG=$(command git -C ${DIR} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
+        LOG=$(command git -C ${TARGET} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
       fi
-      if ! ERR=$(command git -C ${DIR} checkout -q ${REV} -- 2>&1); then
+      if ! ERR=$(command git -C ${TARGET} checkout -q ${REV} -- 2>&1); then
         _zimfw_print_error 'Error during git checkout' ${ERR}
         return 1
       fi
       if [[ ${TYPE} == branch ]]; then
-        if ! OUT=$(command git -C ${DIR} merge --ff-only --no-progress -n 2>&1); then
+        if ! OUT=$(command git -C ${TARGET} merge --ff-only --no-progress -n 2>&1); then
           _zimfw_print_error 'Error during git merge' ${OUT}
           return 1
         fi
@@ -967,7 +963,7 @@ _zimfw_tool_git() {
         OUT="Updating to ${TYPE} ${REV}"
       fi
       if (( SUBMODULES )); then
-        if ! ERR=$(command git -C ${DIR} submodule update --init --recursive -q -- 2>&1); then
+        if ! ERR=$(command git -C ${TARGET} submodule update --init --recursive -q -- 2>&1); then
           _zimfw_print_error 'Error during git submodule update' ${ERR}
           return 1
         fi
@@ -980,7 +976,7 @@ _zimfw_tool_git() {
 _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} TYPE=${4} REV=${5} ONPULL=${7}
+  readonly ACTION=${1} TARGET=${2} TYPE=${4} REV=${5} ONPULL=${7}
   if [[ ${ACTION} == (pre|prereinstall) ]] return 0
   if [[ ${ACTION} == check ]]; then
     _zimfw_print_okay 'Skipping mkdir module' 1
@@ -992,11 +988,11 @@ _zimfw_tool_mkdir() {
   if (( ! SUBMODULES )); then
     _zimfw_print_warn "The zmodule option ${_zbold}--no-submodules${_znormalyellow} has no effect when using the mkdir tool"
   fi
-  if [[ ! -d ${DIR} || -n ${ONPULL} ]]; then
-    local -r zroot_dirs=(${(M)_zroot_dirs:#${DIR}(|/*)})
-    local zroot_dir
-    for zroot_dir in ${zroot_dirs}; do
-      _zimfw_create_dir ${zroot_dir} || return 1
+  if [[ ! -d ${TARGET} || -n ${ONPULL} ]]; then
+    local -r zroot_targets=(${(M)_zroot_targets:#${TARGET}(|/*)})
+    local zroot_target
+    for zroot_target in ${zroot_targets}; do
+      _zimfw_create_dir ${zroot_target} || return 1
     done
     _zimfw_pull_print_okay Created || return 1
   fi
@@ -1018,7 +1014,7 @@ _zimfw_run_tool() {
     _zimfw_print_error "Unknown tool ${ztool}"
     return 1
   fi
-  set "${_zpaths[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
+  set "${_ztargets[${_zname}]}" "${_zurls[${_zname}]}" "${_ztypes[${_zname}]}" "${_zrevs[${_zname}]}" "${_zsubmodules[${_zname}]}" "${_zonpulls[${_zname}]}"
   if [[ ${zaction} == reinstall ]]; then
     _zimfw_tool_${ztool} prereinstall "${@}" && return 0
     if (( _zprintlevel > 0 )); then
@@ -1029,15 +1025,15 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r zpath_new=.${_zpaths[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    local -r ztarget_new=.${_ztargets[${_zname}]}_${sysparams[pid]}_${RANDOM}
     {
-      _zimfw_tool_${ztool} install ${zpath_new} "${@:2}" || return 1
-      if ! ERR=$({ command rm -rf ${_zpaths[${_zname}]} && command mv -f ${zpath_new} ${_zpaths[${_zname}]} } 2>&1); then
-        _zimfw_print_error "Error reinstalling ${_zpaths[${_zname}]}" ${ERR}
+      _zimfw_tool_${ztool} install ${ztarget_new} "${@:2}" || return 1
+      if ! ERR=$({ command rm -rf ${_ztargets[${_zname}]} && command mv -f ${ztarget_new} ${_ztargets[${_zname}]} } 2>&1); then
+        _zimfw_print_error "Error reinstalling ${_ztargets[${_zname}]}" ${ERR}
         return 1
       fi
     } always {
-      command rm -rf ${zpath_new} 2>/dev/null
+      command rm -rf ${ztarget_new} 2>/dev/null
     }
     return 0
   else
@@ -1045,13 +1041,13 @@ _zimfw_run_tool() {
   fi
   case ${zaction} in
     install)
-      if [[ -e ${_zpaths[${_zname}]} ]]; then
+      if [[ -e ${_ztargets[${_zname}]} ]]; then
         _zimfw_print_okay 'Skipping already installed module' 1
         return 0
       fi
       ;;
     check|update)
-      if [[ ! -d ${_zpaths[${_zname}]} ]]; then
+      if [[ ! -e ${_ztargets[${_zname}]} ]]; then
         _zimfw_print_error "Not installed. Run ${_zbold}zimfw install${_znormalred} to install."
         return 1
       fi
@@ -1151,17 +1147,17 @@ Options:
       [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
-    [[ -f ${_zversion_target}(#qNm-30) ]]; local -r zversion_check_force=${?}
-    _zimfw_check_version ${zversion_check_force} 1
+    [[ -f ${_zversion_target}(#qNm-30) ]]; local -ri zforce_check_version=${?}
+    _zimfw_check_version ${zforce_check_version} 1
   fi
 
   if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|reinstall|check-version) ]]; then
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
-  local -Ua _znames _zroot_dirs _zdisabled_paths
-  local -A _zfrozens _ztools _zpaths _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
-  local -a _zfpaths _zfunctions _zcmds _zunused_paths
+  local -Ua _znames _zroot_targets _zdisabled_roots
+  local -A _zfrozens _ztools _ztargets _zurls _ztypes _zrevs _zsubmodules _zonpulls _zifs
+  local -a _zfpaths _zfunctions _zcmds _zunused_targets
   local _zrestartmsg=' Restart your terminal for changes to take effect.'
   autoload -Uz zargs
   case ${1} in
@@ -1170,7 +1166,9 @@ Options:
       (( _zprintlevel-- ))
       _zimfw_compile
       ;;
-    check-dumpfile) _zimfw_check_dumpfile ;;
+    check-dumpfile)
+      _zimfw_print -u2 "${_zyellow}Deprecated action. This is now handled by the completion module alone.${_znormal}"
+      ;;
     clean) _zimfw_source_zimrc 0 && _zimfw_clean_compiled && _zimfw_clean_dumpfile ;;
     clean-compiled) _zimfw_source_zimrc 0 && _zimfw_clean_compiled ;;
     clean-dumpfile) _zimfw_clean_dumpfile ;;
@@ -1179,7 +1177,7 @@ Options:
     list)
       _zimfw_source_zimrc $(( _zprintlevel > 1 )) && \
           zargs -n 1 -- "${_znames[@]}" -- _zimfw_run_list && \
-         _zimfw_list_unused_paths ' (unused)'
+         _zimfw_list_unused ' (unused)'
       ;;
     check)
       _zimfw_run_tool_action ${1} || return 1
@@ -1200,7 +1198,7 @@ Options:
       _zimfw_source_zimrc 1 && _zimfw_build && _zimfw_compile
       ;;
     uninstall)
-      _zimfw_source_zimrc 0 && _zimfw_list_unused_paths && _zimfw_uninstall || return 1
+      _zimfw_source_zimrc 0 && _zimfw_list_unused && _zimfw_uninstall || return 1
       (( _zprintlevel-- ))
       _zimfw_source_zimrc 1 && _zimfw_build
       ;;

@@ -1,7 +1,7 @@
 _zimfw_pull_print_okay() {
   # Useb by tools, which run in a subshell
   if [[ -n ${ONPULL} ]]; then
-    if ! ERR=$(builtin cd -q ${DIR} 2>&1 && builtin eval ${ONPULL} 2>&1); then
+    if ! ERR=$(builtin cd -q ${TARGET} 2>&1 && builtin eval ${ONPULL} 2>&1); then
       _zimfw_print_error 'Error during on-pull' ${ERR}
       return 1
     elif [[ ${_zprintlevel} -gt 1 && -n ${ERR} ]]; then

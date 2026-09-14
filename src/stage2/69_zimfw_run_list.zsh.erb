@@ -1,16 +1,16 @@
 _zimfw_run_list() {
   local -r zname=${1}
-  local -r zpath=${_zpaths[${zname}]}
-  local -r zroot_dirs=(${(M)_zroot_dirs:#${zpath}(|/*)})
+  local -r ztarget=${_ztargets[${zname}]}
+  local -r zroot_targets=(${(M)_zroot_targets:#${ztarget}(|/*)})
   print -nR ${_zbold}${zname}${_znormal}
-  if [[ ! -e ${zpath} ]] print -n ' (not installed)'
+  if [[ ! -e ${ztarget} ]] print -n ' (not installed)'
   if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
   if (( _zfrozens[${zname}] )) print -n ' (frozen)'
-  if [[ ${_zdisabled_paths[(I)${zpath}]} -ne 0 && ${zroot_dirs} == (${zpath}) ]] print -n ' (disabled)'
+  if [[ ${_zdisabled_roots[(I)${ztarget}]} -ne 0 && ${zroot_targets} == (${ztarget}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
     if [[ -z ${_zurls[${zname}]} ]]; then
-      print -R '  From: '${zpath}
+      print -R '  From: '${ztarget}
     elif (( ! _zfrozens[${zname}] )); then
       if [[ ${_ztools[${zname}]} == mkdir ]]; then
         print '  From: mkdir'
@@ -27,23 +27,23 @@ _zimfw_run_list() {
       fi
       if [[ -n ${_zonpulls[${zname}]} ]] print -R "  On-pull: ${_zonpulls[${zname}]}"
     fi
-    local zroot_dir zindent zpre
+    local zroot_target zindent zpre
     local -a zfpaths zfunctions zcmds
-    for zroot_dir in ${zroot_dirs}; do
-      if [[ ${zroot_dirs} == (${zpath}) ]]; then
+    for zroot_target in ${zroot_targets}; do
+      if [[ ${zroot_targets} == (${ztarget}) ]]; then
         zindent='  '
       else
-        if [[ ${zroot_dir} == ${zpath} ]]; then
+        if [[ ${zroot_target} == ${ztarget} ]]; then
           print -n '  Root: .'
         else
-          print -nR '  Root: '${zroot_dir##${zpath}/}
+          print -nR '  Root: '${zroot_target##${ztarget}/}
         fi
-        if (( _zdisabled_paths[(I)${zroot_dir}] )) print -n ' (disabled)'
+        if (( _zdisabled_roots[(I)${zroot_target}] )) print -n ' (disabled)'
         print
         zindent='    '
       fi
-      if (( ${+_zifs[${zroot_dir}]} )) print -R ${zindent}'if: '${_zifs[${zroot_dir}]}
-      zpre=${zroot_dir}$'\0'
+      if (( ${+_zifs[${zroot_target}]} )) print -R ${zindent}'if: '${_zifs[${zroot_target}]}
+      zpre=${zroot_target}$'\0'
       zfpaths=(${${(M)_zfpaths:#${zpre}*}#${zpre}})
       zfunctions=(${${(M)_zfunctions:#${zpre}*}#${zpre}})
       zcmds=(${${(M)_zcmds:#${zpre}*}#${zpre}})

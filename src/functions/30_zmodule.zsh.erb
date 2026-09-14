@@ -116,10 +116,10 @@ Per-call initialization options:
   zname=modules/${zname}
   _znames+=(${zname})
   if [[ ${zurl} == /* ]]; then
-    _zpaths[${zname}]=${zurl%%/##}
+    _ztargets[${zname}]=${zurl%%/##}
     zurl=
   else
-    _zpaths[${zname}]=${ZIM_HOME}/${zname}
+    _ztargets[${zname}]=${ZIM_HOME}/${zname}
   fi
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
     print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
@@ -127,8 +127,8 @@ Per-call initialization options:
     return 2
   fi
   _zurls[${zname}]=${zurl}
-  local -r zroot_dir=${_zpaths[${zname}]}${zroot:+/${zroot}}
-  _zroot_dirs+=(${zroot_dir})
+  local -r zroot_target=${_ztargets[${zname}]}${zroot:+/${zroot}}
+  _zroot_targets+=(${zroot_target})
   # Set default values
   if (( ! ${+_ztools[${zname}]} )); then
     zstyle -s ':zim:zmodule' use "_ztools[${zname}]" || _ztools[${zname}]=auto
@@ -176,20 +176,20 @@ Per-call initialization options:
         ;;
       --if)
         shift
-        _zifs[${zroot_dir}]=${1}
+        _zifs[${zroot_target}]=${1}
         ;;
       --if-command)
         shift
-        _zifs[${zroot_dir}]="(( \${+commands[${1}]} ))"
+        _zifs[${zroot_target}]="(( \${+commands[${1}]} ))"
         ;;
       --if-ostype)
         shift
-        _zifs[${zroot_dir}]="[[ \${OSTYPE} == ${1} ]]"
+        _zifs[${zroot_target}]="[[ \${OSTYPE} == ${1} ]]"
         ;;
       -f|--fpath)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
         zfpaths+=(${zarg})
         ;;
       -a|--autoload)
@@ -199,14 +199,14 @@ Per-call initialization options:
       -s|--source)
         shift
         zarg=${1}
-        if [[ ${zarg} != /* ]] zarg=${zroot_dir}/${zarg}
+        if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
         zcmds+=('source '${(qqq)zarg:a})
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(qqq)zroot_dir:a}})
+        zcmds+=(${1//{}/${(qqq)zroot_target:a}})
         ;;
-      -d|--disabled) _zdisabled_paths+=(${zroot_dir}) ;;
+      -d|--disabled) _zdisabled_roots+=(${zroot_target}) ;;
       *)
         print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Unknown zmodule option ${_zbold}${1}${_znormal}" '' ${zusage}
         _zfailed=1
@@ -217,10 +217,10 @@ Per-call initialization options:
   done
   # Detect tool if auto and not external and not frozen module
   if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
-    if [[ -e ${_zpaths[${zname}]} ]]; then
-      if [[ -r ${_zpaths[${zname}]}/.git ]]; then
+    if [[ -e ${_ztargets[${zname}]} ]]; then
+      if [[ -r ${_ztargets[${zname}]}/.git ]]; then
         _ztools[${zname}]=git
-      elif [[ -r ${_zpaths[${zname}]}/.zdegit ]]; then
+      elif [[ -r ${_ztargets[${zname}]}/.zdegit ]]; then
         _ztools[${zname}]=degit
       else
         _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Could not auto detect tool, will default to ${_zbold}mkdir${_znormalyellow}. Use zmodule option ${_zbold}-u${_znormalyellow}|${_zbold}--use${_znormalyellow} to stop this warning.${_znormal}"
@@ -234,32 +234,32 @@ Per-call initialization options:
       fi
     fi
   fi
-  if (( ! ${_zdisabled_paths[(I)${zroot_dir}]} && _zeager )); then
-    if [[ ! -e ${zroot_dir} ]]; then
-      print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_dir}${_znormalred} not found${_znormal}"
+  if (( ! ${_zdisabled_roots[(I)${zroot_target}]} && _zeager )); then
+    if [[ ! -e ${zroot_target} ]]; then
+      print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_target}${_znormalred} not found${_znormal}"
       _zfailed=1
       return 1
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      zfpaths=(${zroot_dir}/functions(NF))
+      zfpaths=(${zroot_target}/functions(NF))
       # _* functions are autoloaded by compinit
       # prompt_*_setup functions are autoloaded by promptinit
       zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
-      local -ra prezto_scripts=(${zroot_dir}/init.zsh(N))
+      local -ra prezto_scripts=(${zroot_target}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
         zcmds=('source '${(qqq)^prezto_scripts:a})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-        local -ra zscripts=(${zroot_dir}/(init.zsh|(${zname:t}|${zroot_dir:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
+        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
         zcmds=('source '${(qqq)^zscripts:a})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
       _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Nothing found to be initialized. Customize the module name, root or initialization with ${_zbold}zmodule${_znormalyellow} options.${_znormal}" '' ${zusage}
     fi
-    # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root dir
-    local -r zpre=${zroot_dir}$'\0'
+    # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root target
+    local -r zpre=${zroot_target}$'\0'
     zfpaths=(${${(@qqq)zfpaths:a}/${HOME}/\${HOME}})
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})

@@ -9,14 +9,14 @@ _zimfw_build_init() {
     print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
     print
     print -R 'if [[ -e ${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
-    local zroot_dir zpre
+    local zroot_target zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
-    # Keep fpath constant regardless of "if" root dirs, to avoid confusing compinit.
-    # Move all from zfunctions and zcmds with "if" root dirs prefixes.
-    for zroot_dir in ${_zroot_dirs}; do
-      if (( ${+_zifs[${zroot_dir}]} )); then
-        zpre=${zroot_dir}$'\0'
+    # Keep fpath constant regardless of "if" root targets, to avoid confusing compinit.
+    # Move all from zfunctions and zcmds with "if" root targets prefixes.
+    for zroot_target in ${_zroot_targets}; do
+      if (( ${+_zifs[${zroot_target}]} )); then
+        zpre=${zroot_target}$'\0'
         zif_functions+=(${(M)zfunctions:#${zpre}*})
         zif_cmds+=(${(M)zcmds:#${zpre}*})
         zfunctions=(${zfunctions:#${zpre}*})
@@ -26,13 +26,13 @@ _zimfw_build_init() {
     zpre=$'*\0'
     if (( ${#_zfpaths} )) print -R 'fpath=('${_zfpaths#${~zpre}}' ${fpath})'
     if (( ${#zfunctions} )) print -R 'autoload -Uz -- '${zfunctions#${~zpre}}
-    for zroot_dir in ${_zroot_dirs}; do
-      zpre=${zroot_dir}$'\0'
-      if (( ${+_zifs[${zroot_dir}]} )); then
+    for zroot_target in ${_zroot_targets}; do
+      zpre=${zroot_target}$'\0'
+      if (( ${+_zifs[${zroot_target}]} )); then
         zroot_functions=(${${(M)zif_functions:#${zpre}*}#${zpre}})
         zroot_cmds=(${${(M)zif_cmds:#${zpre}*}#${zpre}})
         if (( ${#zroot_functions} || ${#zroot_cmds} )); then
-          print -R 'if '${_zifs[${zroot_dir}]}'; then'
+          print -R 'if '${_zifs[${zroot_target}]}'; then'
           if (( ${#zroot_functions} )) print -R '  autoload -Uz -- '${zroot_functions}
           if (( ${#zroot_cmds} )) print -R ${(F):-  ${^zroot_cmds}}
           print fi

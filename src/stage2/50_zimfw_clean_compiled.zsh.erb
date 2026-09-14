@@ -1,8 +1,8 @@
 _zimfw_clean_compiled() {
-  # Array with unique dirs. ${ZIM_HOME} or any subdirectory should only occur once.
-  local -Ur zscriptdirs=(${ZIM_HOME:A} ${${(v)_zpaths##${ZIM_HOME}/*}:A})
+  # Array with unique targets. ${ZIM_HOME} or any external target should only occur once.
+  local -Ur ztargets=(${ZIM_HOME:A} ${${(v)_ztargets##${ZIM_HOME}/*}:A})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
-  command rm -f ${zopt} ${^zscriptdirs}/**/*.zwc(|.old)(N) && \
+  command rm -f ${zopt} ${^ztargets}/**/*.zwc(|.old)(N) && \
       _zimfw_print "Done with clean-compiled. Restart your terminal or run ${_zbold}zimfw compile${_znormal} to re-compile."
 }

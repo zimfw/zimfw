@@ -1,31 +1,31 @@
 _zimfw_tool_git() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} URL=${3} TYPE=${4} ONPULL=${7}
+  readonly ACTION=${1} TARGET=${2} URL=${3} TYPE=${4} ONPULL=${7}
   REV=${5}
   case ${ACTION} in
     pre|prereinstall)
       local premsg
       if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
-      if [[ -e ${DIR} ]]; then
-        if [[ ! -r ${DIR}/.git ]]; then
+      if [[ -e ${TARGET} ]]; then
+        if [[ ! -r ${TARGET}/.git ]]; then
           _zimfw_print_error 'Module was not installed using git.'${premsg}
           return 1
         fi
-        if [[ ${URL} != $(command git -C ${DIR} config --get remote.origin.url) ]]; then
+        if [[ ${URL} != $(command git -C ${TARGET} config --get remote.origin.url) ]]; then
           _zimfw_print_error 'The git URL does not match. Expected '${URL}.${premsg}
           return 1
         fi
         if [[ ${TYPE} == branch ]]; then
           if [[ -z ${REV} ]]; then
-            if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+            if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
               REV=${REV#origin/}
             else
               _zimfw_print_error 'Error during git symbolic-ref.'${premsg} ${REV}
               return 1
             fi
           fi
-          readonly AHEAD_AND_BEHIND=$(command git -C ${DIR} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
+          readonly AHEAD_AND_BEHIND=$(command git -C ${TARGET} rev-list --count --left-right ${REV}...${REV}@{u} -- 2>/dev/null)
           readonly -i AHEAD=${AHEAD_AND_BEHIND[(w)1]}
           readonly -i BEHIND=${AHEAD_AND_BEHIND[(w)2]}
           if (( AHEAD && BEHIND )); then
@@ -36,7 +36,7 @@ _zimfw_tool_git() {
       fi
       ;;
     install)
-      if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${DIR} 2>&1); then
+      if ERR=$(command git clone ${REV:+-b} ${REV} -q --config core.autocrlf=false ${${SUBMODULES:#0}:+--recursive} -- ${URL} ${TARGET} 2>&1); then
         _zimfw_pull_print_okay Installed
       else
         _zimfw_print_error 'Error during git clone' ${ERR}
@@ -44,18 +44,18 @@ _zimfw_tool_git() {
       fi
       ;;
     check|update)
-      if ! ERR=$(command git -C ${DIR} fetch -pqt origin 2>&1); then
+      if ! ERR=$(command git -C ${TARGET} fetch -pqt origin 2>&1); then
         _zimfw_print_error 'Error during git fetch' ${ERR}
         return 1
       fi
       if [[ ${TYPE} == branch ]]; then
         if [[ -z ${REV} ]]; then
           # Get HEAD remote branch
-          if ! ERR=$(command git -C ${DIR} remote set-head origin -a 2>&1); then
+          if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
             _zimfw_print_error 'Error during git remote set-head' ${ERR}
             return 1
           fi
-          if REV=$(command git -C ${DIR} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
+          if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
             REV=${REV#origin/}
           else
             _zimfw_print_error 'Error during git symbolic-ref' ${REV}
@@ -63,7 +63,7 @@ _zimfw_tool_git() {
           fi
         fi
         if [[ ${ACTION} == check ]]; then
-          readonly -i BEHIND=$(command git -C ${DIR} rev-list --count ${REV}..${REV}@{u} -- 2>/dev/null)
+          readonly -i BEHIND=$(command git -C ${TARGET} rev-list --count ${REV}..${REV}@{u} -- 2>/dev/null)
           if (( BEHIND )); then
             _zimfw_print_okay "Update available [behind ${BEHIND}]"
             return 4
@@ -74,7 +74,7 @@ _zimfw_tool_git() {
         fi
         TO_REV=${REV}@{u}
       else
-        if [[ ${REV} == $(command git -C ${DIR} describe --tags --exact-match 2>/dev/null) ]]; then
+        if [[ ${REV} == $(command git -C ${TARGET} describe --tags --exact-match 2>/dev/null) ]]; then
           if [[ ${ACTION} == check ]]; then
             _zimfw_print_okay 'Already up to date' 1
             return 0
@@ -90,16 +90,16 @@ _zimfw_tool_git() {
         TO_REV=${REV}
       fi
       if [[ -z ${NO_COLOR} && -t 1 ]]; then
-        LOG=$(command git -C ${DIR} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
+        LOG=$(command git -C ${TARGET} log --graph --color --format='%C(yellow)%h%C(reset) %s %C(cyan)(%cr)%C(reset)' ..${TO_REV} -- 2>/dev/null)
       else
-        LOG=$(command git -C ${DIR} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
+        LOG=$(command git -C ${TARGET} log --graph --format='%h %s (%cr)' ..${TO_REV} -- 2>/dev/null)
       fi
-      if ! ERR=$(command git -C ${DIR} checkout -q ${REV} -- 2>&1); then
+      if ! ERR=$(command git -C ${TARGET} checkout -q ${REV} -- 2>&1); then
         _zimfw_print_error 'Error during git checkout' ${ERR}
         return 1
       fi
       if [[ ${TYPE} == branch ]]; then
-        if ! OUT=$(command git -C ${DIR} merge --ff-only --no-progress -n 2>&1); then
+        if ! OUT=$(command git -C ${TARGET} merge --ff-only --no-progress -n 2>&1); then
           _zimfw_print_error 'Error during git merge' ${OUT}
           return 1
         fi
@@ -109,7 +109,7 @@ _zimfw_tool_git() {
         OUT="Updating to ${TYPE} ${REV}"
       fi
       if (( SUBMODULES )); then
-        if ! ERR=$(command git -C ${DIR} submodule update --init --recursive -q -- 2>&1); then
+        if ! ERR=$(command git -C ${TARGET} submodule update --init --recursive -q -- 2>&1); then
           _zimfw_print_error 'Error during git submodule update' ${ERR}
           return 1
         fi

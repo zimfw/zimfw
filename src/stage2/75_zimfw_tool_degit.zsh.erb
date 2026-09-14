@@ -7,7 +7,7 @@ _zimfw_download_tarball() {
     _zimfw_print_error "${URL} is not a valid URL. Will not try to ${ACTION}. The zimfw degit tool only supports GitHub URLs. Use zmodule option ${_zbold}--use git${_znormalred} to use git instead."
     return 1
   fi
-  readonly HEADERS_TARGET=${DIR}/${TEMP}_headers
+  readonly HEADERS_TARGET=${TARGET}/${TEMP}_headers
   {
     if [[ ${ACTION} != install ]]; then
       readonly INFO=("${(@f)"$(<${INFO_TARGET})"}")
@@ -83,13 +83,13 @@ _zimfw_untar_tarball() {
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} DIR=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
-  readonly TARBALL_TARGET=${DIR}/${TEMP}_tarball.tar.gz INFO_TARGET=${DIR}/.zdegit
+  readonly ACTION=${1} TARGET=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
+  readonly TARBALL_TARGET=${TARGET}/${TEMP}_tarball.tar.gz INFO_TARGET=${TARGET}/.zdegit
   case ${ACTION} in
     pre|prereinstall)
       local premsg
       if [[ ${ACTION} == pre ]] premsg=" Use zmodule option ${_zbold}-z${_znormalred}|${_zbold}--frozen${_znormalred} to stop this error or run ${_zbold}zimfw reinstall${_znormalred} to reinstall."
-      if [[ -e ${DIR} ]]; then
+      if [[ -e ${TARGET} ]]; then
         if [[ ! -r ${INFO_TARGET} ]]; then
           _zimfw_print_error $'Module was not installed using zimfw\'s degit.'${premsg}
           return 1
@@ -104,16 +104,16 @@ _zimfw_tool_degit() {
       ;;
     install)
       {
-        _zimfw_create_dir ${DIR} && _zimfw_download_tarball && _zimfw_untar_tarball ${DIR} && _zimfw_pull_print_okay Installed || return 1
+        _zimfw_create_dir ${TARGET} && _zimfw_download_tarball && _zimfw_untar_tarball ${TARGET} && _zimfw_pull_print_okay Installed || return 1
       } always {
         # return 1 does not change ${TRY_BLOCK_ERROR}, only changes ${?}
         (( TRY_BLOCK_ERROR = ? ))
         command rm -f ${TARBALL_TARGET} 2>/dev/null
-        if (( TRY_BLOCK_ERROR )) command rm -rf ${DIR} 2>/dev/null
+        if (( TRY_BLOCK_ERROR )) command rm -rf ${TARGET} 2>/dev/null
       }
       ;;
     check|update)
-      readonly DIR_NEW=${DIR}${TEMP}
+      readonly DIR_NEW=${TARGET}${TEMP}
       {
         _zimfw_download_tarball || return 1
         if [[ ${ACTION} == check ]]; then
@@ -127,12 +127,12 @@ _zimfw_tool_degit() {
           if [[ -e ${TARBALL_TARGET} ]]; then
             _zimfw_create_dir ${DIR_NEW} && _zimfw_untar_tarball ${DIR_NEW} || return 1
             if [[ ${+commands[diff]} -ne 0 && -x ${commands[diff]} ]]; then
-              LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${DIR} ${DIR_NEW} 2>/dev/null)
-              LOG=${${LOG//${DIR_NEW}/new}//${DIR}/old}
+              LOG=$(command diff -x '.zdegit*' -x '*.zwc' -x '*.zwc.old' -qr ${TARGET} ${DIR_NEW} 2>/dev/null)
+              LOG=${${LOG//${DIR_NEW}/new}//${TARGET}/old}
             fi
             if ! ERR=$({ command cp -f ${INFO_TARGET} ${DIR_NEW} && \
-                command rm -rf ${DIR} && command mv -f ${DIR_NEW} ${DIR} } 2>&1); then
-              _zimfw_print_error "Error updating ${DIR}" ${ERR}
+                command rm -rf ${TARGET} && command mv -f ${DIR_NEW} ${TARGET} } 2>&1); then
+              _zimfw_print_error "Error updating ${TARGET}" ${ERR}
               return 1
             fi
             _zimfw_pull_print_okay Updated 0 ${LOG} || return 1
@@ -147,7 +147,7 @@ _zimfw_tool_degit() {
       ;;
   esac
   # Check after successful install or update
-  if [[ ${SUBMODULES} -ne 0 && -e ${DIR}/.gitmodules ]]; then
+  if [[ ${SUBMODULES} -ne 0 && -e ${TARGET}/.gitmodules ]]; then
     _zimfw_print_warn "Module contains git submodules, which are not supported by zimfw's degit. Use zmodule option ${_zbold}--no-submodules${_znormalyellow} to stop this warning."
   fi
 }
