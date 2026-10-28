@@ -50,10 +50,12 @@ _zimfw_tool_git() {
       fi
       if [[ ${TYPE} == branch ]]; then
         if [[ -z ${REV} ]]; then
-          # Get HEAD remote branch
-          if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
-            _zimfw_print_error 'Error during git remote set-head' ${ERR}
-            return 1
+          if ! command git -C ${TARGET} rev-parse -q --verify refs/remotes/origin/HEAD >/dev/null 2>&1; then
+            # Get HEAD remote branch only if origin/HEAD is missing or dangling locally
+            if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
+              _zimfw_print_error 'Error during git remote set-head' ${ERR}
+              return 1
+            fi
           fi
           if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
             REV=${REV#origin/}

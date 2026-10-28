@@ -551,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-09-14 16:09:30 UTC, previous commit is 8062423)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-10-28 16:57:41 UTC, previous commit is c095eb6)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -904,10 +904,12 @@ _zimfw_tool_git() {
       fi
       if [[ ${TYPE} == branch ]]; then
         if [[ -z ${REV} ]]; then
-          # Get HEAD remote branch
-          if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
-            _zimfw_print_error 'Error during git remote set-head' ${ERR}
-            return 1
+          if ! command git -C ${TARGET} rev-parse -q --verify refs/remotes/origin/HEAD >/dev/null 2>&1; then
+            # Get HEAD remote branch only if origin/HEAD is missing or dangling locally
+            if ! ERR=$(command git -C ${TARGET} remote set-head origin -a 2>&1); then
+              _zimfw_print_error 'Error during git remote set-head' ${ERR}
+              return 1
+            fi
           fi
           if REV=$(command git -C ${TARGET} symbolic-ref --short refs/remotes/origin/HEAD 2>&1); then
             REV=${REV#origin/}
