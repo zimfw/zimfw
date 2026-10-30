@@ -54,6 +54,9 @@ EOF
 }
 
 @test 'can check-version' {
+  create_repo github.com/zimfw/zimfw.git
+  git -C "${FIXTURES_DIR}"/github.com/zimfw/zimfw.git tag v1.0.0
+
   run zsh "${PWD}"/zimfw.zsh version
   assert_success
   assert_output --regexp '^[0-9]+\.[0-9]+\.[0-9]+(-dev)?$'
@@ -62,4 +65,5 @@ EOF
   assert_success
   assert_output ''
   assert_file_exists "${ZIM_HOME}"/.latest_version
+  assert_equal "$(<"${ZIM_HOME}"/.latest_version)" 1.0.0
 }

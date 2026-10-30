@@ -79,6 +79,23 @@ EOF
 }
 
 @test 'can create default .zimrc' {
+  create_repo github.com/zimfw/environment.git init.zsh
+  create_repo github.com/zimfw/git.git init.zsh functions/{_git-branch-delete-interactive,git-alias-lookup} \
+      functions/git-branch-{current,default,delete-interactive,remote-tracking} \
+      functions/git-{dir,edit-unmerged,ignore-add,root,stash-{clear-interactive,recover}} \
+      functions/git-{submodule-{move,remove},sync}
+  create_repo github.com/zimfw/input.git init.zsh
+  create_repo github.com/zimfw/termtitle.git init.zsh
+  create_repo github.com/zimfw/utility.git init.zsh functions/{mkcd,mkpw}
+  create_repo github.com/zimfw/duration-info.git init.zsh functions/duration-info-{precmd,preexec}
+  create_repo github.com/zimfw/git-info.git functions/{coalesce,git-action,git-info}
+  create_repo github.com/zimfw/prompt-pwd.git functions/prompt-pwd
+  create_repo github.com/zimfw/asciiship.git asciiship.zsh-theme
+  create_repo github.com/zsh-users/zsh-completions.git src/_zimfw-test zsh-completions.plugin.zsh
+  create_repo github.com/zimfw/completion.git init.zsh functions/_zimfw
+  create_repo github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting{,.plugin}.zsh
+  create_repo github.com/zsh-users/zsh-history-substring-search.git zsh-history-substring-search{,.plugin}.zsh
+  create_repo github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions{,.plugin}.zsh
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
 # EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!

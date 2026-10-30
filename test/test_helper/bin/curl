@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Fake curl for zimfw's degit tool.
+head=0 header='' output='' dump_header=''
+while getopts 'fsSLIH:o:D:' opt; do
+  case ${opt} in
+    I) head=1 ;;
+    H) header=${OPTARG} ;;
+    o) output=${OPTARG} ;;
+    D) dump_header=${OPTARG} ;;
+    f|s|S|L) ;;
+    *) exit 2 ;;
+  esac
+done
+shift $((OPTIND - 1))
+url=${1}
+
+url_regex='^https://api\.github\.com/repos/([^/]+)/([^/]+)/tarball/(.*)$'
+if [[ ! ${url} =~ ${url_regex} ]]; then
+  echo "curl: (6) Fake curl cannot serve ${url}" >&2
+  exit 6
+fi
+owner=${BASH_REMATCH[1]} repo=${BASH_REMATCH[2]} rev=${BASH_REMATCH[3]}
+dir=${FIXTURES_DIR}/github.com/${owner}/${repo}.git
+if ! sha=$(git -C "${dir}" rev-parse -q --verify "${rev:-HEAD}^{commit}" 2>/dev/null); then
+  echo 'curl: (22) The requested URL returned error: 404' >&2
+  exit 22
+fi
+etag="\"${sha}\""
+if [[ ${header} == "If-None-Match: ${etag}" ]]; then
+  status='HTTP/2 304'
+else
+  status='HTTP/2 200'
+fi
+
+print_headers() {
+  printf '%s\r\n' "${status}" "etag: ${etag}" ''
+}
+if [[ ${head} -ne 0 ]]; then
+  print_headers
+  exit 0
+fi
+if [[ -n ${dump_header} ]]; then
+  print_headers >"${dump_header}"
+fi
+if [[ ${status} == 'HTTP/2 200' ]]; then
+  git -C "${dir}" archive --format=tar.gz --prefix="${owner}-${repo}-${sha}/" "${sha}" >"${output}"
+fi

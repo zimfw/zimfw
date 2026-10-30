@@ -494,14 +494,14 @@ _zimfw_check_version() {
     if (( ${2} )); then
       # background check
       if [[ -w ${_zversion_target:h} ]]; then
-        print -R ${${${(f)"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
-            https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"}##*v}[1]} >! ${_zversion_target} &!
+        print -R ${${"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
+            https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"%%$'\n'*}##*v} >! ${_zversion_target} &!
       fi
     else
       # foreground check
       local tags
       tags=$(command git ls-remote --tags --refs --sort=-v:refname https://github.com/zimfw/zimfw.git 'v*') || return 1
-      >! ${_zversion_target} <<<${${${(f)tags}##*v}[1]} || return 1
+      >! ${_zversion_target} <<<${${tags%%$'\n'*}##*v} || return 1
     fi
   fi
   if [[ -f ${_zversion_target} ]]; then
@@ -551,7 +551,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-10-30 01:57:14 UTC, previous commit is 983212c)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-10-30 03:18:40 UTC, previous commit is f9e4d9f)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1078,7 +1078,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.20.2'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.20.3-dev'
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:

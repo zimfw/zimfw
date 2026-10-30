@@ -28,6 +28,7 @@ EOF
 }
 
 @test 'can define module with custom URL' {
+  create_repo gist.github.com/agnoster/3712874 agnoster.zsh-theme
   cat >"${HOME}"/.zimrc <<EOF
 zmodule https://gist.github.com/agnoster/3712874 -n agnoster
 EOF
@@ -49,6 +50,7 @@ EOF
 }
 
 @test 'can define module with multiple source files' {
+  create_repo github.com/sindresorhus/pure.git async.zsh pure.zsh
   cat >"${HOME}"/.zimrc <<EOF
 zmodule sindresorhus/pure -s async.zsh -s pure.zsh
 EOF
@@ -171,6 +173,12 @@ Done with build. Restart your terminal for changes to take effect."
 }
 
 @test 'can define modules with custom options' {
+  create_repo github.com/zimfw/macports.git init.zsh
+  create_repo github.com/zimfw/git-info.git functions/{coalesce,git-action,git-info}
+  create_repo github.com/zimfw/asciiship.git asciiship.zsh-theme
+  create_repo github.com/zsh-users/zsh-completions.git src/_zimfw-test zsh-completions.plugin.zsh
+  create_repo github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting{,.plugin}.zsh \
+      highlighters/{brackets/brackets,cursor/cursor,line/line,main/main,pattern/pattern,regexp/regexp,root/root}-highlighter.zsh
   mkdir "${HOME}"/external
   cat >"${HOME}"/external/init.zsh <<EOF
 print external
@@ -432,7 +440,7 @@ Done with check. Run zimfw update to update modules."
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "modules/external (external)"
+  assert_output 'modules/external (external)'
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success

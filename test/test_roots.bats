@@ -227,7 +227,7 @@ Done with check. Run zimfw update to update modules."
 
   run zsh "${PWD}"/zimfw.zsh list
   assert_success
-  assert_output "modules/external (external)"
+  assert_output 'modules/external (external)'
 
   run zsh "${PWD}"/zimfw.zsh list -v
   assert_success

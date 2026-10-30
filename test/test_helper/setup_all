@@ -1,4 +1,5 @@
 # vim:et sts=2 sw=2 ft=sh
+# shellcheck shell=bash
 setup_all() {
   bats_load_library bats-support
   bats_load_library bats-assert
@@ -14,4 +15,37 @@ EOF
   cat >"${HOME}"/.zshrc <<EOF
 source ${ZIM_HOME}/init.zsh
 EOF
+
+  export FIXTURES_DIR="${BATS_TEST_TMPDIR}"/fixtures
+  export PATH="${BATS_TEST_DIRNAME}"/test_helper/bin:"${PATH}"
+  export GIT_ALLOW_PROTOCOL=file GIT_CONFIG_GLOBAL="${HOME}"/.gitconfig GIT_CONFIG_NOSYSTEM=1
+  cat >"${GIT_CONFIG_GLOBAL}" <<EOF
+[user]
+  name = zimfw test
+  email = test@zimfw.invalid
+[init]
+  defaultBranch = main
+[protocol "file"]
+  allow = always
+[url "file://${FIXTURES_DIR}/github.com/"]
+  insteadOf = https://github.com/
+[url "file://${FIXTURES_DIR}/gist.github.com/"]
+  insteadOf = https://gist.github.com/
+EOF
+}
+
+create_repo() {
+  local -r repo="${FIXTURES_DIR}/${1}"
+  shift
+  git init -q "${repo}"
+  local file
+  for file in "${@}"; do
+    mkdir -p "$(dirname "${repo}/${file}")"
+    case ${file} in
+      *.plugin.zsh) echo '# shim' >"${repo}/${file}" ;; # <name>.plugin.zsh files must be the smallest
+      *) echo '# zimfw test fixture' >"${repo}/${file}" ;;
+    esac
+  done
+  git -C "${repo}" add -A
+  git -C "${repo}" commit -q --allow-empty -m 'Initial commit'
 }
