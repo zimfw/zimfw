@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.20.2] - 2026-10-30
+
+### Fixed
+- Extra network call per module on every `check` and `update` action. The
+  remote HEAD branch is now only updated when the local `origin/HEAD` is missing
+  or dangling.
+- Versions are now compared with `is-at-least` instead of just checking whether
+  they're different.
+
 ## [1.20.1] - 2026-08-16
 
 ### Fixed
@@ -495,7 +504,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.1...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.2...HEAD
+[1.20.2]: https://github.com/zimfw/zimfw/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/zimfw/zimfw/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/zimfw/zimfw/compare/v1.19.1...v1.20.0
 [1.19.1]: https://github.com/zimfw/zimfw/compare/v1.19.0...v1.19.1
