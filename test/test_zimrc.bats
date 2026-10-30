@@ -85,7 +85,7 @@ EOF
 
 if [[ -e \${ZIM_CONFIG_FILE:-\${ZDOTDIR:-\${HOME}}/.zimrc} ]] zimfw() { source "${PWD}/zimfw.zsh" "\${@}" }
 fpath=("\${HOME}/.zim/modules/git/functions" "\${HOME}/.zim/modules/utility/functions" "\${HOME}/.zim/modules/duration-info/functions" "\${HOME}/.zim/modules/git-info/functions" "\${HOME}/.zim/modules/prompt-pwd/functions" "\${HOME}/.zim/modules/zsh-completions/src" "\${HOME}/.zim/modules/completion/functions" \${fpath})
-autoload -Uz -- git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove mkcd mkpw duration-info-precmd duration-info-preexec coalesce git-action git-info prompt-pwd
+autoload -Uz -- git-alias-lookup git-branch-current git-branch-default git-branch-delete-interactive git-branch-remote-tracking git-dir git-edit-unmerged git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove git-sync mkcd mkpw duration-info-precmd duration-info-preexec coalesce git-action git-info prompt-pwd
 source "\${HOME}/.zim/modules/environment/init.zsh"
 source "\${HOME}/.zim/modules/git/init.zsh"
 source "\${HOME}/.zim/modules/input/init.zsh"
@@ -127,7 +127,7 @@ EOF
 modules/git
   From: https://github.com/zimfw/git.git, default branch, using git
   fpath: \"\${HOME}/.zim/modules/git/functions\"
-  autoload: git-alias-lookup git-branch-current git-branch-delete-interactive git-branch-remote-tracking git-dir git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove
+  autoload: git-alias-lookup git-branch-current git-branch-default git-branch-delete-interactive git-branch-remote-tracking git-dir git-edit-unmerged git-ignore-add git-root git-stash-clear-interactive git-stash-recover git-submodule-move git-submodule-remove git-sync
   cmd: source \"\${HOME}/.zim/modules/git/init.zsh\"
 modules/input
   From: https://github.com/zimfw/input.git, default branch, using git
