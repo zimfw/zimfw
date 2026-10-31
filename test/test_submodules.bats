@@ -12,7 +12,7 @@ _test_submodules() {
   git -C "${repo}" submodule add -q https://github.com/kward/shunit2.git tests/shunit2
   git -C "${repo}" commit -qm 'Add shunit2 submodule'
   git -C "${repo}" tag v3.13.3
-  git -C "${repo}" commit -q --allow-empty -m 'Commit after tag'
+  git -C "${repo}" commit -q --allow-empty -m 'Commit after tag' # so tag_sha is not the last commit sha
   local -r tag_sha="$(git -C "${repo}" rev-parse 'v3.13.3^{commit}')"
   cat >"${HOME}"/.zimrc <<EOF
 zmodule spaceship-prompt/spaceship-prompt --name spaceship --tag v3.13.3 ${USE_DEGIT} ${NO_SUBMODULES}

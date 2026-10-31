@@ -1,12 +1,17 @@
 .PHONY: lint test
 
 srcfiles := src/zimfw.zsh.erb $(wildcard src/*/*.erb src/templates/*) LICENSE
+testfiles := $(wildcard test/test_*.bats)
 
 zimfw.zsh: $(srcfiles)
 	erb $< >| $@
 
 lint:
-	@shellcheck test/test_*.bats
+	@shellcheck $(testfiles) test/test_helper/bin/curl test/test_helper/setup_all
 
 test: zimfw.zsh lint
-	@test/bats/bin/bats test/test_*.bats
+	@if [[ -x test/bats/bin/bats ]]; then \
+		test/bats/bin/bats $(testfiles); \
+	else \
+		bats $(testfiles); \
+	fi
