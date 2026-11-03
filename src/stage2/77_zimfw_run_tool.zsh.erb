@@ -1,7 +1,8 @@
 _zimfw_run_tool() {
   local zaction=${1}
   local -r _zname=${2}
-  if [[ -z ${_zurls[${_zname}]} ]]; then
+  local -r ztool=${_ztools[${_zname}]}
+  if [[ ${ztool} == external ]]; then
     _zimfw_print_okay 'Skipping external module' 1
     return 0
   fi
@@ -9,7 +10,6 @@ _zimfw_run_tool() {
     _zimfw_print_okay 'Skipping frozen module' 1
     return 0
   fi
-  local -r ztool=${_ztools[${_zname}]}
   if [[ ${ztool} != (degit|git|mkdir) ]]; then
     _zimfw_print_error "Unknown tool ${ztool}"
     return 1

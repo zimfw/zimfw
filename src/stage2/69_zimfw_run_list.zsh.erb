@@ -4,12 +4,12 @@ _zimfw_run_list() {
   local -r zroot_targets=(${(M)_zroot_targets:#${ztarget}(|/*)})
   print -nR ${_zbold}${zname}${_znormal}
   if [[ ! -e ${ztarget} ]] print -n ' (not installed)'
-  if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
+  if [[ ${_ztools[${zname}]} == external ]] print -n ' (external)'
   if (( _zfrozens[${zname}] )) print -n ' (frozen)'
   if [[ ${_zdisabled_roots[(I)${ztarget}]} -ne 0 && ${zroot_targets} == (${ztarget}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
-    if [[ -z ${_zurls[${zname}]} ]]; then
+    if [[ ${_ztools[${zname}]} == external ]]; then
       print -R '  From: '${ztarget}
     elif (( ! _zfrozens[${zname}] )); then
       if [[ ${_ztools[${zname}]} == mkdir ]]; then

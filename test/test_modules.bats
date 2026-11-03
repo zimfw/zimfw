@@ -448,3 +448,98 @@ Done with check. Run zimfw update to update modules."
   From: ${HOME}/external-zsh
   cmd: source \"\${HOME}/external-zsh/external.zsh\""
 }
+
+@test 'warns about options with no effect for external modules' {
+  mkdir "${HOME}"/external
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external --branch main
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output "! ${HOME}/.zimrc:1:modules/external: The zmodule option --branch has no effect for external modules
+modules/external (external)"
+}
+
+@test 'keeps external module external with --use' {
+  mkdir "${HOME}"/external
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external --use git
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh check -v
+  assert_success
+  assert_output "! ${HOME}/.zimrc:1:modules/external: The zmodule option --use has no effect for external modules
+) modules/external: Skipping external module
+Done with check. Run zimfw update to update modules."
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output "! ${HOME}/.zimrc:1:modules/external: The zmodule option --use has no effect for external modules
+modules/external (external)"
+}
+
+@test 'keeps external module external when frozen' {
+  mkdir "${HOME}"/external
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external --frozen --cmd 'print external'
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh list -v
+  assert_success
+  assert_output "modules/external (external) (frozen)
+  From: ${HOME}/external
+  cmd: print external"
+}
+
+@test 'cannot define module twice with different paths' {
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule test
+zmodule another/test
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_failure
+  assert_line "x ${HOME}/.zimrc:2:modules/test: Module already defined with a different URL"
+  assert_line "Failed to source ${HOME}/.zimrc"
+}
+
+@test 'can define module twice with and without trailing slash' {
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule zimfw/test/
+zmodule zimfw/test
+zmodule test/
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh list
+  assert_success
+  assert_output 'modules/test (not installed)'
+}
+
+@test 'cannot define external module twice with different paths' {
+  mkdir -p "${HOME}"/external "${HOME}"/another/external
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external
+zmodule ${HOME}/another/external
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_failure
+  assert_line "x ${HOME}/.zimrc:2:modules/external: Module already defined with a different URL"
+  assert_line "Failed to source ${HOME}/.zimrc"
+}
+
+@test 'can define external module twice with and without trailing slash' {
+  mkdir -p "${HOME}"/external
+  cat >"${HOME}"/external/init.zsh <<EOF
+print external
+EOF
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule ${HOME}/external/
+zmodule ${HOME}/external
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_output ''
+}

@@ -197,7 +197,7 @@ Per-call initialization options:
     _zfailed=1
     return 2
   fi
-  local zurl=${1} zname=${1:t} zroot zarg
+  local zurl=${1%%/##} zname=${1:t} zroot zarg
   local -a zfpaths zfunctions zcmds
   if [[ ${zurl} =~ ^[^:/]+: ]]; then
     zname=${zname%.git}
@@ -228,19 +228,19 @@ Per-call initialization options:
     shift
   done
   zname=modules/${zname}
-  _znames+=(${zname})
-  if [[ ${zurl} == /* ]]; then
-    _ztargets[${zname}]=${zurl%%/##}
-    zurl=
-  else
-    _ztargets[${zname}]=${ZIM_HOME}/${zname}
-  fi
+  # zname is set at this point and used below to index associative arrays.
   if [[ ${+_zurls[${zname}]} -ne 0 && ${_zurls[${zname}]} != ${zurl} ]]; then
-    print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL. Expected ${_zbold}${_zurls[${zname}]}${_znormal}" '' ${zusage}
+    print -u2 -lR "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalred} Module already defined with a different URL" '' ${zusage}
     _zfailed=1
     return 2
   fi
+  _znames+=(${zname})
   _zurls[${zname}]=${zurl}
+  if [[ ${zurl} == /* ]]; then
+    _ztargets[${zname}]=${zurl}
+  else
+    _ztargets[${zname}]=${ZIM_HOME}/${zname}
+  fi
   local -r zroot_target=${_ztargets[${zname}]}${zroot:+/${zroot}}
   _zroot_targets+=(${zroot_target})
   # Set default values
@@ -262,7 +262,7 @@ Per-call initialization options:
     esac
     case ${1} in
       -b|--branch|-t|--tag|-u|--use|--no-submodules)
-        if [[ -z ${zurl} ]] _zimfw_print -u2 -R "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} The zmodule option ${_zbold}${1}${_znormalyellow} has no effect for external modules${_znormal}"
+        if [[ ${zurl} == /* ]] _zimfw_print -u2 -R "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} The zmodule option ${_zbold}${1}${_znormalyellow} has no effect for external modules${_znormal}"
         ;;
     esac
     case ${1} in
@@ -329,8 +329,10 @@ Per-call initialization options:
     esac
     shift
   done
-  # Detect tool if auto and not external and not frozen module
-  if [[ ${_ztools[${zname}]} == auto && -n ${_zurls[${zname}]} && _zfrozens[${zname}] -eq 0 ]]; then
+  if [[ ${zurl} == /* ]]; then
+    _ztools[${zname}]=external
+  elif [[ ${_ztools[${zname}]} == auto && _zfrozens[${zname}] -eq 0 ]]; then
+    # Detect tool if auto and not frozen module
     if [[ -e ${_ztargets[${zname}]} ]]; then
       if [[ -r ${_ztargets[${zname}]}/.git ]]; then
         _ztools[${zname}]=git
@@ -348,6 +350,35 @@ Per-call initialization options:
       fi
     fi
   fi
+  # Variables set up to this point:
+  # * zname: The module name, prefixed with 'modules/'. Added to _znames array, which contains all
+  #   module names.
+  # * zurl and _zurls[${zname}]: The normalized repository URL, or the absolute path for external
+  #   modules. Used to detect conflicting module definitions. Not fetched for external/frozen
+  #   modules or with mkdir.
+  # * _ztargets[${zname}]: The full path to the module directory.
+  # * _ztypes[${zname}]: The module rev type. Defaults to 'branch'. Unused for external/frozen
+  #   modules; with mkdir, used only to identify a non-empty rev in a warning.
+  # * _zrevs[${zname}]: The module rev value. Unused for external/frozen modules; with mkdir, a
+  #   non-empty value triggers a warning.
+  # * _ztools[${zname}]: The module tool: 'external', 'degit', 'git' or 'mkdir'. External is set for
+  #   absolute path modules. Frozen modules keep the given value (default 'auto'), unused.
+  # * _zsubmodules[${zname}]: Set to 1 if git submodules are enabled for the module. Defaults to 1.
+  #   External/frozen modules are skipped; with mkdir, a 0 value triggers a warning.
+  # * _zfrozens[${zname}]: Set to 1 if the module is frozen.
+  # * _zonpulls[${zname}]: The --on-pull values (appended with '; '); unused for external/frozen
+  #   modules, otherwise passed to the selected tool.
+  # * zroot: The module root subdirectory. Empty if none.
+  # * zroot_target: The full path to the module root subdirectory. Added to _zroot_targets array,
+  #   which contains all root targets.
+  # * _zifs[${zroot_target}]: The module root condition from --if, --if-command or --if-ostype.
+  # * zfpaths: Array with given -f|--fpath option values. Relative paths are prefixed with the
+  #   module root path.
+  # * zfunctions: Array with given -a|--autoload option values.
+  # * zcmds: Commands from -s|--source and -c|--cmd. For --source, relative paths are prefixed with
+  #   the module root path and converted to 'source' commands. For --cmd, '{}' are expanded to the
+  #   module root subdirectory.
+  # * _zdisabled_roots array contains zroot_target if this module root is disabled.
   if (( ! ${_zdisabled_roots[(I)${zroot_target}]} && _zeager )); then
     if [[ ! -e ${zroot_target} ]]; then
       print -u2 -R "${_zerror}${funcfiletrace[1]}:${_zbold}${zname}: ${zroot_target}${_znormalred} not found${_znormal}"
@@ -372,13 +403,18 @@ Per-call initialization options:
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
       _zimfw_print -u2 -lR "${_zwarn}${funcfiletrace[1]}:${_zbold}${zname}:${_znormalyellow} Nothing found to be initialized. Customize the module name, root or initialization with ${_zbold}zmodule${_znormalyellow} options.${_znormal}" '' ${zusage}
     fi
-    # Prefix is added to all _zfpaths, _zfunctions and _zcmds to distinguish the originating root target
+    # Each entry gets a zroot_target+NUL prefix to distinguish its originating module root.
     local -r zpre=${zroot_target}$'\0'
     zfpaths=(${${(@qqq)zfpaths:a}/${HOME}/\${HOME}})
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})
     zcmds=(${zcmds//${HOME}/\${HOME}})
     _zcmds+=(${zpre}${^zcmds})
+    # Prefixed entries (zroot_target+NUL+value) are added to these arrays; values may be provided
+    # per-call or auto-discovered:
+    # * _zfpaths contains full fpath paths.
+    # * _zfunctions contains autoloaded function names.
+    # * _zcmds contains initialization commands.
   fi
 }
 
@@ -551,7 +587,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-10-30 03:18:40 UTC, previous commit is f9e4d9f)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-03 16:07:28 UTC, previous commit is 80a6af4)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -615,12 +651,12 @@ _zimfw_run_list() {
   local -r zroot_targets=(${(M)_zroot_targets:#${ztarget}(|/*)})
   print -nR ${_zbold}${zname}${_znormal}
   if [[ ! -e ${ztarget} ]] print -n ' (not installed)'
-  if [[ -z ${_zurls[${zname}]} ]] print -n ' (external)'
+  if [[ ${_ztools[${zname}]} == external ]] print -n ' (external)'
   if (( _zfrozens[${zname}] )) print -n ' (frozen)'
   if [[ ${_zdisabled_roots[(I)${ztarget}]} -ne 0 && ${zroot_targets} == (${ztarget}) ]] print -n ' (disabled)'
   print
   if (( _zprintlevel > 1 )); then
-    if [[ -z ${_zurls[${zname}]} ]]; then
+    if [[ ${_ztools[${zname}]} == external ]]; then
       print -R '  From: '${ztarget}
     elif (( ! _zfrozens[${zname}] )); then
       if [[ ${_ztools[${zname}]} == mkdir ]]; then
@@ -1003,7 +1039,8 @@ _zimfw_tool_mkdir() {
 _zimfw_run_tool() {
   local zaction=${1}
   local -r _zname=${2}
-  if [[ -z ${_zurls[${_zname}]} ]]; then
+  local -r ztool=${_ztools[${_zname}]}
+  if [[ ${ztool} == external ]]; then
     _zimfw_print_okay 'Skipping external module' 1
     return 0
   fi
@@ -1011,7 +1048,6 @@ _zimfw_run_tool() {
     _zimfw_print_okay 'Skipping frozen module' 1
     return 0
   fi
-  local -r ztool=${_ztools[${_zname}]}
   if [[ ${ztool} != (degit|git|mkdir) ]]; then
     _zimfw_print_error "Unknown tool ${ztool}"
     return 1
