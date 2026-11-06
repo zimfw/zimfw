@@ -25,7 +25,7 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r ztarget_new=.${_ztargets[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${sysparams[pid]}_${RANDOM}
     {
       _zimfw_tool_${ztool} install ${ztarget_new} "${@:2}" || return 1
       if ! ERR=$({ command rm -rf ${_ztargets[${_zname}]} && command mv -f ${ztarget_new} ${_ztargets[${_zname}]} } 2>&1); then

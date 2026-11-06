@@ -113,7 +113,7 @@ _zimfw_tool_degit() {
       }
       ;;
     check|update)
-      readonly DIR_NEW=${TARGET}${TEMP}
+      readonly DIR_NEW=${TARGET:h}/.${TARGET:t}${TEMP}
       {
         _zimfw_download_tarball || return 1
         if [[ ${ACTION} == check ]]; then

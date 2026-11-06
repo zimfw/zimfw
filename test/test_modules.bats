@@ -397,6 +397,8 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
   assert_exists "${ZIM_HOME}"/modules/zsh-completions/.git
   assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.zdegit
   assert_files_equal "${ZIM_HOME}"/init.zsh "${HOME}"/expected_init.zsh
+  # Temporary reinstall targets are not created under the current directory
+  assert_not_exists "${PWD}${ZIM_HOME}"
 
   run zsh "${PWD}"/zimfw.zsh check -v
   assert_success
@@ -542,4 +544,25 @@ EOF
   run zsh "${PWD}"/zimfw.zsh init
   assert_success
   assert_output ''
+}
+
+@test 'can update degit module with changes' {
+  create_repo github.com/zimfw/foo.git foo.zsh
+  cat >"${HOME}"/.zimrc <<EOF
+zmodule foo --use degit
+EOF
+
+  run zsh "${PWD}"/zimfw.zsh init
+  assert_success
+  assert_file_exists "${ZIM_HOME}"/modules/foo/.zdegit
+
+  touch "${FIXTURES_DIR}"/github.com/zimfw/foo.git/bar.zsh
+  git -C "${FIXTURES_DIR}"/github.com/zimfw/foo.git add -A
+  git -C "${FIXTURES_DIR}"/github.com/zimfw/foo.git commit -q -m 'Add bar.zsh'
+
+  run zsh "${PWD}"/zimfw.zsh update -v
+  assert_success
+  assert_line ') modules/foo: Updated'
+  assert_file_exists "${ZIM_HOME}"/modules/foo/bar.zsh
+  assert_file_exists "${ZIM_HOME}"/modules/foo/.zdegit
 }

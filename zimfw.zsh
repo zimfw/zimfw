@@ -571,7 +571,7 @@ _zimfw_compile() {
   local zroot_target zfile
   for zroot_target in ${_zroot_targets:|_zdisabled_roots}; do
     if [[ ! -w ${zroot_target} ]]; then
-      _zimfw_print -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
+      _zimfw_print -u2 -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
     fi
     for zfile in ${zroot_target}/(^*test*/)#*.zsh(|-theme)(N-.); do
@@ -587,7 +587,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-03 16:07:28 UTC, previous commit is 80a6af4)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-06 16:08:23 UTC, previous commit is 5ca7c42)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -849,7 +849,7 @@ _zimfw_tool_degit() {
       }
       ;;
     check|update)
-      readonly DIR_NEW=${TARGET}${TEMP}
+      readonly DIR_NEW=${TARGET:h}/.${TARGET:t}${TEMP}
       {
         _zimfw_download_tarball || return 1
         if [[ ${ACTION} == check ]]; then
@@ -1063,7 +1063,7 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r ztarget_new=.${_ztargets[${_zname}]}_${sysparams[pid]}_${RANDOM}
+    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${sysparams[pid]}_${RANDOM}
     {
       _zimfw_tool_${ztool} install ${ztarget_new} "${@:2}" || return 1
       if ! ERR=$({ command rm -rf ${_ztargets[${_zname}]} && command mv -f ${ztarget_new} ${_ztargets[${_zname}]} } 2>&1); then

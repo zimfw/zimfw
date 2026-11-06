@@ -3,7 +3,7 @@ _zimfw_compile() {
   local zroot_target zfile
   for zroot_target in ${_zroot_targets:|_zdisabled_roots}; do
     if [[ ! -w ${zroot_target} ]]; then
-      _zimfw_print -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
+      _zimfw_print -u2 -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
       continue
     fi
     for zfile in ${zroot_target}/(^*test*/)#*.zsh(|-theme)(N-.); do
