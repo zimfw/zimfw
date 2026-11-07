@@ -81,7 +81,7 @@ Options:
     _zimfw_check_version ${zforce_check_version} 1
   fi
 
-  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|reinstall|check-version) ]]; then
+  if [[ ! -w ${ZIM_HOME} && ${1} == (init|install|update|reinstall|check-version) ]]; then
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi

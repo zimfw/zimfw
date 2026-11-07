@@ -1,4 +1,6 @@
 _zimfw_run_tool() {
+  # zargs before zsh 5.9 does not preserve the caller options. See https://www.zsh.org/users/26406
+  builtin emulate -L zsh -o EXTENDED_GLOB
   local zaction=${1}
   local -r _zname=${2}
   local -r ztool=${_ztools[${_zname}]}
@@ -25,7 +27,7 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${sysparams[pid]}_${RANDOM}
+    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${$}_${RANDOM}
     {
       _zimfw_tool_${ztool} install ${ztarget_new} "${@:2}" || return 1
       if ! ERR=$({ command rm -rf ${_ztargets[${_zname}]} && command mv -f ${ztarget_new} ${_ztargets[${_zname}]} } 2>&1); then

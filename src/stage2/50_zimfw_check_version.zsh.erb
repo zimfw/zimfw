@@ -2,10 +2,8 @@ _zimfw_check_version() {
   if (( ${1} )); then
     if (( ${2} )); then
       # background check
-      if [[ -w ${_zversion_target:h} ]]; then
-        print -R ${${"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
-            https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"%%$'\n'*}##*v} >! ${_zversion_target} &!
-      fi
+      print -R ${${"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
+          https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"%%$'\n'*}##*v} >! ${_zversion_target} &!
     else
       # foreground check
       local tags

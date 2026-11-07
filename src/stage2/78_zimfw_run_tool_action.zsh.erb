@@ -3,5 +3,8 @@ _zimfw_run_tool_action() {
   if [[ ${1} == reinstall ]] zmaxprocs=1
   _zimfw_source_zimrc 0 || return 1
   zargs -n 2 -P ${zmaxprocs} -- "${_znames[@]}" -- _zimfw_run_tool ${1}
+  # Ignore return from zargs with -P. It "may not correctly capture the exit status of the
+  # backgrounded jobs, because of limitations of the "wait" builtin", per zargs before zsh 5.9.
+  # See also https://www.zsh.org/workers/50281
   return 0
 }

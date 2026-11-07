@@ -529,10 +529,8 @@ _zimfw_check_version() {
   if (( ${1} )); then
     if (( ${2} )); then
       # background check
-      if [[ -w ${_zversion_target:h} ]]; then
-        print -R ${${"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
-            https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"%%$'\n'*}##*v} >! ${_zversion_target} &!
-      fi
+      print -R ${${"$(GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=30 command git ls-remote --tags --refs --sort=-v:refname \
+          https://github.com/zimfw/zimfw.git 'v*' 2>/dev/null)"%%$'\n'*}##*v} >! ${_zversion_target} &!
     else
       # foreground check
       local tags
@@ -570,12 +568,12 @@ _zimfw_compile() {
   # Compile zimfw scripts
   local zroot_target zfile
   for zroot_target in ${_zroot_targets:|_zdisabled_roots}; do
-    if [[ ! -w ${zroot_target} ]]; then
-      _zimfw_print -u2 -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
-      continue
-    fi
     for zfile in ${zroot_target}/(^*test*/)#*.zsh(|-theme)(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
+        if [[ ! -w ${zfile:h} ]]; then
+          _zimfw_print -u2 -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
+          continue 2
+        fi
         zcompile -R ${zfile} && _zimfw_print -R "${_zokay}${_zbold}${zfile}.zwc:${_znormal} Compiled"
       fi
     done
@@ -587,7 +585,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-06 16:08:23 UTC, previous commit is 5ca7c42)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 15:17:26 UTC, previous commit is b4b4add)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -819,7 +817,7 @@ _zimfw_untar_tarball() {
 _zimfw_tool_degit() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
-  readonly ACTION=${1} TARGET=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${sysparams[pid]}_${RANDOM}
+  readonly ACTION=${1} TARGET=${2} URL=${3} REV=${5} ONPULL=${7} TEMP=.zdegit_${$}_${RANDOM}
   readonly TARBALL_TARGET=${TARGET}/${TEMP}_tarball.tar.gz INFO_TARGET=${TARGET}/.zdegit
   case ${ACTION} in
     pre|prereinstall)
@@ -1037,6 +1035,8 @@ _zimfw_tool_mkdir() {
 }
 
 _zimfw_run_tool() {
+  # zargs before zsh 5.9 does not preserve the caller options. See https://www.zsh.org/users/26406
+  builtin emulate -L zsh -o EXTENDED_GLOB
   local zaction=${1}
   local -r _zname=${2}
   local -r ztool=${_ztools[${_zname}]}
@@ -1063,7 +1063,7 @@ _zimfw_run_tool() {
         return 0
       fi
     fi
-    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${sysparams[pid]}_${RANDOM}
+    local -r ztarget_new=${_ztargets[${_zname}]:h}/.${_ztargets[${_zname}]:t}_${$}_${RANDOM}
     {
       _zimfw_tool_${ztool} install ${ztarget_new} "${@:2}" || return 1
       if ! ERR=$({ command rm -rf ${_ztargets[${_zname}]} && command mv -f ${ztarget_new} ${_ztargets[${_zname}]} } 2>&1); then
@@ -1103,6 +1103,9 @@ _zimfw_run_tool_action() {
   if [[ ${1} == reinstall ]] zmaxprocs=1
   _zimfw_source_zimrc 0 || return 1
   zargs -n 2 -P ${zmaxprocs} -- "${_znames[@]}" -- _zimfw_run_tool ${1}
+  # Ignore return from zargs with -P. It "may not correctly capture the exit status of the
+  # backgrounded jobs, because of limitations of the "wait" builtin", per zargs before zsh 5.9.
+  # See also https://www.zsh.org/workers/50281
   return 0
 }
 
@@ -1189,7 +1192,7 @@ Options:
     _zimfw_check_version ${zforce_check_version} 1
   fi
 
-  if [[ ! -w ${ZIM_HOME} && ${1} == (build|check|init|install|update|reinstall|check-version) ]]; then
+  if [[ ! -w ${ZIM_HOME} && ${1} == (init|install|update|reinstall|check-version) ]]; then
     print -u2 -R "${_zred}${0}: No write permission to ${_zbold}${ZIM_HOME}${_znormalred}. Will not try to ${1}.${_znormal}"
     return 1
   fi
