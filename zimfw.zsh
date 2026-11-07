@@ -42,9 +42,7 @@ _zimfw_mv() {
       [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
     _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Already up to date"
   else
-    if [[ -e ${2} ]]; then
-      command mv -f ${2}{,.old} || return 1
-    fi
+    [[ ! -e ${2} ]] || command mv -f ${2}{,.old} || return 1
     command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Updated"
   fi
 }
@@ -52,9 +50,7 @@ _zimfw_mv() {
 _zimfw_build_init() {
   local -r ztarget=${ZIM_HOME}/init.zsh
   # Force update of init.zsh if it's older than .zimrc
-  if [[ ${ztarget} -ot ${_zconfig} ]]; then
-    command mv -f ${ztarget}{,.old} || return 1
-  fi
+  [[ ! ${ztarget} -ot ${_zconfig} ]] || command mv -f ${ztarget}{,.old} || return 1
   _zimfw_mv =(
     print -R '# FILE AUTOMATICALLY GENERATED FROM '${_zconfig}
     print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
@@ -99,9 +95,7 @@ _zimfw_build_init() {
 _zimfw_build_login_init() {
   local -r ztarget=${ZIM_HOME}/login_init.zsh
   # Force update of login_init.zsh if it's older than .zimrc
-  if [[ ${ztarget} -ot ${_zconfig} ]]; then
-    command mv -f ${ztarget}{,.old} || return 1
-  fi
+  [[ ! ${ztarget} -ot ${_zconfig} ]] || command mv -f ${ztarget}{,.old} || return 1
   _zimfw_mv =(
     print '# Do nothing. This file is deprecated.'
   ) ${ztarget}
@@ -585,7 +579,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 15:17:26 UTC, previous commit is b4b4add)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 16:19:02 UTC, previous commit is 7c395ea)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -750,7 +744,7 @@ _zimfw_download_tarball() {
     fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
-      if [[ -z ${INFO_HEADER} ]] return 0
+      [[ -z ${INFO_HEADER} ]] && return 0
       if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
       else
@@ -1013,7 +1007,7 @@ _zimfw_tool_mkdir() {
   # This runs in a subshell
   readonly -i SUBMODULES=${6}
   readonly ACTION=${1} TARGET=${2} TYPE=${4} REV=${5} ONPULL=${7}
-  if [[ ${ACTION} == (pre|prereinstall) ]] return 0
+  [[ ${ACTION} == (pre|prereinstall) ]] && return 0
   if [[ ${ACTION} == check ]]; then
     _zimfw_print_okay 'Skipping mkdir module' 1
     return 0
@@ -1179,9 +1173,7 @@ Options:
     print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
     return 1
   fi
-  if [[ ! -e ${ZIM_HOME} ]]; then
-    command mkdir -p ${ZIM_HOME} || return 1
-  fi
+  [[ -e ${ZIM_HOME} ]] || command mkdir -p ${ZIM_HOME} || return 1
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \

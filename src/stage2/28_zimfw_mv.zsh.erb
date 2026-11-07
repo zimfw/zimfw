@@ -4,9 +4,7 @@ _zimfw_mv() {
       [[ ${${(z)cklines[1]}[1,2]} == ${${(z)cklines[2]}[1,2]} ]]; then
     _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Already up to date"
   else
-    if [[ -e ${2} ]]; then
-      command mv -f ${2}{,.old} || return 1
-    fi
+    [[ ! -e ${2} ]] || command mv -f ${2}{,.old} || return 1
     command mv -f ${1} ${2} && command chmod a+r ${2} && _zimfw_print -R "${_zokay}${_zbold}${2}:${_znormal} Updated"
   fi
 }

@@ -16,7 +16,7 @@ _zimfw_download_tarball() {
     fi
     readonly TARBALL_URL=https://api.github.com/repos/${REPO}/tarball/${REV}
     if [[ ${ACTION} == check ]]; then
-      if [[ -z ${INFO_HEADER} ]] return 0
+      [[ -z ${INFO_HEADER} ]] && return 0
       if [[ ${+commands[curl]} -ne 0 && -x ${commands[curl]} ]]; then
         command curl -IfsL -H ${INFO_HEADER} ${TARBALL_URL} >${HEADERS_TARGET}
       else
