@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+- `clean-compiled` not removing compiled files in symlinked module directories.
+- `uninstall` deleting a module that is still used through a different path to
+  the same directory via a symlink.
+- Detection of default initialization files ignoring symlinked directories and
+  files in modules.
+- `${HOME}` being replaced in the middle of paths in init.zsh.
 
 ## [1.20.2] - 2026-10-30
 

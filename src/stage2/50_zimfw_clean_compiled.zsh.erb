@@ -1,6 +1,6 @@
 _zimfw_clean_compiled() {
-  # Array with unique targets. ${ZIM_HOME} or any external target should only occur once.
-  local -Ur ztargets=(${ZIM_HOME:A} ${${(v)_ztargets##${ZIM_HOME}/*}:A})
+  # Also root targets, as globs don't descend into symlinked directories
+  local -Ur ztargets=(${ZIM_HOME} ${(v)_ztargets} ${_zroot_targets})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^ztargets}/**/*.zwc(|.old)(N) && \

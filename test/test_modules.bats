@@ -180,9 +180,7 @@ Done with build. Restart your terminal for changes to take effect."
   create_repo github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting{,.plugin}.zsh \
       highlighters/{brackets/brackets,cursor/cursor,line/line,main/main,pattern/pattern,regexp/regexp,root/root}-highlighter.zsh
   mkdir "${HOME}"/external
-  cat >"${HOME}"/external/init.zsh <<EOF
-print external
-EOF
+  echo 'print external' >"${HOME}"/external/init.zsh
   cat >"${HOME}"/.zimrc <<EOF
 zmodule macports --name zimfw/macports --if-ostype 'darwin*'
 zmodule duration-info -n zimfw/duration-info --frozen --disabled
@@ -412,9 +410,7 @@ x modules/zsh-syntax-highlighting: Module was not installed using zimfw's degit.
 
 @test 'can define external module with custom name' {
   mkdir "${HOME}"/external-zsh
-  cat >"${HOME}"/external-zsh/external.zsh <<EOF
-print external
-EOF
+  echo 'print external' >"${HOME}"/external-zsh/external.zsh
   cat >"${HOME}"/.zimrc <<EOF
 zmodule ${HOME}/external-zsh --name external
 EOF
@@ -533,9 +529,7 @@ EOF
 
 @test 'can define external module twice with and without trailing slash' {
   mkdir -p "${HOME}"/external
-  cat >"${HOME}"/external/init.zsh <<EOF
-print external
-EOF
+  echo 'print external' >"${HOME}"/external/init.zsh
   cat >"${HOME}"/.zimrc <<EOF
 zmodule ${HOME}/external/
 zmodule ${HOME}/external

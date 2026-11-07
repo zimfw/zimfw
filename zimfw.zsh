@@ -55,7 +55,7 @@ _zimfw_build_init() {
     print -R '# FILE AUTOMATICALLY GENERATED FROM '${_zconfig}
     print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
     print
-    print -R 'if [[ -e ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
+    print -R 'if [[ -e ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/#\"${HOME}\//\"\${HOME}/}' "${@}" }'
     local zroot_target zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})
@@ -308,11 +308,11 @@ Per-call initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
-        zcmds+=('source '${(qqq)zarg:a})
+        zcmds+=('source '${(qqq)zarg})
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(qqq)zroot_target:a}})
+        zcmds+=(${1//{}/${(qqq)zroot_target}})
         ;;
       -d|--disabled) _zdisabled_roots+=(${zroot_target}) ;;
       *)
@@ -380,18 +380,18 @@ Per-call initialization options:
       return 1
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      zfpaths=(${zroot_target}/functions(NF))
+      zfpaths=(${zroot_target}/functions(N-F))
       # _* functions are autoloaded by compinit
       # prompt_*_setup functions are autoloaded by promptinit
       zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       local -ra prezto_scripts=(${zroot_target}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
-        zcmds=('source '${(qqq)^prezto_scripts:a})
+        zcmds=('source '${(qqq)^prezto_scripts})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds=('source '${(qqq)^zscripts:a})
+        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(N-OL[1]))
+        zcmds=('source '${(qqq)^zscripts})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
@@ -399,10 +399,10 @@ Per-call initialization options:
     fi
     # Each entry gets a zroot_target+NUL prefix to distinguish its originating module root.
     local -r zpre=${zroot_target}$'\0'
-    zfpaths=(${${(@qqq)zfpaths:a}/${HOME}/\${HOME}})
+    zfpaths=(${${(@qqq)zfpaths}/#\"${HOME}\//\"\${HOME}/})
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})
-    zcmds=(${zcmds//${HOME}/\${HOME}})
+    zcmds=(${zcmds//\"${HOME}\//\"\${HOME}/})
     _zcmds+=(${zpre}${^zcmds})
     # Prefixed entries (zroot_target+NUL+value) are added to these arrays; values may be provided
     # per-call or auto-discovered:
@@ -501,22 +501,20 @@ zmodule zsh-users/zsh-autosuggestions
 }
 
 _zimfw_list_unused() {
-  local -i i=1
-  local zinstalled=(${ZIM_HOME}/modules/*(N/))
-  local -r ztargets=(${(v)_ztargets})
-  # Search into subdirectories
-  while (( i <= ${#zinstalled} )); do
-    if (( ztargets[(I)${zinstalled[i]}/*] )); then
-      zinstalled+=(${zinstalled[i]}/*(N/))
-      zinstalled[i]=()
-    else
-      (( i++ ))
+  local zinstalled=(${ZIM_HOME}/modules/*(N/)) zpath
+  # Resolved, so a target given via another path to the same directory is still used
+  local -r ztargets=(${${(v)_ztargets}:A})
+  while (( ${#zinstalled} )); do
+    zpath=${zinstalled[1]}
+    shift zinstalled
+    if (( ztargets[(I)${zpath:A}/*] )); then
+      # Search into subdirectories
+      zinstalled+=(${zpath}/*(N/))
+    elif (( ! ztargets[(Ie)${zpath:A}] )); then
+      _zunused_targets+=(${zpath})
+      _zimfw_print -R "${_zbold}${zpath##${ZIM_HOME}/}${_znormal}${1}"
     fi
   done
-  # Unused = all installed targets not in ztargets
-  _zunused_targets=(${zinstalled:|ztargets})
-  local zunused
-  for zunused (${_zunused_targets}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}${_znormal}${1}"
 }
 
 _zimfw_check_version() {
@@ -542,8 +540,8 @@ _zimfw_check_version() {
 }
 
 _zimfw_clean_compiled() {
-  # Array with unique targets. ${ZIM_HOME} or any external target should only occur once.
-  local -Ur ztargets=(${ZIM_HOME:A} ${${(v)_ztargets##${ZIM_HOME}/*}:A})
+  # Also root targets, as globs don't descend into symlinked directories
+  local -Ur ztargets=(${ZIM_HOME} ${(v)_ztargets} ${_zroot_targets})
   local zopt
   if (( _zprintlevel > 0 )) zopt=-v
   command rm -f ${zopt} ${^ztargets}/**/*.zwc(|.old)(N) && \
@@ -579,7 +577,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 16:19:02 UTC, previous commit is 7c395ea)'
+  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 21:33:25 UTC, previous commit is e3a4215)'
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}

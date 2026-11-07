@@ -200,11 +200,11 @@ Per-call initialization options:
         shift
         zarg=${1}
         if [[ ${zarg} != /* ]] zarg=${zroot_target}/${zarg}
-        zcmds+=('source '${(qqq)zarg:a})
+        zcmds+=('source '${(qqq)zarg})
         ;;
       -c|--cmd)
         shift
-        zcmds+=(${1//{}/${(qqq)zroot_target:a}})
+        zcmds+=(${1//{}/${(qqq)zroot_target}})
         ;;
       -d|--disabled) _zdisabled_roots+=(${zroot_target}) ;;
       *)
@@ -272,18 +272,18 @@ Per-call initialization options:
       return 1
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
-      zfpaths=(${zroot_target}/functions(NF))
+      zfpaths=(${zroot_target}/functions(N-F))
       # _* functions are autoloaded by compinit
       # prompt_*_setup functions are autoloaded by promptinit
       zfunctions=(${^zfpaths}/^(*~|*.zwc(|.old)|_*|prompt_*_setup)(N-.:t))
       local -ra prezto_scripts=(${zroot_target}/init.zsh(N))
       if (( ${#zfpaths} && ${#prezto_scripts} )); then
         # this follows the prezto module format, no need to check for other scripts
-        zcmds=('source '${(qqq)^prezto_scripts:a})
+        zcmds=('source '${(qqq)^prezto_scripts})
       else
         # get script with largest size (descending `O`rder by `L`ength, and return only `[1]` first)
-        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(NOL[1]))
-        zcmds=('source '${(qqq)^zscripts:a})
+        local -ra zscripts=(${zroot_target}/(init.zsh|(${zname:t}|${zroot_target:t}).(zsh|plugin.zsh|zsh-theme|sh))(N-OL[1]))
+        zcmds=('source '${(qqq)^zscripts})
       fi
     fi
     if (( ! ${#zfpaths} && ! ${#zfunctions} && ! ${#zcmds} )); then
@@ -291,10 +291,10 @@ Per-call initialization options:
     fi
     # Each entry gets a zroot_target+NUL prefix to distinguish its originating module root.
     local -r zpre=${zroot_target}$'\0'
-    zfpaths=(${${(@qqq)zfpaths:a}/${HOME}/\${HOME}})
+    zfpaths=(${${(@qqq)zfpaths}/#\"${HOME}\//\"\${HOME}/})
     _zfpaths+=(${zpre}${^zfpaths})
     _zfunctions+=(${zpre}${^zfunctions})
-    zcmds=(${zcmds//${HOME}/\${HOME}})
+    zcmds=(${zcmds//\"${HOME}\//\"\${HOME}/})
     _zcmds+=(${zpre}${^zcmds})
     # Prefixed entries (zroot_target+NUL+value) are added to these arrays; values may be provided
     # per-call or auto-discovered:

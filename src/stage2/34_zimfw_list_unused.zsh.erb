@@ -1,18 +1,16 @@
 _zimfw_list_unused() {
-  local -i i=1
-  local zinstalled=(${ZIM_HOME}/modules/*(N/))
-  local -r ztargets=(${(v)_ztargets})
-  # Search into subdirectories
-  while (( i <= ${#zinstalled} )); do
-    if (( ztargets[(I)${zinstalled[i]}/*] )); then
-      zinstalled+=(${zinstalled[i]}/*(N/))
-      zinstalled[i]=()
-    else
-      (( i++ ))
+  local zinstalled=(${ZIM_HOME}/modules/*(N/)) zpath
+  # Resolved, so a target given via another path to the same directory is still used
+  local -r ztargets=(${${(v)_ztargets}:A})
+  while (( ${#zinstalled} )); do
+    zpath=${zinstalled[1]}
+    shift zinstalled
+    if (( ztargets[(I)${zpath:A}/*] )); then
+      # Search into subdirectories
+      zinstalled+=(${zpath}/*(N/))
+    elif (( ! ztargets[(Ie)${zpath:A}] )); then
+      _zunused_targets+=(${zpath})
+      _zimfw_print -R "${_zbold}${zpath##${ZIM_HOME}/}${_znormal}${1}"
     fi
   done
-  # Unused = all installed targets not in ztargets
-  _zunused_targets=(${zinstalled:|ztargets})
-  local zunused
-  for zunused (${_zunused_targets}) _zimfw_print -R "${_zbold}${zunused##${ZIM_HOME}/}${_znormal}${1}"
 }

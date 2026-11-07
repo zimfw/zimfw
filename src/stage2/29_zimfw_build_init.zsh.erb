@@ -6,7 +6,7 @@ _zimfw_build_init() {
     print -R '# FILE AUTOMATICALLY GENERATED FROM '${_zconfig}
     print '# EDIT THE SOURCE FILE AND THEN RUN zimfw build. DO NOT DIRECTLY EDIT THIS FILE!'
     print
-    print -R 'if [[ -e ${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/${HOME}/\${HOME}}' "${@}" }'
+    print -R 'if [[ -e ${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} ]] zimfw() { source '${${(qqq)__ZIMFW_FILE}/#\"${HOME}\//\"\${HOME}/}' "${@}" }'
     local zroot_target zpre
     local -a zif_functions zif_cmds zroot_functions zroot_cmds
     local -a zfunctions=(${_zfunctions}) zcmds=(${_zcmds})

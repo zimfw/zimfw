@@ -29,7 +29,7 @@ setup() {
 
 @test 'can turn script path to absolute path' {
   cat >"${HOME}"/.zimrc <<EOF
-zmodule test --use mkdir --on-pull '>test.sh <<<"echo test"'
+zmodule test --use mkdir --on-pull '>test.sh <<<"print test"'
 EOF
   cat >"${HOME}"/expected_init.zsh <<EOF
 # FILE AUTOMATICALLY GENERATED FROM ${HOME}/.zimrc
