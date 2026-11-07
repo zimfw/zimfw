@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Make zimfw.zsh build reproducible, using `SOURCE_DATE_EPOCH` for the build
+  time when set, and not showing the previous commit anymore.
+
 ### Fixed
 - `clean-compiled` not removing compiled files in symlinked module directories.
 - `uninstall` deleting a module that is still used through a different path to

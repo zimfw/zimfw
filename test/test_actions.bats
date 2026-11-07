@@ -11,6 +11,7 @@ setup() {
   assert_line "ZIM_HOME:             ${ZIM_HOME}"
   assert_line "zimfw config:         ${HOME}/.zimrc"
   assert_line "zimfw script:         ${PWD}/zimfw.zsh"
+  assert_line --regexp '^zimfw version:        [0-9]+\.[0-9]+\.[0-9]+(-dev)? \(built at [0-9-]+ [0-9:]+ UTC\)$'
 }
 
 @test 'can print info with symlinks' {
