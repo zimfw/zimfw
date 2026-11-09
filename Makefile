@@ -10,7 +10,7 @@ lint:
 	@shellcheck $(testfiles) test/test_helper/bin/curl test/test_helper/setup_all
 
 test: zimfw.zsh lint
-	@if [[ -x test/bats/bin/bats ]]; then \
+	@if [ -x test/bats/bin/bats ]; then \
 		test/bats/bin/bats $(testfiles); \
 	else \
 		bats $(testfiles); \

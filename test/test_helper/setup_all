@@ -1,6 +1,7 @@
 # vim:et sts=2 sw=2 ft=sh
 # shellcheck shell=bash
 setup_all() {
+  BATS_LIB_PATH="${BATS_TEST_DIRNAME}"/test_helper:"${BATS_LIB_PATH}"
   bats_load_library bats-support
   bats_load_library bats-assert
   bats_load_library bats-file

@@ -1,7 +1,5 @@
 setup() {
-  # shellcheck disable=SC2034
-  BATS_LIB_PATH="${BATS_TEST_DIRNAME}"/test_helper
-  bats_load_library setup_all
+  load test_helper/setup_all
   setup_all
 }
 
