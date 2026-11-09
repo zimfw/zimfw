@@ -1109,7 +1109,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.21.0-dev' _zvendor=''
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.21.0' _zvendor=''
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:

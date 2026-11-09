@@ -3,7 +3,7 @@ class Zim
   attr_reader :version, :vendor, :home, :min_zsh_version, :url_regex, :okay, :warn, :error
 
   def initialize
-    @version = "1.21.0-dev"
+    @version = "1.21.0"
     @vendor = ENV["ZIMFW_VENDOR"]
     @home = "${ZDOTDIR:-${HOME}}"
     @min_zsh_version = "5.2"

@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.21.0] - 2026-11-09
+
 ### Added
 - `ZIMFW_VENDOR` build variable for package maintainers. When set, `zimfw info`
-   shows it next to the version, and the version check and the `check-version`
-   and `upgrade` actions are disabled.
+  shows it next to the version, and the version check and the `check-version`
+  and `upgrade` actions are disabled.
 
 ### Changed
 - Make zimfw.zsh build reproducible, by not showing the build time and the
@@ -518,7 +522,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.20.2...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.21.0...HEAD
+[1.21.0]: https://github.com/zimfw/zimfw/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/zimfw/zimfw/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/zimfw/zimfw/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/zimfw/zimfw/compare/v1.19.1...v1.20.0
