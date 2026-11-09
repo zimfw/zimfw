@@ -577,7 +577,7 @@ _zimfw_info() {
   _zimfw_info_print_symlink ZIM_HOME ${ZIM_HOME}
   _zimfw_info_print_symlink 'zimfw config' ${_zconfig}
   _zimfw_info_print_symlink 'zimfw script' ${__ZIMFW_FILE}
-  print -R 'zimfw version:        '${_zversion}' (built at 2026-11-07 21:38:57 UTC)'
+  print -R 'zimfw version:        '${_zversion}${_zvendor:+" (${_zvendor})"}
   local zparam
   for zparam in LANG ${(Mk)parameters:#LC_*} OSTYPE TERM TERM_PROGRAM TERM_PROGRAM_VERSION ZSH_VERSION; do
     print -R ${(r.22....:.)zparam}${(P)zparam}
@@ -1109,7 +1109,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.20.3-dev'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.21.0-dev' _zvendor=''
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:
@@ -1167,6 +1167,10 @@ Options:
       ;;
   esac
 
+  if [[ -n ${_zvendor} && ${1} == (check-version|upgrade) ]]; then
+    print -u2 -R "${_zred}${0}: ${1} is disabled. Use your package manager to upgrade zimfw.${_znormal}"
+    return 1
+  fi
   if (( ! ${+ZIM_HOME} )); then
     print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
     return 1
@@ -1175,7 +1179,7 @@ Options:
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
+      [[ -z ${_zvendor} && ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -ri zforce_check_version=${?}

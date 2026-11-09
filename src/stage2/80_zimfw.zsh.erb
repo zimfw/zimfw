@@ -6,7 +6,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}<%= error %>" _zokay="${_zgreen}<%= okay %>${_znormal}" _zwarn="${_zyellow}<%= warn %>"
-  local -r _zconfig=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} _zversion='<%= version %>'
+  local -r _zconfig=${ZIM_CONFIG_FILE:-<%= home %>/.zimrc} _zversion='<%= version %>' _zvendor='<%= vendor %>'
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:
@@ -64,6 +64,10 @@ Options:
       ;;
   esac
 
+  if [[ -n ${_zvendor} && ${1} == (check-version|upgrade) ]]; then
+    print -u2 -R "${_zred}${0}: ${1} is disabled. Use your package manager to upgrade zimfw.${_znormal}"
+    return 1
+  fi
   if (( ! ${+ZIM_HOME} )); then
     print -u2 -R "${_zred}${0}: ${_zbold}ZIM_HOME${_znormalred} not defined${_znormal}"
     return 1
@@ -72,7 +76,7 @@ Options:
 
   local -r _zversion_target=${ZIM_HOME}/.latest_version
   if ! zstyle -t ':zim' disable-version-check && \
-      [[ ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
+      [[ -z ${_zvendor} && ${1} != check-version && -w ${ZIM_HOME} && -w ${__ZIMFW_FILE:A:h} ]]
   then
     # If .latest_version does not exist or was not modified in the last 30 days
     [[ -f ${_zversion_target}(#qNm-30) ]]; local -ri zforce_check_version=${?}

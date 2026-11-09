@@ -11,7 +11,7 @@ setup() {
   assert_line "ZIM_HOME:             ${ZIM_HOME}"
   assert_line "zimfw config:         ${HOME}/.zimrc"
   assert_line "zimfw script:         ${PWD}/zimfw.zsh"
-  assert_line --regexp '^zimfw version:        [0-9]+\.[0-9]+\.[0-9]+(-dev)? \(built at [0-9-]+ [0-9:]+ UTC\)$'
+  assert_line --regexp '^zimfw version:        [0-9]+\.[0-9]+\.[0-9]+(-dev)?( \(.+\))?$'
 }
 
 @test 'can print info with symlinks' {
@@ -54,17 +54,38 @@ EOF
   assert_line "zimfw script:         ${PWD}/zimfw.zsh"
 }
 
-@test 'can check-version' {
+@test 'can check-version without vendor' {
   create_repo github.com/zimfw/zimfw.git
   git -C "${FIXTURES_DIR}"/github.com/zimfw/zimfw.git tag v1.0.0
+  (cd "${BATS_TEST_DIRNAME}"/.. && ZIMFW_VENDOR='' erb src/zimfw.zsh.erb >"${HOME}"/zimfw.zsh)
 
-  run zsh "${PWD}"/zimfw.zsh version
+  run zsh "${HOME}"/zimfw.zsh version
   assert_success
   assert_output --regexp '^[0-9]+\.[0-9]+\.[0-9]+(-dev)?$'
 
-  run zsh "${PWD}"/zimfw.zsh check-version
+  run zsh "${HOME}"/zimfw.zsh info
+  assert_success
+  assert_line --regexp '^zimfw version:        [0-9]+\.[0-9]+\.[0-9]+(-dev)?$'
+
+  run zsh "${HOME}"/zimfw.zsh check-version
   assert_success
   assert_output ''
   assert_file_exists "${ZIM_HOME}"/.latest_version
   assert_equal "$(<"${ZIM_HOME}"/.latest_version)" 1.0.0
+}
+
+@test 'can be built with vendor' {
+  (cd "${BATS_TEST_DIRNAME}"/.. && ZIMFW_VENDOR=Test erb src/zimfw.zsh.erb >"${HOME}"/zimfw.zsh)
+
+  run zsh "${HOME}"/zimfw.zsh info
+  assert_success
+  assert_line --regexp '^zimfw version:        [0-9]+\.[0-9]+\.[0-9]+(-dev)? \(Test\)$'
+
+  run zsh "${HOME}"/zimfw.zsh check-version
+  assert_failure
+  assert_output 'zimfw: check-version is disabled. Use your package manager to upgrade zimfw.'
+
+  run zsh "${HOME}"/zimfw.zsh upgrade
+  assert_failure
+  assert_output 'zimfw: upgrade is disabled. Use your package manager to upgrade zimfw.'
 }

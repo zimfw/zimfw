@@ -7,16 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ZIMFW_VENDOR` build variable for package maintainers. When set, `zimfw info`
+   shows it next to the version, and the version check and the `check-version`
+   and `upgrade` actions are disabled.
+
 ### Changed
-- Make zimfw.zsh build reproducible, using `SOURCE_DATE_EPOCH` for the build
-  time when set, and not showing the previous commit anymore.
+- Make zimfw.zsh build reproducible, by not showing the build time and the
+  previous commit in `zimfw info` anymore.
 
 ### Fixed
-- `clean-compiled` not removing compiled files in symlinked module directories.
-- `uninstall` deleting a module that is still used through a different path to
-  the same directory via a symlink.
-- Detection of default initialization files ignoring symlinked directories and
-  files in modules.
+- `clean-compiled` and the detection of default initialization files ignoring
+  symlinked directories and files.
+- `uninstall` deleting a module still in use, because it compared paths without
+  resolving symlinks.
 - `${HOME}` being replaced in the middle of paths in init.zsh.
 
 ## [1.20.2] - 2026-10-30
