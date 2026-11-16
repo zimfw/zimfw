@@ -175,8 +175,9 @@ Done with build. Restart your terminal for changes to take effect."
   create_repo github.com/zimfw/git-info.git functions/{coalesce,git-action,git-info}
   create_repo github.com/zimfw/asciiship.git asciiship.zsh-theme
   create_repo github.com/zsh-users/zsh-completions.git src/_zimfw-test zsh-completions.plugin.zsh
-  create_repo github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting{,.plugin}.zsh \
-      highlighters/{brackets/brackets,cursor/cursor,line/line,main/main,pattern/pattern,regexp/regexp,root/root}-highlighter.zsh
+  create_repo github.com/zsh-users/zsh-syntax-highlighting.git \
+      highlighters/{brackets/brackets,cursor/cursor,line/line,main/main,pattern/pattern,regexp/regexp,root/root}-highlighter.zsh \
+      tests/generate.zsh zsh-syntax-highlighting{,.plugin}.zsh
   mkdir "${HOME}"/external
   echo 'print external' >"${HOME}"/external/init.zsh
   cat >"${HOME}"/.zimrc <<EOF
@@ -234,6 +235,7 @@ EOF
   assert_file_exists "${ZIM_HOME}"/modules/zsh-completions/.zdegit
   assert_dir_exists "${ZIM_HOME}"/modules/zsh-completions/src
   assert_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/.git
+  assert_not_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/tests/generate.zsh.zwc
   assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   assert_file_exists "${ZIM_HOME}"/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh.zwc
   assert_not_exists "${ZIM_HOME}"/modules/test/.git

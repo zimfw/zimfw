@@ -560,7 +560,7 @@ _zimfw_compile() {
   # Compile zimfw scripts
   local zroot_target zfile
   for zroot_target in ${_zroot_targets:|_zdisabled_roots}; do
-    for zfile in ${zroot_target}/(^*test*/)#*.zsh(|-theme)(N-.); do
+    for zfile in ${zroot_target}/**/*.zsh(|-theme)~${zroot_target}/*test*/*(N-.); do
       if [[ ! ${zfile}.zwc -nt ${zfile} ]]; then
         if [[ ! -w ${zfile:h} ]]; then
           _zimfw_print -u2 -R "${_zwarn}${_zbold}${zroot_target}:${_znormalyellow} No write permission, unable to compile.${_znormal}"
@@ -1109,7 +1109,7 @@ zimfw() {
     local -r _znormal= _zbold= _zred= _znormalred= _zgreen= _zyellow= _znormalyellow=
   fi
   local -r _zerror="${_zred}x " _zokay="${_zgreen}) ${_znormal}" _zwarn="${_zyellow}! "
-  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.21.0' _zvendor=''
+  local -r _zconfig=${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} _zversion='1.21.1-dev' _zvendor=''
   local -r zusage="Usage: ${_zbold}${0}${_znormal} <action> [option]
 
 Actions:
