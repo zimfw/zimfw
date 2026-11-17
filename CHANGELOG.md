@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [1.21.1] - 2026-11-17
+
+### Fixed
+- Glob used by `compile` action, which didn't work on the Zsh s390x port for
+  Debian.
+
 ## [1.21.0] - 2026-11-09
 
 ### Added
@@ -522,7 +528,8 @@ Take your time to review the updated [README.md] and the changes listed below.
 [termtitle]: https://github.com/zimfw/termtitle
 [s1ck94]: https://github.com/zimfw/s1ck94
 
-[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.21.0...HEAD
+[Unreleased]: https://github.com/zimfw/zimfw/compare/v1.21.1...HEAD
+[1.21.1]: https://github.com/zimfw/zimfw/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/zimfw/zimfw/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/zimfw/zimfw/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/zimfw/zimfw/compare/v1.20.0...v1.20.1
